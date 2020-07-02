@@ -1,0 +1,47 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Example API
+paths:
+  '/v1/resources':
+    get:
+      description: Get a list of resources
+      operationId: getResources
+      parameters:
+        - $ref: '#/components/parameters/FilterById'
+        - $ref: '#/components/parameters/FilterByName'
+        - $ref: '#/components/parameters/FilterByIds'
+      responses:
+        '200':
+          description: list of resources
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Resource'
+components:
+  schemas:
+    Resource:
+      type: object
+      properties:
+        id:
+          type: integer
+  parameters:
+    FilterById:
+      name: filterById
+      in: query
+      schema:
+        type: integer
+    FilterByName:
+      name: filterByName
+      in: query
+      schema:
+        type: string
+    FilterByIds:
+      name: filterByIds
+      in: query
+      schema:
+        type: array
+        items:
+          type: integer

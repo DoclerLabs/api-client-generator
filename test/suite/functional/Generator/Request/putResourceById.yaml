@@ -1,0 +1,140 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Example API
+paths:
+  '/v1/resources/{resourceId}':
+    put:
+      description: Put new resource with id
+      operationId: putResourceById
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+        - name: integerParameter
+          in: query
+          schema:
+            type: integer
+        - name: stringParameter
+          in: query
+          schema:
+            type: string
+        - name: enumParameter
+          in: query
+          schema:
+            type: string
+            enum:
+              - 'one value'
+              - 'another value'
+              - 'third value'
+        - name: dateParameter
+          in: query
+          schema:
+            type: string
+            format: 'date-time'
+        - name: floatParameter
+          in: query
+          schema:
+            type: number
+            format: float
+        - name: booleanParameter
+          in: query
+          schema:
+            type: boolean
+        - name: arrayParameter
+          in: query
+          schema:
+            type: array
+            items:
+              type: integer
+        - name: objectParameter
+          in: query
+          schema:
+            $ref: '#/components/schemas/EmbeddedObject'
+        - name: mandatoryIntegerParameter
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: mandatoryStringParameter
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: mandatoryEnumParameter
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - 'one value'
+              - 'another value'
+              - 'third value'
+        - name: mandatoryDateParameter
+          in: query
+          required: true
+          schema:
+            type: string
+            format: 'date-time'
+        - name: mandatoryFloatParameter
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+        - name: mandatoryBooleanParameter
+          in: query
+          required: true
+          schema:
+            type: boolean
+        - name: mandatoryArrayParameter
+          in: query
+          required: true
+          schema:
+            type: array
+            items:
+              type: integer
+        - name: mandatoryObjectParameter
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/EmbeddedObject'
+        - in: header
+          name: X-Request-ID
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: cookie
+          name: csrf_token
+          schema:
+            type: string
+      requestBody:
+        description: New resource.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: integer
+              required:
+                - value
+      responses:
+        '201':
+          description: Successful operation.
+components:
+  schemas:
+    EmbeddedObject:
+      type: object
+      properties:
+        string:
+          type: string
+  parameters:
+    ResourceId:
+      in: path
+      description: Id of a resource.
+      required: true
+      name: resourceId
+      schema:
+        type: integer
+        format: int64
+        minimum: 0

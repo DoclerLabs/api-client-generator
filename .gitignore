@@ -1,0 +1,6 @@
+.DS_Store
+.idea/
+generated
+test-reports
+vendor
+.phpunit.result.cache

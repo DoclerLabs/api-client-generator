@@ -1,0 +1,49 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Example API
+paths:
+  '/v1/resources/{resourceId}':
+    get:
+      operationId: getResource
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+components:
+  schemas:
+    Resource:
+      type: object
+      properties:
+        mandatoryInteger:
+          type: integer
+        mandatoryString:
+          type: string
+        mandatoryEnum:
+          type: string
+          enum:
+            - 'one option'
+            - 'another option'
+        mandatoryDate:
+          type: string
+          format: 'date-time'
+      required:
+        - mandatoryInteger
+        - mandatoryString
+        - mandatoryEnum
+        - mandatoryDate
+  parameters:
+    ResourceId:
+      in: path
+      description: Id of a resource.
+      required: true
+      name: resourceId
+      schema:
+        type: integer
+        format: int64
+        minimum: 0

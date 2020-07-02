@@ -1,0 +1,37 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Example API
+paths:
+  '/v1/resource':
+    get:
+      operationId: getResources
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtendedItem'
+components:
+  schemas:
+    ExtendedItem:
+      allOf:
+        - $ref: '#/components/schemas/ParentObject'
+        - type: object
+          properties:
+            mandatoryChildInteger:
+              type: integer
+            optionalChildString:
+              type: string
+          required:
+            - mandatoryChildInteger
+    ParentObject:
+      type: object
+      properties:
+        madatoryParentString:
+          type: string
+        optionalParentInteger:
+          type: integer
+      required:
+        - madatoryParentString

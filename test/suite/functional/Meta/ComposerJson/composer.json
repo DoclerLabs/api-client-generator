@@ -1,0 +1,30 @@
+{
+    "name": "test/petstore-api",
+    "description": "A sample API that uses a petstore as an example to demonstrate features in the OpenAPI 3.0 specification",
+    "keywords": [
+        "api-client"
+    ],
+    "config": {
+        "sort-packages": true
+    },
+    "require": {
+        "php": ">=7.0",
+        "ext-json": "*",
+        "dh-minion/api-client-base": "^1.1",
+        "dh-core/json": "^1.2",
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Test\\PerstoreApi\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Test\\PerstoreApi\\Test\\Unit\\": "test/suite/unit/"
+        }
+    }
+}

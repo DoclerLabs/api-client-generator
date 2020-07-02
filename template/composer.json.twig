@@ -1,0 +1,30 @@
+{
+    "name": "{{ packageName }}",
+    "description": "{{ description }}",
+    "keywords": [
+        "api-client"
+    ],
+    "config": {
+        "sort-packages": true
+    },
+    "require": {
+        "php": ">={{ phpVersion }}",
+        "ext-json": "*",
+        "dh-minion/api-client-base": "^1.1",
+        "dh-core/json": "^1.2",
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "{{ namespace }}": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "{{ namespace }}Test\\Unit\\": "test/suite/unit/"
+        }
+    }
+}

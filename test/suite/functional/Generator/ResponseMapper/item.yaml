@@ -1,0 +1,92 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Example API
+paths:
+  '/v1/items/{itemId}':
+    get:
+      operationId: getItem
+      parameters:
+        - $ref: '#/components/parameters/ItemId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+components:
+  schemas:
+    Item:
+      type: object
+      properties:
+        mandatoryInteger:
+          type: integer
+        mandatoryString:
+          type: string
+        mandatoryEnum:
+          type: string
+          enum:
+            - 'one option'
+            - 'another option'
+        mandatoryDate:
+          type: string
+          format: 'date-time'
+        mandatoryFloat:
+          type: number
+          format: float
+        mandatoryBoolean:
+          type: boolean
+        mandatoryArray:
+          type: array
+          items:
+            type: string
+        mandatoryObject:
+          $ref: '#/components/schemas/EmbeddedObject'
+        optionalInteger:
+          type: integer
+        optionalString:
+          type: string
+        optionalEnum:
+          type: string
+          enum:
+            - 'one option'
+            - 'another option'
+        optionalDate:
+          type: string
+          format: 'date-time'
+        optionalFloat:
+          type: number
+          format: float
+        optionalBoolean:
+          type: boolean
+        optionalArray:
+          type: array
+          items:
+            type: string
+        optionalObject:
+          $ref: '#/components/schemas/EmbeddedObject'
+      required:
+        - mandatoryInteger
+        - mandatoryString
+        - mandatoryEnum
+        - mandatoryDate
+        - mandatoryFloat
+        - mandatoryBoolean
+        - mandatoryArray
+        - mandatoryObject
+    EmbeddedObject:
+      type: object
+      properties:
+        string:
+          type: string
+  parameters:
+    ItemId:
+      in: path
+      description: Id of a item.
+      required: true
+      name: itemId
+      schema:
+        type: integer
+        format: int64
+        minimum: 0

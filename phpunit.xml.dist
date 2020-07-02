@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="./vendor/autoload.php"
+		 colors="true"
+		 convertErrorsToExceptions="true"
+		 convertNoticesToExceptions="true"
+		 convertWarningsToExceptions="true"
+		 stopOnFailure="false">
+	<testsuites>
+		<testsuite name="unit">
+			<directory>./test/suite/unit</directory>
+		</testsuite>
+		<testsuite name="functional">
+			<directory>./test/suite/functional</directory>
+		</testsuite>
+	</testsuites>
+
+	<filter>
+		<whitelist processUncoveredFilesFromWhitelist="true">
+			<directory suffix=".php">./src</directory>
+		</whitelist>
+	</filter>
+	<php>
+		<env name="API_KEY" value="fakeApiKey" force="true"/>
+	</php>
+	<logging>
+		<log type="coverage-html" target="./test-reports"/>
+		<log type="coverage-text" target="php://stdout" showOnlySummary="false"/>
+	</logging>
+</phpunit>

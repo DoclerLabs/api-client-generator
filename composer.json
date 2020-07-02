@@ -1,0 +1,42 @@
+{
+    "name": "docler-labs/api-client-generator",
+    "description": "SDK Generator - API Client Generator",
+    "type": "library",
+    "keywords": [
+        "rest",
+        "api",
+        "api-client",
+        "openapi",
+        "sdk",
+        "generator",
+        "api-client-generator"
+    ],
+    "require": {
+        "php": ">=7.4",
+        "ext-json": "*",
+        "cebe/php-openapi": "^1.0",
+        "docler-labs/api-client-base": "^1.0",
+        "friendsofphp/php-cs-fixer": "^2.15",
+        "guzzlehttp/guzzle": "^6.3",
+        "nikic/php-parser": "^4.2",
+        "pimple/pimple": "^3.2",
+        "symfony/console": "^5.0",
+        "symfony/options-resolver": "^5.0",
+        "symfony/serializer": "^3.4",
+        "symfony/yaml": "^5.0",
+        "twig/twig": "^3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "DoclerLabs\\ApiClientGenerator\\Test\\Unit\\": "test/suite/unit",
+            "DoclerLabs\\ApiClientGenerator\\Test\\Functional\\": "test/suite/functional",
+            "DoclerLabs\\ApiClientGenerator\\": "src/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
