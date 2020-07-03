@@ -2,8 +2,6 @@
 
 namespace DoclerLabs\ApiClientGenerator\Input;
 
-use cebe\openapi\exceptions\TypeErrorException;
-use cebe\openapi\exceptions\UnresolvableReferenceException;
 use cebe\openapi\ReferenceContext;
 use cebe\openapi\spec\OpenApi;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
@@ -14,20 +12,35 @@ use Symfony\Component\Yaml\Yaml;
 
 class Parser
 {
-    private $operationCollectionFactory;
+    private OperationCollectionFactory $operationCollectionFactory;
 
     public function __construct(OperationCollectionFactory $operationCollectionFactory)
     {
         $this->operationCollectionFactory = $operationCollectionFactory;
     }
 
-    public function parse(string $fileName): Specification
+    public function parseFile(string $fileName): Specification
     {
-        try {
-            $openApi = $this->parseSpecification($fileName);
-        } catch (TypeErrorException | UnresolvableReferenceException $e) {
-            throw new InvalidSpecificationException($e->getMessage(), $e->getCode(), $e->getPrevious());
+        if (!is_readable($fileName)) {
+            throw new InvalidSpecificationException('File does not exist or not readable: ' . $fileName);
         }
+
+        $ext      = pathinfo($fileName, PATHINFO_EXTENSION);
+        $contents = file_get_contents($fileName);
+        switch ($ext) {
+            case 'yaml':
+            case 'yml':
+                $openApi = $this->parse(Yaml::parse($contents));
+                break;
+            case 'json':
+                $openApi = $this->parse(json_decode($contents, true, 512, JSON_THROW_ON_ERROR));
+                break;
+            default:
+                throw new InvalidSpecificationException(
+                    sprintf('Unknown specification file extension: %s. Supported: yaml, yml, json', $ext)
+                );
+        }
+        $openApi->setReferenceContext(new ReferenceContext($openApi, $fileName));
         $operations              = $this->operationCollectionFactory->create($openApi);
         $compositeRequestFields  = $this->extractCompositeRequestFields($operations);
         $compositeResponseFields = $this->extractCompositeResponseFields($operations);
@@ -40,19 +53,13 @@ class Parser
         );
     }
 
-    private function parseSpecification(string $fileName): OpenApi
+    public function parse(array $data): OpenApi
     {
-        if (!is_readable($fileName)) {
-            throw new InvalidSpecificationException('File does not exist or not readable: ' . $fileName);
-        }
-
-        $yaml    = file_get_contents($fileName);
-        $openApi = new OpenApi(Yaml::parse($yaml));
-        $openApi->setReferenceContext(new ReferenceContext($openApi, $fileName));
+        $openApi = new OpenApi($data);
 
         if (!$openApi->validate()) {
             throw new InvalidSpecificationException(
-                'OpenAPI specification validation failed: ' . json_encode($openApi->getErrors())
+                'OpenAPI specification validation failed: ' . json_encode($openApi->getErrors(), JSON_THROW_ON_ERROR)
             );
         }
 

@@ -52,7 +52,7 @@ class GenerateCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $specification = $this->parser->parse($this->configuration->getFilePath());
+        $specification = $this->parser->parseFile($this->configuration->getFilePath());
 
         $phpFiles =
             new PhpFileCollection($this->configuration->getOutputDirectory(), $this->configuration->getNamespace());

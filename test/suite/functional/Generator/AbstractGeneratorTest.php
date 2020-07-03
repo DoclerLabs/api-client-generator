@@ -48,7 +48,7 @@ abstract class AbstractGeneratorTest extends TestCase
         $this->assertFileExists($absoluteSpecificationPath);
         $this->assertFileExists($absoluteExpectedResultPath);
 
-        $specification = $this->parser->parse($absoluteSpecificationPath);
+        $specification = $this->parser->parseFile($absoluteSpecificationPath);
 
         $this->sut->generate($specification, $this->fileRegistry);
 
