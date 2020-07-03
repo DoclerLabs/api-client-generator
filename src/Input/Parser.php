@@ -9,8 +9,6 @@ use cebe\openapi\spec\OpenApi;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\FieldCollection;
 use DoclerLabs\ApiClientGenerator\Entity\OperationCollection;
-use DoclerLabs\ApiClientGenerator\Entity\ResponseException;
-use DoclerLabs\ApiClientGenerator\Entity\ResponseExceptionCollection;
 use DoclerLabs\ApiClientGenerator\Input\Factory\OperationCollectionFactory;
 use Symfony\Component\Yaml\Yaml;
 
@@ -33,14 +31,12 @@ class Parser
         $operations              = $this->operationCollectionFactory->create($openApi);
         $compositeRequestFields  = $this->extractCompositeRequestFields($operations);
         $compositeResponseFields = $this->extractCompositeResponseFields($operations);
-        $responseExceptions      = $this->extractResponseExceptions($operations);
 
         return new Specification(
             $openApi,
             $operations,
             $compositeRequestFields,
             $compositeResponseFields,
-            $responseExceptions
         );
     }
 
@@ -110,17 +106,5 @@ class Parser
         foreach ($rootObject->getStructure()->getObjectProperties() as $property) {
             $this->extractField($property, $allFields);
         }
-    }
-
-    private function extractResponseExceptions(OperationCollection $operations): ResponseExceptionCollection
-    {
-        $errorTypes = new ResponseExceptionCollection();
-        foreach ($operations as $operation) {
-            foreach ($operation->getErrorResponses() as $response) {
-                $errorTypes->add(new ResponseException($response->getStatusCode()));
-            }
-        }
-
-        return $errorTypes;
     }
 }

@@ -20,7 +20,11 @@
 		</whitelist>
 	</filter>
 	<php>
-		<env name="API_KEY" value="fakeApiKey" force="true"/>
+		<env name="OPENAPI" value="/test/openapi.yaml" force="true"/>
+		<env name="NAMESPACE" value="Test" force="true"/>
+		<env name="OUTPUT_DIR" value="test" force="true"/>
+		<env name="CODE_STYLE" value=".php_cs.php" force="true"/>
+		<env name="PACKAGE" value="test/test-api-client" force="true"/>
 	</php>
 	<logging>
 		<log type="coverage-html" target="./test-reports"/>

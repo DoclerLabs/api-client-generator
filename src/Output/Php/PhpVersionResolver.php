@@ -42,17 +42,17 @@ class PhpVersionResolver
 
     public function isVersion70(): bool
     {
-        return $this->phpVersion === self::VERSION_PHP7;
+        return $this->phpVersion === self::VERSION_PHP70;
     }
 
     public function isVersion71(): bool
     {
-        return $this->phpVersion === self::VERSION_PHP7;
+        return $this->phpVersion === self::VERSION_PHP71;
     }
 
     public function isVersion74(): bool
     {
-        return $this->phpVersion === self::VERSION_PHP7;
+        return $this->phpVersion === self::VERSION_PHP74;
     }
 
     public function getPhpVersion(): string

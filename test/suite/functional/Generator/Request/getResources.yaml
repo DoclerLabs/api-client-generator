@@ -20,6 +20,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Resource'
+        '400':
+          description: Invalid request parameters.
 components:
   schemas:
     Resource:

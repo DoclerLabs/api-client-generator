@@ -35,9 +35,4 @@ class Operation
     {
         return $this->successfulResponse;
     }
-
-    public function getErrorResponses(): array
-    {
-        return $this->errorResponses;
-    }
 }

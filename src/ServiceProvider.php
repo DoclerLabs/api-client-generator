@@ -43,41 +43,47 @@ class ServiceProvider implements ServiceProviderInterface
 {
     public function register(Container $pimple): void
     {
-        $pimple[Configuration::class] = static fn() => new Configuration(
-            getenv('OPENAPI') ?: '',
-            getenv('NAMESPACE') ?: '',
-            getenv('OUTPUT_DIR') ?: '',
-            getenv('CODE_STYLE') ?: '',
-            getenv('PACKAGE') ?: '',
-            getenv('COMPOSER_JSON_TEMPLATE_DIR') ?: Configuration::DEFAULT_TEMPLATE_DIRECTORY,
-            getenv('README_MD_TEMPLATE_DIR') ?: Configuration::DEFAULT_TEMPLATE_DIRECTORY,
-        );
+        $pimple[Configuration::class] =
+            static fn() => new Configuration(
+                getenv('OPENAPI') ?: '',
+                getenv('NAMESPACE') ?: '',
+                getenv('OUTPUT_DIR') ?: '',
+                getenv('CODE_STYLE') ?: '',
+                getenv('PACKAGE') ?: '',
+                getenv('PHP_VERSION') ?: PhpVersionResolver::VERSION_PHP70,
+                getenv('COMPOSER_JSON_TEMPLATE_DIR') ?: Configuration::DEFAULT_TEMPLATE_DIRECTORY,
+                getenv('README_MD_TEMPLATE_DIR') ?: Configuration::DEFAULT_TEMPLATE_DIRECTORY,
+            );
 
-        $pimple[GenerateCommand::class] = static fn(Container $container) => new GenerateCommand(
-            $container[Configuration::class],
-            $container[OpenApiParser::class],
-            $container[CodeGeneratorFacade::class],
-            $container[PhpPrinter::class],
-            $container[MetaTemplateFacade::class],
-            new MetaFilePrinter(new Printer())
-        );
+        $pimple[GenerateCommand::class] =
+            static fn(Container $container) => new GenerateCommand(
+                $container[Configuration::class],
+                $container[OpenApiParser::class],
+                $container[CodeGeneratorFacade::class],
+                $container[PhpPrinter::class],
+                $container[MetaTemplateFacade::class],
+                new MetaFilePrinter(new Printer())
+            );
 
-        $pimple[CodeGeneratorFacade::class] = static fn(Container $container) => (new CodeGeneratorFacade())
-            ->add($container[SchemaCollectionGenerator::class])
-            ->add($container[SchemaGenerator::class])
-            ->add($container[ResponseMapperGenerator::class])
-            ->add($container[ClientFactoryGenerator::class])
-            ->add($container[RequestGenerator::class])
-            ->add($container[ClientGenerator::class]);
+        $pimple[CodeGeneratorFacade::class] =
+            static fn(Container $container) => (new CodeGeneratorFacade())
+                ->add($container[SchemaCollectionGenerator::class])
+                ->add($container[SchemaGenerator::class])
+                ->add($container[ResponseMapperGenerator::class])
+                ->add($container[ClientFactoryGenerator::class])
+                ->add($container[RequestGenerator::class])
+                ->add($container[ClientGenerator::class]);
 
-        $pimple[MetaTemplateFacade::class] = static fn(Container $container) => (new MetaTemplateFacade())
-            ->add($container[ComposerJsonTemplate::class])
-            ->add($container[ReadmeMdTemplate::class]);
+        $pimple[MetaTemplateFacade::class] =
+            static fn(Container $container) => (new MetaTemplateFacade())
+                ->add($container[ComposerJsonTemplate::class])
+                ->add($container[ReadmeMdTemplate::class]);
 
         $pimple[YamlEncoder::class] =
             static fn(Container $container) => new YamlEncoder(new Dumper(), $container[YamlParser::class]);
 
-        $pimple[YamlParser::class] = static fn() => new YamlParser();
+        $pimple[YamlParser::class] =
+            static fn() => new YamlParser();
 
         $pimple[OpenApiParser::class] =
             static fn(Container $container) => new OpenApiParser($container[OperationCollectionFactory::class]);
@@ -89,7 +95,9 @@ class ServiceProvider implements ServiceProviderInterface
             static fn(Container $container) => new CodeBuilder($container[PhpVersionResolver::class]);
 
         $pimple[PhpVersionResolver::class] =
-            static fn() => new PhpVersionResolver(PhpVersionResolver::VERSION_PHP70);
+            static fn(Container $container) => new PhpVersionResolver(
+                $container[Configuration::class]->getPhpVersion()
+            );
 
         $pimple[RequestGenerator::class] =
             static fn(Container $container) => new RequestGenerator($container[CodeBuilder::class]);
@@ -118,10 +126,11 @@ class ServiceProvider implements ServiceProviderInterface
         $pimple[OperationCollectionFactory::class] =
             static fn(Container $container) => new OperationCollectionFactory($container[OperationFactory::class]);
 
-        $pimple[OperationFactory::class] = static fn(Container $container) => new OperationFactory(
-            $container[RequestFactory::class],
-            $container[ResponseFactory::class]
-        );
+        $pimple[OperationFactory::class] =
+            static fn(Container $container) => new OperationFactory(
+                $container[RequestFactory::class],
+                $container[ResponseFactory::class]
+            );
 
         $pimple[RequestFactory::class] =
             static fn(Container $container) => new RequestFactory($container[FieldFactory::class]);
@@ -129,29 +138,28 @@ class ServiceProvider implements ServiceProviderInterface
         $pimple[ResponseFactory::class] =
             static fn(Container $container) => new ResponseFactory($container[FieldFactory::class]);
 
-        $pimple[FieldFactory::class] = static fn() => new FieldFactory(
-            new FieldStructureFactory(),
-            new PhpNameValidator()
-        );
+        $pimple[FieldFactory::class] =
+            static fn() => new FieldFactory(new FieldStructureFactory(), new PhpNameValidator());
 
         $pimple[ClientFactoryGenerator::class] =
             static fn(Container $container) => new ClientFactoryGenerator($container[CodeBuilder::class]);
 
-        $pimple[Environment::class] = static fn(Container $container) => new Environment(
-            new FilesystemLoader(
-                [
-                    $container[Configuration::class]->getComposerJsonTemplateDir(),
-                    $container[Configuration::class]->getReadmeMdTemplateDir(),
-                ], '/'
-            )
-        );
+        $pimple[Environment::class] =
+            static fn(Container $container) => new Environment(
+                new FilesystemLoader(
+                    [
+                        $container[Configuration::class]->getComposerJsonTemplateDir(),
+                        $container[Configuration::class]->getReadmeMdTemplateDir(),
+                    ], '/'
+                )
+            );
 
         $pimple[ComposerJsonTemplate::class] =
             static fn(Container $container) => new ComposerJsonTemplate(
                 $container[Environment::class],
                 $container[Configuration::class]->getPackageName(),
                 $container[Configuration::class]->getNamespace(),
-                $container[PhpVersionResolver::class]->getPhpVersion(),
+                $container[Configuration::class]->getPhpVersion(),
             );
 
         $pimple[ReadmeMdTemplate::class] =

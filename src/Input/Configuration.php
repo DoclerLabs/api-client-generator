@@ -12,6 +12,7 @@ class Configuration
     private string $outputDirectory;
     private string $codeStyleConfig;
     private string $packageName;
+    private string $phpVersion;
     private string $composerJsonTemplateDir;
     private string $readmeMdTemplateDir;
 
@@ -21,6 +22,7 @@ class Configuration
         string $outputDirectory,
         string $codeStyleConfig,
         string $packageName,
+        string $phpVersion,
         string $composerJsonTemplateDir,
         string $readmeMdTemplateDir
     ) {
@@ -29,6 +31,7 @@ class Configuration
         Assert::notEmpty($outputDirectory, 'Output directory is not provided.');
         Assert::notEmpty($codeStyleConfig, 'Code style config is not provided.');
         Assert::notEmpty($packageName, 'Composer package name is not provided.');
+        Assert::notEmpty($phpVersion, 'Php version is not provided.');
         Assert::true(is_dir($composerJsonTemplateDir), 'Passed composer.json.twig directory does not exist.');
         Assert::true(is_dir($readmeMdTemplateDir), 'Passed README.md.twig directory does not exist.');
 
@@ -37,6 +40,7 @@ class Configuration
         $this->outputDirectory         = $outputDirectory;
         $this->codeStyleConfig         = $codeStyleConfig;
         $this->packageName             = $packageName;
+        $this->phpVersion              = $phpVersion;
         $this->composerJsonTemplateDir = $composerJsonTemplateDir;
         $this->readmeMdTemplateDir     = $readmeMdTemplateDir;
     }
@@ -64,6 +68,11 @@ class Configuration
     public function getPackageName(): string
     {
         return $this->packageName;
+    }
+
+    public function getPhpVersion(): string
+    {
+        return $this->phpVersion;
     }
 
     public function getComposerJsonTemplateDir(): string
