@@ -29,9 +29,8 @@ class ComposerJsonTemplateTest extends AbstractTemplateTest
     {
         return new ComposerJsonTemplate(
             new Environment(
-                new FilesystemLoader([dirname('template/composer.json')])
+                new FilesystemLoader(['template'], getcwd() . DIRECTORY_SEPARATOR)
             ),
-            'composer.json.twig',
             'test/petstore-api',
             'Test\\PerstoreApi',
             '7.0',

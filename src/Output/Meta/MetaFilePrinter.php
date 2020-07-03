@@ -13,12 +13,12 @@ class MetaFilePrinter
         $this->printer = $printer;
     }
 
-    public function createFiles(MetaFileCollection $templates): void
+    public function createFiles(MetaFileCollection $files): void
     {
-        foreach ($templates as $template) {
-            $path = sprintf('%s/%s', $templates->getBaseDirectory(), $template->getOutputFilename());
+        foreach ($files as $template) {
+            $path = sprintf('%s/%s', $files->getBaseDirectory(), $template->getFilePath());
 
-            $this->printer->print($path, $template->render());
+            $this->printer->print($path, $template->getContent());
         }
     }
 }

@@ -30,9 +30,8 @@ class ReadmeMdTemplateTest extends AbstractTemplateTest
     {
         return new ReadmeMdTemplate(
             new Environment(
-                new FilesystemLoader([dirname('template/README.md')])
+                new FilesystemLoader(['template'], getcwd() . DIRECTORY_SEPARATOR)
             ),
-            'README.md.twig',
         );
     }
 }

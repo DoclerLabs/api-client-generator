@@ -44,13 +44,13 @@ class ServiceProvider implements ServiceProviderInterface
     public function register(Container $pimple): void
     {
         $pimple[Configuration::class] = static fn() => new Configuration(
-            getenv('OPENAPI'),
-            getenv('NAMESPACE'),
-            getenv('OUTPUT_DIR'),
-            getenv('CODE_STYLE'),
-            getenv('PACKAGE'),
-            getenv('COMPOSER_JSON_TEMPLATE_PATH') ?: '../template/composer.json.twig',
-            getenv('README_MD_TEMPLATE_PATH') ?: '../template/README.md.twig',
+            getenv('OPENAPI') ?: '',
+            getenv('NAMESPACE') ?: '',
+            getenv('OUTPUT_DIR') ?: '',
+            getenv('CODE_STYLE') ?: '',
+            getenv('PACKAGE') ?: '',
+            getenv('COMPOSER_JSON_TEMPLATE_DIR') ?: Configuration::DEFAULT_TEMPLATE_DIRECTORY,
+            getenv('README_MD_TEMPLATE_DIR') ?: Configuration::DEFAULT_TEMPLATE_DIRECTORY,
         );
 
         $pimple[GenerateCommand::class] = static fn(Container $container) => new GenerateCommand(
@@ -72,7 +72,7 @@ class ServiceProvider implements ServiceProviderInterface
 
         $pimple[MetaTemplateFacade::class] = static fn(Container $container) => (new MetaTemplateFacade())
             ->add($container[ComposerJsonTemplate::class])
-            ->add($container[SchemaGenerator::class]);
+            ->add($container[ReadmeMdTemplate::class]);
 
         $pimple[YamlEncoder::class] =
             static fn(Container $container) => new YamlEncoder(new Dumper(), $container[YamlParser::class]);
@@ -140,16 +140,15 @@ class ServiceProvider implements ServiceProviderInterface
         $pimple[Environment::class] = static fn(Container $container) => new Environment(
             new FilesystemLoader(
                 [
-                    dirname($container[Configuration::class]->getComposerJsonTemplatePath()),
-                    dirname($container[Configuration::class]->getReadmeMdTemplatePath()),
-                ]
+                    $container[Configuration::class]->getComposerJsonTemplateDir(),
+                    $container[Configuration::class]->getReadmeMdTemplateDir(),
+                ], '/'
             )
         );
 
         $pimple[ComposerJsonTemplate::class] =
             static fn(Container $container) => new ComposerJsonTemplate(
                 $container[Environment::class],
-                $container[Configuration::class]->getComposerJsonTemplatePath(),
                 $container[Configuration::class]->getPackageName(),
                 $container[Configuration::class]->getNamespace(),
                 $container[PhpVersionResolver::class]->getPhpVersion(),
@@ -157,8 +156,7 @@ class ServiceProvider implements ServiceProviderInterface
 
         $pimple[ReadmeMdTemplate::class] =
             static fn(Container $container) => new ReadmeMdTemplate(
-                $container[Environment::class],
-                $container[Configuration::class]->getReadmeMdTemplatePath(),
+                $container[Environment::class]
             );
 
         $pimple[WarningFormatter::class] =

@@ -54,11 +54,12 @@ class GenerateCommand extends Command
     {
         $specification = $this->parser->parse($this->configuration->getFilePath());
 
-        $phpFiles = new PhpFileCollection($this->configuration->getDirectory(), $this->configuration->getNamespace());
+        $phpFiles =
+            new PhpFileCollection($this->configuration->getOutputDirectory(), $this->configuration->getNamespace());
         $this->codeGenerator->generate($specification, $phpFiles);
         $this->phpPrinter->createFiles($phpFiles);
 
-        $metaFiles = new MetaFileCollection($this->configuration->getDirectory());
+        $metaFiles = new MetaFileCollection($this->configuration->getOutputDirectory());
         $this->metaTemplate->render($specification, $metaFiles);
         $this->templatePrinter->createFiles($metaFiles);
 

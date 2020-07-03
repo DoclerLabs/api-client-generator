@@ -2,32 +2,43 @@
 
 namespace DoclerLabs\ApiClientGenerator\Input;
 
+use Webmozart\Assert\Assert;
+
 class Configuration
 {
+    public const DEFAULT_TEMPLATE_DIRECTORY = __DIR__ . '/../../template';
     private string $filePath;
     private string $namespace;
-    private string $directory;
+    private string $outputDirectory;
     private string $codeStyleConfig;
     private string $packageName;
-    private string $composerJsonTemplatePath;
-    private string $readmeMdTemplatePath;
+    private string $composerJsonTemplateDir;
+    private string $readmeMdTemplateDir;
 
     public function __construct(
         string $filePath,
         string $namespace,
-        string $directory,
+        string $outputDirectory,
         string $codeStyleConfig,
         string $packageName,
-        string $composerJsonTemplatePath,
-        string $readmeMdTemplatePath
+        string $composerJsonTemplateDir,
+        string $readmeMdTemplateDir
     ) {
-        $this->filePath                 = $filePath;
-        $this->namespace                = $namespace;
-        $this->directory                = $directory;
-        $this->codeStyleConfig          = $codeStyleConfig;
-        $this->packageName              = $packageName;
-        $this->composerJsonTemplatePath = $composerJsonTemplatePath;
-        $this->readmeMdTemplatePath     = $readmeMdTemplatePath;
+        Assert::notEmpty($filePath, 'Specification file path is not provided.');
+        Assert::notEmpty($namespace, 'Namespace for generated code is not provided.');
+        Assert::notEmpty($outputDirectory, 'Output directory is not provided.');
+        Assert::notEmpty($codeStyleConfig, 'Code style config is not provided.');
+        Assert::notEmpty($packageName, 'Composer package name is not provided.');
+        Assert::true(is_dir($composerJsonTemplateDir), 'Passed composer.json.twig directory does not exist.');
+        Assert::true(is_dir($readmeMdTemplateDir), 'Passed README.md.twig directory does not exist.');
+
+        $this->filePath                = $filePath;
+        $this->namespace               = $namespace;
+        $this->outputDirectory         = $outputDirectory;
+        $this->codeStyleConfig         = $codeStyleConfig;
+        $this->packageName             = $packageName;
+        $this->composerJsonTemplateDir = $composerJsonTemplateDir;
+        $this->readmeMdTemplateDir     = $readmeMdTemplateDir;
     }
 
     public function getFilePath(): string
@@ -40,9 +51,9 @@ class Configuration
         return $this->namespace;
     }
 
-    public function getDirectory(): string
+    public function getOutputDirectory(): string
     {
-        return $this->directory;
+        return $this->outputDirectory;
     }
 
     public function getCodeStyleConfig(): string
@@ -55,13 +66,13 @@ class Configuration
         return $this->packageName;
     }
 
-    public function getComposerJsonTemplatePath(): string
+    public function getComposerJsonTemplateDir(): string
     {
-        return $this->composerJsonTemplatePath;
+        return $this->composerJsonTemplateDir;
     }
 
-    public function getReadmeMdTemplatePath(): string
+    public function getReadmeMdTemplateDir(): string
     {
-        return $this->readmeMdTemplatePath;
+        return $this->readmeMdTemplateDir;
     }
 }

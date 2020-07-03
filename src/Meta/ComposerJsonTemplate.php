@@ -10,23 +10,20 @@ use Twig\Environment;
 class ComposerJsonTemplate implements TemplateInterface
 {
     private Environment $renderer;
-    private string      $templatePath;
     private string      $packageName;
     private string      $namespace;
     private string      $phpVersion;
 
     public function __construct(
         Environment $renderer,
-        string $templatePath,
         string $packageName,
         string $namespace,
         string $phpVersion = '7.0'
     ) {
-        $this->renderer     = $renderer;
-        $this->templatePath = $templatePath;
-        $this->packageName  = $packageName;
-        $this->namespace    = addslashes($namespace . '\\');
-        $this->phpVersion   = $phpVersion;
+        $this->renderer    = $renderer;
+        $this->packageName = $packageName;
+        $this->namespace   = addslashes($namespace . '\\');
+        $this->phpVersion  = $phpVersion;
     }
 
     public function getOutputFilePath(): string
@@ -37,7 +34,7 @@ class ComposerJsonTemplate implements TemplateInterface
     public function render(Specification $specification, MetaFileCollection $fileRegistry): void
     {
         $content = $this->renderer->render(
-            $this->templatePath,
+            'composer.json.twig',
             [
                 'packageName' => $this->packageName,
                 'description' => $specification->getDescription(),

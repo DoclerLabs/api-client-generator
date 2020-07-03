@@ -10,12 +10,10 @@ use Twig\Environment;
 class ReadmeMdTemplate implements TemplateInterface
 {
     private Environment $renderer;
-    private string      $templatePath;
 
-    public function __construct(Environment $renderer, string $templatePath)
+    public function __construct(Environment $renderer)
     {
-        $this->renderer     = $renderer;
-        $this->templatePath = $templatePath;
+        $this->renderer = $renderer;
     }
 
     public function getOutputFilePath(): string
@@ -25,7 +23,7 @@ class ReadmeMdTemplate implements TemplateInterface
 
     public function render(Specification $specification, MetaFileCollection $fileRegistry): void
     {
-        $content = $this->renderer->render($this->templatePath, ['apiClientName' => $specification->getTitle()]);
+        $content = $this->renderer->render('README.md.twig', ['apiClientName' => $specification->getTitle()]);
 
         $fileRegistry->add(new MetaFile($this->getOutputFilePath(), $content));
     }
