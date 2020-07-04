@@ -4,6 +4,7 @@ namespace DoclerLabs\ApiClientGenerator\Test\Functional\Generator;
 
 use DoclerLabs\ApiClientGenerator\Generator\GeneratorInterface;
 use DoclerLabs\ApiClientGenerator\Input\Parser;
+use DoclerLabs\ApiClientGenerator\Input\FileReader;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use DoclerLabs\ApiClientGenerator\ServiceProvider;
 use PhpParser\PrettyPrinter\Standard;
@@ -14,9 +15,10 @@ abstract class AbstractGeneratorTest extends TestCase
 {
     public const BASE_NAMESPACE = 'Test';
     protected GeneratorInterface $sut;
-    protected Parser $parser;
-    protected PhpFileCollection $fileRegistry;
-    protected Standard $printer;
+    protected FileReader             $specificationReader;
+    protected Parser             $specificationParser;
+    protected PhpFileCollection  $fileRegistry;
+    protected Standard           $printer;
 
     public function setUp(): void
     {
@@ -29,10 +31,11 @@ abstract class AbstractGeneratorTest extends TestCase
             E_USER_WARNING
         );
 
-        $this->sut          = $container[$this->generatorClassName()];
-        $this->parser       = $container[Parser::class];
-        $this->fileRegistry = new PhpFileCollection('', self::BASE_NAMESPACE);
-        $this->printer      = new Standard();
+        $this->sut                 = $container[$this->generatorClassName()];
+        $this->specificationReader = $container[FileReader::class];
+        $this->specificationParser = $container[Parser::class];
+        $this->fileRegistry        = new PhpFileCollection('', self::BASE_NAMESPACE);
+        $this->printer             = new Standard();
     }
 
     /**
@@ -48,7 +51,8 @@ abstract class AbstractGeneratorTest extends TestCase
         $this->assertFileExists($absoluteSpecificationPath);
         $this->assertFileExists($absoluteExpectedResultPath);
 
-        $specification = $this->parser->parseFile($absoluteSpecificationPath);
+        $data          = $this->specificationReader->read($absoluteSpecificationPath);
+        $specification = $this->specificationParser->parse($data, $absoluteSpecificationPath);
 
         $this->sut->generate($specification, $this->fileRegistry);
 

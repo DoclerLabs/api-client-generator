@@ -10,12 +10,15 @@ paths:
         - $ref: '#/components/parameters/ItemId'
       responses:
         '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Item'
+          $ref: '#/components/responses/ItemResponse'
 components:
+  responses:
+    ItemResponse:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Item'
   schemas:
     Item:
       type: object

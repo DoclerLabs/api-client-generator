@@ -4,6 +4,7 @@ namespace DoclerLabs\ApiClientGenerator\Command;
 
 use DoclerLabs\ApiClientGenerator\CodeGeneratorFacade;
 use DoclerLabs\ApiClientGenerator\Input\Configuration;
+use DoclerLabs\ApiClientGenerator\Input\FileReader;
 use DoclerLabs\ApiClientGenerator\Input\Parser;
 use DoclerLabs\ApiClientGenerator\MetaTemplateFacade;
 use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFileCollection;
@@ -16,15 +17,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateCommand extends Command
 {
-    private Configuration       $configuration;
-    private CodeGeneratorFacade $codeGenerator;
-    private Parser              $parser;
-    private PhpPrinter          $phpPrinter;
-    private MetaTemplateFacade  $metaTemplate;
-    private MetaFilePrinter     $templatePrinter;
+    private Configuration           $configuration;
+    private CodeGeneratorFacade     $codeGenerator;
+    private FileReader              $fileReader;
+    private Parser                  $parser;
+    private PhpPrinter              $phpPrinter;
+    private MetaTemplateFacade      $metaTemplate;
+    private MetaFilePrinter         $templatePrinter;
 
     public function __construct(
         Configuration $configuration,
+        FileReader $fileReader,
         Parser $parser,
         CodeGeneratorFacade $codeGenerator,
         PhpPrinter $phpPrinter,
@@ -34,6 +37,7 @@ class GenerateCommand extends Command
         parent::__construct();
 
         $this->configuration   = $configuration;
+        $this->fileReader      = $fileReader;
         $this->parser          = $parser;
         $this->codeGenerator   = $codeGenerator;
         $this->phpPrinter      = $phpPrinter;
@@ -52,10 +56,13 @@ class GenerateCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $specification = $this->parser->parseFile($this->configuration->getFilePath());
+        $specificationData = $this->fileReader->read($this->configuration->getFilePath());
+        $specification     = $this->parser->parse($specificationData, $this->configuration->getFilePath());
 
-        $phpFiles =
-            new PhpFileCollection($this->configuration->getOutputDirectory(), $this->configuration->getNamespace());
+        $phpFiles = new PhpFileCollection(
+            $this->configuration->getOutputDirectory(),
+            $this->configuration->getNamespace()
+        );
         $this->codeGenerator->generate($specification, $phpFiles);
         $this->phpPrinter->createFiles($phpFiles);
 

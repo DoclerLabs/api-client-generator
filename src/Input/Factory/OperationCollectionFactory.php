@@ -3,9 +3,11 @@
 namespace DoclerLabs\ApiClientGenerator\Input\Factory;
 
 use cebe\openapi\spec\OpenApi;
+use cebe\openapi\spec\PathItem;
 use DoclerLabs\ApiClientGenerator\Entity\OperationCollection;
 use DoclerLabs\ApiClientGenerator\Entity\Request;
 use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
+use ReflectionClass;
 
 class OperationCollectionFactory
 {
@@ -19,32 +21,33 @@ class OperationCollectionFactory
     public function create(OpenApi $specification): OperationCollection
     {
         $collection = new OperationCollection();
-        if ($specification->paths === null) {
+        if (count($specification->paths) === 0) {
             throw new InvalidSpecificationException('No paths found in the specification.');
         }
 
         foreach ($specification->paths as $path => $pathItem) {
-            if ($pathItem->get !== null) {
-                $collection->add($this->operationFactory->create($pathItem, $path, Request::GET));
-            }
+            foreach ($this->getOperations($pathItem) as $method => $operation) {
+                if (!in_array($method, Request::ALLOWED_METHODS, true)) {
+                    throw new InvalidSpecificationException(
+                        sprintf('Unsupported request method `%s` in `%s`.', $method, $path)
+                    );
+                }
 
-            if ($pathItem->patch !== null) {
-                $collection->add($this->operationFactory->create($pathItem, $path, Request::PATCH));
-            }
-
-            if ($pathItem->post !== null) {
-                $collection->add($this->operationFactory->create($pathItem, $path, Request::POST));
-            }
-
-            if ($pathItem->put !== null) {
-                $collection->add($this->operationFactory->create($pathItem, $path, Request::PUT));
-            }
-
-            if ($pathItem->delete !== null) {
-                $collection->add($this->operationFactory->create($pathItem, $path, Request::DELETE));
+                $collection->add(
+                    $this->operationFactory->create($operation, $path, $method, $pathItem->parameters ?? [])
+                );
             }
         }
 
         return $collection;
+    }
+
+    private function getOperations(PathItem $pathItem): array
+    {
+        $r  = new ReflectionClass($pathItem);
+        $pr = $r->getParentClass()->getProperty('_properties');
+        $pr->setAccessible(true);
+
+        return array_change_key_case($pr->getValue($pathItem), CASE_UPPER);
     }
 }

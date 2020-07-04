@@ -17,6 +17,7 @@ use DoclerLabs\ApiClientGenerator\Input\Factory\OperationCollectionFactory;
 use DoclerLabs\ApiClientGenerator\Input\Factory\OperationFactory;
 use DoclerLabs\ApiClientGenerator\Input\Factory\RequestFactory;
 use DoclerLabs\ApiClientGenerator\Input\Factory\ResponseFactory;
+use DoclerLabs\ApiClientGenerator\Input\FileReader;
 use DoclerLabs\ApiClientGenerator\Input\Parser as OpenApiParser;
 use DoclerLabs\ApiClientGenerator\Input\PhpNameValidator;
 use DoclerLabs\ApiClientGenerator\Meta\ComposerJsonTemplate;
@@ -33,9 +34,6 @@ use Pimple\ServiceProviderInterface;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Serializer\Encoder\YamlEncoder;
-use Symfony\Component\Yaml\Dumper;
-use Symfony\Component\Yaml\Parser as YamlParser;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -58,6 +56,7 @@ class ServiceProvider implements ServiceProviderInterface
         $pimple[GenerateCommand::class] =
             static fn(Container $container) => new GenerateCommand(
                 $container[Configuration::class],
+                $container[FileReader::class],
                 $container[OpenApiParser::class],
                 $container[CodeGeneratorFacade::class],
                 $container[PhpPrinter::class],
@@ -79,11 +78,8 @@ class ServiceProvider implements ServiceProviderInterface
                 ->add($container[ComposerJsonTemplate::class])
                 ->add($container[ReadmeMdTemplate::class]);
 
-        $pimple[YamlEncoder::class] =
-            static fn(Container $container) => new YamlEncoder(new Dumper(), $container[YamlParser::class]);
-
-        $pimple[YamlParser::class] =
-            static fn() => new YamlParser();
+        $pimple[FileReader::class] =
+            static fn(Container $container) => new FileReader();
 
         $pimple[OpenApiParser::class] =
             static fn(Container $container) => new OpenApiParser($container[OperationCollectionFactory::class]);

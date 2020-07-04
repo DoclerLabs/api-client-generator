@@ -38,6 +38,14 @@ class FieldFactory
             $schemaReference  = $schemaOrReference;
             $schema           = $this->resolveReference($schemaOrReference);
 
+            if ($referenceName !== '' && !$this->nameValidator->isValidClassName($referenceName)) {
+                throw new InvalidSpecificationException('Invalid field reference name: ' . $referenceName);
+            }
+
+            if ($fieldName !== '' && !$this->nameValidator->isValidVariableName(CaseCaster::toCamel($fieldName))) {
+                throw new InvalidSpecificationException('Invalid field name: ' . $fieldName);
+            }
+
             $type = $schema->type;
             if (isset($schema->allOf)) {
                 if (count($schema->allOf) !== 2) {
@@ -87,14 +95,6 @@ class FieldFactory
                 }
 
                 $objectProperties = $this->mapProperties($operationName, $schema);
-            }
-
-            if ($fieldName !== '' && !$this->nameValidator->isValidVariableName(CaseCaster::toCamel($fieldName))) {
-                throw new InvalidSpecificationException('Invalid field name: ' . $fieldName);
-            }
-
-            if ($referenceName !== '' && !$this->nameValidator->isValidClassName($referenceName)) {
-                throw new InvalidSpecificationException('Invalid field reference name: ' . $referenceName);
             }
 
             $fieldStructure = $this->fieldStructureMapper->create(

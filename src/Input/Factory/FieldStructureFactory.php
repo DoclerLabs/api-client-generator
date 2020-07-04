@@ -19,10 +19,7 @@ class FieldStructureFactory
         $fieldStructure = new FieldStructure();
 
         $type = $schema->type;
-        if (FieldType::isSpecificationTypeArray($type)) {
-            if ($arrayItem === null) {
-                throw new InvalidSpecificationException('Array field does not have items specified.');
-            }
+        if ($arrayItem !== null && FieldType::isSpecificationTypeArray($type)) {
             $fieldStructure->setArrayItem($arrayItem);
         } elseif (FieldType::isSpecificationTypeObject($type)) {
             $fieldStructure->setObjectProperties($objectProperties);

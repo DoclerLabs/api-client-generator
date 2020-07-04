@@ -1,0 +1,28 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Example API
+paths:
+  '/v1/resources/{resourceId}':
+    patch:
+      description: Update resource
+      operationId: patchResource
+      requestBody:
+        description: Updated values.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  enum:
+                    - 'one'
+                    - 'two'
+                value:
+                  type: integer
+              required:
+                - value
+      responses:
+        '201':
+          description: Successful operation.

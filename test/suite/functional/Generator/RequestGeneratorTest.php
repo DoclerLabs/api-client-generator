@@ -12,6 +12,11 @@ class RequestGeneratorTest extends AbstractGeneratorTest
     public function exampleProvider(): array
     {
         return [
+            'Request with body' => [
+                '/Request/patchResource.yaml',
+                '/Request/PatchResourceRequest.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\PatchResourceRequest',
+            ],
             'Request with mandatory parameters and body'    => [
                 '/Request/putResourceById.yaml',
                 '/Request/PutResourceByIdRequest.php',

@@ -4,13 +4,22 @@ namespace DoclerLabs\ApiClientGenerator\Entity;
 
 class Request
 {
-    public const GET     = 'GET';
-    public const POST    = 'POST';
-    public const PUT     = 'PUT';
-    public const PATCH   = 'PATCH';
-    public const OPTIONS = 'OPTIONS';
-    public const DELETE  = 'DELETE';
-    public const HEAD    = 'HEAD';
+    public const GET             = 'GET';
+    public const POST            = 'POST';
+    public const PUT             = 'PUT';
+    public const PATCH           = 'PATCH';
+    public const OPTIONS         = 'OPTIONS';
+    public const DELETE          = 'DELETE';
+    public const HEAD            = 'HEAD';
+    public const ALLOWED_METHODS = [
+        self::GET,
+        self::POST,
+        self::PUT,
+        self::PATCH,
+        self::OPTIONS,
+        self::DELETE,
+        self::HEAD,
+    ];
     private string               $path;
     private string               $method;
     private RequestFieldRegistry $fields;

@@ -3,6 +3,7 @@
 namespace DoclerLabs\ApiClientGenerator\Test\Functional\Meta;
 
 use DoclerLabs\ApiClientGenerator\Input\Parser;
+use DoclerLabs\ApiClientGenerator\Input\FileReader;
 use DoclerLabs\ApiClientGenerator\Meta\TemplateInterface;
 use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFileCollection;
 use DoclerLabs\ApiClientGenerator\ServiceProvider;
@@ -11,8 +12,9 @@ use Pimple\Container;
 
 abstract class AbstractTemplateTest extends TestCase
 {
-    protected TemplateInterface $sut;
-    protected Parser $parser;
+    protected TemplateInterface  $sut;
+    protected FileReader             $specificationReader;
+    protected Parser             $specificationParser;
     protected MetaFileCollection $fileRegistry;
 
     public function setUp(): void
@@ -26,9 +28,10 @@ abstract class AbstractTemplateTest extends TestCase
             E_USER_WARNING
         );
 
-        $this->sut          = $this->sutTemplate($container);
-        $this->parser       = $container[Parser::class];
-        $this->fileRegistry = new MetaFileCollection('');
+        $this->sut                 = $this->sutTemplate($container);
+        $this->specificationReader = $container[FileReader::class];
+        $this->specificationParser = $container[Parser::class];
+        $this->fileRegistry        = new MetaFileCollection('');
     }
 
     /**
@@ -44,7 +47,8 @@ abstract class AbstractTemplateTest extends TestCase
         $this->assertFileExists($absoluteSpecificationPath);
         $this->assertFileExists($absoluteExpectedResultPath);
 
-        $specification = $this->parser->parseFile($absoluteSpecificationPath);
+        $data          = $this->specificationReader->read($absoluteSpecificationPath);
+        $specification = $this->specificationParser->parse($data, $absoluteSpecificationPath);
 
         $this->sut->render($specification, $this->fileRegistry);
 
