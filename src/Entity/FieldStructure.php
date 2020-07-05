@@ -60,27 +60,6 @@ class FieldStructure
         return $this;
     }
 
-    public function hasEnumFields(): bool
-    {
-        if ($this->getObjectProperties() !== null) {
-            foreach ($this->getObjectProperties() as $property) {
-                $propertyHasEnum = $property->getStructure()->hasEnumFields();
-                if ($propertyHasEnum) {
-                    return true;
-                }
-            }
-        }
-
-        if ($this->getArrayItem() !== null) {
-            $propertyHasEnum = $this->getArrayItem()->getStructure()->hasEnumFields();
-            if ($propertyHasEnum) {
-                return true;
-            }
-        }
-
-        return $this->getEnumValues() !== null;
-    }
-
     public function getObjectParent(): ?Field
     {
         return $this->objectParent;

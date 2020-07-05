@@ -6,11 +6,10 @@ use UnexpectedValueException;
 
 class PhpVersionResolver
 {
-    public const  VERSION_PHP70                      = '7.0';
-    public const  VERSION_PHP71                      = '7.1';
-    public const  VERSION_PHP74                      = '7.4';
-    public const  VERSIONS                           = [self::VERSION_PHP70, self::VERSION_PHP71, self::VERSION_PHP74];
-    private const PARAM_TYPE_HINTS_FORBIDDEN_IN_PHP5 = ['int', 'float', 'string', 'bool', 'object', 'callable'];
+    public const  VERSION_PHP70 = '7.0';
+    public const  VERSION_PHP71 = '7.1';
+    public const  VERSION_PHP74 = '7.4';
+    public const  VERSIONS      = [self::VERSION_PHP70, self::VERSION_PHP71, self::VERSION_PHP74];
     private string $phpVersion;
 
     public function __construct(string $phpVersion)
@@ -26,37 +25,33 @@ class PhpVersionResolver
         $this->phpVersion = $phpVersion;
     }
 
-    public function isParamTypeHintSupported(string $type): bool
+    public function isClassConstantVisibilitySupported()
     {
-        return $this->isVersion7() || !in_array($type, self::PARAM_TYPE_HINTS_FORBIDDEN_IN_PHP5, true);
+        return $this->isVersion71() || $this->isVersion74();
     }
 
-    public function isReturnTypeHintSupported(): bool
+    public function isNullableTypeHintSupported()
     {
-        if ($this->isVersion7()) {
-            return true;
-        }
-
-        return false;
+        return $this->isVersion71() || $this->isVersion74();
     }
 
-    public function isVersion70(): bool
+    public function isVoidTypeHintSupported()
     {
-        return $this->phpVersion === self::VERSION_PHP70;
+        return $this->isVersion71() || $this->isVersion74();
     }
 
-    public function isVersion71(): bool
+    public function isParameterTypeHintSupported()
+    {
+        return $this->isVersion74();
+    }
+
+    protected function isVersion71(): bool
     {
         return $this->phpVersion === self::VERSION_PHP71;
     }
 
-    public function isVersion74(): bool
+    protected function isVersion74(): bool
     {
         return $this->phpVersion === self::VERSION_PHP74;
-    }
-
-    public function getPhpVersion(): string
-    {
-        return $this->phpVersion;
     }
 }

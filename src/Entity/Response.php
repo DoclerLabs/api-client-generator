@@ -14,11 +14,6 @@ class Response
         $this->body       = $body;
     }
 
-    public function getStatusCode(): int
-    {
-        return $this->statusCode;
-    }
-
     public function getBody(): ?Field
     {
         $body = $this->body;
@@ -30,10 +25,5 @@ class Response
         }
 
         return $body;
-    }
-
-    public function isEmpty(): bool
-    {
-        return $this->getBody() === null;
     }
 }

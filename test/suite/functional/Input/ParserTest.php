@@ -456,7 +456,7 @@ class ParserTest extends TestCase
                         '/users' => [
                             'get' => [
                                 'parameters'  => [
-                                    '$ref' => '#/components/parameters/ItemName',
+                                    ['$ref' => '#/components/parameters/ItemName',],
                                 ],
                                 'operationId' => 'getItems',
                                 'responses'   => [
@@ -508,9 +508,11 @@ class ParserTest extends TestCase
                     'components' => [
                         'parameters' => [
                             'ItemName' => [
-                                'name' => 'itemName',
-                                'in'   => 'query',
-                                'type' => 'string',
+                                'name'   => 'itemName',
+                                'in'     => 'query',
+                                'schema' => [
+                                    'type' => 'string',
+                                ],
                             ],
                         ],
                     ],
@@ -573,6 +575,72 @@ class ParserTest extends TestCase
                                         [
                                             'type' => 'string',
                                         ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'Duplicated operation id'                         => [
+                [
+                    'openapi' => '3.0.0',
+                    'info'    => [
+                        'title'   => 'Sample API',
+                        'version' => '1.0.0',
+                    ],
+                    'paths'   => [
+                        '/users' => [
+                            'get' => [
+                                'operationId' => 'getUsers',
+                                'responses'   => [
+                                    '200' => [
+                                        'description' => 'OK',
+                                    ],
+                                ],
+                            ],
+                        ],
+                        '/items' => [
+                            'get' => [
+                                'operationId' => 'getUsers',
+                                'responses'   => [
+                                    '200' => [
+                                        'description' => 'OK',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'Parameter with invalid origin'                   => [
+                [
+                    'openapi'    => '3.0.0',
+                    'info'       => [
+                        'title'   => 'Sample API',
+                        'version' => '1.0.0',
+                    ],
+                    'paths'      => [
+                        '/users' => [
+                            'get' => [
+                                'parameters'  => [
+                                    ['$ref' => '#/components/parameters/ItemName',],
+                                ],
+                                'operationId' => 'getItems',
+                                'responses'   => [
+                                    '200' => [
+                                        'description' => 'OK',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                    'components' => [
+                        'parameters' => [
+                            'ItemName' => [
+                                'name'   => 'itemName',
+                                'in'     => 'somewhere',
+                                'schema' => [
+                                    'type' => 'string',
                                 ],
                             ],
                         ],

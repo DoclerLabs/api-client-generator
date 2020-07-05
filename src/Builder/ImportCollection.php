@@ -2,10 +2,7 @@
 
 namespace DoclerLabs\ApiClientGenerator\Builder;
 
-use ArrayIterator;
-use IteratorAggregate;
-
-class ImportCollection implements IteratorAggregate
+class ImportCollection
 {
     protected array $items = [];
 
@@ -19,10 +16,5 @@ class ImportCollection implements IteratorAggregate
     public function toArray(): array
     {
         return array_unique($this->items);
-    }
-
-    public function getIterator(): ArrayIterator
-    {
-        return new ArrayIterator($this->toArray());
     }
 }

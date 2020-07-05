@@ -34,6 +34,7 @@ class OperationFactory
             throw new InvalidSpecificationException($exception->getMessage());
         }
 
+        $p          = $operation->parameters;
         $parameters = array_merge($commonParameters, $operation->parameters ?? []);
 
         try {
