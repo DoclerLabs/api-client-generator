@@ -4,7 +4,6 @@ namespace DoclerLabs\ApiClientGenerator\Builder;
 
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpVersionResolver;
 use InvalidArgumentException;
-use PhpParser\Builder\Class_;
 use PhpParser\BuilderFactory;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
@@ -17,6 +16,7 @@ use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\BinaryOp;
 use PhpParser\Node\Expr\BinaryOp\BooleanAnd;
 use PhpParser\Node\Expr\BinaryOp\BooleanOr;
+use PhpParser\Node\Expr\BinaryOp\Coalesce;
 use PhpParser\Node\Expr\BinaryOp\Div;
 use PhpParser\Node\Expr\BinaryOp\Greater;
 use PhpParser\Node\Expr\BinaryOp\GreaterOrEqual;
@@ -93,7 +93,7 @@ class CodeBuilder extends BuilderFactory
         return new Closure($subNodes);
     }
 
-    public function class(string $name): Class_
+    public function class(string $name): ClassBuilder
     {
         return new ClassBuilder($name);
     }
@@ -212,6 +212,11 @@ class CodeBuilder extends BuilderFactory
     public function ternary(Expr $condition, Expr $if, Expr $else): Ternary
     {
         return new Ternary($condition, $if, $else);
+    }
+
+    public function coalesce(Expr $left, Expr $right): Coalesce
+    {
+        return new Coalesce($left, $right);
     }
 
     public function instanceOf(Expr $left, Name $class): Instanceof_

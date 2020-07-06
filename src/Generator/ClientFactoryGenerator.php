@@ -12,9 +12,9 @@ use DoclerLabs\ApiClientGenerator\Naming\ClientNaming;
 use DoclerLabs\ApiClientGenerator\Naming\ResponseMapperNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use GuzzleHttp\Client;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\RequestOptions;
 use InvalidArgumentException;
+use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -30,7 +30,6 @@ class ClientFactoryGenerator extends GeneratorAbstract
 
         $this
             ->addImport(Client::class)
-            ->addImport(HandlerStack::class)
             ->addImport(ResponseHandler::class)
             ->addImport(RequestMapper::class)
             ->addImport(ResponseMapperRegistry::class)
@@ -52,44 +51,44 @@ class ClientFactoryGenerator extends GeneratorAbstract
             ->setType('string')
             ->getNode();
         $params[] = $this->builder
-            ->param('connectionTimeout')
-            ->setType('float')
-            ->getNode();
-        $params[] = $this->builder
-            ->param('requestTimeout')
-            ->setType('float')
-            ->getNode();
-        $params[] = $this->builder
-            ->param('handlerStack')
-            ->setType('HandlerStack')
-            ->setDefault($this->builder->val(null))
-            ->getNode();
-        $params[] = $this->builder
-            ->param('proxy')
-            ->setType('string')
-            ->setDefault($this->builder->val(null))
+            ->param('options')
+            ->setType('array')
+            ->setDefault($this->builder->val([]))
             ->getNode();
 
-        $config = $this->builder->var('config');
+        $default = $this->builder->var('default');
+        $config  = $this->builder->var('config');
+        $baseUri = $this->builder->var('baseUri');
+        $options = $this->builder->var('options');
+        $server  = $this->builder->var('_SERVER');
 
-        $baseUri      = $this->builder->var('baseUri');
         $statements[] = $this->generateBaseUriValidation($baseUri);
 
-        $configItems  = [
-            'base_uri'                      => $baseUri,
-            'handler'                       => $this->builder->var('handlerStack'),
-            RequestOptions::TIMEOUT         => $this->builder->var('requestTimeout'),
-            RequestOptions::CONNECT_TIMEOUT => $this->builder->var('connectionTimeout'),
-            RequestOptions::PROXY           => $this->builder->var('proxy'),
-            RequestOptions::HTTP_ERRORS     => $this->builder->val(false),
-            RequestOptions::HEADERS         => $this->builder->array(
+        $defaultItems = [
+            'base_uri'                  => $baseUri,
+            RequestOptions::TIMEOUT     => $this->builder->val(3),
+            RequestOptions::HEADERS     => $this->builder->array(
                 [
                     'Accept'       => $this->builder->val('application/json'),
                     'Content-Type' => $this->builder->val('application/json'),
+                    'X-Client-Ip'  => $this->builder->coalesce(
+                        $this->builder->getArrayItem($server, $this->builder->val('HTTP_X_CLIENT_IP')),
+                        $this->builder->coalesce(
+                            $this->builder->getArrayItem($server, $this->builder->val('REMOTE_ADDR')),
+                            $this->builder->val(null)
+                        )
+                    ),
                 ]
             ),
+            RequestOptions::HTTP_ERRORS => $this->builder->val(false),
         ];
-        $statements[] = $this->builder->assign($config, $this->builder->array($configItems));
+
+        $statements[] = $this->builder->assign($default, $this->builder->array($defaultItems));
+
+        $statements[] = $this->builder->assign(
+            $config,
+            $this->builder->funcCall('array_replace_recursive', [$default, $options])
+        );
 
         $registryVar  = $this->builder->var('registry');
         $statements[] = $this->builder->assign(
@@ -165,7 +164,7 @@ class ClientFactoryGenerator extends GeneratorAbstract
             ->getNode();
     }
 
-    private function buildMapperDependencies(Field $field)
+    private function buildMapperDependencies(Field $field): New_
     {
         $dependencies = [];
         if ($field->isObject()) {

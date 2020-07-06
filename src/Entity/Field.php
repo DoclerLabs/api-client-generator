@@ -122,6 +122,10 @@ class Field
 
     public function getPhpDocType(bool $allowNullable = true): string
     {
+        if ($this->type->isMixed()) {
+            return 'mixed';
+        }
+
         if ($this->isComposite()) {
             return $this->getPhpTypeHint();
         }

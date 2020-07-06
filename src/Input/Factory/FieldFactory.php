@@ -4,6 +4,7 @@ namespace DoclerLabs\ApiClientGenerator\Input\Factory;
 
 use cebe\openapi\spec\Parameter;
 use cebe\openapi\spec\Reference;
+use cebe\openapi\spec\Schema;
 use cebe\openapi\SpecObjectInterface;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\FieldType;
@@ -62,8 +63,8 @@ class FieldFactory
                             $required,
                             $objectParentReferenceName
                         );
-                    } else {
-                        $type   = FieldType::PHP_TYPE_OBJECT;
+                    } elseif ($allOfSchema instanceof Schema) {
+                        $type   = $allOfSchema->type;
                         $schema = $allOfSchema;
                     }
                 }

@@ -34,35 +34,39 @@ class FieldType
         self::SPEC_TYPE_BOOLEAN => self::PHP_TYPE_BOOLEAN,
         self::SPEC_TYPE_OBJECT  => self::PHP_TYPE_OBJECT,
     ];
-    private string $specificationType;
-    private string $phpType;
+    private ?string $specificationType;
+    private ?string $phpType;
 
-    public function __construct(string $specificationType)
+    public function __construct(?string $specificationType)
     {
         if (
-            !isset(self::SPEC_TO_PHP_TYPE_MAP[$specificationType])
-            || !in_array($specificationType, self::SPEC_TYPES, true)
+            $specificationType !== null
+            && (
+                !isset(self::SPEC_TO_PHP_TYPE_MAP[$specificationType])
+                || !in_array($specificationType, self::SPEC_TYPES, true)
+            )
         ) {
             throw new InvalidArgumentException('Unknown type passed: ' . $specificationType);
         }
 
         $this->specificationType = $specificationType;
-        $this->phpType           = self::SPEC_TO_PHP_TYPE_MAP[$this->specificationType];
+        $this->phpType           = self::SPEC_TO_PHP_TYPE_MAP[$this->specificationType] ?? null;
     }
 
-    public function toSpecificationType(): string
+    public function toSpecificationType(): ?string
     {
         return $this->specificationType;
     }
 
-    public function toPhpType(): string
+    public function toPhpType(): ?string
     {
         return $this->phpType;
     }
 
     public function isString(): bool
     {
-        return $this->specificationType === self::SPEC_TYPE_STRING && $this->phpType === self::PHP_TYPE_STRING;
+        return $this->specificationType === self::SPEC_TYPE_STRING
+               && $this->phpType === self::PHP_TYPE_STRING;
     }
 
     public static function isSpecificationTypeString(?string $type): bool
@@ -72,7 +76,8 @@ class FieldType
 
     public function isFloat(): bool
     {
-        return $this->specificationType === self::SPEC_TYPE_FLOAT && $this->phpType === self::PHP_TYPE_FLOAT;
+        return $this->specificationType === self::SPEC_TYPE_FLOAT
+               && $this->phpType === self::PHP_TYPE_FLOAT;
     }
 
     public static function isSpecificationTypeFloat(?string $type): bool
@@ -93,7 +98,8 @@ class FieldType
 
     public function isArray(): bool
     {
-        return $this->specificationType === self::SPEC_TYPE_ARRAY && $this->phpType === self::PHP_TYPE_ARRAY;
+        return $this->specificationType === self::SPEC_TYPE_ARRAY
+               && $this->phpType === self::PHP_TYPE_ARRAY;
     }
 
     public static function isSpecificationTypeArray(?string $type): bool
@@ -103,7 +109,8 @@ class FieldType
 
     public function isBoolean(): bool
     {
-        return $this->specificationType === self::SPEC_TYPE_BOOLEAN && $this->phpType === self::PHP_TYPE_BOOLEAN;
+        return $this->specificationType === self::SPEC_TYPE_BOOLEAN
+               && $this->phpType === self::PHP_TYPE_BOOLEAN;
     }
 
     public static function isSpecificationTypeBoolean(?string $type): bool
@@ -113,11 +120,23 @@ class FieldType
 
     public function isObject(): bool
     {
-        return $this->specificationType === self::SPEC_TYPE_OBJECT && $this->phpType === self::PHP_TYPE_OBJECT;
+        return $this->specificationType === self::SPEC_TYPE_OBJECT
+               && $this->phpType === self::PHP_TYPE_OBJECT;
     }
 
     public static function isSpecificationTypeObject(?string $type): bool
     {
         return $type === self::SPEC_TYPE_OBJECT;
+    }
+
+    public function isMixed(): bool
+    {
+        return $this->specificationType === null
+               && $this->phpType === null;
+    }
+
+    public static function isSpecificationTypeMixed(?string $type): bool
+    {
+        return $type === null;
     }
 }

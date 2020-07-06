@@ -3,8 +3,12 @@
 namespace DoclerLabs\ApiClientGenerator\Builder;
 
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpVersionResolver;
+use PhpParser\Builder;
 use PhpParser\Builder\Method;
 use PhpParser\Comment\Doc;
+use PhpParser\Node;
+use PhpParser\Node\Name;
+use PhpParser\Node\NullableType;
 
 class MethodBuilder extends Method
 {
@@ -47,6 +51,11 @@ class MethodBuilder extends Method
         return $this;
     }
 
+    /**
+     * @param Name|NullableType|string|null $type
+     *
+     * @return $this
+     */
     public function setReturnType($type): self
     {
         if ($type === '' || $type === null) {
@@ -56,6 +65,11 @@ class MethodBuilder extends Method
         return parent::setReturnType($type);
     }
 
+    /**
+     * @param Builder|Node|null $stmt
+     *
+     * @return $this
+     */
     public function addStmt($stmt): self
     {
         if ($stmt === null) {

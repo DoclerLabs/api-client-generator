@@ -1,0 +1,19 @@
+language: php
+
+php:
+  - 7.4
+
+install:
+  - composer clear-cache
+  - composer install --no-interaction --prefer-dist
+
+script:
+  - vendor/bin/phpunit
+  - vendor/bin/phpstan analyse
+
+after_success:
+  - travis_retry php vendor/bin/php-coveralls -v
+
+cache:
+  directories:
+    - $HOME/.composer/cache

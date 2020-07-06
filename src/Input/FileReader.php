@@ -18,10 +18,8 @@ class FileReader
             case 'yaml':
             case 'yml':
                 return Yaml::parse($contents);
-                break;
             case 'json':
                 return json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
-                break;
             default:
                 throw new InvalidSpecificationException(
                     sprintf('Unknown specification file extension: %s. Supported: yaml, yml, json', $ext)
