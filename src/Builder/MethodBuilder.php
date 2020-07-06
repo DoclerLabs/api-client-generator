@@ -47,7 +47,7 @@ class MethodBuilder extends Method
         return $this;
     }
 
-    public function setReturnType($type): Method
+    public function setReturnType($type): self
     {
         if ($type === '' || $type === null) {
             return $this;
@@ -56,7 +56,7 @@ class MethodBuilder extends Method
         return parent::setReturnType($type);
     }
 
-    public function addStmt($stmt): Method
+    public function addStmt($stmt): self
     {
         if ($stmt === null) {
             return $this;

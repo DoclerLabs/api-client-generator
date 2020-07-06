@@ -9,7 +9,7 @@ class Parameter extends Param
 {
     protected string $docBlockType = '';
 
-    public function setType($type)
+    public function setType($type): self
     {
         if ($type !== '') {
             return parent::setType($type);
@@ -18,7 +18,7 @@ class Parameter extends Param
         return $this;
     }
 
-    public function getNode(): Node
+    public function getNode(): ParameterNode
     {
         return new ParameterNode(
             new Node\Expr\Variable($this->name),

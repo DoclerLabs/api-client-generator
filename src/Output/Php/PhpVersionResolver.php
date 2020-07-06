@@ -25,22 +25,22 @@ class PhpVersionResolver
         $this->phpVersion = $phpVersion;
     }
 
-    public function isClassConstantVisibilitySupported()
+    public function isClassConstantVisibilitySupported(): bool
     {
         return $this->isVersion71() || $this->isVersion74();
     }
 
-    public function isNullableTypeHintSupported()
+    public function isNullableTypeHintSupported(): bool
     {
         return $this->isVersion71() || $this->isVersion74();
     }
 
-    public function isVoidTypeHintSupported()
+    public function isVoidTypeHintSupported(): bool
     {
         return $this->isVersion71() || $this->isVersion74();
     }
 
-    public function isParameterTypeHintSupported()
+    public function isParameterTypeHintSupported(): bool
     {
         return $this->isVersion74();
     }

@@ -13,7 +13,7 @@ class WarningFormatter
         $this->output = $output;
     }
 
-    public function __invoke(int $code, string $message)
+    public function __invoke(int $code, string $message): void
     {
         $this->output->warning($message);
     }

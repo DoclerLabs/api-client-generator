@@ -33,6 +33,9 @@ class PhpFileCollection implements IteratorAggregate
         return $this->files[$className];
     }
 
+    /**
+     * @return ArrayIterator<PhpFile>
+     */
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->files);

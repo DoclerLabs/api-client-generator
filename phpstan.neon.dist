@@ -1,0 +1,8 @@
+parameters:
+    level: 4
+    paths:
+        - src
+    fileExtensions:
+        - php
+    universalObjectCratesClasses:
+        - cebe\openapi\SpecObjectInterface

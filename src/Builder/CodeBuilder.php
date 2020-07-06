@@ -5,8 +5,6 @@ namespace DoclerLabs\ApiClientGenerator\Builder;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpVersionResolver;
 use InvalidArgumentException;
 use PhpParser\Builder\Class_;
-use PhpParser\Builder\Method;
-use PhpParser\Builder\Param;
 use PhpParser\BuilderFactory;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
@@ -65,7 +63,7 @@ class CodeBuilder extends BuilderFactory
         $this->versionResolver = $versionResolver;
     }
 
-    public function method(string $name): Method
+    public function method(string $name): MethodBuilder
     {
         return new MethodBuilder($name, $this->versionResolver);
     }
@@ -336,7 +334,7 @@ class CodeBuilder extends BuilderFactory
         throw new InvalidArgumentException('Unknown operator passed: ' . $operator);
     }
 
-    public function param(string $name): Param
+    public function param(string $name): Parameter
     {
         return new Parameter($name);
     }

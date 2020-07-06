@@ -2,6 +2,7 @@
     "name": "docler-labs/api-client-generator",
     "description": "SDK Generator - API Client Generator",
     "type": "library",
+    "license": "MIT",
     "keywords": [
         "rest",
         "api",
@@ -21,12 +22,12 @@
         "nikic/php-parser": "^4.2",
         "pimple/pimple": "^3.2",
         "symfony/console": "^5.0",
-        "symfony/options-resolver": "^5.0",
-        "symfony/serializer": "^3.4",
-        "symfony/yaml": "^5.0",
+        "symfony/yaml": "^5.1",
         "twig/twig": "^3.0"
     },
     "require-dev": {
+        "php-coveralls/php-coveralls": "^2.2",
+        "phpstan/phpstan": "^0.12.32",
         "phpunit/phpunit": "^9.2"
     },
     "autoload": {

@@ -12,6 +12,7 @@ use DoclerLabs\ApiClientGenerator\Naming\RequestNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use GuzzleHttp\ClientInterface;
 use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Property;
 
 class ClientGenerator extends GeneratorAbstract
 {
@@ -113,6 +114,9 @@ class ClientGenerator extends GeneratorAbstract
             ->getNode();
     }
 
+    /**
+     * @return Property[]
+     */
     protected function generateProperties(): array
     {
         return [

@@ -32,7 +32,7 @@ class MetaFileCollection implements IteratorAggregate
     }
 
     /**
-     * @return MetaFile[]
+     * @return ArrayIterator<MetaFile>
      */
     public function getIterator(): ArrayIterator
     {

@@ -25,7 +25,7 @@ class ParameterNode extends Param
 
     public function getDocBlockType(): string
     {
-        if ($this->docBlockType === null) {
+        if ($this->docBlockType === null && is_string($this->type)) {
             return $this->type;
         }
 
