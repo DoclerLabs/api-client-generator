@@ -2,6 +2,9 @@
 
 API client generator is a console application capable of auto-generating an API client based on OpenAPI specification according to PHP best practices, and your code style standards.
 
+[![Build Status](https://travis-ci.org/DoclerLabs/api-client-generator.svg?branch=master)](https://travis-ci.org/DoclerLabs/api-client-generator)
+[![Coverage Status](https://coveralls.io/repos/github/DoclerLabs/api-client-generator/badge.svg?branch=master)](https://coveralls.io/github/DoclerLabs/api-client-generator?branch=master)
+
 ## Usage
 
 ### With Docker
