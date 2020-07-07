@@ -5,7 +5,7 @@ namespace DoclerLabs\ApiClientGenerator\Output\Php;
 use DoclerLabs\ApiClientGenerator\Output\Printer;
 use PhpParser\PrettyPrinterAbstract;
 
-class PhpPrinter
+class PhpFilePrinter
 {
     private PrettyPrinterAbstract $marshaller;
     private Printer               $printer;
@@ -21,6 +21,7 @@ class PhpPrinter
     public function createFiles(PhpFileCollection $files): void
     {
         foreach ($files as $file) {
+            /** @var PhpFile $file */
             $path = sprintf('%s/%s', $files->getBaseDirectory(), $file->getFileName());
 
             $this->printer->print($path, $this->marshaller->prettyPrintFile($file->getNodes()));

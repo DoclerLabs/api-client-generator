@@ -35,7 +35,7 @@ class FieldType
         self::SPEC_TYPE_OBJECT  => self::PHP_TYPE_OBJECT,
     ];
     private ?string $specificationType;
-    private ?string $phpType;
+    private string  $phpType;
 
     public function __construct(?string $specificationType)
     {
@@ -50,7 +50,7 @@ class FieldType
         }
 
         $this->specificationType = $specificationType;
-        $this->phpType           = self::SPEC_TO_PHP_TYPE_MAP[$this->specificationType] ?? null;
+        $this->phpType           = self::SPEC_TO_PHP_TYPE_MAP[$this->specificationType] ?? '';
     }
 
     public function toSpecificationType(): ?string
@@ -58,7 +58,7 @@ class FieldType
         return $this->specificationType;
     }
 
-    public function toPhpType(): ?string
+    public function toPhpType(): string
     {
         return $this->phpType;
     }
@@ -132,7 +132,7 @@ class FieldType
     public function isMixed(): bool
     {
         return $this->specificationType === null
-               && $this->phpType === null;
+               && $this->phpType === '';
     }
 
     public static function isSpecificationTypeMixed(?string $type): bool

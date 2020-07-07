@@ -8,6 +8,7 @@ use DoclerLabs\ApiClientGenerator\Entity\OperationCollection;
 use DoclerLabs\ApiClientGenerator\Entity\Request;
 use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
 use ReflectionClass;
+use UnexpectedValueException;
 
 class OperationCollectionFactory
 {
@@ -44,8 +45,11 @@ class OperationCollectionFactory
 
     private function getOperations(PathItem $pathItem): array
     {
-        $r  = new ReflectionClass($pathItem);
-        $pr = $r->getParentClass()->getProperty('_properties');
+        $parentClass = (new ReflectionClass($pathItem))->getParentClass();
+        if ($parentClass === false) {
+            throw new UnexpectedValueException('Wrong path item class passed.');
+        }
+        $pr = $parentClass->getProperty('_properties');
         $pr->setAccessible(true);
 
         return array_change_key_case($pr->getValue($pathItem), CASE_UPPER);

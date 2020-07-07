@@ -25,13 +25,13 @@ class ResponseFactory
             }
 
             if ($code === 204) {
-                return new Response($code, null);
+                return new Response(204, null);
             }
 
             if (200 <= $code && $code < 300) {
                 $content = current($response->content);
                 if ($content === false) {
-                    return new Response($code, null);
+                    return new Response((int)$code, null);
                 }
 
                 $schema     = $content->schema;
@@ -45,7 +45,7 @@ class ResponseFactory
                     $schemaName
                 );
 
-                return new Response($code, $body);
+                return new Response((int)$code, $body);
             }
         }
 
@@ -59,7 +59,7 @@ class ResponseFactory
         $responses = [];
         foreach ($openApiResponses as $code => $response) {
             if ($code > 399) {
-                $responses[] = new Response($code, null);
+                $responses[] = new Response((int)$code, null);
             }
         }
 

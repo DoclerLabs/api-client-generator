@@ -157,7 +157,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             $statements = array_merge($statements, $this->generateMapStatementsForObject($root, $responseVar));
         }
 
-        if ($root->isArrayOfObjects() && $root->getStructure()->getArrayItem() !== null) {
+        if ($root->isArrayOfObjects()) {
             $statements = array_merge($statements, $this->generateMapStatementsForArrayOfObjects($root, $responseVar));
         }
 

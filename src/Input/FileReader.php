@@ -9,11 +9,15 @@ class FileReader
     public function read(string $fileName): array
     {
         if (!is_readable($fileName)) {
-            throw new InvalidSpecificationException('File does not exist or not readable: ' . $fileName);
+            throw new InvalidSpecificationException('Specification file does not exist or not readable: ' . $fileName);
         }
 
         $ext      = pathinfo($fileName, PATHINFO_EXTENSION);
         $contents = file_get_contents($fileName);
+        if ($contents === false) {
+            throw new InvalidSpecificationException('Specification file is empty.');
+        }
+
         switch ($ext) {
             case 'yaml':
             case 'yml':

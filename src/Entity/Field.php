@@ -4,6 +4,7 @@ namespace DoclerLabs\ApiClientGenerator\Entity;
 
 use DoclerLabs\ApiClientGenerator\Naming\CaseCaster;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaCollectionNaming;
+use RuntimeException;
 
 class Field
 {
@@ -73,13 +74,15 @@ class Field
         return $this->type->isObject();
     }
 
+    public function isArray(): bool
+    {
+        return $this->type->isArray();
+    }
+
     public function isArrayOfObjects(): bool
     {
-        $arrayItem = $this->getStructure()->getArrayItem();
-
-        return $arrayItem !== null
-               && $this->type->isArray()
-               && $arrayItem->getType()->isObject();
+        return $this->isArray()
+               && $this->getStructure()->getArrayItem()->getType()->isObject();
     }
 
     public function getPhpVariableName(): string
@@ -87,23 +90,24 @@ class Field
         return CaseCaster::toCamel($this->name);
     }
 
-    public function getPhpClassName(): ?string
+    public function getPhpClassName(): string
     {
         if ($this->type->isObject()) {
             return $this->referenceName;
         }
-        $arrayItem = $this->getStructure()->getArrayItem();
+
         if (
-            $arrayItem !== null
-            && $arrayItem->getType()->isObject()
+            $this->type->isArray()
+            && $this->getStructure()->getArrayItem()->getType()->isObject()
         ) {
-            return SchemaCollectionNaming::getClassName($arrayItem->getReferenceName());
+            return SchemaCollectionNaming::getClassName($this->getStructure()->getArrayItem()->getReferenceName());
         }
+
         if ($this->isDate()) {
             return 'DateTimeInterface';
         }
 
-        return null;
+        throw new RuntimeException('Call of getPhpClassName on the non-composite field.');
     }
 
     public function getPhpTypeHint(): string
@@ -112,12 +116,11 @@ class Field
             return '';
         }
 
-        $className = $this->getPhpClassName();
-        if ($className === null) {
-            return $this->type->toPhpType();
+        if ($this->isComposite() || $this->isDate()) {
+            return $this->getPhpClassName();
         }
 
-        return $className;
+        return $this->type->toPhpType();
     }
 
     public function getPhpDocType(bool $allowNullable = true): string
@@ -132,18 +135,19 @@ class Field
 
         $nullableSuffix = '';
         $arraySuffix    = '';
-        $typeHint       = $this->getPhpClassName();
-        if ($typeHint === null) {
+        if ($this->isComposite() || $this->isDate()) {
+            $typeHint = $this->getPhpClassName();
+        } else {
             $typeHint = $this->type->toPhpType();
         }
+
         if ($allowNullable && ($this->isNullable() || $this->isOptional())) {
             $nullableSuffix = '|null';
         }
 
-        $arrayItem = $this->getStructure()->getArrayItem();
-        if ($arrayItem !== null && !$arrayItem->getType()->isObject()) {
+        if ($this->isArray()) {
             $arraySuffix = '[]';
-            $typeHint    = $arrayItem->getPhpTypeHint();
+            $typeHint    = $this->getStructure()->getArrayItem()->getPhpTypeHint();
         }
 
         return sprintf('%s%s%s', $typeHint, $arraySuffix, $nullableSuffix);
@@ -164,10 +168,10 @@ class Field
         return $this->getStructure()->getObjectParent() !== null;
     }
 
-    public function getAllProperties()
+    public function getAllProperties(): array
     {
-        $allProperties = $this->getStructure()->getObjectProperties();
-        if ($this->isExtended()) {
+        $allProperties = $this->getStructure()->getObjectProperties() ?? [];
+        if (!empty($allProperties) && $this->isExtended()) {
             $allProperties =
                 array_merge(
                     $this->getStructure()->getParentProperties(),

@@ -3,7 +3,9 @@
 namespace DoclerLabs\ApiClientGenerator\Builder;
 
 use PhpParser\Node\Expr;
+use PhpParser\Node\NullableType;
 use PhpParser\Node\Param;
+use PhpParser\Node\UnionType;
 
 class ParameterNode extends Param
 {
@@ -25,10 +27,22 @@ class ParameterNode extends Param
 
     public function getDocBlockType(): string
     {
-        if ($this->docBlockType === '' && $this->type !== null) {
-            return (string)$this->type;
+        if ($this->docBlockType !== '') {
+            return $this->docBlockType;
         }
 
-        return $this->docBlockType;
+        if ($this->type instanceof UnionType) {
+            return implode("|", $this->type->getAttribute('types'));
+        }
+
+        if ($this->type instanceof NullableType) {
+            return sprintf('%s|null', $this->type->type->toString());
+        }
+
+        if ($this->type !== null) {
+            return $this->type->toString();
+        }
+
+        return '';
     }
 }

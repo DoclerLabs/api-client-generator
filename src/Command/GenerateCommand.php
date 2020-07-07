@@ -10,27 +10,27 @@ use DoclerLabs\ApiClientGenerator\MetaTemplateFacade;
 use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFileCollection;
 use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFilePrinter;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
-use DoclerLabs\ApiClientGenerator\Output\Php\PhpPrinter;
+use DoclerLabs\ApiClientGenerator\Output\Php\PhpFilePrinter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateCommand extends Command
 {
-    private Configuration           $configuration;
-    private CodeGeneratorFacade     $codeGenerator;
-    private FileReader              $fileReader;
-    private Parser                  $parser;
-    private PhpPrinter              $phpPrinter;
-    private MetaTemplateFacade      $metaTemplate;
-    private MetaFilePrinter         $templatePrinter;
+    private Configuration               $configuration;
+    private CodeGeneratorFacade         $codeGenerator;
+    private FileReader                  $fileReader;
+    private Parser                      $parser;
+    private PhpFilePrinter              $phpPrinter;
+    private MetaTemplateFacade          $metaTemplate;
+    private MetaFilePrinter             $templatePrinter;
 
     public function __construct(
         Configuration $configuration,
         FileReader $fileReader,
         Parser $parser,
         CodeGeneratorFacade $codeGenerator,
-        PhpPrinter $phpPrinter,
+        PhpFilePrinter $phpPrinter,
         MetaTemplateFacade $metaTemplate,
         MetaFilePrinter $templatePrinter
     ) {
@@ -45,7 +45,7 @@ class GenerateCommand extends Command
         $this->templatePrinter = $templatePrinter;
     }
 
-    public function configure()
+    public function configure(): void
     {
         $this->setName('generate');
         $this->setDescription('Generate an api client based on a given OpenApi specification');
@@ -54,7 +54,7 @@ class GenerateCommand extends Command
         );
     }
 
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $specificationData = $this->fileReader->read($this->configuration->getFilePath());
         $specification     = $this->parser->parse($specificationData, $this->configuration->getFilePath());

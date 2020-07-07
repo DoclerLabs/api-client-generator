@@ -24,7 +24,7 @@ use DoclerLabs\ApiClientGenerator\Meta\ComposerJsonTemplate;
 use DoclerLabs\ApiClientGenerator\Meta\ReadmeMdTemplate;
 use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFilePrinter;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpCodeStyleFixer;
-use DoclerLabs\ApiClientGenerator\Output\Php\PhpPrinter;
+use DoclerLabs\ApiClientGenerator\Output\Php\PhpFilePrinter;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpVersionResolver;
 use DoclerLabs\ApiClientGenerator\Output\Printer;
 use DoclerLabs\ApiClientGenerator\Output\WarningFormatter;
@@ -59,7 +59,7 @@ class ServiceProvider implements ServiceProviderInterface
                 $container[FileReader::class],
                 $container[OpenApiParser::class],
                 $container[CodeGeneratorFacade::class],
-                $container[PhpPrinter::class],
+                $container[PhpFilePrinter::class],
                 $container[MetaTemplateFacade::class],
                 new MetaFilePrinter(new Printer())
             );
@@ -107,8 +107,8 @@ class ServiceProvider implements ServiceProviderInterface
         $pimple[SchemaGenerator::class] =
             static fn(Container $container) => new SchemaGenerator($container[CodeBuilder::class]);
 
-        $pimple[PhpPrinter::class] =
-            static fn(Container $container) => new PhpPrinter(
+        $pimple[PhpFilePrinter::class] =
+            static fn(Container $container) => new PhpFilePrinter(
                 new Standard(),
                 new Printer(),
                 $container[PhpCodeStyleFixer::class]

@@ -25,13 +25,6 @@ class PhpFile
         return $this->fullyQualifiedClassName;
     }
 
-    public function getClassName(): string
-    {
-        $exploded = explode('\\', $this->fullyQualifiedClassName);
-
-        return end($exploded);
-    }
-
     public function getNodes(): array
     {
         return $this->nodes;

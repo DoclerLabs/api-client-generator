@@ -2,6 +2,8 @@
 
 namespace DoclerLabs\ApiClientGenerator\Entity;
 
+use RuntimeException;
+
 class FieldStructure
 {
     public const FORMAT_DATE      = 'date';
@@ -12,8 +14,12 @@ class FieldStructure
     private string $format           = '';
     private ?Field $objectParent     = null;
 
-    public function getArrayItem(): ?Field
+    public function getArrayItem(): Field
     {
+        if ($this->arrayItem === null) {
+            throw new RuntimeException('Call of getArrayItem on the non-array field.');
+        }
+
         return $this->arrayItem;
     }
 
@@ -24,8 +30,12 @@ class FieldStructure
         return $this;
     }
 
-    public function getObjectProperties(): ?array
+    public function getObjectProperties(): array
     {
+        if (empty($this->objectProperties)) {
+            throw new RuntimeException('Call of getObjectProperties on the non-object field.');
+        }
+
         return $this->objectProperties;
     }
 
@@ -76,7 +86,8 @@ class FieldStructure
     {
         $parentProperties = [];
         $parent           = $this->getObjectParent();
-        while ($parent !== null) {
+        while ($parent !== null
+               && $parent->getStructure()->getObjectProperties() !== null) {
             $parentProperties = array_merge($parent->getStructure()->getObjectProperties(), $parentProperties);
             $parent           = $parent->getStructure()->getObjectParent();
         }

@@ -15,10 +15,11 @@ class MetaFilePrinter
 
     public function createFiles(MetaFileCollection $files): void
     {
-        foreach ($files as $template) {
-            $path = sprintf('%s/%s', $files->getBaseDirectory(), $template->getFilePath());
+        foreach ($files as $file) {
+            /** @var MetaFile $file */
+            $path = sprintf('%s/%s', $files->getBaseDirectory(), $file->getFilePath());
 
-            $this->printer->print($path, $template->getContent());
+            $this->printer->print($path, $file->getContent());
         }
     }
 }

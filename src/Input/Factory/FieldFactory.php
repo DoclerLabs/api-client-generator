@@ -13,6 +13,7 @@ use DoclerLabs\ApiClientGenerator\Input\PhpNameValidator;
 use DoclerLabs\ApiClientGenerator\Naming\CaseCaster;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaNaming;
 use Throwable;
+use UnexpectedValueException;
 
 class FieldFactory
 {
@@ -140,13 +141,19 @@ class FieldFactory
 
     private function resolveReference(SpecObjectInterface $schema): SpecObjectInterface
     {
+        $resolved = $schema;
         if ($schema instanceof Reference) {
-            $schema = $schema->resolve();
+            $resolved = $schema->resolve();
         }
-        if ($schema instanceof Parameter) {
+
+        if (is_array($resolved) || $resolved === null) {
+            throw new UnexpectedValueException('Unexpected value after the reference resolution');
+        }
+
+        if ($resolved instanceof Parameter) {
             throw new InvalidSpecificationException('Usage of parameter inside of the schema is unexpected.');
         }
 
-        return $schema;
+        return $resolved;
     }
 }

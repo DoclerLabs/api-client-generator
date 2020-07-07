@@ -31,9 +31,6 @@ class MetaFileCollection implements IteratorAggregate
         return $this->files[$fileName];
     }
 
-    /**
-     * @return ArrayIterator<MetaFile>
-     */
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->files);
