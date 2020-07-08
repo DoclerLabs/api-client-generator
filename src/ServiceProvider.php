@@ -46,9 +46,9 @@ class ServiceProvider implements ServiceProviderInterface
                 getenv('OPENAPI') ?: '',
                 getenv('NAMESPACE') ?: '',
                 getenv('OUTPUT_DIR') ?: '',
-                getenv('CODE_STYLE') ?: '',
+                getenv('CODE_STYLE') ?: Configuration::DEFAULT_CODE_STYLE_CONFIG,
                 getenv('PACKAGE') ?: '',
-                getenv('PHP_VERSION') ?: PhpVersionResolver::VERSION_PHP70,
+                getenv('CLIENT_PHP_VERSION') ?: PhpVersionResolver::VERSION_PHP70,
                 getenv('COMPOSER_JSON_TEMPLATE_DIR') ?: Configuration::DEFAULT_TEMPLATE_DIRECTORY,
                 getenv('README_MD_TEMPLATE_DIR') ?: Configuration::DEFAULT_TEMPLATE_DIRECTORY,
             );

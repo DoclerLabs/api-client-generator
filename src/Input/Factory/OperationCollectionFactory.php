@@ -12,6 +12,7 @@ use UnexpectedValueException;
 
 class OperationCollectionFactory
 {
+    private const NON_OPERATION_ALLOWED_KEYS = ['parameters'];
     private OperationFactory $operationFactory;
 
     public function __construct(OperationFactory $operationFactory)
@@ -49,9 +50,14 @@ class OperationCollectionFactory
         if ($parentClass === false) {
             throw new UnexpectedValueException('Wrong path item class passed.');
         }
-        $pr = $parentClass->getProperty('_properties');
-        $pr->setAccessible(true);
+        $properties = $parentClass->getProperty('_properties');
+        $properties->setAccessible(true);
+        $operations = $properties->getValue($pathItem);
 
-        return array_change_key_case($pr->getValue($pathItem), CASE_UPPER);
+        foreach (self::NON_OPERATION_ALLOWED_KEYS as $key) {
+            unset($operations[$key]);
+        }
+
+        return array_change_key_case($operations, CASE_UPPER);
     }
 }

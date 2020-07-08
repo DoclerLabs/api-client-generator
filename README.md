@@ -4,44 +4,37 @@ API client generator is a console application capable of auto-generating an API 
 
 [![Build Status](https://travis-ci.org/DoclerLabs/api-client-generator.svg?branch=master)](https://travis-ci.org/DoclerLabs/api-client-generator)
 [![Coverage Status](https://coveralls.io/repos/github/DoclerLabs/api-client-generator/badge.svg?branch=master)](https://coveralls.io/github/DoclerLabs/api-client-generator?branch=master)
+[![PHPStan Level](https://img.shields.io/badge/PHPStan-level%208-brightgreen.svg?style=flat)](https://img.shields.io/badge/PHPStan-level%208-brightgreen.svg?style=flat)
 
 ## Usage
-
 ### With Docker
-
-#### Build this image
-
-If you have `composer` configured locally to use Satis:
-
-    docker build \
-            --build-arg SATIS_USERNAME="$(composer config http-basic.satis-private.doclerholding.com.username)" \
-            --build-arg SATIS_PASSWORD="$(composer config http-basic.satis-private.doclerholding.com.password)" \
-            -t api-client-generator .
-
-If you don't have `composer` configure locally:
-
-    docker build \
-            --build-arg SATIS_USERNAME="YOUR USERNAME" \
-            --build-arg SATIS_PASSWORD="YOUR PASSWORD" \
-            -t api-client-generator .
-
-#### On the API Client repository
-
-    docker run -it \
-      -v `pwd`:/client \
-      -v `/absolute/path/to/your-api`:/app:ro \
-      api-client-generator
-
-> The following _optional_ environment variables are available:
->
-> |Variable    |Default                             |Example                    |
-> |------------|------------------------------------|---------------------------|
-> |`NAMESPACE` |`<API Namespace>Client`             |`Group\\SomeApiClient`     |
-> |`PACKAGE`   |`<API composer package name>-client`|`dh-group/some-api-client` |
-> |`OPENAPI `  |`/app/doc/openapi.yaml`             |`/app/web/swagger.yaml`    |
-> |`OUTPUT_DIR`|`/client`                           |`/client`                  |
-> |`CODE_STYLE`|`/generator/.php_cs.php`            |`/client/myCodeStyle.php`  |
+```
+docker run -it \
+-v <path-to-specification>/openapi.yaml:/openapi.yaml:ro \
+-v <path-to-client>/some-api-client:/client \
+-e NAMESPACE=Group\SomeApiClient \
+-e OPENAPI=/openapi.yaml \
+-e OUTPUT_DIR=/client \
+-e PACKAGE=group/some-api-client \
+api-client-generator
+```
 
 ### Without Docker
+Preconditions: PHP 7.4
 
-OPENAPI={path}/swagger.yaml NAMESPACE=Group\SomeApiClient PACKAGE=dh-group/some-api-client OUTPUT_DIR={path}/generated CODE_STYLE={path}/.php_cs.php ./bin/api-client-generator generate 
+Clone the repository and run:
+```OPENAPI={path}/swagger.yaml NAMESPACE=Group\SomeApiClient PACKAGE=group/some-api-client OUTPUT_DIR={path}/generated ./bin/api-client-generator generate``` 
+
+## Configuration
+The following environment variables are available:
+
+| Variable | Required | Default                             |Example                    |
+|------------|---------|---------------------------|---------------------------|
+| `NAMESPACE` | yes | | Group\\SomeApiClient |
+| `PACKAGE` | yes | | group/some-api-client |
+| `OPENAPI ` | yes | | /api/openapi.yaml |
+| `OUTPUT_DIR` | yes | | /client |
+| `CODE_STYLE` | no | <repo-path>/.php_cs.php | /client/myCodeStyle.php |
+| `CLIENT_PHP_VERSION` | no | 7.0 | 7.0 |
+| `COMPOSER_JSON_TEMPLATE_DIR` | no | <repo-path>/template/composer.json.twig | /path/composer.json.twig |
+| `README_MD_TEMPLATE_DIR` | no | <repo-path>/template/README.md.twig | /path/README.md.twig |

@@ -1,32 +1,19 @@
 FROM composer as dependencies
 
-ARG SATIS_USERNAME
-ARG SATIS_PASSWORD
-
 WORKDIR /dependencies
 
 COPY composer.json /dependencies
 COPY composer.lock /dependencies
 
-RUN if [ "${SATIS_USERNAME}" != "" ] && [ "${SATIS_PASSWORD}" != "" ]; then composer config http-basic.satis-public.doclerholding.com "${SATIS_USERNAME}" "${SATIS_PASSWORD}"; fi
-RUN if [ "${SATIS_USERNAME}" != "" ] && [ "${SATIS_PASSWORD}" != "" ]; then composer config http-basic.satis-private.doclerholding.com "${SATIS_USERNAME}" "${SATIS_PASSWORD}"; fi
-
 RUN composer install
 
-FROM php:7.2-cli
-
-LABEL maintainer="Livejasmin BE teams <livejasmin_BE@doclerholding.com>"
-
-WORKDIR /generator
+FROM php:7.4-cli-alpine
 
 COPY . /generator
 COPY --from=dependencies /dependencies/vendor /generator/vendor
 
-ENV OPENAPI /app/doc/openapi.yaml
-ENV OUTPUT_DIR /client
-ENV CODE_STYLE /generator/.php_cs.php
+RUN chmod +x /generator/bin/api-client-generator
 
-VOLUME /app
-VOLUME /client
+WORKDIR /generator/bin
 
-ENTRYPOINT ["/generator/generate.sh"]
+CMD ["php", "api-client-generator", "generate"]

@@ -6,6 +6,7 @@ use Webmozart\Assert\Assert;
 
 class Configuration
 {
+    public const DEFAULT_CODE_STYLE_CONFIG  = __DIR__ . '/../../.php_cs.php';
     public const DEFAULT_TEMPLATE_DIRECTORY = __DIR__ . '/../../template';
     private string $filePath;
     private string $namespace;
