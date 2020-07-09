@@ -10,8 +10,8 @@ API client generator is a console application capable of auto-generating an API 
 ### With Docker
 ```
 docker run -it \
--v <path-to-specification>/openapi.yaml:/openapi.yaml:ro \
--v <path-to-client>/some-api-client:/client \
+-v {path-to-specification}/openapi.yaml:/openapi.yaml:ro \
+-v {path-to-client}/some-api-client:/client \
 -e NAMESPACE=Group\SomeApiClient \
 -e OPENAPI=/openapi.yaml \
 -e OUTPUT_DIR=/client \
@@ -23,7 +23,7 @@ mikemadweb/api-client-generator
 Preconditions: PHP 7.4
 
 Clone the repository and run:
-```OPENAPI={path}/swagger.yaml NAMESPACE=Group\SomeApiClient PACKAGE=group/some-api-client OUTPUT_DIR={path}/generated ./bin/api-client-generator generate``` 
+```OPENAPI={path-to-specification}/openapi.yaml NAMESPACE=Group\SomeApiClient PACKAGE=group/some-api-client OUTPUT_DIR={path-to-client}/generated ./bin/api-client-generator generate``` 
 
 ## Configuration
 The following environment variables are available:
@@ -36,5 +36,5 @@ The following environment variables are available:
 | `OUTPUT_DIR` | yes | | /client |
 | `CODE_STYLE` | no | <repo-path>/.php_cs.php | /client/myCodeStyle.php |
 | `CLIENT_PHP_VERSION` | no | 7.0 | 7.0 |
-| `COMPOSER_JSON_TEMPLATE_DIR` | no | <repo-path>/template/composer.json.twig | /path/composer.json.twig |
-| `README_MD_TEMPLATE_DIR` | no | <repo-path>/template/README.md.twig | /path/README.md.twig |
+| `COMPOSER_JSON_TEMPLATE_DIR` | no | {path-to-repository}/template/composer.json.twig | /path/composer.json.twig |
+| `README_MD_TEMPLATE_DIR` | no | {path-to-repository}/template/README.md.twig | /path/README.md.twig |
