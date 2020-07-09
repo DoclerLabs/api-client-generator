@@ -16,7 +16,7 @@ docker run -it \
 -e OPENAPI=/openapi.yaml \
 -e OUTPUT_DIR=/client \
 -e PACKAGE=group/some-api-client \
-api-client-generator
+mikemadweb/api-client-generator
 ```
 
 ### Without Docker
