@@ -34,7 +34,7 @@ The following environment variables are available:
 | `PACKAGE` | yes | | group/some-api-client |
 | `OPENAPI ` | yes | | /api/openapi.yaml |
 | `OUTPUT_DIR` | yes | | /client |
-| `CODE_STYLE` | no | <repo-path>/.php_cs.php | /client/myCodeStyle.php |
+| `CODE_STYLE` | no | {path-to-repository}/.php_cs.php | /client/myCodeStyle.php |
 | `CLIENT_PHP_VERSION` | no | 7.0 | 7.0 |
 | `COMPOSER_JSON_TEMPLATE_DIR` | no | {path-to-repository}/template/composer.json.twig | /path/composer.json.twig |
 | `README_MD_TEMPLATE_DIR` | no | {path-to-repository}/template/README.md.twig | /path/README.md.twig |
