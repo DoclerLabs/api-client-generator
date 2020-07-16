@@ -44,8 +44,8 @@ abstract class AbstractTemplateTest extends TestCase
     ): void {
         $absoluteSpecificationPath  = __DIR__ . $specificationFilePath;
         $absoluteExpectedResultPath = __DIR__ . $expectedResultFilePath;
-        $this->assertFileExists($absoluteSpecificationPath);
-        $this->assertFileExists($absoluteExpectedResultPath);
+        self::assertFileExists($absoluteSpecificationPath);
+        self::assertFileExists($absoluteExpectedResultPath);
 
         $data          = $this->specificationReader->read($absoluteSpecificationPath);
         $specification = $this->specificationParser->parse($data, $absoluteSpecificationPath);
@@ -54,7 +54,7 @@ abstract class AbstractTemplateTest extends TestCase
 
         $result = $this->fileRegistry->get($resultFileName)->getContent();
 
-        $this->assertStringEqualsFile($absoluteExpectedResultPath, $result);
+        self::assertStringEqualsFile($absoluteExpectedResultPath, $result);
     }
 
     abstract public function exampleProvider(): array;

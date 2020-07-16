@@ -30,7 +30,6 @@ class SwaggerPetstoreClientFactory
     }
     /**
      * @param ResponseMapperRegistryInterface $registry
-     * @codeCoverageIgnore
     */
     function registerResponseMappers(ResponseMapperRegistryInterface $registry)
     {

@@ -23,8 +23,7 @@ class MethodBuilder extends Method
     public function composeDocBlock(
         array $parameters = [],
         string $returnType = '',
-        array $exceptions = [],
-        bool $excludeFromCodeCoverage = false
+        array $exceptions = []
     ): self {
         if (empty($parameters) && $returnType === '' && empty($exceptions)) {
             return $this;
@@ -40,9 +39,6 @@ class MethodBuilder extends Method
         }
         foreach ($exceptions as $exception) {
             $docLines[] = sprintf(' * @throws %s', $exception);
-        }
-        if ($excludeFromCodeCoverage) {
-            $docLines[] = ' * @codeCoverageIgnore';
         }
         $docLines[] = '*/';
 

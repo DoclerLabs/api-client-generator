@@ -160,7 +160,7 @@ class ClientFactoryGenerator extends GeneratorAbstract
             ->method('registerResponseMappers')
             ->addParam($param)
             ->addStmts($statements)
-            ->composeDocBlock([$param], '', [], true)
+            ->composeDocBlock([$param], '', [])
             ->getNode();
     }
 

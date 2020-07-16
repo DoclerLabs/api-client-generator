@@ -34,7 +34,7 @@ class FileReaderTest extends TestCase
      */
     public function testParseValidFile(string $filePath): void
     {
-        $this->assertNotNull($this->sut->read($filePath));
+        self::assertNotNull($this->sut->read($filePath));
     }
 
     /**

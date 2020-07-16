@@ -24,24 +24,24 @@ class PhpFileCollectionTest extends TestCase
 
     public function testGetBaseNamespace(): void
     {
-        $this->assertEquals(self::BASE_NAMESPACE, $this->sut->getBaseNamespace());
+        self::assertEquals(self::BASE_NAMESPACE, $this->sut->getBaseNamespace());
     }
 
     public function testGetBaseDirectory(): void
     {
-        $this->assertEquals(self::BASE_DIRECTORY . '/src', $this->sut->getBaseDirectory());
+        self::assertEquals(self::BASE_DIRECTORY . '/src', $this->sut->getBaseDirectory());
     }
 
     public function testAddAndGet(): void
     {
         $this->sut->add(new PhpFile('some-file.php', 'SomeClass', []));
-        $this->assertNotNull($this->sut->get('SomeClass'));
+        self::assertNotNull($this->sut->get('SomeClass'));
     }
 
     public function testGetNonExisting(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->assertNotNull($this->sut->get('NonExistingClass'));
+        self::assertNotNull($this->sut->get('NonExistingClass'));
     }
 
     public function testGetIterator(): void
@@ -49,7 +49,7 @@ class PhpFileCollectionTest extends TestCase
         $this->sut->add(new PhpFile('some-file.php', 'SomeClass', []));
         $this->sut->add(new PhpFile('another-file.php', 'AnotherClass', []));
         foreach ($this->sut as $file) {
-            $this->assertNotNull($file);
+            self::assertNotNull($file);
         }
     }
 }

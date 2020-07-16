@@ -26,7 +26,7 @@ class PhpNameValidatorTest extends TestCase
      */
     public function testIsValidClassName(string $input, bool $expectedResult): void
     {
-        $this->assertEquals($expectedResult, $this->sut->isValidClassName($input));
+        self::assertEquals($expectedResult, $this->sut->isValidClassName($input));
     }
 
     /**
@@ -37,7 +37,7 @@ class PhpNameValidatorTest extends TestCase
      */
     public function testIsValidVariableName(string $input, bool $expectedResult): void
     {
-        $this->assertEquals($expectedResult, $this->sut->isValidVariableName($input));
+        self::assertEquals($expectedResult, $this->sut->isValidVariableName($input));
     }
 
     public function classNameProvider(): array

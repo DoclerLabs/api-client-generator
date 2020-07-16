@@ -35,7 +35,7 @@ class PutResourceByIdRequest implements RequestInterface
     private $booleanParameter;
     /** @var int[]|null */
     private $arrayParameter;
-    /** @var EmbeddedObject */
+    /** @var EmbeddedObject|null */
     private $objectParameter;
     /** @var int */
     private $mandatoryIntegerParameter;

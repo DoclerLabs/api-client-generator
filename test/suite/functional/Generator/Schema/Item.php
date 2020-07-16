@@ -30,7 +30,7 @@ class Item implements JsonSerializable
     private $mandatoryArray;
     /** @var EmbeddedObject */
     private $mandatoryObject;
-    /** @var  */
+    /** @var NullableObject|null */
     private $nullableObject;
     /** @var DateTimeInterface|null */
     private $nullableDate;
@@ -48,7 +48,7 @@ class Item implements JsonSerializable
     private $optionalBoolean;
     /** @var string[]|null */
     private $optionalArray;
-    /** @var EmbeddedObject */
+    /** @var EmbeddedObject|null */
     private $optionalObject;
     /**
      * @param int $mandatoryInteger
@@ -76,7 +76,7 @@ class Item implements JsonSerializable
         $this->mandatoryObject = $mandatoryObject;
     }
     /**
-     * @param  $nullableObject
+     * @param NullableObject|null $nullableObject
      * @return self
     */
     public function setNullableObject($nullableObject) : self
@@ -85,7 +85,7 @@ class Item implements JsonSerializable
         return $this;
     }
     /**
-     * @param DateTimeInterface $nullableDate
+     * @param DateTimeInterface|null $nullableDate
      * @return self
     */
     public function setNullableDate($nullableDate) : self
@@ -225,6 +225,9 @@ class Item implements JsonSerializable
     {
         return $this->mandatoryObject;
     }
+    /**
+     * @return NullableObject|null
+    */
     public function getNullableObject()
     {
         return $this->nullableObject;
@@ -286,7 +289,7 @@ class Item implements JsonSerializable
         return $this->optionalArray;
     }
     /**
-     * @return EmbeddedObject
+     * @return EmbeddedObject|null
     */
     public function getOptionalObject()
     {
