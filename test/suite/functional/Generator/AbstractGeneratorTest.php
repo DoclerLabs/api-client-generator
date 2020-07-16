@@ -48,8 +48,8 @@ abstract class AbstractGeneratorTest extends TestCase
     ): void {
         $absoluteSpecificationPath  = __DIR__ . $specificationFilePath;
         $absoluteExpectedResultPath = __DIR__ . $expectedResultFilePath;
-        $this->assertFileExists($absoluteSpecificationPath);
-        $this->assertFileExists($absoluteExpectedResultPath);
+        self::assertFileExists($absoluteSpecificationPath);
+        self::assertFileExists($absoluteExpectedResultPath);
 
         $data          = $this->specificationReader->read($absoluteSpecificationPath);
         $specification = $this->specificationParser->parse($data, $absoluteSpecificationPath);
@@ -58,7 +58,7 @@ abstract class AbstractGeneratorTest extends TestCase
 
         $result = $this->printer->prettyPrintFile($this->fileRegistry->get($resultClassName)->getNodes());
 
-        $this->assertStringEqualsFile($absoluteExpectedResultPath, $result);
+        self::assertStringEqualsFile($absoluteExpectedResultPath, $result);
     }
 
     abstract public function exampleProvider(): array;

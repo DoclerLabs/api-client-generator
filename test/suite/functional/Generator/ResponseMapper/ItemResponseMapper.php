@@ -29,7 +29,7 @@ class ItemResponseMapper implements ResponseMapperInterface
             $missingFields = implode(', ', array_diff(array('mandatoryInteger', 'mandatoryString', 'mandatoryEnum', 'mandatoryDate', 'mandatoryFloat', 'mandatoryBoolean', 'mandatoryArray', 'mandatoryObject'), array_keys($response)));
             throw new UnexpectedResponseBodyException('Required attributes for `Item` missing in the response body: ' . $missingFields);
         }
-        $schema = new Item($response['mandatoryInteger'], $response['mandatoryString'], $response['mandatoryEnum'], DateTimeImmutable::createFromFormat(DATE_RFC3339, $response['mandatoryDate']), $response['mandatoryFloat'], $response['mandatoryBoolean'], $response['mandatoryArray'], $this->embeddedObjectResponseMapper->map($response['mandatoryObject']));
+        $schema = new Item($response['mandatoryInteger'], $response['mandatoryString'], $response['mandatoryEnum'], new DateTimeImmutable($response['mandatoryDate']), $response['mandatoryFloat'], $response['mandatoryBoolean'], $response['mandatoryArray'], $this->embeddedObjectResponseMapper->map($response['mandatoryObject']));
         if (isset($response['optionalInteger'])) {
             $schema->setOptionalInteger($response['optionalInteger']);
         }
@@ -40,7 +40,7 @@ class ItemResponseMapper implements ResponseMapperInterface
             $schema->setOptionalEnum($response['optionalEnum']);
         }
         if (isset($response['optionalDate'])) {
-            $schema->setOptionalDate(DateTimeImmutable::createFromFormat(DATE_RFC3339, $response['optionalDate']));
+            $schema->setOptionalDate(new DateTimeImmutable($response['optionalDate']));
         }
         if (isset($response['optionalFloat'])) {
             $schema->setOptionalFloat($response['optionalFloat']);

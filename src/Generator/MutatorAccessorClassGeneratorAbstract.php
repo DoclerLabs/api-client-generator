@@ -30,7 +30,7 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
             $thrownExceptionMap['RequestValidationException'] = true;
         }
 
-        $docType = $field->getPhpDocType(false);
+        $docType = $field->getPhpDocType($field->isNullable());
         $param   = $this->builder
             ->param($field->getPhpVariableName())
             ->setType($field->getPhpTypeHint())

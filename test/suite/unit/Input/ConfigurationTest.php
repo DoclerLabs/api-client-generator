@@ -34,14 +34,14 @@ class ConfigurationTest extends TestCase
             $readmeMdTemplateDir,
         );
 
-        $this->assertEquals($openapiFilePath, $sut->getFilePath());
-        $this->assertEquals($namespace, $sut->getNamespace());
-        $this->assertEquals($outputDirectory, $sut->getOutputDirectory());
-        $this->assertEquals($codeStyleConfig, $sut->getCodeStyleConfig());
-        $this->assertEquals($packageName, $sut->getPackageName());
-        $this->assertEquals($phpVersion, $sut->getPhpVersion());
-        $this->assertEquals($composerJsonTemplateDir, $sut->getComposerJsonTemplateDir());
-        $this->assertEquals($readmeMdTemplateDir, $sut->getReadmeMdTemplateDir());
+        self::assertEquals($openapiFilePath, $sut->getFilePath());
+        self::assertEquals($namespace, $sut->getNamespace());
+        self::assertEquals($outputDirectory, $sut->getOutputDirectory());
+        self::assertEquals($codeStyleConfig, $sut->getCodeStyleConfig());
+        self::assertEquals($packageName, $sut->getPackageName());
+        self::assertEquals($phpVersion, $sut->getPhpVersion());
+        self::assertEquals($composerJsonTemplateDir, $sut->getComposerJsonTemplateDir());
+        self::assertEquals($readmeMdTemplateDir, $sut->getReadmeMdTemplateDir());
     }
 
     public function validConfigurationOptions(): array

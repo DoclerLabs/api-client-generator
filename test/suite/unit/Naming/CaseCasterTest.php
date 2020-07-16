@@ -15,7 +15,7 @@ class CaseCasterTest extends TestCase
      */
     public function testToSnake(string $input, string $expected)
     {
-        $this->assertEquals($expected, CaseCaster::toSnake($input));
+        self::assertEquals($expected, CaseCaster::toSnake($input));
     }
 
     /**
@@ -23,7 +23,7 @@ class CaseCasterTest extends TestCase
      */
     public function testToCamel(string $input, string $expected)
     {
-        $this->assertEquals($expected, CaseCaster::toCamel($input));
+        self::assertEquals($expected, CaseCaster::toCamel($input));
     }
 
     /**
@@ -31,7 +31,7 @@ class CaseCasterTest extends TestCase
      */
     public function testToMacro(string $input, string $expected)
     {
-        $this->assertEquals(strtoupper($expected), CaseCaster::toMacro($input));
+        self::assertEquals(strtoupper($expected), CaseCaster::toMacro($input));
     }
 
     /**
@@ -39,7 +39,7 @@ class CaseCasterTest extends TestCase
      */
     public function testToPascal(string $input, string $expected)
     {
-        $this->assertEquals(ucfirst($expected), CaseCaster::toPascal($input));
+        self::assertEquals(ucfirst($expected), CaseCaster::toPascal($input));
     }
 
     public function camelCaseDataProvider()

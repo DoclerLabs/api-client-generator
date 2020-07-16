@@ -167,7 +167,11 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             ->addParam($responseParam)
             ->addStmts($statements)
             ->setReturnType($root->getPhpTypeHint())
-            ->composeDocBlock([$responseParam], $root->getPhpDocType(), array_keys($this->mapMethodThrownExceptions))
+            ->composeDocBlock(
+                [$responseParam],
+                $root->getPhpDocType(false),
+                array_keys($this->mapMethodThrownExceptions)
+            )
             ->getNode();
     }
 
@@ -258,6 +262,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 
         $requiredVars = [];
         foreach ($requiredFields as $i => $field) {
+            /** @var Field $field */
             if ($field->isComposite()) {
                 $requiredVars[] = $this->builder->methodCall(
                     $this->builder->localPropertyFetch(ResponseMapperNaming::getPropertyName($field)),
@@ -266,11 +271,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 );
             } elseif ($field->isDate()) {
                 $this->addImport(DateTimeImmutable::class);
-                $requiredVars[] = $this->builder->staticCall(
-                    'DateTimeImmutable',
-                    'createFromFormat',
-                    [$this->builder->constFetch('DATE_RFC3339'), $requiredResponseItems[$i]]
-                );
+                $requiredVars[] = $this->builder->new('DateTimeImmutable', [$requiredResponseItems[$i]]);
             } else {
                 $requiredVars[] = $requiredResponseItems[$i];
             }
@@ -287,11 +288,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                     $optionalVar = $this->builder->methodCall($mapper, 'map', [$optionalResponseItems[$i]]);
                 } elseif ($field->isDate()) {
                     $this->addImport(DateTimeImmutable::class);
-                    $optionalVar = $this->builder->staticCall(
-                        'DateTimeImmutable',
-                        'createFromFormat',
-                        [$this->builder->constFetch('DATE_RFC3339'), $optionalResponseItems[$i]]
-                    );
+                    $optionalVar = $this->builder->new('DateTimeImmutable', [$optionalResponseItems[$i]]);
                 } else {
                     $optionalVar = $optionalResponseItems[$i];
                 }

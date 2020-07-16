@@ -30,6 +30,9 @@ class FieldStructure
         return $this;
     }
 
+    /**
+     * @return Field[]
+     */
     public function getObjectProperties(): array
     {
         if (empty($this->objectProperties)) {

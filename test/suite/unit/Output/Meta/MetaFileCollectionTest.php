@@ -23,19 +23,19 @@ class MetaFileCollectionTest extends TestCase
 
     public function testGetBaseDirectory(): void
     {
-        $this->assertEquals(self::BASE_DIRECTORY, $this->sut->getBaseDirectory());
+        self::assertEquals(self::BASE_DIRECTORY, $this->sut->getBaseDirectory());
     }
 
     public function testAddAndGet(): void
     {
         $this->sut->add(new MetaFile('some-file.php', 'content'));
-        $this->assertNotNull($this->sut->get('some-file.php'));
+        self::assertNotNull($this->sut->get('some-file.php'));
     }
 
     public function testGetNonExisting(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->assertNotNull($this->sut->get('non-existing.file'));
+        self::assertNotNull($this->sut->get('non-existing.file'));
     }
 
     public function testGetIterator(): void
@@ -43,7 +43,7 @@ class MetaFileCollectionTest extends TestCase
         $this->sut->add(new MetaFile('some-file.php', 'content'));
         $this->sut->add(new MetaFile('another-file.php', 'content'));
         foreach ($this->sut as $file) {
-            $this->assertNotNull($file);
+            self::assertNotNull($file);
         }
     }
 }

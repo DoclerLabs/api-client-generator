@@ -129,10 +129,6 @@ class Field
             return 'mixed';
         }
 
-        if ($this->isComposite()) {
-            return $this->getPhpTypeHint();
-        }
-
         $nullableSuffix = '';
         $arraySuffix    = '';
         if ($this->isComposite() || $this->isDate()) {
@@ -145,7 +141,7 @@ class Field
             $nullableSuffix = '|null';
         }
 
-        if ($this->isArray()) {
+        if ($this->isArray() && !$this->isArrayOfObjects()) {
             $arraySuffix = '[]';
             $typeHint    = $this->getStructure()->getArrayItem()->getPhpTypeHint();
         }

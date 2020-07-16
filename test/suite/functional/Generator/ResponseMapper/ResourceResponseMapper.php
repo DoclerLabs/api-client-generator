@@ -20,6 +20,6 @@ class ResourceResponseMapper implements ResponseMapperInterface
             $missingFields = implode(', ', array_diff(array('mandatoryInteger', 'mandatoryString', 'mandatoryEnum', 'mandatoryDate'), array_keys($response)));
             throw new UnexpectedResponseBodyException('Required attributes for `Resource` missing in the response body: ' . $missingFields);
         }
-        return new Resource($response['mandatoryInteger'], $response['mandatoryString'], $response['mandatoryEnum'], DateTimeImmutable::createFromFormat(DATE_RFC3339, $response['mandatoryDate']));
+        return new Resource($response['mandatoryInteger'], $response['mandatoryString'], $response['mandatoryEnum'], new DateTimeImmutable($response['mandatoryDate']));
     }
 }

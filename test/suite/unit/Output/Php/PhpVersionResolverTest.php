@@ -19,34 +19,34 @@ class PhpVersionResolverTest extends TestCase
 
     public function testIsParameterTypeHintSupported()
     {
-        $this->assertFalse((new PhpVersionResolver(PhpVersionResolver::VERSION_PHP70))->isParameterTypeHintSupported());
-        $this->assertFalse((new PhpVersionResolver(PhpVersionResolver::VERSION_PHP71))->isParameterTypeHintSupported());
-        $this->assertTrue((new PhpVersionResolver(PhpVersionResolver::VERSION_PHP74))->isParameterTypeHintSupported());
+        self::assertFalse((new PhpVersionResolver(PhpVersionResolver::VERSION_PHP70))->isParameterTypeHintSupported());
+        self::assertFalse((new PhpVersionResolver(PhpVersionResolver::VERSION_PHP71))->isParameterTypeHintSupported());
+        self::assertTrue((new PhpVersionResolver(PhpVersionResolver::VERSION_PHP74))->isParameterTypeHintSupported());
     }
 
     public function testIsVoidTypeHintSupported()
     {
-        $this->assertFalse((new PhpVersionResolver(PhpVersionResolver::VERSION_PHP70))->isVoidTypeHintSupported());
-        $this->assertTrue((new PhpVersionResolver(PhpVersionResolver::VERSION_PHP71))->isVoidTypeHintSupported());
-        $this->assertTrue((new PhpVersionResolver(PhpVersionResolver::VERSION_PHP74))->isVoidTypeHintSupported());
+        self::assertFalse((new PhpVersionResolver(PhpVersionResolver::VERSION_PHP70))->isVoidTypeHintSupported());
+        self::assertTrue((new PhpVersionResolver(PhpVersionResolver::VERSION_PHP71))->isVoidTypeHintSupported());
+        self::assertTrue((new PhpVersionResolver(PhpVersionResolver::VERSION_PHP74))->isVoidTypeHintSupported());
     }
 
     public function testIsNullableTypeHintSupported()
     {
-        $this->assertFalse((new PhpVersionResolver(PhpVersionResolver::VERSION_PHP70))->isNullableTypeHintSupported());
-        $this->assertTrue((new PhpVersionResolver(PhpVersionResolver::VERSION_PHP71))->isNullableTypeHintSupported());
-        $this->assertTrue((new PhpVersionResolver(PhpVersionResolver::VERSION_PHP74))->isNullableTypeHintSupported());
+        self::assertFalse((new PhpVersionResolver(PhpVersionResolver::VERSION_PHP70))->isNullableTypeHintSupported());
+        self::assertTrue((new PhpVersionResolver(PhpVersionResolver::VERSION_PHP71))->isNullableTypeHintSupported());
+        self::assertTrue((new PhpVersionResolver(PhpVersionResolver::VERSION_PHP74))->isNullableTypeHintSupported());
     }
 
     public function testIsClassConstantVisibilitySupported()
     {
-        $this->assertFalse(
+        self::assertFalse(
             (new PhpVersionResolver(PhpVersionResolver::VERSION_PHP70))->isClassConstantVisibilitySupported()
         );
-        $this->assertTrue(
+        self::assertTrue(
             (new PhpVersionResolver(PhpVersionResolver::VERSION_PHP71))->isClassConstantVisibilitySupported()
         );
-        $this->assertTrue(
+        self::assertTrue(
             (new PhpVersionResolver(PhpVersionResolver::VERSION_PHP74))->isClassConstantVisibilitySupported()
         );
     }

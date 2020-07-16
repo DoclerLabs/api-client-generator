@@ -34,7 +34,7 @@ class ParserTest extends TestCase
      */
     public function testParseValidSpecification(array $data): void
     {
-        $this->assertNotNull($this->sut->parse($data, '/openapi.yaml'));
+        self::assertNotNull($this->sut->parse($data, '/openapi.yaml'));
     }
 
     /**
