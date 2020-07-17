@@ -12,11 +12,11 @@ API client generator is a console application capable of auto-generating an API 
 docker run -it \
 -v {path-to-specification}/openapi.yaml:/openapi.yaml:ro \
 -v {path-to-client}/some-api-client:/client \
--e NAMESPACE=Group\SomeApiClient \
+-e NAMESPACE=Group\\SomeApiClient \
 -e OPENAPI=/openapi.yaml \
 -e OUTPUT_DIR=/client \
 -e PACKAGE=group/some-api-client \
-mikemadweb/api-client-generator
+dhlabs/api-client-generator
 ```
 
 ### Without Docker
