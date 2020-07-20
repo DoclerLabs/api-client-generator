@@ -16,16 +16,23 @@ class TwigExtension extends AbstractExtension
         ];
     }
 
-    public function staticCall($class, $method, ...$args)
+    /**
+     * @param string $class
+     * @param string $method
+     * @param mixed  ...$arguments
+     *
+     * @return mixed
+     */
+    public function staticCall(string $class, string $method, ...$arguments)
     {
         if (!class_exists($class)) {
             throw new RuntimeException("Cannot call static method $method on $class: class does not exist.");
         }
 
-        if (!method_exists($class, $method)) {
+        if (!is_callable([$class, $method]) || !method_exists($class, $method)) {
             throw new RuntimeException("Cannot call static method $method on $class: method does not exist.");
         }
 
-        return forward_static_call_array([$class, $method], $args);
+        return $class::$method(...$arguments);
     }
 }
