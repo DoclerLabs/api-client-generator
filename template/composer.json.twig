@@ -1,6 +1,6 @@
 {
     "name": "{{ packageName }}",
-    "description": "{{ description }}",
+    "description": "Client library for {{ specification.getTitle() }}",
     "keywords": [
         "api-client"
     ],
@@ -18,12 +18,12 @@
     },
     "autoload": {
         "psr-4": {
-            "{{ namespace }}": "src/"
+            "{{ addslashes(namespace) }}\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "{{ namespace }}Test\\Unit\\": "test/suite/unit/"
+            "{{ addslashes(namespace) }}\\Test\\Unit\\": "test/suite/unit/"
         }
     }
 }

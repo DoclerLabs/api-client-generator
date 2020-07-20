@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Entity;
 
@@ -28,6 +28,9 @@ class OperationCollection implements IteratorAggregate
         return $this->items;
     }
 
+    /**
+     * @return Operation[]
+     */
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->toArray());

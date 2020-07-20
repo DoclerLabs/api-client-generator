@@ -1,7 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Meta;
 
+use DoclerLabs\ApiClientGenerator\Input\Configuration;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFile;
 use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFileCollection;
@@ -9,21 +10,15 @@ use Twig\Environment;
 
 class ComposerJsonTemplate implements TemplateInterface
 {
-    private Environment $renderer;
-    private string      $packageName;
-    private string      $namespace;
-    private string      $phpVersion;
+    private Environment   $renderer;
+    private Configuration $configuration;
 
     public function __construct(
         Environment $renderer,
-        string $packageName,
-        string $namespace,
-        string $phpVersion = '7.0'
+        Configuration $configuration
     ) {
-        $this->renderer    = $renderer;
-        $this->packageName = $packageName;
-        $this->namespace   = addslashes($namespace . '\\');
-        $this->phpVersion  = $phpVersion;
+        $this->renderer      = $renderer;
+        $this->configuration = $configuration;
     }
 
     public function getOutputFilePath(): string
@@ -36,10 +31,10 @@ class ComposerJsonTemplate implements TemplateInterface
         $content = $this->renderer->render(
             'composer.json.twig',
             [
-                'packageName' => $this->packageName,
-                'description' => $specification->getDescription(),
-                'phpVersion'  => $this->phpVersion,
-                'namespace'   => $this->namespace,
+                'specification' => $specification,
+                'packageName'   => $this->configuration->getPackageName(),
+                'phpVersion'    => $this->configuration->getPhpVersion(),
+                'namespace'     => $this->configuration->getNamespace(),
             ]
         );
 

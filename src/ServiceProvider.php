@@ -22,6 +22,7 @@ use DoclerLabs\ApiClientGenerator\Input\Parser as OpenApiParser;
 use DoclerLabs\ApiClientGenerator\Input\PhpNameValidator;
 use DoclerLabs\ApiClientGenerator\Meta\ComposerJsonTemplate;
 use DoclerLabs\ApiClientGenerator\Meta\ReadmeMdTemplate;
+use DoclerLabs\ApiClientGenerator\Meta\Template\TwigExtension;
 use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFilePrinter;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpCodeStyleFixer;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFilePrinter;
@@ -41,6 +42,22 @@ class ServiceProvider implements ServiceProviderInterface
 {
     public function register(Container $pimple): void
     {
+        $pimple[Environment::class] =
+            static function (Container $container) {
+                $twig = new Environment(
+                    new FilesystemLoader(
+                        [
+                            $container[Configuration::class]->getComposerJsonTemplateDir(),
+                            $container[Configuration::class]->getReadmeMdTemplateDir(),
+                        ], '/'
+                    )
+                );
+
+                $twig->addExtension($container[TwigExtension::class]);
+
+                return $twig;
+            };
+
         $pimple[Configuration::class] =
             static fn() => new Configuration(
                 getenv('OPENAPI') ?: '',
@@ -140,27 +157,19 @@ class ServiceProvider implements ServiceProviderInterface
         $pimple[ClientFactoryGenerator::class] =
             static fn(Container $container) => new ClientFactoryGenerator($container[CodeBuilder::class]);
 
-        $pimple[Environment::class] =
-            static fn(Container $container) => new Environment(
-                new FilesystemLoader(
-                    [
-                        $container[Configuration::class]->getComposerJsonTemplateDir(),
-                        $container[Configuration::class]->getReadmeMdTemplateDir(),
-                    ], '/'
-                )
-            );
+        $pimple[TwigExtension::class] =
+            static fn(Container $container) => new TwigExtension();
 
         $pimple[ComposerJsonTemplate::class] =
             static fn(Container $container) => new ComposerJsonTemplate(
                 $container[Environment::class],
-                $container[Configuration::class]->getPackageName(),
-                $container[Configuration::class]->getNamespace(),
-                $container[Configuration::class]->getPhpVersion(),
+                $container[Configuration::class]
             );
 
         $pimple[ReadmeMdTemplate::class] =
             static fn(Container $container) => new ReadmeMdTemplate(
-                $container[Environment::class]
+                $container[Environment::class],
+                $container[Configuration::class]
             );
 
         $pimple[WarningFormatter::class] =
