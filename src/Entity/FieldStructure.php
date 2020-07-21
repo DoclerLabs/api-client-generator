@@ -35,7 +35,7 @@ class FieldStructure
      */
     public function getObjectProperties(): array
     {
-        if (empty($this->objectProperties)) {
+        if ($this->objectProperties === null) {
             throw new RuntimeException('Call of getObjectProperties on the non-object field.');
         }
 
@@ -90,7 +90,7 @@ class FieldStructure
         $parentProperties = [];
         $parent           = $this->getObjectParent();
         while ($parent !== null
-               && $parent->getStructure()->getObjectProperties() !== null) {
+               && !empty($parent->getStructure()->getObjectProperties())) {
             $parentProperties = array_merge($parent->getStructure()->getObjectProperties(), $parentProperties);
             $parent           = $parent->getStructure()->getObjectParent();
         }

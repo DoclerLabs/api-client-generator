@@ -3,6 +3,7 @@
 namespace DoclerLabs\ApiClientGenerator\Input\Factory;
 
 use cebe\openapi\spec\Operation as OpenApiOperation;
+use cebe\openapi\spec\Reference;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
 use Throwable;
@@ -28,18 +29,22 @@ class OperationFactory
     ): Operation {
         if ($operation->operationId === null) {
             throw new InvalidSpecificationException(
-                'Operation Id is not set up for operation: ' . $operation->description
+                sprintf('Mandatory operationId field is missing: [%s] %s', $method, $path)
             );
         }
 
         $operationId = $operation->operationId;
         $parameters  = array_merge($commonParameters, $operation->parameters ?? []);
+        $requestBody = $operation->requestBody;
+        if ($requestBody instanceof Reference) {
+            $requestBody = $requestBody->resolve();
+        }
 
         try {
             return new Operation(
                 $operationId,
                 $operation->description ?? '',
-                $this->requestMapper->create($operationId, $path, $method, $parameters, $operation->requestBody),
+                $this->requestMapper->create($operationId, $path, $method, $parameters, $requestBody),
                 $this->responseMapper->createSuccessful($operationId, $operation->responses->getResponses()),
                 $this->responseMapper->createPossibleErrors($operation->responses->getResponses()),
                 $operation->tags
