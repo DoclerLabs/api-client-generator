@@ -35,10 +35,6 @@ class FieldStructure
      */
     public function getObjectProperties(): array
     {
-        if ($this->objectProperties === null) {
-            throw new RuntimeException('Call of getObjectProperties on the non-object field.');
-        }
-
         return $this->objectProperties;
     }
 

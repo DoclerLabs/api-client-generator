@@ -27,11 +27,11 @@ class MetaTemplateFacadeTest extends TestCase
         $fileCollection = $this->createMock(MetaFileCollection::class);
 
         $childGeneratorOne = $this->createMock(TemplateInterface::class);
-        $childGeneratorOne->expects($this->once())
+        $childGeneratorOne->expects(self::once())
             ->method('render')
             ->with($specification, $fileCollection);
         $childGeneratorTwo = $this->createMock(TemplateInterface::class);
-        $childGeneratorTwo->expects($this->once())
+        $childGeneratorTwo->expects(self::once())
             ->method('render')
             ->with($specification, $fileCollection);
 

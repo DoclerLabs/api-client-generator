@@ -7,7 +7,7 @@ You can generate the client with the following command:
 docker run -it \
 -v <local-path-to-api>/doc/openapi.yaml:/openapi.yaml:ro \
 -v <local-path-to-client>:/client \
--e NAMESPACE=Test\\PerstoreApi \
+-e NAMESPACE=Test\\PetstoreApi \
 -e OPENAPI=/openapi.yaml \
 -e OUTPUT_DIR=/client \
 -e PACKAGE=test/petstore-api \
@@ -20,8 +20,8 @@ dhlabs/api-client-generator
 ```php
 <?php declare(strict_types=1);
 
-use \Test\PerstoreApi\SwaggerPetstoreClientFactory;
-use \Test\PerstoreApi\Request\FindPetsRequest;
+use \Test\PetstoreApi\SwaggerPetstoreClientFactory;
+use \Test\PetstoreApi\Request\FindPetsRequest;
 
 $factory = new SwaggerPetstoreClientFactory();
 $client  = $factory->create('http://petstore.swagger.io/api', ['timeout' => 2]);

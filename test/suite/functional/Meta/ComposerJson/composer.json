@@ -18,12 +18,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Test\\PerstoreApi\\": "src/"
+            "Test\\PetstoreApi\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Test\\PerstoreApi\\Test\\Unit\\": "test/suite/unit/"
+            "Test\\PetstoreApi\\Test\\Unit\\": "test/suite/unit/"
         }
     }
 }

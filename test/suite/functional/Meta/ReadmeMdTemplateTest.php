@@ -35,7 +35,7 @@ class ReadmeMdTemplateTest extends AbstractTemplateTest
         $configuration
             ->expects(self::once())
             ->method('getNamespace')
-            ->willReturn('Test\\PerstoreApi');
+            ->willReturn('Test\\PetstoreApi');
 
         $configuration
             ->expects(self::once())
