@@ -77,14 +77,14 @@ class Parser
 
         if ($field->isArrayOfObjects()) {
             $allFields->add($field);
-            $allFields->add($field->getStructure()->getArrayItem());
-            $this->extractPropertyFields($field->getStructure()->getArrayItem(), $allFields);
+            $allFields->add($field->getArrayItem());
+            $this->extractPropertyFields($field->getArrayItem(), $allFields);
         }
     }
 
     private function extractPropertyFields(Field $rootObject, FieldCollection $allFields): void
     {
-        $fields = $rootObject->getStructure()->getObjectProperties();
+        $fields = $rootObject->getObjectProperties();
         if ($fields !== null) {
             foreach ($fields as $property) {
                 $this->extractField($property, $allFields);

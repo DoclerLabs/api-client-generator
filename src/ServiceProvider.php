@@ -12,7 +12,6 @@ use DoclerLabs\ApiClientGenerator\Generator\SchemaCollectionGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\SchemaGenerator;
 use DoclerLabs\ApiClientGenerator\Input\Configuration;
 use DoclerLabs\ApiClientGenerator\Input\Factory\FieldFactory;
-use DoclerLabs\ApiClientGenerator\Input\Factory\FieldStructureFactory;
 use DoclerLabs\ApiClientGenerator\Input\Factory\OperationCollectionFactory;
 use DoclerLabs\ApiClientGenerator\Input\Factory\OperationFactory;
 use DoclerLabs\ApiClientGenerator\Input\Factory\RequestFactory;
@@ -152,7 +151,7 @@ class ServiceProvider implements ServiceProviderInterface
             static fn(Container $container) => new ResponseFactory($container[FieldFactory::class]);
 
         $pimple[FieldFactory::class] =
-            static fn() => new FieldFactory(new FieldStructureFactory(), new PhpNameValidator());
+            static fn() => new FieldFactory(new PhpNameValidator());
 
         $pimple[ClientFactoryGenerator::class] =
             static fn(Container $container) => new ClientFactoryGenerator($container[CodeBuilder::class]);

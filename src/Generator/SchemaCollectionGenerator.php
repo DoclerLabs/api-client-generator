@@ -38,18 +38,18 @@ class SchemaCollectionGenerator extends GeneratorAbstract
             ->addImport(ArrayIterator::class);
 
         $className       = $field->getPhpClassName();
-        $propertyDocType = SchemaCollectionNaming::getArrayDocType($field->getStructure()->getArrayItem());
+        $propertyDocType = SchemaCollectionNaming::getArrayDocType($field->getArrayItem());
 
         $classBuilder = $this->builder
             ->class($className)
             ->implement('IteratorAggregate', 'JsonSerializable', 'Countable')
             ->addStmt($this->builder->localProperty(self::INTERNAL_ARRAY_NAME, $propertyDocType))
-            ->addStmt($this->generateConstructor($field->getStructure()->getArrayItem()))
+            ->addStmt($this->generateConstructor($field->getArrayItem()))
             ->addStmt($this->generateToArray($field))
             ->addStmt($this->generateGetIterator($field))
             ->addStmt($this->generateJsonSerialize($field))
             ->addStmt($this->generateCount())
-            ->addStmt($this->generateFirst($field->getStructure()->getArrayItem()));
+            ->addStmt($this->generateFirst($field->getArrayItem()));
 
         $this->registerFile($fileRegistry, $classBuilder, self::SUBDIRECTORY, self::NAMESPACE_SUBPATH);
     }
@@ -90,7 +90,7 @@ class SchemaCollectionGenerator extends GeneratorAbstract
             ->makePublic()
             ->addStmt($return)
             ->setReturnType(FieldType::PHP_TYPE_ARRAY)
-            ->composeDocBlock([], SchemaCollectionNaming::getArrayDocType($field->getStructure()->getArrayItem()))
+            ->composeDocBlock([], SchemaCollectionNaming::getArrayDocType($field->getArrayItem()))
             ->getNode();
     }
 
@@ -104,7 +104,7 @@ class SchemaCollectionGenerator extends GeneratorAbstract
             ->makePublic()
             ->addStmt($return)
             ->setReturnType('ArrayIterator')
-            ->composeDocBlock([], SchemaCollectionNaming::getArrayDocType($field->getStructure()->getArrayItem()))
+            ->composeDocBlock([], SchemaCollectionNaming::getArrayDocType($field->getArrayItem()))
             ->getNode();
     }
 
@@ -117,7 +117,7 @@ class SchemaCollectionGenerator extends GeneratorAbstract
             ->makePublic()
             ->addStmt($return)
             ->setReturnType(FieldType::PHP_TYPE_ARRAY)
-            ->composeDocBlock([], SchemaCollectionNaming::getArrayDocType($field->getStructure()->getArrayItem()))
+            ->composeDocBlock([], SchemaCollectionNaming::getArrayDocType($field->getArrayItem()))
             ->getNode();
     }
 

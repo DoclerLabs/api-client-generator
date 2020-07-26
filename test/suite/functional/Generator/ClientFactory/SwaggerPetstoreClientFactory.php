@@ -10,6 +10,7 @@ use DoclerLabs\ApiClientBase\Response\ResponseMapperRegistryInterface;
 use InvalidArgumentException;
 use Test\Response\Mapper\PetCollectionResponseMapper;
 use Test\Response\Mapper\PetResponseMapper;
+use Test\Response\Mapper\FoodResponseMapper;
 class SwaggerPetstoreClientFactory
 {
     /**
@@ -33,11 +34,14 @@ class SwaggerPetstoreClientFactory
     */
     function registerResponseMappers(ResponseMapperRegistryInterface $registry)
     {
-        $registry->add(PetCollectionResponseMapper::SCHEMA_NAME, static function () : PetCollectionResponseMapper {
-            return new PetCollectionResponseMapper(new PetResponseMapper(new FoodResponseMapper()));
+        $registry->add(PetCollectionResponseMapper::class, static function () use($registry) : PetCollectionResponseMapper {
+            return new PetCollectionResponseMapper($registry->get(PetResponseMapper::class));
         });
-        $registry->add(PetResponseMapper::SCHEMA_NAME, static function () : PetResponseMapper {
-            return new PetResponseMapper(new FoodResponseMapper());
+        $registry->add(PetResponseMapper::class, static function () use($registry) : PetResponseMapper {
+            return new PetResponseMapper($registry->get(FoodResponseMapper::class));
+        });
+        $registry->add(FoodResponseMapper::class, static function () use($registry) : FoodResponseMapper {
+            return new FoodResponseMapper();
         });
     }
 }

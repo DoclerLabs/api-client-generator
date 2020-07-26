@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [1.1.0] - 2020-07-21
 ### Added
  - README.md meta template
+### Changed
+ - Any number of allOf schemas allowed
+ - allOf schemas joined to one schema without inheritance 
 ### Fixed
  - Empty object handling
  

@@ -8,27 +8,85 @@ use RuntimeException;
 
 class Field
 {
+    public const FORMAT_DATE      = 'date';
+    public const FORMAT_DATE_TIME = 'date-time';
     private string         $name;
     private FieldType      $type;
     private string         $referenceName;
     private bool           $required;
-    private FieldStructure $structure;
     private bool           $nullable;
+    private ?Field         $arrayItem        = null;
+    private array          $objectProperties = [];
+    private array          $enumValues       = [];
+    private string         $format           = '';
 
     public function __construct(
         string $name,
         FieldType $type,
         string $referenceName,
         bool $required,
-        FieldStructure $structure,
         bool $nullable
     ) {
         $this->name          = $name;
         $this->type          = $type;
         $this->referenceName = $referenceName;
         $this->required      = $required;
-        $this->structure     = $structure;
         $this->nullable      = $nullable;
+    }
+
+    public function getArrayItem(): Field
+    {
+        if ($this->arrayItem === null) {
+            throw new RuntimeException('Call of getArrayItem on the non-array field.');
+        }
+
+        return $this->arrayItem;
+    }
+
+    public function setArrayItem(Field $arrayItem): self
+    {
+        $this->arrayItem = $arrayItem;
+
+        return $this;
+    }
+
+    /**
+     * @return Field[]
+     */
+    public function getObjectProperties(): array
+    {
+        return $this->objectProperties;
+    }
+
+    public function setObjectProperties(array $objectProperties): self
+    {
+        $this->objectProperties = $objectProperties;
+
+        return $this;
+    }
+
+    public function getEnumValues(): ?array
+    {
+        return $this->enumValues;
+    }
+
+    public function setEnumValues(array $enumValues): self
+    {
+        $this->enumValues = $enumValues;
+
+        return $this;
+    }
+
+    public function getFormat(): ?string
+    {
+        return $this->format;
+    }
+
+    public function setFormat(string $format): self
+    {
+        $this->format = $format;
+
+        return $this;
     }
 
     public function getName(): string
@@ -63,8 +121,7 @@ class Field
 
     public function isDate(): bool
     {
-        $isDateFormat = $this->structure->getFormat() === FieldStructure::FORMAT_DATE
-                        || $this->structure->getFormat() === FieldStructure::FORMAT_DATE_TIME;
+        $isDateFormat = $this->getFormat() === self::FORMAT_DATE || $this->getFormat() === self::FORMAT_DATE_TIME;
 
         return $this->type->isString() && $isDateFormat;
     }
@@ -82,7 +139,8 @@ class Field
     public function isArrayOfObjects(): bool
     {
         return $this->isArray()
-               && $this->getStructure()->getArrayItem()->getType()->isObject();
+               && $this->getArrayItem() !== null
+               && $this->getArrayItem()->isObject();
     }
 
     public function getPhpVariableName(): string
@@ -98,9 +156,9 @@ class Field
 
         if (
             $this->type->isArray()
-            && $this->getStructure()->getArrayItem()->getType()->isObject()
+            && $this->getArrayItem()->isObject()
         ) {
-            return SchemaCollectionNaming::getClassName($this->getStructure()->getArrayItem()->getReferenceName());
+            return SchemaCollectionNaming::getClassName($this->getArrayItem()->getReferenceName());
         }
 
         if ($this->isDate()) {
@@ -143,38 +201,14 @@ class Field
 
         if ($this->isArray() && !$this->isArrayOfObjects()) {
             $arraySuffix = '[]';
-            $typeHint    = $this->getStructure()->getArrayItem()->getPhpTypeHint();
+            $typeHint    = $this->getArrayItem()->getPhpTypeHint();
         }
 
         return sprintf('%s%s%s', $typeHint, $arraySuffix, $nullableSuffix);
     }
 
-    public function getStructure(): FieldStructure
-    {
-        return $this->structure;
-    }
-
     public function isComposite(): bool
     {
         return $this->isObject() || $this->isArrayOfObjects();
-    }
-
-    public function isExtended(): bool
-    {
-        return $this->getStructure()->getObjectParent() !== null;
-    }
-
-    public function getAllProperties(): array
-    {
-        $allProperties = $this->getStructure()->getObjectProperties() ?? [];
-        if (!empty($allProperties) && $this->isExtended()) {
-            $allProperties =
-                array_merge(
-                    $this->getStructure()->getParentProperties(),
-                    $allProperties
-                );
-        }
-
-        return $allProperties;
     }
 }

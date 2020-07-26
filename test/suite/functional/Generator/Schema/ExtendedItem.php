@@ -3,8 +3,12 @@
 namespace Test\Schema;
 
 use JsonSerializable;
-class ExtendedItem extends ParentObject
+class ExtendedItem implements JsonSerializable
 {
+    /** @var string */
+    private $madatoryParentString;
+    /** @var int|null */
+    private $optionalParentInteger;
     /** @var int */
     private $mandatoryChildInteger;
     /** @var string|null */
@@ -15,8 +19,17 @@ class ExtendedItem extends ParentObject
     */
     public function __construct(string $madatoryParentString, int $mandatoryChildInteger)
     {
-        parent::__construct($madatoryParentString);
+        $this->madatoryParentString = $madatoryParentString;
         $this->mandatoryChildInteger = $mandatoryChildInteger;
+    }
+    /**
+     * @param int $optionalParentInteger
+     * @return self
+    */
+    public function setOptionalParentInteger(int $optionalParentInteger) : self
+    {
+        $this->optionalParentInteger = $optionalParentInteger;
+        return $this;
     }
     /**
      * @param string $optionalChildString
@@ -26,6 +39,20 @@ class ExtendedItem extends ParentObject
     {
         $this->optionalChildString = $optionalChildString;
         return $this;
+    }
+    /**
+     * @return string
+    */
+    public function getMadatoryParentString() : string
+    {
+        return $this->madatoryParentString;
+    }
+    /**
+     * @return int|null
+    */
+    public function getOptionalParentInteger()
+    {
+        return $this->optionalParentInteger;
     }
     /**
      * @return int
@@ -46,7 +73,11 @@ class ExtendedItem extends ParentObject
     */
     public function jsonSerialize() : array
     {
-        $fields = parent::jsonSerialize();
+        $fields = array();
+        $fields['madatoryParentString'] = $this->madatoryParentString;
+        if ($this->optionalParentInteger !== null) {
+            $fields['optionalParentInteger'] = $this->optionalParentInteger;
+        }
         $fields['mandatoryChildInteger'] = $this->mandatoryChildInteger;
         if ($this->optionalChildString !== null) {
             $fields['optionalChildString'] = $this->optionalChildString;

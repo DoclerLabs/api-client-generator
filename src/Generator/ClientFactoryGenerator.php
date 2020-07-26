@@ -134,6 +134,7 @@ class ClientFactoryGenerator extends GeneratorAbstract
         $registryVar     = $this->builder->var('registry');
         $compositeFields = $specification->getCompositeResponseFields()->getUniqueByPhpClassName();
         foreach ($compositeFields as $field) {
+            /** @var Field $field */
             $closureStatements = [];
             $mapperClass       = ResponseMapperNaming::getClassName($field);
             $this->addImport(
@@ -144,14 +145,12 @@ class ClientFactoryGenerator extends GeneratorAbstract
                     $mapperClass
                 )
             );
-            $mapperClassConst = $this->builder->classConstFetch(
-                $mapperClass,
-                ResponseMapperGenerator::SCHEMA_CONST_NAME
-            );
 
-            $closureStatements[] = $this->builder->return($this->buildMapperDependencies($field));
+            $mapperClassConst = $this->builder->classConstFetch($mapperClass, 'class');
 
-            $closure = $this->builder->closure($closureStatements, [], [], $mapperClass);
+            $closureStatements[] = $this->builder->return($this->buildMapperDependencies($field, $registryVar));
+
+            $closure = $this->builder->closure($closureStatements, [], [$registryVar], $mapperClass);
 
             $statements[] = $this->builder->methodCall($registryVar, 'add', [$mapperClassConst, $closure]);
         }
@@ -164,21 +163,25 @@ class ClientFactoryGenerator extends GeneratorAbstract
             ->getNode();
     }
 
-    private function buildMapperDependencies(Field $field): New_
+    private function buildMapperDependencies(Field $field, Variable $registryVar): New_
     {
         $dependencies = [];
         if ($field->isObject()) {
             $alreadyInjected = [];
-            foreach ($field->getAllProperties() as $subfield) {
+            foreach ($field->getObjectProperties() as $subfield) {
                 if ($subfield->isComposite() && !isset($alreadyInjected[$subfield->getPhpClassName()])) {
-                    $dependencies[] = $this->buildMapperDependencies($subfield);
+                    $getMethodArg   =
+                        $this->builder->classConstFetch(ResponseMapperNaming::getClassName($subfield), 'class');
+                    $dependencies[] = $this->builder->methodCall($registryVar, 'get', [$getMethodArg]);
 
                     $alreadyInjected[$subfield->getPhpClassName()] = true;
                 }
             }
         }
         if ($field->isArrayOfObjects()) {
-            $dependencies[] = $this->buildMapperDependencies($field->getStructure()->getArrayItem());
+            $getMethodArg   =
+                $this->builder->classConstFetch(ResponseMapperNaming::getClassName($field->getArrayItem()), 'class');
+            $dependencies[] = $this->builder->methodCall($registryVar, 'get', [$getMethodArg]);
         }
 
         return $this->builder->new(ResponseMapperNaming::getClassName($field), $dependencies);

@@ -8,7 +8,6 @@ use DoclerLabs\ApiClientBase\Exception\UnexpectedResponseBodyException;
 use DateTimeImmutable;
 class ItemResponseMapper implements ResponseMapperInterface
 {
-    const SCHEMA_NAME = Item::class;
     /** @var EmbeddedObjectResponseMapper */
     private $embeddedObjectResponseMapper;
     /**

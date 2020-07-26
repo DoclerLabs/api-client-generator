@@ -3,8 +3,10 @@
 namespace Test;
 
 use Test\Request\FindPetsRequest;
+use Test\Response\Mapper\PetCollectionResponseMapper;
 use Test\Schema\PetCollection;
 use Test\Request\AddPetRequest;
+use Test\Response\Mapper\PetResponseMapper;
 use Test\Schema\Pet;
 use Test\Request\FindPetByIdRequest;
 use Test\Request\DeletePetRequest;
@@ -42,7 +44,7 @@ class SwaggerPetstoreClient
     public function findPets(FindPetsRequest $request) : PetCollection
     {
         $response = $this->responseHandler->handle($this->client->request($request->getMethod(), $request->getRoute(), $this->requestHandler->getParameters($request)));
-        return $this->mapperRegistry->get(PetCollection::class)->map($response);
+        return $this->mapperRegistry->get(PetCollectionResponseMapper::class)->map($response);
     }
     /**
      * @param AddPetRequest $request
@@ -51,7 +53,7 @@ class SwaggerPetstoreClient
     public function addPet(AddPetRequest $request) : Pet
     {
         $response = $this->responseHandler->handle($this->client->request($request->getMethod(), $request->getRoute(), $this->requestHandler->getParameters($request)));
-        return $this->mapperRegistry->get(Pet::class)->map($response);
+        return $this->mapperRegistry->get(PetResponseMapper::class)->map($response);
     }
     /**
      * @param FindPetByIdRequest $request
@@ -60,7 +62,7 @@ class SwaggerPetstoreClient
     public function findPetById(FindPetByIdRequest $request) : Pet
     {
         $response = $this->responseHandler->handle($this->client->request($request->getMethod(), $request->getRoute(), $this->requestHandler->getParameters($request)));
-        return $this->mapperRegistry->get(Pet::class)->map($response);
+        return $this->mapperRegistry->get(PetResponseMapper::class)->map($response);
     }
     /**
      * @param DeletePetRequest $request
