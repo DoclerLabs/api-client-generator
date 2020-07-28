@@ -3,7 +3,6 @@
 namespace DoclerLabs\ApiClientGenerator\Output\Php;
 
 use PhpCsFixer\Console\Command\FixCommand;
-use PhpCsFixer\ToolInfo;
 use RuntimeException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -13,13 +12,9 @@ class PhpCodeStyleFixer
     private FixCommand $command;
     private string     $codeStyleConfig;
 
-    public function __construct(string $codeStyleConfig)
+    public function __construct(FixCommand $command, string $codeStyleConfig)
     {
-        if (!class_exists(FixCommand::class)) {
-            return;
-        }
-
-        $this->command         = new FixCommand(new ToolInfo());
+        $this->command         = $command;
         $this->codeStyleConfig = $codeStyleConfig;
     }
 

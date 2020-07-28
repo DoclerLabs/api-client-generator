@@ -32,10 +32,17 @@ $result  = $client->findPets($request);
 
 ## Operations
 
-### [No tag]
+### Pet
 Endpoints:
 - **findPets**
 - **addPet**
 - **findPetById**
+
+### New
+Endpoints:
+- **findPets**
+
+### [No tag]
+Endpoints:
 - **deletePet** - deletes a single pet based on the ID supplied 
 

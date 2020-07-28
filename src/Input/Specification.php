@@ -30,11 +30,6 @@ class Specification
         return $this->openApi->info->title;
     }
 
-    public function getDescription(): string
-    {
-        return $this->openApi->info->description ?? '';
-    }
-
     public function getServerUrls(): array
     {
         $serverUrls = [];

@@ -28,6 +28,8 @@ use DoclerLabs\ApiClientGenerator\Output\Php\PhpFilePrinter;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpVersionResolver;
 use DoclerLabs\ApiClientGenerator\Output\Printer;
 use DoclerLabs\ApiClientGenerator\Output\WarningFormatter;
+use PhpCsFixer\Console\Command\FixCommand;
+use PhpCsFixer\ToolInfo;
 use PhpParser\PrettyPrinter\Standard;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
@@ -132,6 +134,7 @@ class ServiceProvider implements ServiceProviderInterface
 
         $pimple[PhpCodeStyleFixer::class] =
             static fn(Container $container) => new PhpCodeStyleFixer(
+                new FixCommand(new ToolInfo()),
                 $container[Configuration::class]->getCodeStyleConfig()
             );
 

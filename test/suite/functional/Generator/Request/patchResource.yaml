@@ -8,21 +8,25 @@ paths:
       description: Update resource
       operationId: patchResource
       requestBody:
-        description: Updated values.
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  enum:
-                    - 'one'
-                    - 'two'
-                value:
-                  type: integer
-              required:
-                - value
+        $ref: '#/components/requestBodies/UpdateResourceBody'
       responses:
         '201':
           description: Successful operation.
+components:
+  requestBodies:
+    UpdateResourceBody:
+      description: Updated values.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                enum:
+                  - 'one'
+                  - 'two'
+              value:
+                type: integer
+            required:
+              - value

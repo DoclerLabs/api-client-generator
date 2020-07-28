@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - README.md meta template
 ### Changed
  - Any number of allOf schemas allowed
- - allOf schemas joined to one schema without inheritance 
+ - allOf schemas joined to one schema without inheritance
+ - Response mapper invocation reused in the client factory 
 ### Fixed
  - Empty object handling
  
