@@ -16,7 +16,6 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 {
     public const NAMESPACE_SUBPATH = '\\Response\\Mapper';
     public const SUBDIRECTORY      = 'Response/Mapper/';
-    public const SCHEMA_CONST_NAME = 'SCHEMA_NAME';
     private string $baseNamespace;
     private array  $mapMethodThrownExceptions;
 
@@ -35,11 +34,9 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         $this->mapMethodThrownExceptions = [];
 
         $className    = ResponseMapperNaming::getClassName($root);
-        $schemaConst  = $this->builder->classConstFetch($root->getPhpClassName(), 'class');
         $classBuilder = $this->builder
             ->class($className)
             ->implement('ResponseMapperInterface')
-            ->addStmt($this->builder->constants([$this->builder->const(self::SCHEMA_CONST_NAME, $schemaConst)]))
             ->addStmts($this->generateProperties($root))
             ->addStmt($this->generateConstructor($root))
             ->addStmt($this->generateMap($fileRegistry, $root));
@@ -52,7 +49,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         $properties = [];
         if ($root->isObject()) {
             $alreadyInjected = [];
-            foreach ($root->getAllProperties() as $child) {
+            foreach ($root->getObjectProperties() as $child) {
                 if ($child->isComposite()) {
                     $childClassName = ResponseMapperNaming::getClassName($child);
                     if (!isset($alreadyInjected[$childClassName])) {
@@ -66,7 +63,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         }
 
         if ($root->isArrayOfObjects()) {
-            $child = $root->getStructure()->getArrayItem();
+            $child = $root->getArrayItem();
             if ($child !== null && $child->isComposite()) {
                 $propertyName = ResponseMapperNaming::getPropertyName($child);
                 $properties[] = $this->builder->localProperty(
@@ -85,7 +82,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         $paramInits = [];
         if ($root->isObject()) {
             $alreadyInjected = [];
-            foreach ($root->getAllProperties() as $child) {
+            foreach ($root->getObjectProperties() as $child) {
                 if ($child->isComposite()) {
                     $childClassName = ResponseMapperNaming::getClassName($child);
                     if (!isset($alreadyInjected[$childClassName])) {
@@ -106,7 +103,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         }
 
         if ($root->isArrayOfObjects()) {
-            $child = $root->getStructure()->getArrayItem();
+            $child = $root->getArrayItem();
             if ($child !== null && $child->isComposite()) {
                 $propertyName = ResponseMapperNaming::getPropertyName($child);
                 $params[]     = $this->builder
@@ -182,7 +179,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 
         $as                  = $this->builder->var('responseItem');
         $itemMapper          = $this->builder->localPropertyFetch(
-            ResponseMapperNaming::getPropertyName($field->getStructure()->getArrayItem())
+            ResponseMapperNaming::getPropertyName($field->getArrayItem())
         );
         $itemMapperCall      = $this->builder->methodCall($itemMapper, 'map', [$as]);
         $foreachStatements[] = $this->builder->appendToArray($itemsVar, $itemMapperCall);
@@ -210,7 +207,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         $optionalFields        = [];
         $optionalResponseItems = [];
 
-        foreach ($root->getAllProperties() as $property) {
+        foreach ($root->getObjectProperties() as $property) {
             if ($property->isRequired()) {
                 $requiredFields[]        = $property;
                 $requiredItemName        = $this->builder->val($property->getName());

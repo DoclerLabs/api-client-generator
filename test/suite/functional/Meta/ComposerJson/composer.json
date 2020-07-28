@@ -1,6 +1,6 @@
 {
     "name": "test/petstore-api",
-    "description": "A sample API that uses a petstore as an example to demonstrate features in the OpenAPI 3.0 specification",
+    "description": "Client library for Swagger Petstore",
     "keywords": [
         "api-client"
     ],
@@ -8,7 +8,7 @@
         "sort-packages": true
     },
     "require": {
-        "php": ">=7.0",
+        "php": ">=7.2",
         "ext-json": "*",
         "docler-labs/api-client-base": "^1.0",
         "guzzlehttp/guzzle": "^6.3"
@@ -18,12 +18,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Test\\PerstoreApi\\": "src/"
+            "Test\\PetstoreApi\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Test\\PerstoreApi\\Test\\Unit\\": "test/suite/unit/"
+            "Test\\PetstoreApi\\Test\\Unit\\": "test/suite/unit/"
         }
     }
 }

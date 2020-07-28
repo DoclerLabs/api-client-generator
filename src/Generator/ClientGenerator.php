@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
@@ -9,6 +9,7 @@ use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\ClientNaming;
 use DoclerLabs\ApiClientGenerator\Naming\RequestNaming;
+use DoclerLabs\ApiClientGenerator\Naming\ResponseMapperNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use GuzzleHttp\ClientInterface;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -73,19 +74,25 @@ class ClientGenerator extends GeneratorAbstract
 
         $responseBody = $operation->getSuccessfulResponse()->getBody();
         if ($responseBody !== null) {
-            $responseClassName = $responseBody->getPhpClassName();
-            $responseVariable  = $this->builder->var('response');
-            $responseStmt      = $this->builder->assign($responseVariable, $responseStmt);
-
-            $getMethodArg = $this->builder->classConstFetch($responseClassName, 'class');
-            $getMethod    = $this->builder->methodCall(
+            $mapperClassName = ResponseMapperNaming::getClassName($responseBody);
+            $this->addImport(
+                sprintf(
+                    '%s%s\\%s',
+                    $this->baseNamespace,
+                    ResponseMapperGenerator::NAMESPACE_SUBPATH,
+                    $mapperClassName
+                )
+            );
+            $getMethod = $this->builder->methodCall(
                 $this->builder->localPropertyFetch('mapperRegistry'),
                 'get',
-                [$getMethodArg]
+                [$this->builder->classConstFetch($mapperClassName, 'class')]
             );
 
-            $mapMethod  = $this->builder->methodCall($getMethod, 'map', [$responseVariable]);
-            $returnStmt = $this->builder->return($mapMethod);
+            $responseVariable = $this->builder->var('response');
+            $responseStmt     = $this->builder->assign($responseVariable, $responseStmt);
+            $mapMethod        = $this->builder->methodCall($getMethod, 'map', [$responseVariable]);
+            $returnStmt       = $this->builder->return($mapMethod);
 
             $this->addImport(
                 sprintf(

@@ -20,9 +20,9 @@ class Response
         if (
             $body !== null
             && $body->isObject()
-            && !empty($body->getStructure()->getObjectProperties())
+            && count($body->getObjectProperties()) === 1
         ) {
-            $first = current($body->getStructure()->getObjectProperties());
+            $first = current($body->getObjectProperties());
             if ($first->getName() === self::ROOT_KEY) {
                 return $first;
             }

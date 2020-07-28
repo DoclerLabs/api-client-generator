@@ -27,11 +27,11 @@ class CodeGeneratorFacadeTest extends TestCase
         $fileCollection = $this->createMock(PhpFileCollection::class);
 
         $childGeneratorOne = $this->createMock(GeneratorInterface::class);
-        $childGeneratorOne->expects($this->once())
+        $childGeneratorOne->expects(self::once())
             ->method('generate')
             ->with($specification, $fileCollection);
         $childGeneratorTwo = $this->createMock(GeneratorInterface::class);
-        $childGeneratorTwo->expects($this->once())
+        $childGeneratorTwo->expects(self::once())
             ->method('generate')
             ->with($specification, $fileCollection);
 

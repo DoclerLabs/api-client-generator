@@ -6,7 +6,6 @@ use DoclerLabs\ApiClientBase\Response\Mapper\ResponseMapperInterface;
 use Test\Schema\ItemCollection;
 class ItemCollectionResponseMapper implements ResponseMapperInterface
 {
-    const SCHEMA_NAME = ItemCollection::class;
     /** @var ItemResponseMapper */
     private $itemResponseMapper;
     /**

@@ -4,7 +4,6 @@ namespace DoclerLabs\ApiClientGenerator\Input\Factory;
 
 use cebe\openapi\spec\Parameter;
 use cebe\openapi\spec\Reference;
-use cebe\openapi\spec\Schema;
 use cebe\openapi\SpecObjectInterface;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\FieldType;
@@ -17,13 +16,11 @@ use UnexpectedValueException;
 
 class FieldFactory
 {
-    private FieldStructureFactory $fieldStructureMapper;
     private PhpNameValidator      $nameValidator;
 
-    public function __construct(FieldStructureFactory $fieldStructureMapper, PhpNameValidator $nameValidator)
+    public function __construct(PhpNameValidator $nameValidator)
     {
-        $this->fieldStructureMapper = $fieldStructureMapper;
-        $this->nameValidator        = $nameValidator;
+        $this->nameValidator = $nameValidator;
     }
 
     public function create(
@@ -35,7 +32,6 @@ class FieldFactory
     ): Field {
         try {
             $arrayItem        = null;
-            $objectParent     = null;
             $objectProperties = [];
             $schemaReference  = $schemaOrReference;
             $schema           = $this->resolveReference($schemaOrReference);
@@ -50,28 +46,13 @@ class FieldFactory
 
             $type = $schema->type;
             if (isset($schema->allOf)) {
-                if (count($schema->allOf) !== 2) {
-                    throw new InvalidSpecificationException('Invalid number of schemas in allOf, only 2 is supported.');
+                $type = FieldType::SPEC_TYPE_OBJECT;
+                if ($referenceName === '') {
+                    $referenceName = SchemaNaming::getClassName($schemaReference, $fieldName);
                 }
-                foreach ($schema->allOf as $allOfSchema) {
-                    if ($allOfSchema instanceof Reference) {
-                        $objectParentReferenceName = SchemaNaming::getClassName($allOfSchema, $fieldName);
 
-                        $objectParent = $this->create(
-                            $operationName,
-                            lcfirst($objectParentReferenceName),
-                            $allOfSchema,
-                            $required,
-                            $objectParentReferenceName
-                        );
-                    } elseif ($allOfSchema instanceof Schema) {
-                        $type   = $allOfSchema->type;
-                        $schema = $allOfSchema;
-                    }
-                }
-            }
-
-            if (FieldType::isSpecificationTypeArray($type)) {
+                $objectProperties = $this->mergeAllOfProperties($operationName, $schema);
+            } elseif (FieldType::isSpecificationTypeArray($type)) {
                 $itemReferenceName = '';
                 if ($schema->items === null) {
                     throw new InvalidSpecificationException('Array field does not have items specified.');
@@ -99,21 +80,30 @@ class FieldFactory
                 $objectProperties = $this->mapProperties($operationName, $schema);
             }
 
-            $fieldStructure = $this->fieldStructureMapper->create(
-                $schema,
-                $arrayItem,
-                $objectProperties,
-                $objectParent
-            );
-
-            return new Field(
+            $field = new Field(
                 $fieldName,
                 new FieldType($type),
                 $referenceName,
                 $required,
-                $fieldStructure,
                 $schema->nullable
             );
+
+            if ($arrayItem !== null) {
+                $field->setArrayItem($arrayItem);
+            } elseif (!empty($objectProperties)) {
+                $field->setObjectProperties($objectProperties);
+            } elseif (isset($schema->enum)) {
+                if (!FieldType::isSpecificationTypeString($type)) {
+                    throw new InvalidSpecificationException('Only string enum fields are currently supported');
+                }
+                $field->setEnumValues($schema->enum);
+            }
+
+            if (isset($schema->format)) {
+                $field->setFormat($schema->format);
+            }
+
+            return $field;
         } catch (Throwable $exception) {
             throw new InvalidSpecificationException(
                 sprintf(
@@ -155,5 +145,18 @@ class FieldFactory
         }
 
         return $resolved;
+    }
+
+    private function mergeAllOfProperties(string $operationName, SpecObjectInterface $schema): array
+    {
+        $allOfProperties = [];
+        foreach ($schema->allOf as $allOfSchema) {
+            if ($allOfSchema instanceof Reference) {
+                $allOfSchema = $allOfSchema->resolve();
+            }
+            $allOfProperties[] = $this->mapProperties($operationName, $allOfSchema);
+        }
+
+        return array_merge([], ...$allOfProperties);
     }
 }

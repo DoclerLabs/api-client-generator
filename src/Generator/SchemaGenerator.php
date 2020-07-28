@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
@@ -42,12 +42,7 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
             ->addStmts($this->generateGetMethods($field))
             ->addStmt($this->generateJsonSerialize($field));
 
-        $parentClass = $field->getStructure()->getObjectParent();
-        if ($parentClass !== null) {
-            $classBuilder->extend($parentClass->getPhpClassName());
-        } else {
-            $classBuilder->implement('JsonSerializable');
-        }
+        $classBuilder->implement('JsonSerializable');
 
         $this->registerFile($fileRegistry, $classBuilder, self::SUBDIRECTORY, self::NAMESPACE_SUBPATH);
     }
@@ -55,7 +50,7 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
     protected function generateEnumConsts(Field $root): array
     {
         $statements = [];
-        foreach ($root->getStructure()->getObjectProperties() as $propertyField) {
+        foreach ($root->getObjectProperties() as $propertyField) {
             foreach ($this->generateEnumStatements($propertyField) as $statement) {
                 $statements[] = $statement;
             }
@@ -67,7 +62,7 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
     protected function generateProperties(Field $root): array
     {
         $statements = [];
-        foreach ($root->getStructure()->getObjectProperties() as $propertyField) {
+        foreach ($root->getObjectProperties() as $propertyField) {
             $statements[] = $this->generateProperty($propertyField);
         }
 
@@ -81,31 +76,7 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
         $paramsDoc          = [];
         $thrownExceptionMap = [];
 
-        if ($root->isExtended()) {
-            $requiredParentPropertyVariables = [];
-            foreach ($root->getStructure()->getParentProperties() as $parentClassProperty) {
-                if ($parentClassProperty->isRequired()) {
-                    $params[] = $this->builder
-                        ->param($parentClassProperty->getPhpVariableName())
-                        ->setType($parentClassProperty->getPhpTypeHint())
-                        ->getNode();
-
-                    $paramsDoc[] = $this->builder
-                        ->param($parentClassProperty->getPhpVariableName())
-                        ->setType($parentClassProperty->getPhpDocType())
-                        ->getNode();
-
-                    $requiredParentPropertyVariables[] = $this->builder
-                        ->var($parentClassProperty->getPhpVariableName());
-                }
-            }
-
-            if (!empty($requiredParentPropertyVariables)) {
-                $paramsInit[] = $this->builder->staticCall('parent', '__construct', $requiredParentPropertyVariables);
-            }
-        }
-
-        foreach ($root->getStructure()->getObjectProperties() as $propertyField) {
+        foreach ($root->getObjectProperties() as $propertyField) {
             if ($propertyField->isRequired()) {
                 $enumStmt = $this->generateEnumValidation($propertyField, $this->baseNamespace);
                 if ($enumStmt !== null) {
@@ -144,7 +115,7 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
     protected function generateSetMethods(Field $root): array
     {
         $statements = [];
-        foreach ($root->getStructure()->getObjectProperties() as $propertyField) {
+        foreach ($root->getObjectProperties() as $propertyField) {
             if ($propertyField->isOptional()) {
                 $statements[] = $this->generateSet($propertyField, $this->baseNamespace);
             }
@@ -156,7 +127,7 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
     protected function generateGetMethods(Field $root): array
     {
         $statements = [];
-        foreach ($root->getStructure()->getObjectProperties() as $propertyField) {
+        foreach ($root->getObjectProperties() as $propertyField) {
             $statements[] = $this->generateGet($propertyField);
         }
 
@@ -168,9 +139,6 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
         $statements    = [];
         $arrayVariable = $this->builder->var('fields');
         $initialValue  = $this->builder->val([]);
-        if ($root->isExtended()) {
-            $initialValue = $this->builder->staticCall('parent', 'jsonSerialize');
-        }
 
         $statements[] = $this->builder->assign($arrayVariable, $initialValue);
         $statements   = array_merge($statements, $this->collectSerializationFields($root, $arrayVariable));
@@ -190,7 +158,7 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
     private function collectSerializationFields(Field $root, Variable $arrayVariable): array
     {
         $statements = [];
-        foreach ($root->getStructure()->getObjectProperties() as $propertyField) {
+        foreach ($root->getObjectProperties() as $propertyField) {
             $value = $this->builder->localPropertyFetch($propertyField->getPhpVariableName());
             if ($propertyField->isComposite()) {
                 $methodCall = $this->builder->methodCall($value, 'jsonSerialize');

@@ -518,69 +518,6 @@ class ParserTest extends TestCase
                     ],
                 ],
             ],
-            'Invalid allOf'                                   => [
-                [
-                    'openapi'    => '3.0.0',
-                    'info'       => [
-                        'title'   => 'Sample API',
-                        'version' => '1.0.0',
-                    ],
-                    'paths'      => [
-                        '/users' => [
-                            'get' => [
-                                'operationId' => 'getItems',
-                                'responses'   => [
-                                    '200' => [
-                                        'description' => 'OK',
-                                        'content'     => [
-                                            'application/json' => [
-                                                'schema' => [
-                                                    'allOf' => [
-                                                        [
-                                                            '$ref' => '#/components/schemas/Item',
-                                                        ],
-                                                        [
-                                                            'type'       => 'object',
-                                                            'properties' => [
-                                                                'address' =>
-                                                                    [
-                                                                        'type' => 'string',
-                                                                    ],
-                                                            ],
-                                                        ],
-                                                        [
-                                                            'type'       => 'object',
-                                                            'properties' => [
-                                                                'phone' =>
-                                                                    [
-                                                                        'type' => 'string',
-                                                                    ],
-                                                            ],
-                                                        ],
-                                                    ],
-                                                ],
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                    'components' => [
-                        'schemas' => [
-                            'Item' => [
-                                'type'       => 'object',
-                                'properties' => [
-                                    'name' =>
-                                        [
-                                            'type' => 'string',
-                                        ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
             'Duplicated operation id'                         => [
                 [
                     'openapi' => '3.0.0',

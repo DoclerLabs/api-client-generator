@@ -3,11 +3,10 @@
 namespace DoclerLabs\ApiClientGenerator\Input\Factory;
 
 use cebe\openapi\spec\Operation as OpenApiOperation;
+use cebe\openapi\spec\Reference;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
-use DoclerLabs\ApiClientGenerator\Naming\OperationNaming;
 use Throwable;
-use UnexpectedValueException;
 
 class OperationFactory
 {
@@ -28,24 +27,31 @@ class OperationFactory
         string $method,
         array $commonParameters
     ): Operation {
-        try {
-            $name = OperationNaming::getOperationName($operation);
-        } catch (UnexpectedValueException $exception) {
-            throw new InvalidSpecificationException($exception->getMessage());
+        if ($operation->operationId === null) {
+            throw new InvalidSpecificationException(
+                sprintf('Mandatory operationId field is missing: [%s] %s', $method, $path)
+            );
         }
 
-        $parameters = array_merge($commonParameters, $operation->parameters ?? []);
+        $operationId = $operation->operationId;
+        $parameters  = array_merge($commonParameters, $operation->parameters ?? []);
+        $requestBody = $operation->requestBody;
+        if ($requestBody instanceof Reference) {
+            $requestBody = $requestBody->resolve();
+        }
 
         try {
             return new Operation(
-                $name,
-                $this->requestMapper->create($name, $path, $method, $parameters, $operation->requestBody),
-                $this->responseMapper->createSuccessful($name, $operation->responses->getResponses()),
-                $this->responseMapper->createPossibleErrors($operation->responses->getResponses())
+                $operationId,
+                $operation->description ?? '',
+                $this->requestMapper->create($operationId, $path, $method, $parameters, $requestBody),
+                $this->responseMapper->createSuccessful($operationId, $operation->responses->getResponses()),
+                $this->responseMapper->createPossibleErrors($operation->responses->getResponses()),
+                $operation->tags
             );
         } catch (Throwable $exception) {
             throw new InvalidSpecificationException(
-                sprintf('Error on mapping `%s`: %s', $name, $exception->getMessage())
+                sprintf('Error on mapping `%s`: %s', $operationId, $exception->getMessage())
             );
         }
     }

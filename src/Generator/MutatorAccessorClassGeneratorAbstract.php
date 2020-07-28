@@ -96,7 +96,7 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
     protected function generateEnumStatements(Field $field): array
     {
         $statements = [];
-        $enumValues = $field->getStructure()->getEnumValues();
+        $enumValues = $field->getEnumValues();
         if (!empty($enumValues)) {
             $enumConstCalls = [];
             foreach ($enumValues as $enumValue) {
@@ -122,7 +122,7 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
 
     protected function generateEnumValidation(Field $root, string $baseNamespace): ?Stmt
     {
-        $enumValues = $root->getStructure()->getEnumValues();
+        $enumValues = $root->getEnumValues();
         if (empty($enumValues)) {
             return null;
         }

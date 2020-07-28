@@ -1,1 +1,45 @@
-# {{ apiClientName }}
+# {{ specification.getTitle() }} client
+
+This client is generated using [docler-labs/api-client-generator](https://github.com/DoclerLabs/api-client-generator) based on the OpenAPI specification of the {{ specification.getTitle() }}.
+
+You can generate the client with the following command:
+```bash
+docker run -it \
+-v <local-path-to-api>/doc/openapi.yaml:/openapi.yaml:ro \
+-v <local-path-to-client>:/client \
+-e NAMESPACE={{ addslashes(namespace) }} \
+-e OPENAPI=/openapi.yaml \
+-e OUTPUT_DIR=/client \
+-e PACKAGE={{ packageName }} \
+-e CLIENT_PHP_VERSION={{ phpVersion }} \
+dhlabs/api-client-generator
+```
+
+## Usage
+{% set serverUrl = specification.serverUrls() is not empty ? specification.serverUrls()|first : '<server-base-url>' %}
+{% set requestClass = static('\\DoclerLabs\\ApiClientGenerator\\Naming\\RequestNaming', 'getClassName', exampleOperation) %}
+
+```php
+<?php declare(strict_types=1);
+
+use \{{ namespace }}\{{ static('\\DoclerLabs\\ApiClientGenerator\\Naming\\ClientNaming', 'getFactoryClassName', specification) }};
+use \{{ namespace }}\Request\{{ requestClass }};
+
+$factory = new {{ static('\\DoclerLabs\\ApiClientGenerator\\Naming\\ClientNaming', 'getFactoryClassName', specification) }}();
+$client  = $factory->create('{{ serverUrl }}', ['timeout' => 2]);
+
+$request = new {{ requestClass }}();
+$result  = $client->{{ exampleOperation.getName() }}($request);
+```
+
+## Operations
+
+{% for tag, operations in operationsGroupedByTags %}
+### {{ tag }}
+Endpoints:
+{% for operation in operations %}
+- **{{ operation.getName() }}**{% if operation.getDescription() is not empty %} - {{ operation.getDescription() }} {% endif %}
+
+{% endfor %}
+
+{% endfor %}

@@ -9,6 +9,9 @@ paths:
   /pets:
     get:
       operationId: findPets
+      tags:
+        - Pet
+        - New
       parameters:
         - name: tags
           in: query
@@ -43,6 +46,8 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       operationId: addPet
+      tags:
+        - Pet
       requestBody:
         description: Pet to add to the store
         required: true
@@ -66,6 +71,8 @@ paths:
   /pets/{id}:
     get:
       operationId: findPetById
+      tags:
+        - Pet
       parameters:
         - name: id
           in: path

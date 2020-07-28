@@ -30,9 +30,14 @@ class Specification
         return $this->openApi->info->title;
     }
 
-    public function getDescription(): string
+    public function getServerUrls(): array
     {
-        return $this->openApi->info->description ?? '';
+        $serverUrls = [];
+        foreach ($this->openApi->servers as $server) {
+            $serverUrls[] = $server->url;
+        }
+
+        return $serverUrls;
     }
 
     public function getOperations(): OperationCollection
