@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8d37b82e92baaedc33cea6282560932d",
+    "content-hash": "4c44387c4ceb27da9b10979823430457",
     "packages": [
         {
             "name": "cebe/php-openapi",
@@ -190,16 +190,16 @@
         },
         {
             "name": "docler-labs/api-client-base",
-            "version": "1.0.0",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DoclerLabs/api-client-base.git",
-                "reference": "2257208bc30c6718264edde9e24695402c9e62d1"
+                "reference": "b31d5127e8586905d27b444ca1bdc25dc4c9c2e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DoclerLabs/api-client-base/zipball/2257208bc30c6718264edde9e24695402c9e62d1",
-                "reference": "2257208bc30c6718264edde9e24695402c9e62d1",
+                "url": "https://api.github.com/repos/DoclerLabs/api-client-base/zipball/b31d5127e8586905d27b444ca1bdc25dc4c9c2e1",
+                "reference": "b31d5127e8586905d27b444ca1bdc25dc4c9c2e1",
                 "shasum": ""
             },
             "require": {
@@ -228,7 +228,7 @@
                 "openapi",
                 "rest"
             ],
-            "time": "2020-07-06T09:57:30+00:00"
+            "time": "2020-07-28T18:27:26+00:00"
         },
         {
             "name": "doctrine/annotations",
