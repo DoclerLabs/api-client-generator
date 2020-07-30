@@ -8,11 +8,14 @@ use Test\Schema\PetCollection;
 use Test\Request\AddPetRequest;
 use Test\Response\Mapper\PetResponseMapper;
 use Test\Schema\Pet;
+use Test\Request\CountPetsRequest;
 use Test\Request\FindPetByIdRequest;
 use Test\Request\DeletePetRequest;
 use GuzzleHttp\ClientInterface;
+use DoclerLabs\ApiClientBase\Response\Response;
 use DoclerLabs\ApiClientBase\Response\Handler\ResponseHandlerInterface;
 use DoclerLabs\ApiClientBase\Request\Mapper\RequestMapperInterface;
+use DoclerLabs\ApiClientBase\Request\RequestInterface;
 use DoclerLabs\ApiClientBase\Response\ResponseMapperRegistryInterface;
 class SwaggerPetstoreClient
 {
@@ -38,13 +41,20 @@ class SwaggerPetstoreClient
         $this->mapperRegistry = $mapperRegistry;
     }
     /**
+     * @param RequestInterface $request
+     * @return Response
+    */
+    public function getResponse(RequestInterface $request) : Response
+    {
+        return $this->responseHandler->handle($this->client->request($request->getMethod(), $request->getRoute(), $this->requestHandler->getParameters($request)));
+    }
+    /**
      * @param FindPetsRequest $request
      * @return PetCollection
     */
     public function findPets(FindPetsRequest $request) : PetCollection
     {
-        $response = $this->responseHandler->handle($this->client->request($request->getMethod(), $request->getRoute(), $this->requestHandler->getParameters($request)));
-        return $this->mapperRegistry->get(PetCollectionResponseMapper::class)->map($response);
+        return $this->mapperRegistry->get(PetCollectionResponseMapper::class)->map($this->getResponse($request));
     }
     /**
      * @param AddPetRequest $request
@@ -52,8 +62,14 @@ class SwaggerPetstoreClient
     */
     public function addPet(AddPetRequest $request) : Pet
     {
-        $response = $this->responseHandler->handle($this->client->request($request->getMethod(), $request->getRoute(), $this->requestHandler->getParameters($request)));
-        return $this->mapperRegistry->get(PetResponseMapper::class)->map($response);
+        return $this->mapperRegistry->get(PetResponseMapper::class)->map($this->getResponse($request));
+    }
+    /**
+     * @param CountPetsRequest $request
+    */
+    public function countPets(CountPetsRequest $request)
+    {
+        $this->getResponse($request);
     }
     /**
      * @param FindPetByIdRequest $request
@@ -61,14 +77,13 @@ class SwaggerPetstoreClient
     */
     public function findPetById(FindPetByIdRequest $request) : Pet
     {
-        $response = $this->responseHandler->handle($this->client->request($request->getMethod(), $request->getRoute(), $this->requestHandler->getParameters($request)));
-        return $this->mapperRegistry->get(PetResponseMapper::class)->map($response);
+        return $this->mapperRegistry->get(PetResponseMapper::class)->map($this->getResponse($request));
     }
     /**
      * @param DeletePetRequest $request
     */
     public function deletePet(DeletePetRequest $request)
     {
-        $this->responseHandler->handle($this->client->request($request->getMethod(), $request->getRoute(), $this->requestHandler->getParameters($request)));
+        $this->getResponse($request);
     }
 }

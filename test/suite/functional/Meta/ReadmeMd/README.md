@@ -36,6 +36,7 @@ $result  = $client->findPets($request);
 Endpoints:
 - **findPets**
 - **addPet**
+- **countPets**
 - **findPetById**
 
 ### New

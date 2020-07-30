@@ -3,6 +3,8 @@
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DoclerLabs\ApiClientBase\Request\Mapper\RequestMapperInterface;
+use DoclerLabs\ApiClientBase\Request\RequestInterface;
+use DoclerLabs\ApiClientBase\Response\Response;
 use DoclerLabs\ApiClientBase\Response\Handler\ResponseHandlerInterface;
 use DoclerLabs\ApiClientBase\Response\ResponseMapperRegistryInterface;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
@@ -21,7 +23,7 @@ class ClientGenerator extends GeneratorAbstract
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
     {
-        $methods             = [];
+        $methods             = [$this->generateResponseAction()];
         $this->baseNamespace = $fileRegistry->getBaseNamespace();
         foreach ($specification->getOperations() as $operation) {
             $methods[] = $this->generateAction($operation);
@@ -36,25 +38,14 @@ class ClientGenerator extends GeneratorAbstract
         $this->registerFile($fileRegistry, $classBuilder);
     }
 
-    protected function generateAction(Operation $operation): ClassMethod
+    protected function generateResponseAction(): ClassMethod
     {
-        $requestClassName = RequestNaming::getClassName($operation);
-        $this->addImport(
-            sprintf(
-                '%s%s\\%s',
-                $this->baseNamespace,
-                RequestGenerator::NAMESPACE_SUBPATH,
-                $requestClassName
-            )
-        );
-
+        $requestVar  = $this->builder->var('request');
         $methodParam = $this->builder
             ->param('request')
-            ->setType($requestClassName)
+            ->setType('RequestInterface')
             ->getNode();
-
-        $requestVar = $this->builder->var('request');
-        $args       = [
+        $args = [
             $this->builder->methodCall($requestVar, 'getMethod'),
             $this->builder->methodCall($requestVar, 'getRoute'),
             $this->builder->methodCall(
@@ -64,60 +55,87 @@ class ClientGenerator extends GeneratorAbstract
             ),
         ];
 
-        $clientCall = $this->builder->methodCall($this->builder->localPropertyFetch('client'), 'request', $args);
-
+        $clientCall   = $this->builder->methodCall($this->builder->localPropertyFetch('client'), 'request', $args);
         $responseStmt = $this->builder->methodCall(
             $this->builder->localPropertyFetch('responseHandler'),
             'handle',
             $this->builder->args([$clientCall])
         );
 
+        return $this->builder->method('getResponse')
+            ->makePublic()
+            ->addParam($methodParam)
+            ->addStmt($this->builder->return($responseStmt))
+            ->setReturnType('Response')
+            ->composeDocBlock([$methodParam], 'Response')
+            ->getNode();
+    }
+
+    protected function generateAction(Operation $operation): ClassMethod
+    {
+        $requestClassName = RequestNaming::getClassName($operation);
+
+        $this->addImport(
+            sprintf(
+                '%s%s\\%s',
+                $this->baseNamespace,
+                RequestGenerator::NAMESPACE_SUBPATH,
+                $requestClassName
+            )
+        );
+
+        $requestVar  = $this->builder->var('request');
+        $methodParam = $this->builder
+            ->param('request')
+            ->setType($requestClassName)
+            ->getNode();
+
+        $responseStmt = $this->builder->localMethodCall('getResponse', [$requestVar]);
+
         $responseBody = $operation->getSuccessfulResponse()->getBody();
-        if ($responseBody !== null) {
-            $mapperClassName = ResponseMapperNaming::getClassName($responseBody);
-            $this->addImport(
-                sprintf(
-                    '%s%s\\%s',
-                    $this->baseNamespace,
-                    ResponseMapperGenerator::NAMESPACE_SUBPATH,
-                    $mapperClassName
-                )
-            );
-            $getMethod = $this->builder->methodCall(
-                $this->builder->localPropertyFetch('mapperRegistry'),
-                'get',
-                [$this->builder->classConstFetch($mapperClassName, 'class')]
-            );
-
-            $responseVariable = $this->builder->var('response');
-            $responseStmt     = $this->builder->assign($responseVariable, $responseStmt);
-            $mapMethod        = $this->builder->methodCall($getMethod, 'map', [$responseVariable]);
-            $returnStmt       = $this->builder->return($mapMethod);
-
-            $this->addImport(
-                sprintf(
-                    '%s%s\\%s',
-                    $this->baseNamespace,
-                    SchemaGenerator::NAMESPACE_SUBPATH,
-                    $responseBody->getPhpClassName()
-                )
-            );
-
+        if ($responseBody === null) {
             return $this->builder->method($operation->getName())
                 ->makePublic()
                 ->addParam($methodParam)
                 ->addStmt($responseStmt)
-                ->addStmt($returnStmt)
-                ->setReturnType($responseBody->getPhpTypeHint())
-                ->composeDocBlock([$methodParam], $responseBody->getPhpDocType(false))
+                ->composeDocBlock([$methodParam])
                 ->getNode();
         }
+
+        $mapperClassName = ResponseMapperNaming::getClassName($responseBody);
+        $this->addImport(
+            sprintf(
+                '%s%s\\%s',
+                $this->baseNamespace,
+                ResponseMapperGenerator::NAMESPACE_SUBPATH,
+                $mapperClassName
+            )
+        );
+
+        $getMethod = $this->builder->methodCall(
+            $this->builder->localPropertyFetch('mapperRegistry'),
+            'get',
+            [$this->builder->classConstFetch($mapperClassName, 'class')]
+        );
+
+        $mapMethod  = $this->builder->methodCall($getMethod, 'map', [$responseStmt]);
+        $returnStmt = $this->builder->return($mapMethod);
+
+        $this->addImport(
+            sprintf(
+                '%s%s\\%s',
+                $this->baseNamespace,
+                SchemaGenerator::NAMESPACE_SUBPATH,
+                $responseBody->getPhpClassName()
+            )
+        );
 
         return $this->builder->method($operation->getName())
             ->makePublic()
             ->addParam($methodParam)
-            ->addStmt($responseStmt)
-            ->composeDocBlock([$methodParam])
+            ->addStmt($returnStmt)
+            ->setReturnType($responseBody->getPhpTypeHint())
+            ->composeDocBlock([$methodParam], $responseBody->getPhpDocType(false))
             ->getNode();
     }
 
@@ -138,8 +156,10 @@ class ClientGenerator extends GeneratorAbstract
     {
         $this
             ->addImport(ClientInterface::class)
+            ->addImport(Response::class)
             ->addImport(ResponseHandlerInterface::class)
             ->addImport(RequestMapperInterface::class)
+            ->addImport(RequestInterface::class)
             ->addImport(ResponseHandlerInterface::class)
             ->addImport(ResponseMapperRegistryInterface::class);
 
