@@ -5,6 +5,7 @@ namespace DoclerLabs\ApiClientGenerator\Generator;
 use DateTimeImmutable;
 use DoclerLabs\ApiClientBase\Exception\UnexpectedResponseBodyException;
 use DoclerLabs\ApiClientBase\Response\Mapper\ResponseMapperInterface;
+use DoclerLabs\ApiClientBase\Response\Response;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\ResponseMapperNaming;
@@ -29,7 +30,9 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 
     protected function generateMapper(PhpFileCollection $fileRegistry, Field $root): void
     {
-        $this->addImport(ResponseMapperInterface::class);
+        $this
+            ->addImport(Response::class)
+            ->addImport(ResponseMapperInterface::class);
 
         $this->mapMethodThrownExceptions = [];
 
@@ -137,9 +140,12 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         $returnObj     = null;
         $responseParam = $this->builder
             ->param('response')
-            ->setType('array')
+            ->setType('Response')
             ->getNode();
         $responseVar   = $this->builder->var('response');
+        $payloadVar    = $this->builder->var('payload');
+
+        $statements[] = $this->builder->assign($payloadVar, $this->builder->methodCall($responseVar, 'getPayload'));
 
         $this->addImport(
             sprintf(
@@ -151,11 +157,19 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         );
 
         if ($root->isObject()) {
-            $statements = array_merge($statements, $this->generateMapStatementsForObject($root, $responseVar));
+            $statements =
+                array_merge(
+                    $statements,
+                    $this->generateMapStatementsForObject($root, $payloadVar, $responseVar)
+                );
         }
 
         if ($root->isArrayOfObjects()) {
-            $statements = array_merge($statements, $this->generateMapStatementsForArrayOfObjects($root, $responseVar));
+            $statements =
+                array_merge(
+                    $statements,
+                    $this->generateMapStatementsForArrayOfObjects($root, $payloadVar, $responseVar)
+                );
         }
 
         return $this->builder
@@ -172,19 +186,29 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             ->getNode();
     }
 
-    protected function generateMapStatementsForArrayOfObjects(Field $field, Variable $responseVar): array
-    {
+    protected function generateMapStatementsForArrayOfObjects(
+        Field $field,
+        Variable $payloadVar,
+        Variable $responseVar
+    ): array {
         $itemsVar     = $this->builder->var('items');
         $statements[] = $this->builder->assign($itemsVar, $this->builder->array([]));
 
-        $as                  = $this->builder->var('responseItem');
+        $as                  = $this->builder->var('payloadItem');
         $itemMapper          = $this->builder->localPropertyFetch(
             ResponseMapperNaming::getPropertyName($field->getArrayItem())
         );
-        $itemMapperCall      = $this->builder->methodCall($itemMapper, 'map', [$as]);
+        $statusCodeCall      = $this->builder->methodCall($responseVar, 'getStatusCode');
+
+        $itemMapperCall =
+            $this->builder->methodCall(
+                $itemMapper,
+                'map',
+                [$this->builder->new('Response', $this->builder->args([$statusCodeCall, $as]))]
+            );
         $foreachStatements[] = $this->builder->appendToArray($itemsVar, $itemMapperCall);
 
-        $statements[] = $this->builder->foreach($responseVar, $as, $foreachStatements);
+        $statements[] = $this->builder->foreach($payloadVar, $as, $foreachStatements);
 
         $statements[] = $this->builder->return(
             $this->builder->new(
@@ -196,7 +220,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         return $statements;
     }
 
-    protected function generateMapStatementsForObject(Field $root, Variable $responseVar): array
+    protected function generateMapStatementsForObject(Field $root, Variable $payloadVar, Variable $responseVar): array
     {
         $statements = [];
 
@@ -212,11 +236,11 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 $requiredFields[]        = $property;
                 $requiredItemName        = $this->builder->val($property->getName());
                 $requiredItemsNames[]    = $requiredItemName;
-                $requiredResponseItems[] = $this->builder->getArrayItem($responseVar, $requiredItemName);
+                $requiredResponseItems[] = $this->builder->getArrayItem($payloadVar, $requiredItemName);
             } else {
                 $optionalFields[]        = $property;
                 $optionalResponseItems[] = $this->builder->getArrayItem(
-                    $responseVar,
+                    $payloadVar,
                     $this->builder->val($property->getName())
                 );
             }
@@ -231,7 +255,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             );
 
             $missingFieldsVar       = $this->builder->var('missingFields');
-            $missingFieldsArrayKeys = $this->builder->funcCall('array_keys', [$responseVar]);
+            $missingFieldsArrayKeys = $this->builder->funcCall('array_keys', [$payloadVar]);
             $missingFieldsArrayDiff = $this->builder->funcCall(
                 'array_diff',
                 [$this->builder->array($requiredItemsNames), $missingFieldsArrayKeys]
@@ -264,7 +288,17 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 $requiredVars[] = $this->builder->methodCall(
                     $this->builder->localPropertyFetch(ResponseMapperNaming::getPropertyName($field)),
                     'map',
-                    [$requiredResponseItems[$i]]
+                    [
+                        $this->builder->new(
+                            'Response',
+                            $this->builder->args(
+                                [
+                                    $this->builder->methodCall($responseVar, 'getStatusCode'),
+                                    $requiredResponseItems[$i],
+                                ]
+                            )
+                        ),
+                    ]
                 );
             } elseif ($field->isDate()) {
                 $this->addImport(DateTimeImmutable::class);
@@ -282,7 +316,21 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             foreach ($optionalFields as $i => $field) {
                 if ($field->isComposite()) {
                     $mapper      = $this->builder->localPropertyFetch(ResponseMapperNaming::getPropertyName($field));
-                    $optionalVar = $this->builder->methodCall($mapper, 'map', [$optionalResponseItems[$i]]);
+                    $optionalVar = $this->builder->methodCall(
+                        $mapper,
+                        'map',
+                        [
+                            $this->builder->new(
+                                'Response',
+                                $this->builder->args(
+                                    [
+                                        $this->builder->methodCall($responseVar, 'getStatusCode'),
+                                        $optionalResponseItems[$i],
+                                    ]
+                                )
+                            ),
+                        ]
+                    );
                 } elseif ($field->isDate()) {
                     $this->addImport(DateTimeImmutable::class);
                     $optionalVar = $this->builder->new('DateTimeImmutable', [$optionalResponseItems[$i]]);

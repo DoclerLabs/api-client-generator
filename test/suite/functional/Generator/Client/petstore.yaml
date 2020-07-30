@@ -63,6 +63,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+    head:
+      operationId: countPets
+      tags:
+        - Pet
+      responses:
+        200:
+          description: Count pets
+          headers:
+            X-Count:
+              schema:
+                type: integer
+                format: int64
   /pets/{id}:
     get:
       operationId: findPetById

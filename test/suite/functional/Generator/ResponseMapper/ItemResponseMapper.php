@@ -2,6 +2,7 @@
 
 namespace Test\Response\Mapper;
 
+use DoclerLabs\ApiClientBase\Response\Response;
 use DoclerLabs\ApiClientBase\Response\Mapper\ResponseMapperInterface;
 use Test\Schema\Item;
 use DoclerLabs\ApiClientBase\Exception\UnexpectedResponseBodyException;
@@ -18,40 +19,41 @@ class ItemResponseMapper implements ResponseMapperInterface
         $this->embeddedObjectResponseMapper = $embeddedObjectResponseMapper;
     }
     /**
-     * @param array $response
+     * @param Response $response
      * @return Item
      * @throws UnexpectedResponseBodyException
     */
-    public function map(array $response) : Item
+    public function map(Response $response) : Item
     {
-        if (!isset($response['mandatoryInteger'], $response['mandatoryString'], $response['mandatoryEnum'], $response['mandatoryDate'], $response['mandatoryFloat'], $response['mandatoryBoolean'], $response['mandatoryArray'], $response['mandatoryObject'])) {
-            $missingFields = implode(', ', array_diff(array('mandatoryInteger', 'mandatoryString', 'mandatoryEnum', 'mandatoryDate', 'mandatoryFloat', 'mandatoryBoolean', 'mandatoryArray', 'mandatoryObject'), array_keys($response)));
+        $payload = $response->getPayload();
+        if (!isset($payload['mandatoryInteger'], $payload['mandatoryString'], $payload['mandatoryEnum'], $payload['mandatoryDate'], $payload['mandatoryFloat'], $payload['mandatoryBoolean'], $payload['mandatoryArray'], $payload['mandatoryObject'])) {
+            $missingFields = implode(', ', array_diff(array('mandatoryInteger', 'mandatoryString', 'mandatoryEnum', 'mandatoryDate', 'mandatoryFloat', 'mandatoryBoolean', 'mandatoryArray', 'mandatoryObject'), array_keys($payload)));
             throw new UnexpectedResponseBodyException('Required attributes for `Item` missing in the response body: ' . $missingFields);
         }
-        $schema = new Item($response['mandatoryInteger'], $response['mandatoryString'], $response['mandatoryEnum'], new DateTimeImmutable($response['mandatoryDate']), $response['mandatoryFloat'], $response['mandatoryBoolean'], $response['mandatoryArray'], $this->embeddedObjectResponseMapper->map($response['mandatoryObject']));
-        if (isset($response['optionalInteger'])) {
-            $schema->setOptionalInteger($response['optionalInteger']);
+        $schema = new Item($payload['mandatoryInteger'], $payload['mandatoryString'], $payload['mandatoryEnum'], new DateTimeImmutable($payload['mandatoryDate']), $payload['mandatoryFloat'], $payload['mandatoryBoolean'], $payload['mandatoryArray'], $this->embeddedObjectResponseMapper->map(new Response($response->getStatusCode(), $payload['mandatoryObject'])));
+        if (isset($payload['optionalInteger'])) {
+            $schema->setOptionalInteger($payload['optionalInteger']);
         }
-        if (isset($response['optionalString'])) {
-            $schema->setOptionalString($response['optionalString']);
+        if (isset($payload['optionalString'])) {
+            $schema->setOptionalString($payload['optionalString']);
         }
-        if (isset($response['optionalEnum'])) {
-            $schema->setOptionalEnum($response['optionalEnum']);
+        if (isset($payload['optionalEnum'])) {
+            $schema->setOptionalEnum($payload['optionalEnum']);
         }
-        if (isset($response['optionalDate'])) {
-            $schema->setOptionalDate(new DateTimeImmutable($response['optionalDate']));
+        if (isset($payload['optionalDate'])) {
+            $schema->setOptionalDate(new DateTimeImmutable($payload['optionalDate']));
         }
-        if (isset($response['optionalFloat'])) {
-            $schema->setOptionalFloat($response['optionalFloat']);
+        if (isset($payload['optionalFloat'])) {
+            $schema->setOptionalFloat($payload['optionalFloat']);
         }
-        if (isset($response['optionalBoolean'])) {
-            $schema->setOptionalBoolean($response['optionalBoolean']);
+        if (isset($payload['optionalBoolean'])) {
+            $schema->setOptionalBoolean($payload['optionalBoolean']);
         }
-        if (isset($response['optionalArray'])) {
-            $schema->setOptionalArray($response['optionalArray']);
+        if (isset($payload['optionalArray'])) {
+            $schema->setOptionalArray($payload['optionalArray']);
         }
-        if (isset($response['optionalObject'])) {
-            $schema->setOptionalObject($this->embeddedObjectResponseMapper->map($response['optionalObject']));
+        if (isset($payload['optionalObject'])) {
+            $schema->setOptionalObject($this->embeddedObjectResponseMapper->map(new Response($response->getStatusCode(), $payload['optionalObject'])));
         }
         return $schema;
     }

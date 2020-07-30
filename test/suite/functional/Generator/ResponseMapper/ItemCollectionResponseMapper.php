@@ -2,6 +2,7 @@
 
 namespace Test\Response\Mapper;
 
+use DoclerLabs\ApiClientBase\Response\Response;
 use DoclerLabs\ApiClientBase\Response\Mapper\ResponseMapperInterface;
 use Test\Schema\ItemCollection;
 class ItemCollectionResponseMapper implements ResponseMapperInterface
@@ -16,14 +17,15 @@ class ItemCollectionResponseMapper implements ResponseMapperInterface
         $this->itemResponseMapper = $itemResponseMapper;
     }
     /**
-     * @param array $response
+     * @param Response $response
      * @return ItemCollection
     */
-    public function map(array $response) : ItemCollection
+    public function map(Response $response) : ItemCollection
     {
+        $payload = $response->getPayload();
         $items = array();
-        foreach ($response as $responseItem) {
-            $items[] = $this->itemResponseMapper->map($responseItem);
+        foreach ($payload as $payloadItem) {
+            $items[] = $this->itemResponseMapper->map(new Response($response->getStatusCode(), $payloadItem));
         }
         return new ItemCollection(...$items);
     }
