@@ -15,6 +15,7 @@ use GuzzleHttp\ClientInterface;
 use DoclerLabs\ApiClientBase\Response\Response;
 use DoclerLabs\ApiClientBase\Response\Handler\ResponseHandlerInterface;
 use DoclerLabs\ApiClientBase\Request\Mapper\RequestMapperInterface;
+use DoclerLabs\ApiClientBase\Request\RequestInterface;
 use DoclerLabs\ApiClientBase\Response\ResponseMapperRegistryInterface;
 class SwaggerPetstoreClient
 {
@@ -40,20 +41,20 @@ class SwaggerPetstoreClient
         $this->mapperRegistry = $mapperRegistry;
     }
     /**
+     * @param RequestInterface $request
+     * @return Response
+    */
+    public function getResponse(RequestInterface $request) : Response
+    {
+        return $this->responseHandler->handle($this->client->request($request->getMethod(), $request->getRoute(), $this->requestHandler->getParameters($request)));
+    }
+    /**
      * @param FindPetsRequest $request
      * @return PetCollection
     */
     public function findPets(FindPetsRequest $request) : PetCollection
     {
-        return $this->mapperRegistry->get(PetCollectionResponseMapper::class)->map($this->findPetsResponse($request));
-    }
-    /**
-     * @param FindPetsRequest $request
-     * @return Response
-    */
-    public function findPetsResponse(FindPetsRequest $request) : Response
-    {
-        return $this->responseHandler->handle($this->client->request($request->getMethod(), $request->getRoute(), $this->requestHandler->getParameters($request)));
+        return $this->mapperRegistry->get(PetCollectionResponseMapper::class)->map($this->getResponse($request));
     }
     /**
      * @param AddPetRequest $request
@@ -61,30 +62,14 @@ class SwaggerPetstoreClient
     */
     public function addPet(AddPetRequest $request) : Pet
     {
-        return $this->mapperRegistry->get(PetResponseMapper::class)->map($this->addPetResponse($request));
-    }
-    /**
-     * @param AddPetRequest $request
-     * @return Response
-    */
-    public function addPetResponse(AddPetRequest $request) : Response
-    {
-        return $this->responseHandler->handle($this->client->request($request->getMethod(), $request->getRoute(), $this->requestHandler->getParameters($request)));
+        return $this->mapperRegistry->get(PetResponseMapper::class)->map($this->getResponse($request));
     }
     /**
      * @param CountPetsRequest $request
     */
     public function countPets(CountPetsRequest $request)
     {
-        $this->countPetsResponse($request);
-    }
-    /**
-     * @param CountPetsRequest $request
-     * @return Response
-    */
-    public function countPetsResponse(CountPetsRequest $request) : Response
-    {
-        return $this->responseHandler->handle($this->client->request($request->getMethod(), $request->getRoute(), $this->requestHandler->getParameters($request)));
+        $this->getResponse($request);
     }
     /**
      * @param FindPetByIdRequest $request
@@ -92,29 +77,13 @@ class SwaggerPetstoreClient
     */
     public function findPetById(FindPetByIdRequest $request) : Pet
     {
-        return $this->mapperRegistry->get(PetResponseMapper::class)->map($this->findPetByIdResponse($request));
-    }
-    /**
-     * @param FindPetByIdRequest $request
-     * @return Response
-    */
-    public function findPetByIdResponse(FindPetByIdRequest $request) : Response
-    {
-        return $this->responseHandler->handle($this->client->request($request->getMethod(), $request->getRoute(), $this->requestHandler->getParameters($request)));
+        return $this->mapperRegistry->get(PetResponseMapper::class)->map($this->getResponse($request));
     }
     /**
      * @param DeletePetRequest $request
     */
     public function deletePet(DeletePetRequest $request)
     {
-        $this->deletePetResponse($request);
-    }
-    /**
-     * @param DeletePetRequest $request
-     * @return Response
-    */
-    public function deletePetResponse(DeletePetRequest $request) : Response
-    {
-        return $this->responseHandler->handle($this->client->request($request->getMethod(), $request->getRoute(), $this->requestHandler->getParameters($request)));
+        $this->getResponse($request);
     }
 }

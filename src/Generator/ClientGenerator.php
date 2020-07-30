@@ -3,10 +3,10 @@
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DoclerLabs\ApiClientBase\Request\Mapper\RequestMapperInterface;
+use DoclerLabs\ApiClientBase\Request\RequestInterface;
 use DoclerLabs\ApiClientBase\Response\Response;
 use DoclerLabs\ApiClientBase\Response\Handler\ResponseHandlerInterface;
 use DoclerLabs\ApiClientBase\Response\ResponseMapperRegistryInterface;
-use DoclerLabs\ApiClientGenerator\Builder\ParameterNode;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\ClientNaming;
@@ -14,7 +14,6 @@ use DoclerLabs\ApiClientGenerator\Naming\RequestNaming;
 use DoclerLabs\ApiClientGenerator\Naming\ResponseMapperNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use GuzzleHttp\ClientInterface;
-use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
 
@@ -24,12 +23,10 @@ class ClientGenerator extends GeneratorAbstract
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
     {
-        $methods             = [];
+        $methods             = [$this->generateResponseAction()];
         $this->baseNamespace = $fileRegistry->getBaseNamespace();
         foreach ($specification->getOperations() as $operation) {
-            [$action, $responseAction] = $this->generateActions($operation);
-            $methods[] = $action;
-            $methods[] = $responseAction;
+            $methods[] = $this->generateAction($operation);
         }
 
         $classBuilder = $this->builder
@@ -41,12 +38,40 @@ class ClientGenerator extends GeneratorAbstract
         $this->registerFile($fileRegistry, $classBuilder);
     }
 
-    /**
-     * @param Operation $operation
-     *
-     * @return ClassMethod[]
-     */
-    protected function generateActions(Operation $operation): array
+    protected function generateResponseAction(): ClassMethod
+    {
+        $requestVar  = $this->builder->var('request');
+        $methodParam = $this->builder
+            ->param('request')
+            ->setType('RequestInterface')
+            ->getNode();
+        $args = [
+            $this->builder->methodCall($requestVar, 'getMethod'),
+            $this->builder->methodCall($requestVar, 'getRoute'),
+            $this->builder->methodCall(
+                $this->builder->localPropertyFetch('requestHandler'),
+                'getParameters',
+                $this->builder->args([$requestVar])
+            ),
+        ];
+
+        $clientCall   = $this->builder->methodCall($this->builder->localPropertyFetch('client'), 'request', $args);
+        $responseStmt = $this->builder->methodCall(
+            $this->builder->localPropertyFetch('responseHandler'),
+            'handle',
+            $this->builder->args([$clientCall])
+        );
+
+        return $this->builder->method('getResponse')
+            ->makePublic()
+            ->addParam($methodParam)
+            ->addStmt($this->builder->return($responseStmt))
+            ->setReturnType('Response')
+            ->composeDocBlock([$methodParam], 'Response')
+            ->getNode();
+    }
+
+    protected function generateAction(Operation $operation): ClassMethod
     {
         $requestClassName = RequestNaming::getClassName($operation);
 
@@ -65,43 +90,7 @@ class ClientGenerator extends GeneratorAbstract
             ->setType($requestClassName)
             ->getNode();
 
-        return [
-            $this->generateAction($operation, $methodParam, $requestVar),
-            $this->generateResponseAction($operation, $methodParam, $requestVar),
-        ];
-    }
-
-    protected function generateResponseAction(Operation $operation, ParameterNode $methodParam, Variable $requestVar): ClassMethod
-    {
-        $args = [
-            $this->builder->methodCall($requestVar, 'getMethod'),
-            $this->builder->methodCall($requestVar, 'getRoute'),
-            $this->builder->methodCall(
-                $this->builder->localPropertyFetch('requestHandler'),
-                'getParameters',
-                $this->builder->args([$requestVar])
-            ),
-        ];
-
-        $clientCall   = $this->builder->methodCall($this->builder->localPropertyFetch('client'), 'request', $args);
-        $responseStmt = $this->builder->methodCall(
-            $this->builder->localPropertyFetch('responseHandler'),
-            'handle',
-            $this->builder->args([$clientCall])
-        );
-
-        return $this->builder->method($operation->getName() . 'Response')
-            ->makePublic()
-            ->addParam($methodParam)
-            ->addStmt($this->builder->return($responseStmt))
-            ->setReturnType('Response')
-            ->composeDocBlock([$methodParam], 'Response')
-            ->getNode();
-    }
-
-    protected function generateAction(Operation $operation, ParameterNode $methodParam, Variable $requestVar): ClassMethod
-    {
-        $responseStmt = $this->builder->localMethodCall($operation->getName() . 'Response', [$requestVar]);
+        $responseStmt = $this->builder->localMethodCall('getResponse', [$requestVar]);
 
         $responseBody = $operation->getSuccessfulResponse()->getBody();
         if ($responseBody === null) {
@@ -170,6 +159,7 @@ class ClientGenerator extends GeneratorAbstract
             ->addImport(Response::class)
             ->addImport(ResponseHandlerInterface::class)
             ->addImport(RequestMapperInterface::class)
+            ->addImport(RequestInterface::class)
             ->addImport(ResponseHandlerInterface::class)
             ->addImport(ResponseMapperRegistryInterface::class);
 
