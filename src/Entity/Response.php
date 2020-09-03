@@ -4,7 +4,6 @@ namespace DoclerLabs\ApiClientGenerator\Entity;
 
 class Response
 {
-    private const ROOT_KEY = 'data';
     private int    $statusCode;
     private ?Field $body;
 
