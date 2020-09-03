@@ -16,6 +16,7 @@
     "require": {
         "php": ">=7.4",
         "ext-json": "*",
+        "ext-dom": "*",
         "cebe/php-openapi": "^1.0",
         "docler-labs/api-client-base": "^3.0",
         "friendsofphp/php-cs-fixer": "^2.15",
