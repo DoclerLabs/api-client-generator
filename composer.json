@@ -17,7 +17,7 @@
         "php": ">=7.4",
         "ext-json": "*",
         "cebe/php-openapi": "^1.0",
-        "docler-labs/api-client-base": "^2.0",
+        "docler-labs/api-client-base": "^3.0",
         "friendsofphp/php-cs-fixer": "^2.15",
         "guzzlehttp/guzzle": "^6.3",
         "nikic/php-parser": "^4.2",
