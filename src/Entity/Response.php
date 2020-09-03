@@ -16,18 +16,6 @@ class Response
 
     public function getBody(): ?Field
     {
-        $body = $this->body;
-        if (
-            $body !== null
-            && $body->isObject()
-            && count($body->getObjectProperties()) === 1
-        ) {
-            $first = current($body->getObjectProperties());
-            if ($first->getName() === self::ROOT_KEY) {
-                return $first;
-            }
-        }
-
-        return $body;
+        return $this->body;
     }
 }
