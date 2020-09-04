@@ -1,6 +1,6 @@
 {
     "name": "docler-labs/api-client-generator",
-    "version": "1.2.0",
+    "version": "2.0.0",
     "description": "SDK Generator - API Client Generator",
     "type": "library",
     "license": "MIT",
@@ -16,8 +16,9 @@
     "require": {
         "php": ">=7.4",
         "ext-json": "*",
+        "ext-dom": "*",
         "cebe/php-openapi": "^1.0",
-        "docler-labs/api-client-base": "^2.0",
+        "docler-labs/api-client-base": "^3.0",
         "friendsofphp/php-cs-fixer": "^2.15",
         "guzzlehttp/guzzle": "^6.3",
         "nikic/php-parser": "^4.2",
