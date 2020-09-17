@@ -30,9 +30,9 @@ class PhpVersionResolverTest extends TestCase
 
     public function testIsVoidTypeHintSupported()
     {
-        self::assertFalse((new PhpVersion(PhpVersion::VERSION_PHP70))->isVoidTypeHintSupported());
-        self::assertTrue((new PhpVersion(PhpVersion::VERSION_PHP71))->isVoidTypeHintSupported());
-        self::assertTrue((new PhpVersion(PhpVersion::VERSION_PHP74))->isVoidTypeHintSupported());
+        self::assertFalse((new PhpVersion(PhpVersion::VERSION_PHP70))->isVoidReturnTypeSupported());
+        self::assertTrue((new PhpVersion(PhpVersion::VERSION_PHP71))->isVoidReturnTypeSupported());
+        self::assertTrue((new PhpVersion(PhpVersion::VERSION_PHP74))->isVoidReturnTypeSupported());
     }
 
     public function testIsNullableTypeHintSupported()

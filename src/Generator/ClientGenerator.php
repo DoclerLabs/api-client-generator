@@ -131,7 +131,7 @@ class ClientGenerator extends GeneratorAbstract
             ->makePublic()
             ->addParam($methodParam)
             ->addStmt($returnStmt)
-            ->setReturnType($responseBody->getPhpTypeHint())
+            ->setReturnType($responseBody->getPhpTypeHint(), $responseBody->isNullable())
             ->composeDocBlock([$methodParam], $responseBody->getPhpDocType(false))
             ->getNode();
     }

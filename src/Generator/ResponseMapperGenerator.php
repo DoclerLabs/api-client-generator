@@ -175,7 +175,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             ->makePublic()
             ->addParam($responseParam)
             ->addStmts($statements)
-            ->setReturnType($root->getPhpTypeHint())
+            ->setReturnType($root->getPhpTypeHint(), $root->isNullable())
             ->composeDocBlock(
                 [$responseParam],
                 $root->getPhpDocType(false),

@@ -57,7 +57,7 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
 
     protected function generateGet(Field $field): ClassMethod
     {
-        $returnType = $field->isRequired() ? $field->getPhpTypeHint() : '';
+        $returnType = $field->isRequired() ? $field->getPhpTypeHint() : Field::TYPE_MIXED;
         $phpDocType = $field->getPhpDocType();
 
         $return = $this->builder->return($this->builder->localPropertyFetch($field->getPhpVariableName()));
@@ -66,7 +66,7 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
             ->method($this->getGetMethodName($field))
             ->makePublic()
             ->addStmt($return)
-            ->setReturnType($returnType)
+            ->setReturnType($returnType, $field->isNullable())
             ->composeDocBlock([], $phpDocType)
             ->getNode();
     }

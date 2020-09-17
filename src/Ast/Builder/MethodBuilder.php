@@ -49,12 +49,29 @@ class MethodBuilder extends Method
 
     /**
      * @param Name|NullableType|string|null $type
+     * @param bool                          $isNullable
      *
      * @return $this
      */
-    public function setReturnType($type): self
+    public function setReturnType($type, $isNullable = false): self
     {
-        if ($type === '' || $type === null) {
+        if ($type === 'mixed') {
+            return $this;
+        }
+
+        if ($type === null) {
+            if ($this->versionResolver->isVoidReturnTypeSupported()) {
+                return parent::setReturnType('void');
+            }
+
+            return $this;
+        }
+
+        if ($isNullable) {
+            if ($this->versionResolver->isNullableTypeHintSupported()) {
+                return parent::setReturnType(sprintf('?%s', $type));
+            }
+
             return $this;
         }
 

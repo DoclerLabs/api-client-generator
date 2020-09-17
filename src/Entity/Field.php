@@ -10,6 +10,7 @@ class Field
 {
     public const FORMAT_DATE      = 'date';
     public const FORMAT_DATE_TIME = 'date-time';
+    public const TYPE_MIXED       = 'mixed';
     private string         $name;
     private FieldType      $type;
     private string         $referenceName;
@@ -170,10 +171,6 @@ class Field
 
     public function getPhpTypeHint(): string
     {
-        if ($this->isNullable()) {
-            return '';
-        }
-
         if ($this->isComposite() || $this->isDate()) {
             return $this->getPhpClassName();
         }
@@ -184,7 +181,7 @@ class Field
     public function getPhpDocType(bool $allowNullable = true): string
     {
         if ($this->type->isMixed()) {
-            return 'mixed';
+            return self::TYPE_MIXED;
         }
 
         $nullableSuffix = '';

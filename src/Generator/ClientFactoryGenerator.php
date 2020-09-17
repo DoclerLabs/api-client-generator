@@ -62,26 +62,12 @@ class ClientFactoryGenerator extends GeneratorAbstract
         $config  = $this->builder->var('config');
         $baseUri = $this->builder->var('baseUri');
         $options = $this->builder->var('options');
-        $server  = $this->builder->var('_SERVER');
 
         $statements[] = $this->generateBaseUriValidation($baseUri);
 
         $defaultItems = [
             'base_uri'    => $baseUri,
             'timeout'     => $this->builder->val(3),
-            'headers'     => $this->builder->array(
-                [
-                    'Accept'       => $this->builder->val('application/json'),
-                    'Content-Type' => $this->builder->val('application/json'),
-                    'X-Client-Ip'  => $this->builder->coalesce(
-                        $this->builder->getArrayItem($server, $this->builder->val('HTTP_X_CLIENT_IP')),
-                        $this->builder->coalesce(
-                            $this->builder->getArrayItem($server, $this->builder->val('REMOTE_ADDR')),
-                            $this->builder->val(null)
-                        )
-                    ),
-                ]
-            ),
             'http_errors' => $this->builder->val(false),
         ];
 

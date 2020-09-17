@@ -43,7 +43,7 @@ class PhpVersion
         return $this->isVersion71() || $this->isVersion74();
     }
 
-    public function isVoidTypeHintSupported(): bool
+    public function isVoidReturnTypeSupported(): bool
     {
         return $this->isVersion71() || $this->isVersion74();
     }
