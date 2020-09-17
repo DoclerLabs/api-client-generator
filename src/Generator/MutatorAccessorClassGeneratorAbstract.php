@@ -3,9 +3,8 @@
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DateTimeInterface;
-use DoclerLabs\ApiClientBase\Exception\RequestValidationException;
 use DoclerLabs\ApiClientBase\Json\Json;
-use DoclerLabs\ApiClientGenerator\Builder\CodeBuilder;
+use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaNaming;
@@ -100,21 +99,18 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
         if (!empty($enumValues)) {
             $enumConstCalls = [];
             foreach ($enumValues as $enumValue) {
-                $constName = SchemaNaming::getEnumConstName($field, $enumValue);
-                $enumConst = $this->builder->const(
+                $constName    = SchemaNaming::getEnumConstName($field, $enumValue);
+                $statements[] = $this->builder->constant(
                     $constName,
                     $this->builder->val($enumValue)
                 );
 
-                $statements[]     = $this->builder->constants([$enumConst]);
                 $enumConstCalls[] = $this->builder->classConstFetch('self', $constName);
             }
-            $enumConst = $this->builder->const(
+            $statements[] = $this->builder->constant(
                 SchemaNaming::getAllowedEnumConstName($field),
                 $this->builder->array($enumConstCalls)
             );
-
-            $statements[] = $this->builder->constants([$enumConst]);
         }
 
         return $statements;

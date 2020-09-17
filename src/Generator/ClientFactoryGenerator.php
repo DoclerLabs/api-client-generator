@@ -2,34 +2,36 @@
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
-use DoclerLabs\ApiClientBase\Request\Mapper\RequestMapper;
-use DoclerLabs\ApiClientBase\Response\Handler\ResponseHandler;
-use DoclerLabs\ApiClientBase\Response\ResponseMapperRegistry;
-use DoclerLabs\ApiClientBase\Response\ResponseMapperRegistryInterface;
+use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
+use DoclerLabs\ApiClientGenerator\Generator\Resolver\HttpClientResolver;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\ClientNaming;
 use DoclerLabs\ApiClientGenerator\Naming\ResponseMapperNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
-use GuzzleHttp\Client;
-use GuzzleHttp\RequestOptions;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Handler\ResponseHandler;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\ResponseMapperRegistry;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\ResponseMapperRegistryInterface;
 use InvalidArgumentException;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\ClassMethod;
+use Psr\Http\Client\ClientInterface;
 
 class ClientFactoryGenerator extends GeneratorAbstract
 {
-    private string $baseNamespace;
+    public function __construct(string $baseNamespace, CodeBuilder $builder, HttpClientResolver $clientResolver)
+    {
+        parent::__construct($baseNamespace, $builder);
+    }
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
     {
-        $className           = ClientNaming::getFactoryClassName($specification);
-        $this->baseNamespace = $fileRegistry->getBaseNamespace();
+        $className = ClientNaming::getFactoryClassName($specification);
 
         $this
-            ->addImport(Client::class)
+            ->addImport(ClientInterface::class)
             ->addImport(ResponseHandler::class)
             ->addImport(RequestMapper::class)
             ->addImport(ResponseMapperRegistry::class)
@@ -65,9 +67,9 @@ class ClientFactoryGenerator extends GeneratorAbstract
         $statements[] = $this->generateBaseUriValidation($baseUri);
 
         $defaultItems = [
-            'base_uri'                  => $baseUri,
-            RequestOptions::TIMEOUT     => $this->builder->val(3),
-            RequestOptions::HEADERS     => $this->builder->array(
+            'base_uri'    => $baseUri,
+            'timeout'     => $this->builder->val(3),
+            'headers'     => $this->builder->array(
                 [
                     'Accept'       => $this->builder->val('application/json'),
                     'Content-Type' => $this->builder->val('application/json'),
@@ -80,7 +82,7 @@ class ClientFactoryGenerator extends GeneratorAbstract
                     ),
                 ]
             ),
-            RequestOptions::HTTP_ERRORS => $this->builder->val(false),
+            'http_errors' => $this->builder->val(false),
         ];
 
         $statements[] = $this->builder->assign($default, $this->builder->array($defaultItems));

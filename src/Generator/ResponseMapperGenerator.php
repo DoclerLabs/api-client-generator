@@ -3,13 +3,13 @@
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DateTimeImmutable;
-use DoclerLabs\ApiClientBase\Exception\UnexpectedResponseBodyException;
-use DoclerLabs\ApiClientBase\Response\Mapper\ResponseMapperInterface;
-use DoclerLabs\ApiClientBase\Response\Response;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\ResponseMapperNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Exception\UnexpectedResponseBodyException;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Mapper\ResponseMapperInterface;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Response;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\ClassMethod;
 
@@ -17,12 +17,10 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 {
     public const NAMESPACE_SUBPATH = '\\Response\\Mapper';
     public const SUBDIRECTORY      = 'Response/Mapper/';
-    private string $baseNamespace;
-    private array  $mapMethodThrownExceptions;
+    private array $mapMethodThrownExceptions;
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
     {
-        $this->baseNamespace = $fileRegistry->getBaseNamespace();
         foreach ($specification->getCompositeResponseFields() as $field) {
             $this->generateMapper($fileRegistry, $field);
         }
@@ -150,7 +148,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         $this->addImport(
             sprintf(
                 '%s%s\\%s',
-                $fileRegistry->getBaseNamespace(),
+                $this->baseNamespace,
                 SchemaGenerator::NAMESPACE_SUBPATH,
                 $root->getPhpClassName()
             )
@@ -194,13 +192,13 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         $itemsVar     = $this->builder->var('items');
         $statements[] = $this->builder->assign($itemsVar, $this->builder->array([]));
 
-        $as                  = $this->builder->var('payloadItem');
-        $itemMapper          = $this->builder->localPropertyFetch(
+        $as             = $this->builder->var('payloadItem');
+        $itemMapper     = $this->builder->localPropertyFetch(
             ResponseMapperNaming::getPropertyName($field->getArrayItem())
         );
-        $statusCodeCall      = $this->builder->methodCall($responseVar, 'getStatusCode');
+        $statusCodeCall = $this->builder->methodCall($responseVar, 'getStatusCode');
 
-        $itemMapperCall =
+        $itemMapperCall      =
             $this->builder->methodCall(
                 $itemMapper,
                 'map',
@@ -213,7 +211,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         $statements[] = $this->builder->return(
             $this->builder->new(
                 $field->getPhpClassName(),
-                [$this->builder->arg($itemsVar, false, true)]
+                [$this->builder->argument($itemsVar, false, true)]
             )
         );
 

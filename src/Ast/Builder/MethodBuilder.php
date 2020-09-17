@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace DoclerLabs\ApiClientGenerator\Builder;
+namespace DoclerLabs\ApiClientGenerator\Ast\Builder;
 
-use DoclerLabs\ApiClientGenerator\Output\Php\PhpVersionResolver;
+use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use PhpParser\Builder;
 use PhpParser\Builder\Method;
 use PhpParser\Comment\Doc;
@@ -12,9 +12,9 @@ use PhpParser\Node\NullableType;
 
 class MethodBuilder extends Method
 {
-    private PhpVersionResolver $versionResolver;
+    private PhpVersion $versionResolver;
 
-    public function __construct(string $name, PhpVersionResolver $versionResolver)
+    public function __construct(string $name, PhpVersion $versionResolver)
     {
         parent::__construct($name);
         $this->versionResolver = $versionResolver;

@@ -2,10 +2,11 @@
 
 namespace Test\Schema;
 
-use JsonSerializable;
 use DateTimeInterface;
 use DoclerLabs\ApiClientBase\Json\Json;
-use DoclerLabs\ApiClientBase\Exception\RequestValidationException;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Exception\RequestValidationException;
+use JsonSerializable;
+
 class Item implements JsonSerializable
 {
     const MANDATORY_ENUM_ONE_OPTION = 'one option';

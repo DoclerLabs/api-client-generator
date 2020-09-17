@@ -36,7 +36,7 @@ class ReadmeMdTemplate implements TemplateInterface
                 'specification'           => $specification,
                 'packageName'             => $this->configuration->getPackageName(),
                 'phpVersion'              => $this->configuration->getPhpVersion(),
-                'namespace'               => $this->configuration->getNamespace(),
+                'namespace'               => $this->configuration->getBaseNamespace(),
                 'exampleOperation'        => $this->pickExampleOperation($specification),
                 'operationsGroupedByTags' => $this->groupOperationsByTags($specification),
             ]

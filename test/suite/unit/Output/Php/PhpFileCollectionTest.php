@@ -19,7 +19,7 @@ class PhpFileCollectionTest extends TestCase
 
     public function setUp(): void
     {
-        $this->sut = new PhpFileCollection(self::BASE_DIRECTORY, self::BASE_NAMESPACE);
+        $this->sut = new PhpFileCollection();
     }
 
     public function testGetBaseNamespace(): void

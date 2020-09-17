@@ -34,8 +34,8 @@ class ConfigurationTest extends TestCase
             $readmeMdTemplateDir,
         );
 
-        self::assertEquals($openapiFilePath, $sut->getFilePath());
-        self::assertEquals($namespace, $sut->getNamespace());
+        self::assertEquals($openapiFilePath, $sut->getSpecificationFilePath());
+        self::assertEquals($namespace, $sut->getBaseNamespace());
         self::assertEquals($outputDirectory, $sut->getOutputDirectory());
         self::assertEquals($codeStyleConfig, $sut->getCodeStyleConfig());
         self::assertEquals($packageName, $sut->getPackageName());

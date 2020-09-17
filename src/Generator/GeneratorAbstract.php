@@ -2,22 +2,24 @@
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
-use DoclerLabs\ApiClientGenerator\Builder\ClassBuilder;
-use DoclerLabs\ApiClientGenerator\Builder\CodeBuilder;
-use DoclerLabs\ApiClientGenerator\Builder\ImportCollection;
+use DoclerLabs\ApiClientGenerator\Ast\Builder\ClassBuilder;
+use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
+use DoclerLabs\ApiClientGenerator\Entity\ImportCollection;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFile;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 
 abstract class GeneratorAbstract implements GeneratorInterface
 {
+    protected string         $baseNamespace;
     protected CodeBuilder    $builder;
     private ImportCollection $imports;
 
-    public function __construct(CodeBuilder $builder)
+    public function __construct(string $baseNamespace, CodeBuilder $builder)
     {
-        $this->imports = new ImportCollection();
-        $this->builder = $builder;
+        $this->baseNamespace = $baseNamespace;
+        $this->imports       = new ImportCollection();
+        $this->builder       = $builder;
     }
 
     abstract public function generate(Specification $specification, PhpFileCollection $fileRegistry): void;
@@ -28,7 +30,7 @@ abstract class GeneratorAbstract implements GeneratorInterface
         string $subDirectory = '',
         string $namespaceSubPath = ''
     ): void {
-        $namespace = sprintf('%s%s', $fileRegistry->getBaseNamespace(), $namespaceSubPath);
+        $namespace = sprintf('%s%s', $this->baseNamespace, $namespaceSubPath);
         $fileRegistry->add(
             new PhpFile(
                 sprintf('%s%s.php', $subDirectory, $class->getName()),
@@ -40,9 +42,14 @@ abstract class GeneratorAbstract implements GeneratorInterface
         $this->resetImports();
     }
 
-    protected function addImport(string $fqdn): self
+    protected function addImport(string $fqdn, string $alias = ''): self
     {
-        $this->imports->add($fqdn);
+        $import = $fqdn;
+        if ($alias !== '') {
+            $import = sprintf('%s as %s', $fqdn, $alias);
+        }
+
+        $this->imports->add($import);
 
         return $this;
     }

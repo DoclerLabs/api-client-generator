@@ -1,8 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace DoclerLabs\ApiClientGenerator\Builder;
+namespace DoclerLabs\ApiClientGenerator\Ast\Builder;
 
-use DoclerLabs\ApiClientGenerator\Output\Php\PhpVersionResolver;
+use DoclerLabs\ApiClientGenerator\Ast\Parameter;
+use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
+use DoclerLabs\ApiClientGenerator\Entity\ImportCollection;
 use InvalidArgumentException;
 use PhpParser\BuilderFactory;
 use PhpParser\Node;
@@ -40,6 +42,7 @@ use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\Name\Relative;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Catch_;
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Stmt\Else_;
 use PhpParser\Node\Stmt\ElseIf_;
@@ -56,9 +59,9 @@ use UnexpectedValueException;
 
 class CodeBuilder extends BuilderFactory
 {
-    private PhpVersionResolver $versionResolver;
+    private PhpVersion $versionResolver;
 
-    public function __construct(PhpVersionResolver $versionResolver)
+    public function __construct(PhpVersion $versionResolver)
     {
         $this->versionResolver = $versionResolver;
     }
@@ -270,19 +273,18 @@ class CodeBuilder extends BuilderFactory
         return new Foreach_($array, $asValue, $subNodes);
     }
 
-    public function arg(Expr $argument, bool $byRef = false, bool $unpack = false): Arg
+    public function argument(Expr $argument, bool $byRef = false, bool $unpack = false): Arg
     {
         return new Arg($argument, $byRef, $unpack);
     }
 
-    public function const(string $name, Expr $value): Const_
+    public function constant(string $name, Expr $value, $visibility = Class_::MODIFIER_PUBLIC): ClassConst
     {
-        return new Const_($name, $value);
-    }
+        if ($this->versionResolver->isClassConstantVisibilitySupported()) {
+            return new ClassConst([new Const_($name, $value)], $visibility);
+        }
 
-    public function constants(array $consts): Stmt
-    {
-        return new ClassConst($consts);
+        return new ClassConst([new Const_($name, $value)]);
     }
 
     public function tryCatch(array $tryStmts, array $catches, Finally_ $finally = null): TryCatch

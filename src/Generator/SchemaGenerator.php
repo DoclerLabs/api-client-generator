@@ -14,12 +14,9 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
 {
     public const SUBDIRECTORY      = 'Schema/';
     public const NAMESPACE_SUBPATH = '\\Schema';
-    private string $baseNamespace;
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
     {
-        $this->baseNamespace = $fileRegistry->getBaseNamespace();
-
         $compositeFields = $specification->getCompositeFields()->getUniqueByPhpClassName();
         foreach ($compositeFields as $field) {
             if ($field->isObject()) {

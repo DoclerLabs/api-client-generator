@@ -2,13 +2,14 @@
 
 namespace Test\Request;
 
-use DoclerLabs\ApiClientBase\Request\RequestInterface;
 use DateTimeInterface;
+use DoclerLabs\ApiClientBase\Json\Json;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Exception\RequestValidationException;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\RequestInterface;
+use JsonSerializable;
 use Test\Schema\EmbeddedObject;
 use Test\Schema\PutResourceByIdRequestBody;
-use DoclerLabs\ApiClientBase\Json\Json;
-use DoclerLabs\ApiClientBase\Exception\RequestValidationException;
-use JsonSerializable;
+
 class PutResourceByIdRequest implements RequestInterface
 {
     const ENUM_PARAMETER_ONE_VALUE = 'one value';

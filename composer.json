@@ -1,6 +1,6 @@
 {
     "name": "docler-labs/api-client-generator",
-    "version": "2.0.0",
+    "version": "3.0.0",
     "description": "SDK Generator - API Client Generator",
     "type": "library",
     "license": "MIT",
@@ -20,9 +20,10 @@
         "cebe/php-openapi": "^1.0",
         "docler-labs/api-client-base": "^3.0",
         "friendsofphp/php-cs-fixer": "^2.15",
-        "guzzlehttp/guzzle": "^6.3",
         "nikic/php-parser": "^4.2",
         "pimple/pimple": "^3.2",
+        "psr/http-client": "^1.0",
+        "psr/http-message": "^1.0",
         "symfony/console": "^5.0",
         "symfony/yaml": "^5.1",
         "twig/twig": "^3.0"

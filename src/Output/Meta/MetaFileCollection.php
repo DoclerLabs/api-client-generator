@@ -8,14 +8,7 @@ use IteratorAggregate;
 
 class MetaFileCollection implements IteratorAggregate
 {
-    private array  $files;
-    private string $baseDirectory;
-
-    public function __construct(string $baseDirectory)
-    {
-        $this->baseDirectory = $baseDirectory;
-        $this->files         = [];
-    }
+    private array  $files = [];
 
     public function add(MetaFile $metaFile): void
     {
@@ -36,8 +29,8 @@ class MetaFileCollection implements IteratorAggregate
         return new ArrayIterator($this->files);
     }
 
-    public function getBaseDirectory(): string
+    public function count(): int
     {
-        return $this->baseDirectory;
+        return count($this->files);
     }
 }

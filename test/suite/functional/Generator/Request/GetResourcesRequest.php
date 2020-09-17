@@ -2,8 +2,9 @@
 
 namespace Test\Request;
 
-use DoclerLabs\ApiClientBase\Request\RequestInterface;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\RequestInterface;
 use JsonSerializable;
+
 class GetResourcesRequest implements RequestInterface
 {
     /** @var int|null */

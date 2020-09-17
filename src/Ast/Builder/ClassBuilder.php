@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace DoclerLabs\ApiClientGenerator\Builder;
+namespace DoclerLabs\ApiClientGenerator\Ast\Builder;
 
 use PhpParser\Builder;
 use PhpParser\Builder\Class_;

@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace DoclerLabs\ApiClientGenerator\Builder;
+namespace DoclerLabs\ApiClientGenerator\Ast;
 
 use PhpParser\Builder\Param;
-use PhpParser\Node;
+use PhpParser\Node\Expr\Variable;
 
 class Parameter extends Param
 {
@@ -21,7 +21,7 @@ class Parameter extends Param
     public function getNode(): ParameterNode
     {
         return new ParameterNode(
-            new Node\Expr\Variable($this->name),
+            new Variable($this->name),
             $this->default,
             $this->type,
             $this->byRef,

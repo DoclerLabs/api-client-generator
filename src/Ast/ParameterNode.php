@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace DoclerLabs\ApiClientGenerator\Builder;
+namespace DoclerLabs\ApiClientGenerator\Ast;
 
 use PhpParser\Node\Expr;
 use PhpParser\Node\NullableType;

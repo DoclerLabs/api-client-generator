@@ -2,15 +2,16 @@
 
 namespace Test;
 
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\Mapper\RequestMapper;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Handler\ResponseHandler;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\ResponseMapperRegistry;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\ResponseMapperRegistryInterface;
 use GuzzleHttp\Client;
-use DoclerLabs\ApiClientBase\Response\Handler\ResponseHandler;
-use DoclerLabs\ApiClientBase\Request\Mapper\RequestMapper;
-use DoclerLabs\ApiClientBase\Response\ResponseMapperRegistry;
-use DoclerLabs\ApiClientBase\Response\ResponseMapperRegistryInterface;
 use InvalidArgumentException;
+use Test\Response\Mapper\FoodResponseMapper;
 use Test\Response\Mapper\PetCollectionResponseMapper;
 use Test\Response\Mapper\PetResponseMapper;
-use Test\Response\Mapper\FoodResponseMapper;
+
 class SwaggerPetstoreClientFactory
 {
     /**

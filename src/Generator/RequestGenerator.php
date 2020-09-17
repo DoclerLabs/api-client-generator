@@ -2,7 +2,6 @@
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
-use DoclerLabs\ApiClientBase\Request\RequestInterface;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Entity\Request;
@@ -10,6 +9,7 @@ use DoclerLabs\ApiClientGenerator\Entity\RequestFieldRegistry;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\RequestNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\RequestInterface;
 use JsonSerializable;
 use PhpParser\Node\Stmt\ClassMethod;
 
@@ -17,11 +17,9 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
 {
     public const NAMESPACE_SUBPATH = '\\Request';
     public const SUBDIRECTORY      = 'Request/';
-    private string $baseNamespace;
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
     {
-        $this->baseNamespace = $fileRegistry->getBaseNamespace();
         foreach ($specification->getOperations() as $operation) {
             $this->generateRequest($fileRegistry, $operation);
         }

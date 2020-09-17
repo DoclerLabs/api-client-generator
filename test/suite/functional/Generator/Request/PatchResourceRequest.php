@@ -2,8 +2,9 @@
 
 namespace Test\Request;
 
-use DoclerLabs\ApiClientBase\Request\RequestInterface;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\RequestInterface;
 use Test\Schema\PatchResourceRequestBody;
+
 class PatchResourceRequest implements RequestInterface
 {
     /** @var PatchResourceRequestBody */

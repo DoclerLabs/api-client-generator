@@ -34,7 +34,7 @@ abstract class AbstractGeneratorTest extends TestCase
         $this->sut                 = $container[$this->generatorClassName()];
         $this->specificationReader = $container[FileReader::class];
         $this->specificationParser = $container[Parser::class];
-        $this->fileRegistry        = new PhpFileCollection('', self::BASE_NAMESPACE);
+        $this->fileRegistry        = new PhpFileCollection();
         $this->printer             = new Standard();
     }
 

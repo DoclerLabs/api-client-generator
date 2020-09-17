@@ -6,22 +6,22 @@ use ArrayIterator;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpCodeStyleFixer;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFile;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
-use DoclerLabs\ApiClientGenerator\Output\Php\PhpFilePrinter;
-use DoclerLabs\ApiClientGenerator\Output\Printer;
+use DoclerLabs\ApiClientGenerator\Output\PhpFilePrinter;
+use DoclerLabs\ApiClientGenerator\Output\TextFilePrinter;
 use PhpParser\PrettyPrinterAbstract;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass PhpFilePrinter
+ * @coversDefaultClass \DoclerLabs\ApiClientGenerator\Output\PhpFilePrinter
  */
 class PhpPrinterTest extends TestCase
 {
-    /** @var PhpFilePrinter */
+    /** @var \DoclerLabs\ApiClientGenerator\Output\PhpFilePrinter */
     private $sut;
     /** @var PrettyPrinterAbstract|MockObject */
     private $marshaler;
-    /** @var Printer|MockObject */
+    /** @var TextFilePrinter|MockObject */
     private $printer;
     /** @var PhpCodeStyleFixer|MockObject */
     private $fixer;
@@ -29,7 +29,7 @@ class PhpPrinterTest extends TestCase
     public function setUp(): void
     {
         $this->marshaler = $this->createMock(PrettyPrinterAbstract::class);
-        $this->printer   = $this->createMock(Printer::class);
+        $this->printer   = $this->createMock(TextFilePrinter::class);
         $this->fixer     = $this->createMock(PhpCodeStyleFixer::class);
 
         $this->sut = new PhpFilePrinter($this->marshaler, $this->printer, $this->fixer);
@@ -54,6 +54,6 @@ class PhpPrinterTest extends TestCase
         $this->fixer->expects(self::once())
             ->method('fix');
 
-        $this->sut->createFiles($fileRegistry);
+        $this->sut->print($fileRegistry);
     }
 }

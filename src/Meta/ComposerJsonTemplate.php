@@ -34,7 +34,7 @@ class ComposerJsonTemplate implements TemplateInterface
                 'specification' => $specification,
                 'packageName'   => $this->configuration->getPackageName(),
                 'phpVersion'    => $this->configuration->getPhpVersion(),
-                'namespace'     => $this->configuration->getNamespace(),
+                'namespace'     => $this->configuration->getBaseNamespace(),
             ]
         );
 

@@ -2,21 +2,22 @@
 
 namespace Test;
 
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\Mapper\RequestMapperInterface;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\RequestInterface;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Handler\ResponseHandlerInterface;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Response;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\ResponseMapperRegistryInterface;
+use GuzzleHttp\ClientInterface;
+use Test\Request\AddPetRequest;
+use Test\Request\CountPetsRequest;
+use Test\Request\DeletePetRequest;
+use Test\Request\FindPetByIdRequest;
 use Test\Request\FindPetsRequest;
 use Test\Response\Mapper\PetCollectionResponseMapper;
-use Test\Schema\PetCollection;
-use Test\Request\AddPetRequest;
 use Test\Response\Mapper\PetResponseMapper;
 use Test\Schema\Pet;
-use Test\Request\CountPetsRequest;
-use Test\Request\FindPetByIdRequest;
-use Test\Request\DeletePetRequest;
-use GuzzleHttp\ClientInterface;
-use DoclerLabs\ApiClientBase\Response\Response;
-use DoclerLabs\ApiClientBase\Response\Handler\ResponseHandlerInterface;
-use DoclerLabs\ApiClientBase\Request\Mapper\RequestMapperInterface;
-use DoclerLabs\ApiClientBase\Request\RequestInterface;
-use DoclerLabs\ApiClientBase\Response\ResponseMapperRegistryInterface;
+use Test\Schema\PetCollection;
+
 class SwaggerPetstoreClient
 {
     /** @var ClientInterface */

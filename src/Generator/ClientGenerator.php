@@ -2,29 +2,26 @@
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
-use DoclerLabs\ApiClientBase\Request\Mapper\RequestMapperInterface;
-use DoclerLabs\ApiClientBase\Request\RequestInterface;
-use DoclerLabs\ApiClientBase\Response\Response;
-use DoclerLabs\ApiClientBase\Response\Handler\ResponseHandlerInterface;
-use DoclerLabs\ApiClientBase\Response\ResponseMapperRegistryInterface;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\ClientNaming;
 use DoclerLabs\ApiClientGenerator\Naming\RequestNaming;
 use DoclerLabs\ApiClientGenerator\Naming\ResponseMapperNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
-use GuzzleHttp\ClientInterface;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\Mapper\RequestMapperInterface;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\RequestInterface as ClientRequestInterface;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Handler\ResponseHandlerInterface;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\ResponseMapperRegistryInterface;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class ClientGenerator extends GeneratorAbstract
 {
-    private string $baseNamespace;
-
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
     {
-        $methods             = [$this->generateResponseAction()];
-        $this->baseNamespace = $fileRegistry->getBaseNamespace();
+        $methods = [$this->generateResponseAction()];
         foreach ($specification->getOperations() as $operation) {
             $methods[] = $this->generateAction($operation);
         }
@@ -45,7 +42,7 @@ class ClientGenerator extends GeneratorAbstract
             ->param('request')
             ->setType('RequestInterface')
             ->getNode();
-        $args = [
+        $args        = [
             $this->builder->methodCall($requestVar, 'getMethod'),
             $this->builder->methodCall($requestVar, 'getRoute'),
             $this->builder->methodCall(
@@ -156,10 +153,10 @@ class ClientGenerator extends GeneratorAbstract
     {
         $this
             ->addImport(ClientInterface::class)
-            ->addImport(Response::class)
+            ->addImport(ResponseInterface::class)
             ->addImport(ResponseHandlerInterface::class)
             ->addImport(RequestMapperInterface::class)
-            ->addImport(RequestInterface::class)
+            ->addImport(ClientRequestInterface::class, 'ClientRequestInterface')
             ->addImport(ResponseHandlerInterface::class)
             ->addImport(ResponseMapperRegistryInterface::class);
 

@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - In progress
+### Changed
+ - Underlying client implementation is configurable(PSR-18)
+ - Most of the static code copied to the client instead of depending on docler-labs/api-client-base
+### Added
+ - Progress bar added
+
 ## [2.0.0] - 2020-08-31
 ### Changed
  - docler-labs/api-client-base updated to 3.0.0
