@@ -46,6 +46,7 @@ $rules = [
     'trim_array_spaces'                         => true,
     'no_leading_import_slash'                   => true,
     'declare_strict_types'                      => true,
+    'single_line_after_imports'                 => true,
     'header_comment'                            => [
         'header' => $header,
     ],

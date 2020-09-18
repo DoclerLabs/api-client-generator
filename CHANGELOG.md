@@ -6,10 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [3.0.0] - In progress
 ### Changed
- - Underlying client implementation is configurable(PSR-18)
  - Most of the static code copied to the client instead of depending on docler-labs/api-client-base
 ### Added
  - Progress bar added
+ - PHP version syntax resolution
 
 ## [2.0.0] - 2020-08-31
 ### Changed

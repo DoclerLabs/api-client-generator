@@ -58,7 +58,7 @@ class SchemaCollectionGenerator extends GeneratorAbstract
     {
         $param = $this->builder
             ->param(self::INTERNAL_ARRAY_NAME)
-            ->setType($item->getPhpTypeHint())
+            ->setType($item->getPhpTypeHint(), $item->isNullable())
             ->makeVariadic()
             ->getNode();
 

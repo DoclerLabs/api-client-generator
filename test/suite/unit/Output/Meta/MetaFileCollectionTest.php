@@ -12,18 +12,12 @@ use PHPUnit\Framework\TestCase;
  */
 class MetaFileCollectionTest extends TestCase
 {
-    private const BASE_DIRECTORY = '/test';
     /** @var MetaFileCollection */
     private $sut;
 
     public function setUp(): void
     {
-        $this->sut = new MetaFileCollection(self::BASE_DIRECTORY);
-    }
-
-    public function testGetBaseDirectory(): void
-    {
-        self::assertEquals(self::BASE_DIRECTORY, $this->sut->getBaseDirectory());
+        $this->sut = new MetaFileCollection();
     }
 
     public function testAddAndGet(): void

@@ -21,7 +21,9 @@ class ConfigurationTest extends TestCase
         string $packageName,
         string $phpVersion,
         string $composerJsonTemplateDir,
-        string $readmeMdTemplateDir
+        string $readmeMdTemplateDir,
+        string $httpClient,
+        string $httpMessage
     ): void {
         $sut = new Configuration(
             $openapiFilePath,
@@ -32,6 +34,8 @@ class ConfigurationTest extends TestCase
             $phpVersion,
             $composerJsonTemplateDir,
             $readmeMdTemplateDir,
+            $httpClient,
+            $httpMessage
         );
 
         self::assertEquals($openapiFilePath, $sut->getSpecificationFilePath());
@@ -42,6 +46,8 @@ class ConfigurationTest extends TestCase
         self::assertEquals($phpVersion, $sut->getPhpVersion());
         self::assertEquals($composerJsonTemplateDir, $sut->getComposerJsonTemplateDir());
         self::assertEquals($readmeMdTemplateDir, $sut->getReadmeMdTemplateDir());
+        self::assertEquals($httpClient, $sut->getHttpClient());
+        self::assertEquals($httpMessage, $sut->getHttpMessage());
     }
 
     public function validConfigurationOptions(): array
@@ -56,6 +62,8 @@ class ConfigurationTest extends TestCase
                 '7.1',
                 __DIR__,
                 __DIR__,
+                Configuration::DEFAULT_HTTP_CLIENT,
+                Configuration::DEFAULT_HTTP_MESSAGE,
             ],
         ];
     }

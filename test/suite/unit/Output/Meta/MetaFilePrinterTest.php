@@ -2,9 +2,7 @@
 
 namespace DoclerLabs\ApiClientGenerator\Test\Unit\Output\Meta;
 
-use ArrayIterator;
 use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFile;
-use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFileCollection;
 use DoclerLabs\ApiClientGenerator\Output\MetaFilePrinter;
 use DoclerLabs\ApiClientGenerator\Output\TextFilePrinter;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -29,19 +27,13 @@ class MetaFilePrinterTest extends TestCase
 
     public function testCreateFiles()
     {
-        $fileRegistry = $this->createMock(MetaFileCollection::class);
-        $file         = $this->createMock(MetaFile::class);
+        $file = $this->createMock(MetaFile::class);
         $file->expects(self::once())
             ->method('getContent');
-
-        $fileRegistry
-            ->expects(self::once())
-            ->method('getIterator')
-            ->willReturn(new ArrayIterator([$file]));
 
         $this->printer->expects(self::once())
             ->method('print');
 
-        $this->sut->print($fileRegistry);
+        $this->sut->print('nowhere', $file);
     }
 }

@@ -3,11 +3,11 @@
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DateTimeImmutable;
+use DoclerLabs\ApiClientBase\Exception\UnexpectedResponseBodyException;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\ResponseMapperNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Exception\UnexpectedResponseBodyException;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Mapper\ResponseMapperInterface;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Response;
 use PhpParser\Node\Expr\Variable;
@@ -40,7 +40,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             ->implement('ResponseMapperInterface')
             ->addStmts($this->generateProperties($root))
             ->addStmt($this->generateConstructor($root))
-            ->addStmt($this->generateMap($fileRegistry, $root));
+            ->addStmt($this->generateMap($root));
 
         $this->registerFile($fileRegistry, $classBuilder, self::SUBDIRECTORY, self::NAMESPACE_SUBPATH);
     }
@@ -132,7 +132,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             ->getNode();
     }
 
-    protected function generateMap(PhpFileCollection $fileRegistry, Field $root): ClassMethod
+    protected function generateMap(Field $root): ClassMethod
     {
         $statements    = [];
         $returnObj     = null;

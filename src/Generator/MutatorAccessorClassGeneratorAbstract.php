@@ -32,7 +32,7 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
         $docType = $field->getPhpDocType($field->isNullable());
         $param   = $this->builder
             ->param($field->getPhpVariableName())
-            ->setType($field->getPhpTypeHint())
+            ->setType($field->getPhpTypeHint(), $field->isNullable())
             ->setDocBlockType($docType)
             ->getNode();
 

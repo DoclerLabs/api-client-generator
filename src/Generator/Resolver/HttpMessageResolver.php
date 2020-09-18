@@ -2,6 +2,7 @@
 
 namespace DoclerLabs\ApiClientGenerator\Generator\Resolver;
 
+use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use UnexpectedValueException;
 
 class HttpMessageResolver
@@ -14,9 +15,10 @@ class HttpMessageResolver
         self::HTTP_MESSAGE_NYHOLM,
         self::HTTP_MESSAGE_SLIM,
     ];
-    private string $httpMessage;
+    private string      $httpMessage;
+    private CodeBuilder $codeBuilder;
 
-    public function __construct(string $httpMessage)
+    public function __construct(string $httpMessage, CodeBuilder $codeBuilder)
     {
         if (!in_array($httpMessage, self::SUPPORTED_HTTP_MESSAGES, true)) {
             $versions = json_encode(self::SUPPORTED_HTTP_MESSAGES, JSON_THROW_ON_ERROR);
@@ -27,5 +29,6 @@ class HttpMessageResolver
         }
 
         $this->httpMessage = $httpMessage;
+        $this->codeBuilder = $codeBuilder;
     }
 }

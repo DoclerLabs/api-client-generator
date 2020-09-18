@@ -2,7 +2,6 @@
 
 namespace DoclerLabs\ApiClientGenerator\Ast\Builder;
 
-use DoclerLabs\ApiClientGenerator\Ast\Parameter;
 use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Entity\ImportCollection;
 use InvalidArgumentException;
@@ -130,14 +129,18 @@ class CodeBuilder extends BuilderFactory
         return new Expression($this->assign($this->getArrayItem($arrayVar, $key), $value));
     }
 
-    public function localProperty(string $name, string $phpDocType, Expr $default = null): Property
+    public function localProperty(string $name, string $type, Expr $default = null): Property
     {
-        $docComment = sprintf('/** @var %s */', $phpDocType);
-
         $property = $this
             ->property($name)
-            ->makePrivate()
-            ->setDocComment($docComment);
+            ->makePrivate();
+
+        if ($this->versionResolver->isPropertyTypeHintSupported()) {
+            $property->setType($type);
+        } else {
+            $docComment = sprintf('/** @var %s */', $type);
+            $property->setDocComment($docComment);
+        }
 
         if ($default !== null) {
             $property->setDefault($default);
@@ -341,9 +344,9 @@ class CodeBuilder extends BuilderFactory
         throw new InvalidArgumentException('Unknown operator passed: ' . $operator);
     }
 
-    public function param(string $name): Parameter
+    public function param(string $name): ParameterBuilder
     {
-        return new Parameter($name);
+        return new ParameterBuilder($name, $this->versionResolver);
     }
 
     private function getStmts(array $imports, Node $class): array

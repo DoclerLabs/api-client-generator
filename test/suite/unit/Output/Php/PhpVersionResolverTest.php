@@ -19,13 +19,13 @@ class PhpVersionResolverTest extends TestCase
 
     public function testIsParameterTypeHintSupported()
     {
-        self::assertFalse((new PhpVersion(PhpVersion::VERSION_PHP70))->isParameterTypeHintSupported());
+        self::assertFalse((new PhpVersion(PhpVersion::VERSION_PHP70))->isPropertyTypeHintSupported());
         self::assertFalse(
             (new \DoclerLabs\ApiClientGenerator\Ast\PhpVersion(
                 PhpVersion::VERSION_PHP71
-            ))->isParameterTypeHintSupported()
+            ))->isPropertyTypeHintSupported()
         );
-        self::assertTrue((new PhpVersion(PhpVersion::VERSION_PHP74))->isParameterTypeHintSupported());
+        self::assertTrue((new PhpVersion(PhpVersion::VERSION_PHP74))->isPropertyTypeHintSupported());
     }
 
     public function testIsVoidTypeHintSupported()

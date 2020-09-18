@@ -72,9 +72,9 @@ class GenerateCommand extends Command
             $specificationFilePath
         );
 
-        $this->copyStaticPhpFiles($output);
         $this->generatePhpFiles($output, $specification);
         $this->generateMetaFiles($output, $specification);
+        $this->copyStaticPhpFiles($output);
 
         return Command::SUCCESS;
     }

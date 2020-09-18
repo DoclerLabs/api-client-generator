@@ -2,10 +2,8 @@
 
 namespace DoclerLabs\ApiClientGenerator\Test\Unit\Output\Php;
 
-use ArrayIterator;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpCodeStyleFixer;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFile;
-use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use DoclerLabs\ApiClientGenerator\Output\PhpFilePrinter;
 use DoclerLabs\ApiClientGenerator\Output\TextFilePrinter;
 use PhpParser\PrettyPrinterAbstract;
@@ -37,15 +35,9 @@ class PhpPrinterTest extends TestCase
 
     public function testCreateFiles()
     {
-        $fileRegistry = $this->createMock(PhpFileCollection::class);
-        $file         = $this->createMock(PhpFile::class);
+        $file = $this->createMock(PhpFile::class);
         $file->expects(self::once())
             ->method('getNodes');
-
-        $fileRegistry
-            ->expects(self::once())
-            ->method('getIterator')
-            ->willReturn(new ArrayIterator([$file]));
 
         $this->marshaler->expects(self::once())
             ->method('prettyPrintFile');
@@ -54,6 +46,6 @@ class PhpPrinterTest extends TestCase
         $this->fixer->expects(self::once())
             ->method('fix');
 
-        $this->sut->print($fileRegistry);
+        $this->sut->print('nowhere', $file);
     }
 }

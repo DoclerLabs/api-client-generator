@@ -2,13 +2,6 @@
 
 namespace DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Handler;
 
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Exception\BadRequestResponseException;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Exception\ForbiddenResponseException;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Exception\NotFoundResponseException;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Exception\PaymentRequiredResponseException;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Exception\ResponseExceptionFactory;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Exception\UnauthorizedResponseException;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Exception\UnexpectedResponseException;
 use Psr\Http\Message\ResponseInterface;
 
 class ResponseHandler implements ResponseHandlerInterface
@@ -25,14 +18,6 @@ class ResponseHandler implements ResponseHandlerInterface
      * @param ResponseInterface $response
      *
      * @return Response
-     *
-     * @throws BadRequestResponseException
-     * @throws UnauthorizedResponseException
-     * @throws PaymentRequiredResponseException
-     * @throws ForbiddenResponseException
-     * @throws NotFoundResponseException
-     * @throws UnexpectedResponseException
-     * @throws JsonException
      */
     public function handle(ResponseInterface $response): Response
     {

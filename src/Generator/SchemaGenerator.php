@@ -82,7 +82,7 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
                 }
                 $params[] = $this->builder
                     ->param($propertyField->getPhpVariableName())
-                    ->setType($propertyField->getPhpTypeHint())
+                    ->setType($propertyField->getPhpTypeHint(), $propertyField->isNullable())
                     ->getNode();
 
                 $paramsInit[] = $this->builder->assign(
@@ -92,7 +92,7 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
 
                 $paramsDoc[] = $this->builder
                     ->param($propertyField->getPhpVariableName())
-                    ->setType($propertyField->getPhpDocType())
+                    ->setType($propertyField->getPhpDocType(), $propertyField->isNullable())
                     ->getNode();
             }
         }

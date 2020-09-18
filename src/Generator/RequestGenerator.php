@@ -95,7 +95,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                     }
                     $params[] = $this->builder
                         ->param($field->getPhpVariableName())
-                        ->setType($field->getPhpTypeHint())
+                        ->setType($field->getPhpTypeHint(), $field->isNullable())
                         ->getNode();
 
                     $paramInits[] = $this->builder->assign(

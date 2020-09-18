@@ -48,7 +48,7 @@ class PhpVersion
         return $this->isVersion71() || $this->isVersion74();
     }
 
-    public function isParameterTypeHintSupported(): bool
+    public function isPropertyTypeHintSupported(): bool
     {
         return $this->isVersion74();
     }
