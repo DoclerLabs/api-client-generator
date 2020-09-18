@@ -142,10 +142,14 @@ class ClientGenerator extends GeneratorAbstract
     protected function generateProperties(): array
     {
         return [
-            $this->builder->localProperty('client', 'ClientInterface'),
-            $this->builder->localProperty('requestHandler', 'RequestMapperInterface'),
-            $this->builder->localProperty('responseHandler', 'ResponseHandlerInterface'),
-            $this->builder->localProperty('mapperRegistry', 'ResponseMapperRegistryInterface'),
+            $this->builder->localProperty('client', 'ClientInterface', 'ClientInterface'),
+            $this->builder->localProperty('requestHandler', 'RequestMapperInterface', 'RequestMapperInterface'),
+            $this->builder->localProperty('responseHandler', 'ResponseHandlerInterface', 'ResponseHandlerInterface'),
+            $this->builder->localProperty(
+                'mapperRegistry',
+                'ResponseMapperRegistryInterface',
+                'ResponseMapperRegistryInterface'
+            ),
         ];
     }
 

@@ -3,28 +3,27 @@
 namespace DoclerLabs\ApiClientGenerator\Test\Functional\Generator;
 
 use DoclerLabs\ApiClientGenerator\Generator\GeneratorInterface;
-use DoclerLabs\ApiClientGenerator\Input\Parser;
 use DoclerLabs\ApiClientGenerator\Input\FileReader;
+use DoclerLabs\ApiClientGenerator\Input\Parser;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
+use DoclerLabs\ApiClientGenerator\Output\PhpFilePrinter;
 use DoclerLabs\ApiClientGenerator\ServiceProvider;
-use PhpParser\PrettyPrinter\Standard;
 use PHPUnit\Framework\TestCase;
 use Pimple\Container;
 
 abstract class AbstractGeneratorTest extends TestCase
 {
     public const BASE_NAMESPACE = 'Test';
-    protected GeneratorInterface $sut;
-    protected FileReader             $specificationReader;
-    protected Parser             $specificationParser;
-    protected PhpFileCollection  $fileRegistry;
-    protected Standard           $printer;
+    protected GeneratorInterface           $sut;
+    protected FileReader                   $specificationReader;
+    protected Parser                       $specificationParser;
+    protected PhpFileCollection            $fileRegistry;
+    protected PhpFilePrinter               $printer;
 
     public function setUp(): void
     {
         $container = new Container();
         $container->register(new ServiceProvider());
-
         set_error_handler(
             static function (int $code, string $message) {
             },
@@ -35,7 +34,7 @@ abstract class AbstractGeneratorTest extends TestCase
         $this->specificationReader = $container[FileReader::class];
         $this->specificationParser = $container[Parser::class];
         $this->fileRegistry        = new PhpFileCollection();
-        $this->printer             = new Standard();
+        $this->printer             = $container[PhpFilePrinter::class];
     }
 
     /**
@@ -46,19 +45,20 @@ abstract class AbstractGeneratorTest extends TestCase
         string $expectedResultFilePath,
         string $resultClassName
     ): void {
-        $absoluteSpecificationPath  = __DIR__ . $specificationFilePath;
-        $absoluteExpectedResultPath = __DIR__ . $expectedResultFilePath;
-        self::assertFileExists($absoluteSpecificationPath);
-        self::assertFileExists($absoluteExpectedResultPath);
+        $specificationPath  = __DIR__ . $specificationFilePath;
+        $expectedResultPath = __DIR__ . $expectedResultFilePath;
+        self::assertFileExists($specificationPath);
+        self::assertFileExists($expectedResultPath);
 
-        $data          = $this->specificationReader->read($absoluteSpecificationPath);
-        $specification = $this->specificationParser->parse($data, $absoluteSpecificationPath);
+        $data          = $this->specificationReader->read($specificationPath);
+        $specification = $this->specificationParser->parse($data, $specificationPath);
 
         $this->sut->generate($specification, $this->fileRegistry);
 
-        $result = $this->printer->prettyPrintFile($this->fileRegistry->get($resultClassName)->getNodes());
+        $actualResultPath = sprintf('%s/temp.php', sys_get_temp_dir());
+        $this->printer->print($actualResultPath, $this->fileRegistry->get($resultClassName));
 
-        self::assertStringEqualsFile($absoluteExpectedResultPath, $result);
+        self::assertFileEquals($expectedResultPath, $actualResultPath);
     }
 
     abstract public function exampleProvider(): array;

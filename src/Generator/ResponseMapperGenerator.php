@@ -55,7 +55,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                     $childClassName = ResponseMapperNaming::getClassName($child);
                     if (!isset($alreadyInjected[$childClassName])) {
                         $propertyName = ResponseMapperNaming::getPropertyName($child);
-                        $properties[] = $this->builder->localProperty($propertyName, $childClassName);
+                        $properties[] = $this->builder->localProperty($propertyName, $childClassName, $childClassName);
 
                         $alreadyInjected[$childClassName] = true;
                     }
@@ -66,10 +66,12 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         if ($root->isArrayOfObjects()) {
             $child = $root->getArrayItem();
             if ($child !== null && $child->isComposite()) {
-                $propertyName = ResponseMapperNaming::getPropertyName($child);
-                $properties[] = $this->builder->localProperty(
+                $propertyName   = ResponseMapperNaming::getPropertyName($child);
+                $childClassName = ResponseMapperNaming::getClassName($child);
+                $properties[]   = $this->builder->localProperty(
                     $propertyName,
-                    ResponseMapperNaming::getClassName($child)
+                    $childClassName,
+                    $childClassName
                 );
             }
         }

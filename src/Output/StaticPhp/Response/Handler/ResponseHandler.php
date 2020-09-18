@@ -17,9 +17,9 @@ class ResponseHandler implements ResponseHandlerInterface
     /**
      * @param ResponseInterface $response
      *
-     * @return Response
+     * @return ResponseInterface
      */
-    public function handle(ResponseInterface $response): Response
+    public function handle(ResponseInterface $response): ResponseInterface
     {
         $statusCode          = $response->getStatusCode();
         $body                = $response->getBody();

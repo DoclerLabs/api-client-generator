@@ -13,14 +13,11 @@ use JsonSerializable;
 
 class GetResourcesRequest implements RequestInterface
 {
-    /** @var int|null */
-    private $filterById;
+    private int $filterById;
 
-    /** @var string|null */
-    private $filterByName;
+    private string $filterByName;
 
-    /** @var int[]|null */
-    private $filterByIds;
+    private array $filterByIds;
 
     /**
      * @param int $filterById

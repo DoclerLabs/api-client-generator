@@ -16,8 +16,7 @@ use Test\Schema\Item;
 
 class ItemResponseMapper implements ResponseMapperInterface
 {
-    /** @var EmbeddedObjectResponseMapper */
-    private $embeddedObjectResponseMapper;
+    private EmbeddedObjectResponseMapper $embeddedObjectResponseMapper;
 
     /**
      * @param EmbeddedObjectResponseMapper $embeddedObjectResponseMapper

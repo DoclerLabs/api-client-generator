@@ -15,71 +15,53 @@ use JsonSerializable;
 
 class Item implements JsonSerializable
 {
-    const MANDATORY_ENUM_ONE_OPTION = 'one option';
+    public const MANDATORY_ENUM_ONE_OPTION = 'one option';
 
-    const MANDATORY_ENUM_ANOTHER_OPTION = 'another option';
+    public const MANDATORY_ENUM_ANOTHER_OPTION = 'another option';
 
-    const ALLOWED_MANDATORY_ENUM_LIST = [self::MANDATORY_ENUM_ONE_OPTION, self::MANDATORY_ENUM_ANOTHER_OPTION];
+    public const ALLOWED_MANDATORY_ENUM_LIST = [self::MANDATORY_ENUM_ONE_OPTION, self::MANDATORY_ENUM_ANOTHER_OPTION];
 
-    const OPTIONAL_ENUM_ONE_OPTION = 'one option';
+    public const OPTIONAL_ENUM_ONE_OPTION = 'one option';
 
-    const OPTIONAL_ENUM_ANOTHER_OPTION = 'another option';
+    public const OPTIONAL_ENUM_ANOTHER_OPTION = 'another option';
 
-    const ALLOWED_OPTIONAL_ENUM_LIST = [self::OPTIONAL_ENUM_ONE_OPTION, self::OPTIONAL_ENUM_ANOTHER_OPTION];
+    public const ALLOWED_OPTIONAL_ENUM_LIST = [self::OPTIONAL_ENUM_ONE_OPTION, self::OPTIONAL_ENUM_ANOTHER_OPTION];
 
-    /** @var int */
-    private $mandatoryInteger;
+    private int $mandatoryInteger;
 
-    /** @var string */
-    private $mandatoryString;
+    private string $mandatoryString;
 
-    /** @var string */
-    private $mandatoryEnum;
+    private string $mandatoryEnum;
 
-    /** @var DateTimeInterface */
-    private $mandatoryDate;
+    private DateTimeInterface $mandatoryDate;
 
-    /** @var float */
-    private $mandatoryFloat;
+    private float $mandatoryFloat;
 
-    /** @var bool */
-    private $mandatoryBoolean;
+    private bool $mandatoryBoolean;
 
-    /** @var string[] */
-    private $mandatoryArray;
+    private array $mandatoryArray;
 
-    /** @var EmbeddedObject */
-    private $mandatoryObject;
+    private EmbeddedObject $mandatoryObject;
 
-    /** @var NullableObject|null */
-    private $nullableObject;
+    private NullableObject $nullableObject;
 
-    /** @var DateTimeInterface|null */
-    private $nullableDate;
+    private DateTimeInterface $nullableDate;
 
-    /** @var int|null */
-    private $optionalInteger;
+    private int $optionalInteger;
 
-    /** @var string|null */
-    private $optionalString;
+    private string $optionalString;
 
-    /** @var string|null */
-    private $optionalEnum;
+    private string $optionalEnum;
 
-    /** @var DateTimeInterface|null */
-    private $optionalDate;
+    private DateTimeInterface $optionalDate;
 
-    /** @var float|null */
-    private $optionalFloat;
+    private float $optionalFloat;
 
-    /** @var bool|null */
-    private $optionalBoolean;
+    private bool $optionalBoolean;
 
-    /** @var string[]|null */
-    private $optionalArray;
+    private array $optionalArray;
 
-    /** @var EmbeddedObject|null */
-    private $optionalObject;
+    private EmbeddedObject $optionalObject;
 
     /**
      * @param int               $mandatoryInteger
@@ -88,7 +70,7 @@ class Item implements JsonSerializable
      * @param DateTimeInterface $mandatoryDate
      * @param float             $mandatoryFloat
      * @param bool              $mandatoryBoolean
-     * @param string[]          $mandatoryArray
+     * @param array             $mandatoryArray
      * @param EmbeddedObject    $mandatoryObject
      *
      * @throws RequestValidationException
@@ -113,7 +95,7 @@ class Item implements JsonSerializable
      *
      * @return self
      */
-    public function setNullableObject($nullableObject): self
+    public function setNullableObject(?NullableObject $nullableObject): self
     {
         $this->nullableObject = $nullableObject;
 
@@ -125,7 +107,7 @@ class Item implements JsonSerializable
      *
      * @return self
      */
-    public function setNullableDate($nullableDate): self
+    public function setNullableDate(?DateTimeInterface $nullableDate): self
     {
         $this->nullableDate = $nullableDate;
 
@@ -300,7 +282,7 @@ class Item implements JsonSerializable
     /**
      * @return NullableObject|null
      */
-    public function getNullableObject()
+    public function getNullableObject(): ?NullableObject
     {
         return $this->nullableObject;
     }
@@ -308,7 +290,7 @@ class Item implements JsonSerializable
     /**
      * @return DateTimeInterface|null
      */
-    public function getNullableDate()
+    public function getNullableDate(): ?DateTimeInterface
     {
         return $this->nullableDate;
     }
@@ -316,7 +298,7 @@ class Item implements JsonSerializable
     /**
      * @return int|null
      */
-    public function getOptionalInteger()
+    public function getOptionalInteger(): ?int
     {
         return $this->optionalInteger;
     }
@@ -324,7 +306,7 @@ class Item implements JsonSerializable
     /**
      * @return string|null
      */
-    public function getOptionalString()
+    public function getOptionalString(): ?string
     {
         return $this->optionalString;
     }
@@ -332,7 +314,7 @@ class Item implements JsonSerializable
     /**
      * @return string|null
      */
-    public function getOptionalEnum()
+    public function getOptionalEnum(): ?string
     {
         return $this->optionalEnum;
     }
@@ -340,7 +322,7 @@ class Item implements JsonSerializable
     /**
      * @return DateTimeInterface|null
      */
-    public function getOptionalDate()
+    public function getOptionalDate(): ?DateTimeInterface
     {
         return $this->optionalDate;
     }
@@ -348,7 +330,7 @@ class Item implements JsonSerializable
     /**
      * @return float|null
      */
-    public function getOptionalFloat()
+    public function getOptionalFloat(): ?float
     {
         return $this->optionalFloat;
     }
@@ -356,7 +338,7 @@ class Item implements JsonSerializable
     /**
      * @return bool|null
      */
-    public function getOptionalBoolean()
+    public function getOptionalBoolean(): ?bool
     {
         return $this->optionalBoolean;
     }
@@ -364,7 +346,7 @@ class Item implements JsonSerializable
     /**
      * @return string[]|null
      */
-    public function getOptionalArray()
+    public function getOptionalArray(): ?array
     {
         return $this->optionalArray;
     }
@@ -372,7 +354,7 @@ class Item implements JsonSerializable
     /**
      * @return EmbeddedObject|null
      */
-    public function getOptionalObject()
+    public function getOptionalObject(): ?EmbeddedObject
     {
         return $this->optionalObject;
     }

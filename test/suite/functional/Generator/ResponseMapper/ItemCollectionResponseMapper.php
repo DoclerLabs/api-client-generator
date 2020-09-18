@@ -14,8 +14,7 @@ use Test\Schema\ItemCollection;
 
 class ItemCollectionResponseMapper implements ResponseMapperInterface
 {
-    /** @var ItemResponseMapper */
-    private $itemResponseMapper;
+    private ItemResponseMapper $itemResponseMapper;
 
     /**
      * @param ItemResponseMapper $itemResponseMapper

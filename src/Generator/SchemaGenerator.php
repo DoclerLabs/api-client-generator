@@ -92,7 +92,7 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
 
                 $paramsDoc[] = $this->builder
                     ->param($propertyField->getPhpVariableName())
-                    ->setType($propertyField->getPhpDocType(), $propertyField->isNullable())
+                    ->setType($propertyField->getPhpTypeHint(), $propertyField->isNullable())
                     ->getNode();
             }
         }

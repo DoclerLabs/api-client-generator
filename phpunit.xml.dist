@@ -1,34 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="./vendor/autoload.php"
-		 colors="true"
-		 convertErrorsToExceptions="true"
-		 convertNoticesToExceptions="true"
-		 convertWarningsToExceptions="true"
-		 stopOnFailure="false">
-	<testsuites>
-		<testsuite name="unit">
-			<directory>./test/suite/unit</directory>
-		</testsuite>
-		<testsuite name="functional">
-			<directory>./test/suite/functional</directory>
-		</testsuite>
-	</testsuites>
-
-	<filter>
-		<whitelist processUncoveredFilesFromWhitelist="true">
-			<directory suffix=".php">./src</directory>
-		</whitelist>
-	</filter>
-	<php>
-		<env name="OPENAPI" value="/test/openapi.yaml" force="true"/>
-		<env name="NAMESPACE" value="Test" force="true"/>
-		<env name="OUTPUT_DIR" value="test" force="true"/>
-		<env name="CODE_STYLE" value=".php_cs.php" force="true"/>
-		<env name="PACKAGE" value="test/test-api-client" force="true"/>
-	</php>
-	<logging>
-		<log type="coverage-text" target="php://stdout" showOnlySummary="false"/>
-		<log type="coverage-html" target="./test-reports"/>
-		<log type="coverage-clover" target="build/logs/clover.xml"/>
-	</logging>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="./vendor/autoload.php" colors="true" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+  <coverage processUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">./src</directory>
+    </include>
+    <report>
+      <clover outputFile="build/logs/clover.xml"/>
+      <html outputDirectory="./test-reports"/>
+      <text outputFile="php://stdout" showOnlySummary="false"/>
+    </report>
+  </coverage>
+  <testsuites>
+    <testsuite name="unit">
+      <directory>./test/suite/unit</directory>
+    </testsuite>
+    <testsuite name="functional">
+      <directory>./test/suite/functional</directory>
+    </testsuite>
+  </testsuites>
+  <php>
+    <env name="OPENAPI" value="/test/openapi.yaml" force="true"/>
+    <env name="NAMESPACE" value="Test" force="true"/>
+    <env name="OUTPUT_DIR" value="test" force="true"/>
+    <env name="CODE_STYLE" value=".php_cs.php" force="true"/>
+    <env name="PACKAGE" value="test/test-api-client" force="true"/>
+    <env name="CLIENT_PHP_VERSION" value="7.4" force="true"/>
+  </php>
+  <logging/>
 </phpunit>

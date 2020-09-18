@@ -57,7 +57,6 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
 
     protected function generateGet(Field $field): ClassMethod
     {
-        $returnType = $field->isRequired() ? $field->getPhpTypeHint() : Field::TYPE_MIXED;
         $phpDocType = $field->getPhpDocType();
 
         $return = $this->builder->return($this->builder->localPropertyFetch($field->getPhpVariableName()));
@@ -66,7 +65,7 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
             ->method($this->getGetMethodName($field))
             ->makePublic()
             ->addStmt($return)
-            ->setReturnType($returnType, $field->isNullable())
+            ->setReturnType($field->getPhpTypeHint(), $field->isNullable() || !$field->isRequired())
             ->composeDocBlock([], $phpDocType)
             ->getNode();
     }
@@ -77,9 +76,11 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
             $this->addImport(DateTimeInterface::class);
         }
 
-        $docType = $field->getPhpDocType();
-
-        return $this->builder->localProperty($field->getPhpVariableName(), $docType);
+        return $this->builder->localProperty(
+            $field->getPhpVariableName(),
+            $field->getPhpTypeHint(),
+            $field->getPhpDocType()
+        );
     }
 
     protected function getSetMethodName(Field $field): string

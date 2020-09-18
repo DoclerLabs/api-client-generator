@@ -15,11 +15,10 @@ use JsonSerializable;
 
 class ItemCollection implements IteratorAggregate, JsonSerializable, Countable
 {
-    /** @var Item[] */
-    private $items;
+    private Item $items;
 
     /**
-     * @param Item[] $items
+     * @param Item $items
      */
     public function __construct(Item ...$items)
     {

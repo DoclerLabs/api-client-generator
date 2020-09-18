@@ -12,17 +12,13 @@ use JsonSerializable;
 
 class ExtendedItem implements JsonSerializable
 {
-    /** @var string */
-    private $madatoryParentString;
+    private string $madatoryParentString;
 
-    /** @var int|null */
-    private $optionalParentInteger;
+    private int $optionalParentInteger;
 
-    /** @var int */
-    private $mandatoryChildInteger;
+    private int $mandatoryChildInteger;
 
-    /** @var string|null */
-    private $optionalChildString;
+    private string $optionalChildString;
 
     /**
      * @param string $madatoryParentString
@@ -69,7 +65,7 @@ class ExtendedItem implements JsonSerializable
     /**
      * @return int|null
      */
-    public function getOptionalParentInteger()
+    public function getOptionalParentInteger(): ?int
     {
         return $this->optionalParentInteger;
     }
@@ -85,7 +81,7 @@ class ExtendedItem implements JsonSerializable
     /**
      * @return string|null
      */
-    public function getOptionalChildString()
+    public function getOptionalChildString(): ?string
     {
         return $this->optionalChildString;
     }

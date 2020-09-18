@@ -18,81 +18,61 @@ use Test\Schema\PutResourceByIdRequestBody;
 
 class PutResourceByIdRequest implements RequestInterface
 {
-    const ENUM_PARAMETER_ONE_VALUE = 'one value';
+    public const ENUM_PARAMETER_ONE_VALUE = 'one value';
 
-    const ENUM_PARAMETER_ANOTHER_VALUE = 'another value';
+    public const ENUM_PARAMETER_ANOTHER_VALUE = 'another value';
 
-    const ENUM_PARAMETER_THIRD_VALUE = 'third value';
+    public const ENUM_PARAMETER_THIRD_VALUE = 'third value';
 
-    const ALLOWED_ENUM_PARAMETER_LIST = [self::ENUM_PARAMETER_ONE_VALUE, self::ENUM_PARAMETER_ANOTHER_VALUE, self::ENUM_PARAMETER_THIRD_VALUE];
+    public const ALLOWED_ENUM_PARAMETER_LIST = [self::ENUM_PARAMETER_ONE_VALUE, self::ENUM_PARAMETER_ANOTHER_VALUE, self::ENUM_PARAMETER_THIRD_VALUE];
 
-    const MANDATORY_ENUM_PARAMETER_ONE_VALUE = 'one value';
+    public const MANDATORY_ENUM_PARAMETER_ONE_VALUE = 'one value';
 
-    const MANDATORY_ENUM_PARAMETER_ANOTHER_VALUE = 'another value';
+    public const MANDATORY_ENUM_PARAMETER_ANOTHER_VALUE = 'another value';
 
-    const MANDATORY_ENUM_PARAMETER_THIRD_VALUE = 'third value';
+    public const MANDATORY_ENUM_PARAMETER_THIRD_VALUE = 'third value';
 
-    const ALLOWED_MANDATORY_ENUM_PARAMETER_LIST = [self::MANDATORY_ENUM_PARAMETER_ONE_VALUE, self::MANDATORY_ENUM_PARAMETER_ANOTHER_VALUE, self::MANDATORY_ENUM_PARAMETER_THIRD_VALUE];
+    public const ALLOWED_MANDATORY_ENUM_PARAMETER_LIST = [self::MANDATORY_ENUM_PARAMETER_ONE_VALUE, self::MANDATORY_ENUM_PARAMETER_ANOTHER_VALUE, self::MANDATORY_ENUM_PARAMETER_THIRD_VALUE];
 
-    /** @var int */
-    private $resourceId;
+    private int $resourceId;
 
-    /** @var int|null */
-    private $integerParameter;
+    private int $integerParameter;
 
-    /** @var string|null */
-    private $stringParameter;
+    private string $stringParameter;
 
-    /** @var string|null */
-    private $enumParameter;
+    private string $enumParameter;
 
-    /** @var DateTimeInterface|null */
-    private $dateParameter;
+    private DateTimeInterface $dateParameter;
 
-    /** @var float|null */
-    private $floatParameter;
+    private float $floatParameter;
 
-    /** @var bool|null */
-    private $booleanParameter;
+    private bool $booleanParameter;
 
-    /** @var int[]|null */
-    private $arrayParameter;
+    private array $arrayParameter;
 
-    /** @var EmbeddedObject|null */
-    private $objectParameter;
+    private EmbeddedObject $objectParameter;
 
-    /** @var int */
-    private $mandatoryIntegerParameter;
+    private int $mandatoryIntegerParameter;
 
-    /** @var string */
-    private $mandatoryStringParameter;
+    private string $mandatoryStringParameter;
 
-    /** @var string */
-    private $mandatoryEnumParameter;
+    private string $mandatoryEnumParameter;
 
-    /** @var DateTimeInterface */
-    private $mandatoryDateParameter;
+    private DateTimeInterface $mandatoryDateParameter;
 
-    /** @var float */
-    private $mandatoryFloatParameter;
+    private float $mandatoryFloatParameter;
 
-    /** @var bool */
-    private $mandatoryBooleanParameter;
+    private bool $mandatoryBooleanParameter;
 
-    /** @var int[] */
-    private $mandatoryArrayParameter;
+    private array $mandatoryArrayParameter;
 
-    /** @var EmbeddedObject */
-    private $mandatoryObjectParameter;
+    private EmbeddedObject $mandatoryObjectParameter;
 
-    /** @var string */
-    private $xRequestId;
+    private string $xRequestId;
 
-    /** @var string|null */
-    private $csrfToken;
+    private string $csrfToken;
 
-    /** @var PutResourceByIdRequestBody */
-    private $putResourceByIdRequestBody;
+    private PutResourceByIdRequestBody $putResourceByIdRequestBody;
 
     /**
      * @param int                        $resourceId

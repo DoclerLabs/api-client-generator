@@ -129,7 +129,7 @@ class CodeBuilder extends BuilderFactory
         return new Expression($this->assign($this->getArrayItem($arrayVar, $key), $value));
     }
 
-    public function localProperty(string $name, string $type, Expr $default = null): Property
+    public function localProperty(string $name, string $type, string $docType, Expr $default = null): Property
     {
         $property = $this
             ->property($name)
@@ -138,7 +138,7 @@ class CodeBuilder extends BuilderFactory
         if ($this->versionResolver->isPropertyTypeHintSupported()) {
             $property->setType($type);
         } else {
-            $docComment = sprintf('/** @var %s */', $type);
+            $docComment = sprintf('/** @var %s */', $docType);
             $property->setDocComment($docComment);
         }
 
