@@ -8,15 +8,19 @@
 
 namespace Test;
 
-use DoclerLabs\ApiClientGenerator\Generator\RequestMapper;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Handler\ResponseHandler;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\ResponseMapperRegistry;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\ResponseMapperRegistryInterface;
+use GuzzleHttp\Client;
+use Http\Adapter\Guzzle6\Client as ClientAdapter;
 use InvalidArgumentException;
 use Psr\Http\Client\ClientInterface;
+use Test\Request\Mapper\GuzzleRequestMapper;
+use Test\Request\Mapper\RequestMapperInterface;
+use Test\Response\Handler\ResponseHandler;
 use Test\Response\Mapper\FoodResponseMapper;
 use Test\Response\Mapper\PetCollectionResponseMapper;
 use Test\Response\Mapper\PetResponseMapper;
+use Test\Response\ResponseMapperRegistry;
+use Test\Response\ResponseMapperRegistryInterface;
+use Test\Serializer\BodySerializer;
 
 class SwaggerPetstoreClientFactory
 {
@@ -28,21 +32,16 @@ class SwaggerPetstoreClientFactory
      */
     public function create(string $baseUri, array $options = []): SwaggerPetstoreClient
     {
-        if (\substr($baseUri, -1) !== '/') {
-            throw new InvalidArgumentException('Base URI should end with the `/` symbol.');
-        }
-        $default  = ['base_uri' => $baseUri, 'timeout' => 3, 'http_errors' => false];
-        $config   = \array_replace_recursive($default, $options);
         $registry = new ResponseMapperRegistry();
         $this->registerResponseMappers($registry);
 
-        return new SwaggerPetstoreClient(new Client($config), new RequestMapper(), new ResponseHandler(), $registry);
+        return new SwaggerPetstoreClient($this->initBaseClient($baseUrl, $options), $this->initRequestMapper(), new ResponseHandler(), $registry);
     }
 
     /**
      * @param ResponseMapperRegistryInterface $registry
      */
-    public function registerResponseMappers(ResponseMapperRegistryInterface $registry)
+    public function registerResponseMappers(ResponseMapperRegistryInterface $registry): void
     {
         $registry->add(PetCollectionResponseMapper::class, static function () use ($registry): PetCollectionResponseMapper {
             return new PetCollectionResponseMapper($registry->get(PetResponseMapper::class));
@@ -53,5 +52,21 @@ class SwaggerPetstoreClientFactory
         $registry->add(FoodResponseMapper::class, static function () use ($registry): FoodResponseMapper {
             return new FoodResponseMapper();
         });
+    }
+
+    private function initBaseClient(string $baseUri, array $options): ClientInterface
+    {
+        if (\substr($baseUri, -1) !== '/') {
+            throw new InvalidArgumentException('Base URI should end with the `/` symbol.');
+        }
+        $default = ['base_uri' => $baseUri, 'timeout' => 3, 'http_errors' => false];
+        $config  = \array_replace_recursive($default, $options);
+
+        return new ClientAdapter(new Client($config));
+    }
+
+    private function initRequestMapper(): RequestMapperInterface
+    {
+        return new GuzzleRequestMapper(new BodySerializer());
     }
 }

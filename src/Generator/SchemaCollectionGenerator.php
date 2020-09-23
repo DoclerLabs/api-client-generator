@@ -37,17 +37,15 @@ class SchemaCollectionGenerator extends GeneratorAbstract
             ->addImport(IteratorAggregate::class)
             ->addImport(ArrayIterator::class);
 
-        $className       = $field->getPhpClassName();
-        $propertyDocType = SchemaCollectionNaming::getArrayDocType($field->getArrayItem());
-
+        $className    = $field->getPhpClassName();
         $classBuilder = $this->builder
             ->class($className)
             ->implement('IteratorAggregate', 'JsonSerializable', 'Countable')
             ->addStmt(
                 $this->builder->localProperty(
                     self::INTERNAL_ARRAY_NAME,
-                    $field->getArrayItem()->getPhpTypeHint(),
-                    $propertyDocType
+                    'array',
+                    SchemaCollectionNaming::getArrayDocType($field->getArrayItem())
                 )
             )
             ->addStmt($this->generateConstructor($field->getArrayItem()))
@@ -75,7 +73,7 @@ class SchemaCollectionGenerator extends GeneratorAbstract
 
         $paramDoc = $this->builder
             ->param(self::INTERNAL_ARRAY_NAME)
-            ->setType($item->getPhpTypeHint())
+            ->setType($item->getPhpDocType() . '[]')
             ->getNode();
 
         return $this->builder
@@ -163,6 +161,7 @@ class SchemaCollectionGenerator extends GeneratorAbstract
             ->addStmt($resetAssign)
             ->addStmt($if)
             ->addStmt($return)
+            ->setReturnType($arrayItem->getPhpTypeHint(), true)
             ->composeDocBlock([], $arrayItem->getReferenceName() . '|null')
             ->getNode();
     }

@@ -8,9 +8,10 @@ use DoclerLabs\ApiClientGenerator\Ast\Visitor\NamespaceSubstituteVisitor;
 use DoclerLabs\ApiClientGenerator\Command\GenerateCommand;
 use DoclerLabs\ApiClientGenerator\Generator\ClientFactoryGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\ClientGenerator;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpClientImplementation;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementation;
 use DoclerLabs\ApiClientGenerator\Generator\RequestGenerator;
-use DoclerLabs\ApiClientGenerator\Generator\Resolver\HttpClientResolver;
-use DoclerLabs\ApiClientGenerator\Generator\Resolver\HttpMessageResolver;
+use DoclerLabs\ApiClientGenerator\Generator\RequestMapperGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\ResponseMapperGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\SchemaCollectionGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\SchemaGenerator;
@@ -95,12 +96,13 @@ class ServiceProvider implements ServiceProviderInterface
         $pimple[Finder::class] = static fn(Container $container) => new Finder();
 
         $pimple[CodeGeneratorFacade::class] = static fn(Container $container) => (new CodeGeneratorFacade())
-            ->add($container[SchemaCollectionGenerator::class])
-            ->add($container[SchemaGenerator::class])
-            ->add($container[ResponseMapperGenerator::class])
             ->add($container[ClientFactoryGenerator::class])
+            ->add($container[ClientGenerator::class])
             ->add($container[RequestGenerator::class])
-            ->add($container[ClientGenerator::class]);
+            ->add($container[RequestMapperGenerator::class])
+            ->add($container[ResponseMapperGenerator::class])
+            ->add($container[SchemaCollectionGenerator::class])
+            ->add($container[SchemaGenerator::class]);
 
         $pimple[MetaTemplateFacade::class] = static fn(Container $container) => (new MetaTemplateFacade())
             ->add($container[ComposerJsonTemplate::class])
@@ -123,6 +125,12 @@ class ServiceProvider implements ServiceProviderInterface
         $pimple[RequestGenerator::class] = static fn(Container $container) => new RequestGenerator(
             $container[Configuration::class]->getBaseNamespace(),
             $container[CodeBuilder::class]
+        );
+
+        $pimple[RequestMapperGenerator::class] = static fn(Container $container) => new RequestMapperGenerator(
+            $container[Configuration::class]->getBaseNamespace(),
+            $container[CodeBuilder::class],
+            $container[HttpMessageImplementation::class]
         );
 
         $pimple[ResponseMapperGenerator::class] = static fn(Container $container) => new ResponseMapperGenerator(
@@ -148,15 +156,16 @@ class ServiceProvider implements ServiceProviderInterface
         $pimple[ClientFactoryGenerator::class] = static fn(Container $container) => new ClientFactoryGenerator(
             $container[Configuration::class]->getBaseNamespace(),
             $container[CodeBuilder::class],
-            $container[HttpClientResolver::class]
+            $container[HttpClientImplementation::class],
+            $container[HttpMessageImplementation::class]
         );
 
-        $pimple[HttpClientResolver::class] = static fn(Container $container) => new HttpClientResolver(
+        $pimple[HttpClientImplementation::class] = static fn(Container $container) => new HttpClientImplementation(
             $container[Configuration::class]->getHttpClient(),
             $container[CodeBuilder::class]
         );
 
-        $pimple[HttpMessageResolver::class] = static fn(Container $container) => new HttpMessageResolver(
+        $pimple[HttpMessageImplementation::class] = static fn(Container $container) => new HttpMessageImplementation(
             $container[Configuration::class]->getHttpMessage(),
             $container[CodeBuilder::class]
         );
@@ -195,7 +204,9 @@ class ServiceProvider implements ServiceProviderInterface
 
         $pimple[ComposerJsonTemplate::class] = static fn(Container $container) => new ComposerJsonTemplate(
             $container[Environment::class],
-            $container[Configuration::class]
+            $container[Configuration::class],
+            $container[HttpClientImplementation::class],
+            $container[HttpMessageImplementation::class]
         );
 
         $pimple[ReadmeMdTemplate::class] = static fn(Container $container) => new ReadmeMdTemplate(
@@ -238,7 +249,7 @@ class ServiceProvider implements ServiceProviderInterface
             $traverser = new NodeTraverser();
             $traverser->addVisitor(
                 new NamespaceSubstituteVisitor(
-                    $container[Configuration::class]->getStaticPhpFilesBaseNamespace(),
+                    Configuration::STATIC_PHP_FILE_BASE_NAMESPACE,
                     $container[Configuration::class]->getBaseNamespace()
                 )
             );

@@ -12,13 +12,17 @@ use JsonSerializable;
 
 class ExtendedItem implements JsonSerializable
 {
-    private string $madatoryParentString;
+    /** @var string */
+    private $madatoryParentString;
 
-    private int $optionalParentInteger;
+    /** @var int|null */
+    private $optionalParentInteger;
 
-    private int $mandatoryChildInteger;
+    /** @var int */
+    private $mandatoryChildInteger;
 
-    private string $optionalChildString;
+    /** @var string|null */
+    private $optionalChildString;
 
     /**
      * @param string $madatoryParentString

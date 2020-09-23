@@ -9,12 +9,12 @@
 namespace Test\Response\Mapper;
 
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Mapper\ResponseMapperInterface;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Response;
 use Test\Schema\ItemCollection;
 
 class ItemCollectionResponseMapper implements ResponseMapperInterface
 {
-    private ItemResponseMapper $itemResponseMapper;
+    /** @var ItemResponseMapper */
+    private $itemResponseMapper;
 
     /**
      * @param ItemResponseMapper $itemResponseMapper

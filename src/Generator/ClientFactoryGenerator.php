@@ -4,26 +4,37 @@ namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
-use DoclerLabs\ApiClientGenerator\Generator\Resolver\HttpClientResolver;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpClientImplementation;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementation;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\ClientNaming;
 use DoclerLabs\ApiClientGenerator\Naming\ResponseMapperNaming;
+use DoclerLabs\ApiClientGenerator\Naming\StaticClassNamespace;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\Mapper\RequestMapperInterface;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Handler\ResponseHandler;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\ResponseMapperRegistry;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\ResponseMapperRegistryInterface;
-use InvalidArgumentException;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Serializer\BodySerializer;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\Variable;
-use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\ClassMethod;
 use Psr\Http\Client\ClientInterface;
 
 class ClientFactoryGenerator extends GeneratorAbstract
 {
-    public function __construct(string $baseNamespace, CodeBuilder $builder, HttpClientResolver $clientResolver)
-    {
+    private HttpClientImplementation  $clientImplementation;
+    private HttpMessageImplementation $messageImplementation;
+
+    public function __construct(
+        string $baseNamespace,
+        CodeBuilder $builder,
+        HttpClientImplementation $clientImplementation,
+        HttpMessageImplementation $messageImplementation
+    ) {
         parent::__construct($baseNamespace, $builder);
+        $this->clientImplementation  = $clientImplementation;
+        $this->messageImplementation = $messageImplementation;
     }
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
@@ -32,15 +43,53 @@ class ClientFactoryGenerator extends GeneratorAbstract
 
         $this
             ->addImport(ClientInterface::class)
-            ->addImport(ResponseHandler::class)
-            ->addImport(RequestMapper::class)
-            ->addImport(ResponseMapperRegistry::class)
-            ->addImport(ResponseMapperRegistryInterface::class);
+            ->addImport(StaticClassNamespace::getImport($this->baseNamespace, RequestMapperInterface::class))
+            ->addImport(StaticClassNamespace::getImport($this->baseNamespace, ResponseHandler::class))
+            ->addImport(StaticClassNamespace::getImport($this->baseNamespace, ResponseMapperRegistry::class))
+            ->addImport(StaticClassNamespace::getImport($this->baseNamespace, ResponseMapperRegistryInterface::class))
+            ->addImport(StaticClassNamespace::getImport($this->baseNamespace, BodySerializer::class))
+            ->addImport(
+                sprintf(
+                    '%s%s\\%s',
+                    $this->baseNamespace,
+                    RequestMapperGenerator::NAMESPACE_SUBPATH,
+                    $this->messageImplementation->getRequestMapperClassName()
+                )
+            );
+
+        foreach ($this->clientImplementation->getInitBaseClientImports() as $import) {
+            $this->addImport($import);
+        }
+
+        $initBaseClientMethodParams   = [];
+        $initBaseClientMethodParams[] = $this->builder
+            ->param('baseUri')
+            ->setType('string')
+            ->getNode();
+        $initBaseClientMethodParams[] = $this->builder
+            ->param('options')
+            ->setType('array')
+            ->getNode();
+
+        $initBaseClientMethod = $this->clientImplementation
+            ->generateInitBaseClientMethod()
+            ->makePrivate()
+            ->addParams($initBaseClientMethodParams)
+            ->setReturnType('ClientInterface')
+            ->getNode();
+
+        $initRequestMapperMethod = $this->messageImplementation
+            ->generateInitRequestMapperMethod()
+            ->makePrivate()
+            ->setReturnType('RequestMapperInterface')
+            ->getNode();
 
         $classBuilder = $this->builder
             ->class($className)
             ->addStmt($this->generateCreate($specification))
-            ->addStmt($this->generateRegisterResponseMappers($specification));
+            ->addStmt($this->generateRegisterResponseMappers($specification))
+            ->addStmt($initBaseClientMethod)
+            ->addStmt($initRequestMapperMethod);
 
         $this->registerFile($fileRegistry, $classBuilder);
     }
@@ -58,42 +107,24 @@ class ClientFactoryGenerator extends GeneratorAbstract
             ->setDefault($this->builder->val([]))
             ->getNode();
 
-        $default = $this->builder->var('default');
-        $config  = $this->builder->var('config');
-        $baseUri = $this->builder->var('baseUri');
-        $options = $this->builder->var('options');
-
-        $statements[] = $this->generateBaseUriValidation($baseUri);
-
-        $defaultItems = [
-            'base_uri'    => $baseUri,
-            'timeout'     => $this->builder->val(3),
-            'http_errors' => $this->builder->val(false),
-        ];
-
-        $statements[] = $this->builder->assign($default, $this->builder->array($defaultItems));
-
-        $statements[] = $this->builder->assign(
-            $config,
-            $this->builder->funcCall('array_replace_recursive', [$default, $options])
-        );
-
         $registryVar  = $this->builder->var('registry');
         $statements[] = $this->builder->assign(
             $registryVar,
             $this->builder->new('ResponseMapperRegistry')
         );
 
-        $statements[] = $this->builder->localMethodCall('registerResponseMappers', [$registryVar]);
-
+        $statements[]    = $this->builder->localMethodCall('registerResponseMappers', [$registryVar]);
         $clientClassName = ClientNaming::getClassName($specification);
         $statements[]    = $this->builder->return(
             $this->builder->new(
                 $clientClassName,
                 $this->builder->args(
                     [
-                        $this->builder->new('Client', $this->builder->args([$config])),
-                        $this->builder->new('RequestMapper'),
+                        $this->builder->localMethodCall(
+                            'initBaseClient',
+                            [$this->builder->var('baseUrl'), $this->builder->var('options')]
+                        ),
+                        $this->builder->localMethodCall('initRequestMapper'),
                         $this->builder->new('ResponseHandler'),
                         $registryVar,
                     ]
@@ -147,6 +178,7 @@ class ClientFactoryGenerator extends GeneratorAbstract
             ->method('registerResponseMappers')
             ->addParam($param)
             ->addStmts($statements)
+            ->setReturnType(null)
             ->composeDocBlock([$param], '', [])
             ->getNode();
     }
@@ -173,21 +205,5 @@ class ClientFactoryGenerator extends GeneratorAbstract
         }
 
         return $this->builder->new(ResponseMapperNaming::getClassName($field), $dependencies);
-    }
-
-    private function generateBaseUriValidation(Variable $baseUri): Stmt
-    {
-        $lastCharacterFunction = $this->builder->funcCall('substr', [$baseUri, $this->builder->val(-1)]);
-        $conditionStatement    = $this->builder->notEquals($lastCharacterFunction, $this->builder->val('/'));
-
-        $this->addImport(InvalidArgumentException::class);
-
-        $exceptionMessage = 'Base URI should end with the `/` symbol.';
-        $throwStatement   = $this->builder->throw(
-            'InvalidArgumentException',
-            $this->builder->val($exceptionMessage)
-        );
-
-        return $this->builder->if($conditionStatement, [$throwStatement]);
     }
 }

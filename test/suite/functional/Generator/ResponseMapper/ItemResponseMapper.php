@@ -9,14 +9,14 @@
 namespace Test\Response\Mapper;
 
 use DateTimeImmutable;
-use DoclerLabs\ApiClientBase\Exception\UnexpectedResponseBodyException;
+use DoclerLabs\ApiClientException\UnexpectedResponseBodyException;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Mapper\ResponseMapperInterface;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Response;
 use Test\Schema\Item;
 
 class ItemResponseMapper implements ResponseMapperInterface
 {
-    private EmbeddedObjectResponseMapper $embeddedObjectResponseMapper;
+    /** @var EmbeddedObjectResponseMapper */
+    private $embeddedObjectResponseMapper;
 
     /**
      * @param EmbeddedObjectResponseMapper $embeddedObjectResponseMapper

@@ -124,7 +124,7 @@ class GenerateCommand extends Command
         $originalFiles = $this->fileFinder
             ->files()
             ->name('*.php')
-            ->in($this->configuration->getStaticPhpFilesDirectory());
+            ->in(Configuration::STATIC_PHP_FILE_DIRECTORY);
 
         $output->writeln(sprintf('<info>Collected %d static PHP files.</info>', $originalFiles->count()));
         $output->writeln(sprintf('Copy static PHP files to %s:', $this->configuration->getOutputDirectory()));

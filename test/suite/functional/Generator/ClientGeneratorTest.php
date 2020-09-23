@@ -3,6 +3,7 @@
 namespace DoclerLabs\ApiClientGenerator\Test\Functional\Generator;
 
 use DoclerLabs\ApiClientGenerator\Generator\ClientGenerator;
+use DoclerLabs\ApiClientGenerator\Test\Functional\ConfigurationBuilder;
 
 /**
  * @coversDefaultClass ClientGenerator
@@ -12,10 +13,11 @@ class ClientGeneratorTest extends AbstractGeneratorTest
     public function exampleProvider(): array
     {
         return [
-            'Basic schema'    => [
+            'Basic schema' => [
                 '/Client/petstore.yaml',
                 '/Client/SwaggerPetstoreClient.php',
                 self::BASE_NAMESPACE . '\\SwaggerPetstoreClient',
+                ConfigurationBuilder::fake()->build(),
             ],
         ];
     }

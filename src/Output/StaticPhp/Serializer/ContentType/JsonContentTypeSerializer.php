@@ -2,10 +2,9 @@
 
 namespace DoclerLabs\ApiClientGenerator\Output\StaticPhp\Serializer\ContentType;
 
-use DoclerLabs\ApiClientBase\Exception\RequestValidationException;
-use DoclerLabs\ApiClientBase\Exception\UnexpectedResponseBodyException;
-use DoclerLabs\ApiClientBase\Json\Json;
-use DoclerLabs\ApiClientBase\Json\JsonException;
+use DoclerLabs\ApiClientException\RequestValidationException;
+use DoclerLabs\ApiClientException\UnexpectedResponseBodyException;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\DecodedResponseBody;
 use Psr\Http\Message\StreamInterface;
 
 class JsonContentTypeSerializer implements ContentTypeSerializerInterface
@@ -27,7 +26,7 @@ class JsonContentTypeSerializer implements ContentTypeSerializerInterface
             fwrite($stream, $string);
             rewind($stream);
 
-            return new Stream($stream);
+            return new EncodedRequestBody($stream);
         } catch (JsonException $exception) {
             throw new RequestValidationException($exception->getMessage());
         }

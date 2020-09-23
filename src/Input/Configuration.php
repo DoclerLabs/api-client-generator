@@ -3,19 +3,19 @@
 namespace DoclerLabs\ApiClientGenerator\Input;
 
 use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
-use DoclerLabs\ApiClientGenerator\Generator\Resolver\HttpClientResolver;
-use DoclerLabs\ApiClientGenerator\Generator\Resolver\HttpMessageResolver;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpClientImplementation;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementation;
 use Webmozart\Assert\Assert;
 
 class Configuration
 {
-    public const  DEFAULT_CODE_STYLE_CONFIG      = __DIR__ . '/../../.php_cs.php';
-    public const  DEFAULT_TEMPLATE_DIRECTORY     = __DIR__ . '/../../template';
-    public const  DEFAULT_HTTP_CLIENT            = HttpClientResolver::HTTP_CLIENT_GUZZLE7;
-    public const  DEFAULT_HTTP_MESSAGE           = HttpMessageResolver::HTTP_MESSAGE_GUZZLE;
-    public const  DEFAULT_PHP_VERSION            = PhpVersion::VERSION_PHP72;
-    private const STATIC_PHP_FILE_BASE_NAMESPACE = 'DoclerLabs\\ApiClientGenerator\\Output\\StaticPhp';
-    private const STATIC_PHP_FILE_DIRECTORY      = __DIR__ . '/../Output/StaticPhp';
+    public const DEFAULT_CODE_STYLE_CONFIG      = __DIR__ . '/../../.php_cs.php';
+    public const DEFAULT_TEMPLATE_DIRECTORY     = __DIR__ . '/../../template';
+    public const DEFAULT_HTTP_CLIENT            = HttpClientImplementation::HTTP_CLIENT_GUZZLE7;
+    public const DEFAULT_HTTP_MESSAGE           = HttpMessageImplementation::HTTP_MESSAGE_GUZZLE;
+    public const DEFAULT_PHP_VERSION            = PhpVersion::VERSION_PHP72;
+    public const STATIC_PHP_FILE_BASE_NAMESPACE = 'DoclerLabs\\ApiClientGenerator\\Output\\StaticPhp';
+    public const STATIC_PHP_FILE_DIRECTORY      = __DIR__ . '/../Output/StaticPhp';
     private string $specificationFilePath;
     private string $baseNamespace;
     private string $outputDirectory;

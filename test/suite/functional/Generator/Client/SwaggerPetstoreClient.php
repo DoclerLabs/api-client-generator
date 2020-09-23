@@ -26,13 +26,17 @@ use Test\Schema\PetCollection;
 
 class SwaggerPetstoreClient
 {
-    private ClientInterface $client;
+    /** @var ClientInterface */
+    private $client;
 
-    private RequestMapperInterface $requestHandler;
+    /** @var RequestMapperInterface */
+    private $requestHandler;
 
-    private ResponseHandlerInterface $responseHandler;
+    /** @var ResponseHandlerInterface */
+    private $responseHandler;
 
-    private ResponseMapperRegistryInterface $mapperRegistry;
+    /** @var ResponseMapperRegistryInterface */
+    private $mapperRegistry;
 
     /**
      * @param ClientInterface                 $client

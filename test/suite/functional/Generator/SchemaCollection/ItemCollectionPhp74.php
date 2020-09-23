@@ -15,10 +15,10 @@ use JsonSerializable;
 
 class ItemCollection implements IteratorAggregate, JsonSerializable, Countable
 {
-    private Item $items;
+    private array $items;
 
     /**
-     * @param Item $items
+     * @param Item[] $items
      */
     public function __construct(Item ...$items)
     {
@@ -60,7 +60,7 @@ class ItemCollection implements IteratorAggregate, JsonSerializable, Countable
     /**
      * @return Item|null
      */
-    public function first()
+    public function first(): ?Item
     {
         $items = $this->toArray();
         $first = \reset($items);

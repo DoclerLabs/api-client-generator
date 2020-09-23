@@ -3,6 +3,7 @@
 namespace DoclerLabs\ApiClientGenerator\Test\Functional\Generator;
 
 use DoclerLabs\ApiClientGenerator\Generator\GeneratorInterface;
+use DoclerLabs\ApiClientGenerator\Input\Configuration;
 use DoclerLabs\ApiClientGenerator\Input\FileReader;
 use DoclerLabs\ApiClientGenerator\Input\Parser;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
@@ -20,31 +21,16 @@ abstract class AbstractGeneratorTest extends TestCase
     protected PhpFileCollection            $fileRegistry;
     protected PhpFilePrinter               $printer;
 
-    public function setUp(): void
-    {
-        $container = new Container();
-        $container->register(new ServiceProvider());
-        set_error_handler(
-            static function (int $code, string $message) {
-            },
-            E_USER_WARNING
-        );
-
-        $this->sut                 = $container[$this->generatorClassName()];
-        $this->specificationReader = $container[FileReader::class];
-        $this->specificationParser = $container[Parser::class];
-        $this->fileRegistry        = new PhpFileCollection();
-        $this->printer             = $container[PhpFilePrinter::class];
-    }
-
     /**
      * @dataProvider exampleProvider
      */
     public function testGenerate(
         string $specificationFilePath,
         string $expectedResultFilePath,
-        string $resultClassName
+        string $resultClassName,
+        Configuration $configuration
     ): void {
+        $this->setUpContainer($configuration);
         $specificationPath  = __DIR__ . $specificationFilePath;
         $expectedResultPath = __DIR__ . $expectedResultFilePath;
         self::assertFileExists($specificationPath);
@@ -62,6 +48,26 @@ abstract class AbstractGeneratorTest extends TestCase
     }
 
     abstract public function exampleProvider(): array;
+
+    protected function setUpContainer(Configuration $configuration): void
+    {
+        $container = new Container();
+        $container->register(new ServiceProvider());
+        set_error_handler(
+            static function (int $code, string $message) {
+            },
+            E_USER_WARNING
+        );
+        $container[Configuration::class] = static function (Container $container) use ($configuration) {
+            return $configuration;
+        };
+
+        $this->sut                 = $container[$this->generatorClassName()];
+        $this->specificationReader = $container[FileReader::class];
+        $this->specificationParser = $container[Parser::class];
+        $this->fileRegistry        = new PhpFileCollection();
+        $this->printer             = $container[PhpFilePrinter::class];
+    }
 
     abstract protected function generatorClassName(): string;
 }

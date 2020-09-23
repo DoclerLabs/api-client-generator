@@ -9,25 +9,14 @@
     },
     "require": {
         "php": ">={{ phpVersion }}",
-        "ext-json": "*",
-        "docler-labs/api-client-base": "^3.0",
-        "guzzlehttp/guzzle": "^6.5",
-        "nyholm/psr7": "^1.3",
-        "psr/http-client-implementation": "^1.0",
-        "psr/http-client": "^1.0",
-        "psr/http-factory": "^1.0"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^6.5"
+        {% for package, version in packages -%}
+"{{ package }}": "{{ version }}"{%- if not loop.last -%},{% endif %}
+
+    {% if not loop.last %}    {% endif %}{% endfor -%}
     },
     "autoload": {
         "psr-4": {
             "{{ addslashes(namespace) }}\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "{{ addslashes(namespace) }}\\Test\\Unit\\": "test/suite/unit/"
         }
     }
 }

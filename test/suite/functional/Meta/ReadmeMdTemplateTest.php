@@ -8,6 +8,7 @@ use DoclerLabs\ApiClientGenerator\Meta\ComposerJsonTemplate;
 use DoclerLabs\ApiClientGenerator\Meta\ReadmeMdTemplate;
 use DoclerLabs\ApiClientGenerator\Meta\Template\TwigExtension;
 use DoclerLabs\ApiClientGenerator\Meta\TemplateInterface;
+use DoclerLabs\ApiClientGenerator\Test\Functional\ConfigurationBuilder;
 use Pimple\Container;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -24,29 +25,13 @@ class ReadmeMdTemplateTest extends AbstractTemplateTest
                 '/ReadmeMd/petstore.yaml',
                 '/ReadmeMd/README.md',
                 'README.md',
+                ConfigurationBuilder::fake()->build()
             ],
         ];
     }
 
-    protected function sutTemplate(Container $container): TemplateInterface
+    protected function sutTemplate(Configuration $configuration): TemplateInterface
     {
-        $configuration = $this->createMock(Configuration::class);
-
-        $configuration
-            ->expects(self::once())
-            ->method('getBaseNamespace')
-            ->willReturn('Test\\PetstoreApi');
-
-        $configuration
-            ->expects(self::once())
-            ->method('getPackageName')
-            ->willReturn('test/petstore-api');
-
-        $configuration
-            ->expects(self::once())
-            ->method('getPhpVersion')
-            ->willReturn('7.2');
-
         $twig = new Environment(
             new FilesystemLoader(['template'], getcwd() . DIRECTORY_SEPARATOR)
         );

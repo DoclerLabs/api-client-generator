@@ -34,45 +34,65 @@ class PutResourceByIdRequest implements RequestInterface
 
     public const ALLOWED_MANDATORY_ENUM_PARAMETER_LIST = [self::MANDATORY_ENUM_PARAMETER_ONE_VALUE, self::MANDATORY_ENUM_PARAMETER_ANOTHER_VALUE, self::MANDATORY_ENUM_PARAMETER_THIRD_VALUE];
 
-    private int $resourceId;
+    /** @var int */
+    private $resourceId;
 
-    private int $integerParameter;
+    /** @var int|null */
+    private $integerParameter;
 
-    private string $stringParameter;
+    /** @var string|null */
+    private $stringParameter;
 
-    private string $enumParameter;
+    /** @var string|null */
+    private $enumParameter;
 
-    private DateTimeInterface $dateParameter;
+    /** @var DateTimeInterface|null */
+    private $dateParameter;
 
-    private float $floatParameter;
+    /** @var float|null */
+    private $floatParameter;
 
-    private bool $booleanParameter;
+    /** @var bool|null */
+    private $booleanParameter;
 
-    private array $arrayParameter;
+    /** @var int[]|null */
+    private $arrayParameter;
 
-    private EmbeddedObject $objectParameter;
+    /** @var EmbeddedObject|null */
+    private $objectParameter;
 
-    private int $mandatoryIntegerParameter;
+    /** @var int */
+    private $mandatoryIntegerParameter;
 
-    private string $mandatoryStringParameter;
+    /** @var string */
+    private $mandatoryStringParameter;
 
-    private string $mandatoryEnumParameter;
+    /** @var string */
+    private $mandatoryEnumParameter;
 
-    private DateTimeInterface $mandatoryDateParameter;
+    /** @var DateTimeInterface */
+    private $mandatoryDateParameter;
 
-    private float $mandatoryFloatParameter;
+    /** @var float */
+    private $mandatoryFloatParameter;
 
-    private bool $mandatoryBooleanParameter;
+    /** @var bool */
+    private $mandatoryBooleanParameter;
 
-    private array $mandatoryArrayParameter;
+    /** @var int[] */
+    private $mandatoryArrayParameter;
 
-    private EmbeddedObject $mandatoryObjectParameter;
+    /** @var EmbeddedObject */
+    private $mandatoryObjectParameter;
 
-    private string $xRequestId;
+    /** @var string */
+    private $xRequestId;
 
-    private string $csrfToken;
+    /** @var string|null */
+    private $csrfToken;
 
-    private PutResourceByIdRequestBody $putResourceByIdRequestBody;
+    /** @var PutResourceByIdRequestBody */
+    private $putResourceByIdRequestBody;
 
     /**
      * @param int                        $resourceId

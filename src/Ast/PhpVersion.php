@@ -35,31 +35,31 @@ class PhpVersion
 
     public function isClassConstantVisibilitySupported(): bool
     {
-        return $this->isVersion71() || $this->isVersion74();
+        return $this->isVersionBiggerThan71();
     }
 
     public function isNullableTypeHintSupported(): bool
     {
-        return $this->isVersion71() || $this->isVersion74();
+        return $this->isVersionBiggerThan71();
     }
 
     public function isVoidReturnTypeSupported(): bool
     {
-        return $this->isVersion71() || $this->isVersion74();
+        return $this->isVersionBiggerThan71();
     }
 
     public function isPropertyTypeHintSupported(): bool
     {
-        return $this->isVersion74();
+        return $this->isVersionBiggerThan74();
     }
 
-    protected function isVersion71(): bool
+    protected function isVersionBiggerThan71(): bool
     {
-        return $this->phpVersion === self::VERSION_PHP71;
+        return (float)$this->phpVersion >= (float)self::VERSION_PHP71;
     }
 
-    protected function isVersion74(): bool
+    protected function isVersionBiggerThan74(): bool
     {
-        return $this->phpVersion === self::VERSION_PHP74;
+        return (float)$this->phpVersion >= (float)self::VERSION_PHP74;
     }
 }
