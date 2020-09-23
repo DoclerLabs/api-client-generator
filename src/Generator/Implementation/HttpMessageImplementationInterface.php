@@ -12,5 +12,7 @@ interface HttpMessageImplementationInterface
 
     public function getRequestMapperClassName(): string;
 
+    public function getInitMessageImports(): array;
+
     public function getPackages(): array;
 }

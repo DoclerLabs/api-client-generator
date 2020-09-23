@@ -11,7 +11,7 @@ namespace Test;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\Mapper\RequestMapperInterface;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\RequestInterface as ClientRequestInterface;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Handler\ResponseHandlerInterface;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\ResponseMapperRegistryInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 use Test\Request\AddPetRequest;
@@ -39,12 +39,12 @@ class SwaggerPetstoreClient
     private $mapperRegistry;
 
     /**
-     * @param ClientInterface                 $client
-     * @param RequestMapperInterface          $requestHandler
-     * @param ResponseHandlerInterface        $responseHandler
-     * @param ResponseMapperRegistryInterface $mapperRegistry
+     * @param ClientInterface          $client
+     * @param RequestMapperInterface   $requestHandler
+     * @param ResponseHandlerInterface $responseHandler
+     * @param ContainerInterface       $mapperRegistry
      */
-    public function __construct(ClientInterface $client, RequestMapperInterface $requestHandler, ResponseHandlerInterface $responseHandler, ResponseMapperRegistryInterface $mapperRegistry)
+    public function __construct(ClientInterface $client, RequestMapperInterface $requestHandler, ResponseHandlerInterface $responseHandler, ContainerInterface $mapperRegistry)
     {
         $this->client          = $client;
         $this->requestHandler  = $requestHandler;

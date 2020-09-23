@@ -58,7 +58,7 @@ abstract class AbstractGeneratorTest extends TestCase
             },
             E_USER_WARNING
         );
-        $container[Configuration::class] = static function (Container $container) use ($configuration) {
+        $container[Configuration::class] = static function () use ($configuration) {
             return $configuration;
         };
 

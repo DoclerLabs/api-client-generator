@@ -10,15 +10,12 @@ namespace Test;
 
 use GuzzleHttp\Client;
 use InvalidArgumentException;
+use Pimple\Psr11\Container;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientInterface;
 use Test\Request\Mapper\GuzzleRequestMapper;
 use Test\Request\Mapper\RequestMapperInterface;
 use Test\Response\Handler\ResponseHandler;
-use Test\Response\Mapper\FoodResponseMapper;
-use Test\Response\Mapper\PetCollectionResponseMapper;
-use Test\Response\Mapper\PetResponseMapper;
-use Test\Response\ResponseMapperRegistry;
-use Test\Response\ResponseMapperRegistryInterface;
 use Test\Serializer\BodySerializer;
 
 class SwaggerPetstoreClientFactory
@@ -34,23 +31,7 @@ class SwaggerPetstoreClientFactory
         $registry = new ResponseMapperRegistry();
         $this->registerResponseMappers($registry);
 
-        return new SwaggerPetstoreClient($this->initBaseClient($baseUrl, $options), $this->initRequestMapper(), new ResponseHandler(), $registry);
-    }
-
-    /**
-     * @param ResponseMapperRegistryInterface $registry
-     */
-    public function registerResponseMappers(ResponseMapperRegistryInterface $registry): void
-    {
-        $registry->add(PetCollectionResponseMapper::class, static function () use ($registry): PetCollectionResponseMapper {
-            return new PetCollectionResponseMapper($registry->get(PetResponseMapper::class));
-        });
-        $registry->add(PetResponseMapper::class, static function () use ($registry): PetResponseMapper {
-            return new PetResponseMapper($registry->get(FoodResponseMapper::class));
-        });
-        $registry->add(FoodResponseMapper::class, static function () use ($registry): FoodResponseMapper {
-            return new FoodResponseMapper();
-        });
+        return new SwaggerPetstoreClient($this->initBaseClient($baseUri, $options), $this->initRequestMapper(), new ResponseHandler(), $registry);
     }
 
     private function initBaseClient(string $baseUri, array $options): ClientInterface
@@ -67,5 +48,14 @@ class SwaggerPetstoreClientFactory
     private function initRequestMapper(): RequestMapperInterface
     {
         return new GuzzleRequestMapper(new BodySerializer());
+    }
+
+    private function initContainer(): ContainerInterface
+    {
+        $container       = new Container();
+        $serviceProvider = new ServiceProvider();
+        $serviceProvider->registerResponseMappers($container);
+
+        return $container;
     }
 }

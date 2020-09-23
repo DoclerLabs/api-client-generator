@@ -3,8 +3,9 @@
 namespace DoclerLabs\ApiClientGenerator\Test\Functional\Meta;
 
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
-use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpClientImplementation;
-use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementation;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationStrategy;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpClientImplementationStrategy;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\SchemaGenerator;
 use DoclerLabs\ApiClientGenerator\Input\Configuration;
 use DoclerLabs\ApiClientGenerator\Meta\ComposerJsonTemplate;
@@ -22,7 +23,7 @@ class ComposerJsonTemplateTest extends AbstractTemplateTest
     public function exampleProvider(): array
     {
         return [
-            'Default composer.json' => [
+            'Default composer.json'         => [
                 '/ComposerJson/petstore.yaml',
                 '/ComposerJson/composer_default.json',
                 'composer.json',
@@ -32,25 +33,33 @@ class ComposerJsonTemplateTest extends AbstractTemplateTest
                 '/ComposerJson/petstore.yaml',
                 '/ComposerJson/composer_guzzle6_client.json',
                 'composer.json',
-                ConfigurationBuilder::fake()->withHttpClient(HttpClientImplementation::HTTP_CLIENT_GUZZLE6)->build(),
+                ConfigurationBuilder::fake()
+                    ->withHttpClient(HttpClientImplementationStrategy::HTTP_CLIENT_GUZZLE6)
+                    ->build(),
             ],
             'Guzzle 7 client composer.json' => [
                 '/ComposerJson/petstore.yaml',
                 '/ComposerJson/composer_guzzle7_client.json',
                 'composer.json',
-                ConfigurationBuilder::fake()->withHttpClient(HttpClientImplementation::HTTP_CLIENT_GUZZLE7)->build(),
+                ConfigurationBuilder::fake()
+                    ->withHttpClient(HttpClientImplementationStrategy::HTTP_CLIENT_GUZZLE7)
+                    ->build(),
             ],
-            'Guzzle message composer.json' => [
+            'Guzzle message composer.json'  => [
                 '/ComposerJson/petstore.yaml',
                 '/ComposerJson/composer_guzzle_message.json',
                 'composer.json',
-                ConfigurationBuilder::fake()->withHttpMessage(HttpMessageImplementation::HTTP_MESSAGE_GUZZLE)->build(),
+                ConfigurationBuilder::fake()
+                    ->withHttpMessage(HttpMessageImplementationStrategy::HTTP_MESSAGE_GUZZLE)
+                    ->build(),
             ],
-            'Nyholm message composer.json' => [
+            'Nyholm message composer.json'  => [
                 '/ComposerJson/petstore.yaml',
                 '/ComposerJson/composer_nyholm_message.json',
                 'composer.json',
-                ConfigurationBuilder::fake()->withHttpMessage(HttpMessageImplementation::HTTP_MESSAGE_NYHOLM)->build(),
+                ConfigurationBuilder::fake()
+                    ->withHttpMessage(HttpMessageImplementationStrategy::HTTP_MESSAGE_NYHOLM)
+                    ->build(),
             ],
         ];
     }
@@ -66,8 +75,9 @@ class ComposerJsonTemplateTest extends AbstractTemplateTest
         return new ComposerJsonTemplate(
             $twig,
             $configuration,
-            new HttpClientImplementation($configuration->getHttpClient(), $codeBuilder),
-            new HttpMessageImplementation($configuration->getHttpMessage(), $codeBuilder)
+            new HttpClientImplementationStrategy($configuration->getHttpClient(), $codeBuilder),
+            new HttpMessageImplementationStrategy($configuration->getHttpMessage(), $codeBuilder),
+            new ContainerImplementationStrategy($configuration->getContainer(), $codeBuilder)
         );
     }
 }

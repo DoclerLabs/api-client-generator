@@ -2,8 +2,9 @@
 
 namespace DoclerLabs\ApiClientGenerator\Meta;
 
-use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpClientImplementation;
-use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementation;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationStrategy;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpClientImplementationStrategy;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Input\Configuration;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFile;
@@ -12,21 +13,24 @@ use Twig\Environment;
 
 class ComposerJsonTemplate implements TemplateInterface
 {
-    private Environment               $renderer;
-    private Configuration             $configuration;
-    private HttpClientImplementation  $clientImplementation;
-    private HttpMessageImplementation $messageImplementation;
+    private Environment                       $renderer;
+    private Configuration                     $configuration;
+    private HttpClientImplementationStrategy  $clientImplementation;
+    private HttpMessageImplementationStrategy $messageImplementation;
+    private ContainerImplementationStrategy   $containerImplementation;
 
     public function __construct(
         Environment $renderer,
         Configuration $configuration,
-        HttpClientImplementation $clientImplementation,
-        HttpMessageImplementation $messageImplementation
+        HttpClientImplementationStrategy $clientImplementation,
+        HttpMessageImplementationStrategy $messageImplementation,
+        ContainerImplementationStrategy $containerImplementation
     ) {
-        $this->renderer              = $renderer;
-        $this->configuration         = $configuration;
-        $this->clientImplementation  = $clientImplementation;
-        $this->messageImplementation = $messageImplementation;
+        $this->renderer                = $renderer;
+        $this->configuration           = $configuration;
+        $this->clientImplementation    = $clientImplementation;
+        $this->messageImplementation   = $messageImplementation;
+        $this->containerImplementation = $containerImplementation;
     }
 
     public function getOutputFilePath(): string
@@ -40,6 +44,7 @@ class ComposerJsonTemplate implements TemplateInterface
             $this->getCommonPackages(),
             $this->clientImplementation->getPackages(),
             $this->messageImplementation->getPackages(),
+            $this->containerImplementation->getPackages()
         );
         ksort($packages);
 
@@ -61,6 +66,7 @@ class ComposerJsonTemplate implements TemplateInterface
     {
         return [
             'docler-labs/api-client-exception' => '^1.0',
+            'psr/container'                    => '^1.0',
             'psr/http-client-implementation'   => '^1.0',
             'psr/http-client'                  => '^1.0',
             'psr/http-factory'                 => '^1.0',

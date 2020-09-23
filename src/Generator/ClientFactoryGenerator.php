@@ -3,38 +3,37 @@
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
-use DoclerLabs\ApiClientGenerator\Entity\Field;
-use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpClientImplementation;
-use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementation;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationStrategy;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpClientImplementationStrategy;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\ClientNaming;
-use DoclerLabs\ApiClientGenerator\Naming\ResponseMapperNaming;
 use DoclerLabs\ApiClientGenerator\Naming\StaticClassNamespace;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\Mapper\RequestMapperInterface;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Handler\ResponseHandler;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\ResponseMapperRegistry;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\ResponseMapperRegistryInterface;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Serializer\BodySerializer;
-use PhpParser\Node\Expr\New_;
-use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\ClassMethod;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientInterface;
 
 class ClientFactoryGenerator extends GeneratorAbstract
 {
-    private HttpClientImplementation  $clientImplementation;
-    private HttpMessageImplementation $messageImplementation;
+    private HttpClientImplementationStrategy  $clientImplementation;
+    private HttpMessageImplementationStrategy $messageImplementation;
+    private ContainerImplementationStrategy   $containerImplementation;
 
     public function __construct(
         string $baseNamespace,
         CodeBuilder $builder,
-        HttpClientImplementation $clientImplementation,
-        HttpMessageImplementation $messageImplementation
+        HttpClientImplementationStrategy $clientImplementation,
+        HttpMessageImplementationStrategy $messageImplementation,
+        ContainerImplementationStrategy $containerImplementation
     ) {
         parent::__construct($baseNamespace, $builder);
-        $this->clientImplementation  = $clientImplementation;
-        $this->messageImplementation = $messageImplementation;
+        $this->clientImplementation    = $clientImplementation;
+        $this->messageImplementation   = $messageImplementation;
+        $this->containerImplementation = $containerImplementation;
     }
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
@@ -43,10 +42,9 @@ class ClientFactoryGenerator extends GeneratorAbstract
 
         $this
             ->addImport(ClientInterface::class)
+            ->addImport(ContainerInterface::class)
             ->addImport(StaticClassNamespace::getImport($this->baseNamespace, RequestMapperInterface::class))
             ->addImport(StaticClassNamespace::getImport($this->baseNamespace, ResponseHandler::class))
-            ->addImport(StaticClassNamespace::getImport($this->baseNamespace, ResponseMapperRegistry::class))
-            ->addImport(StaticClassNamespace::getImport($this->baseNamespace, ResponseMapperRegistryInterface::class))
             ->addImport(StaticClassNamespace::getImport($this->baseNamespace, BodySerializer::class))
             ->addImport(
                 sprintf(
@@ -58,6 +56,10 @@ class ClientFactoryGenerator extends GeneratorAbstract
             );
 
         foreach ($this->clientImplementation->getInitBaseClientImports() as $import) {
+            $this->addImport($import);
+        }
+
+        foreach ($this->containerImplementation->getInitContainerImports() as $import) {
             $this->addImport($import);
         }
 
@@ -84,12 +86,18 @@ class ClientFactoryGenerator extends GeneratorAbstract
             ->setReturnType('RequestMapperInterface')
             ->getNode();
 
+        $initContaineMethod = $this->containerImplementation
+            ->generateInitContainerMethod()
+            ->makePrivate()
+            ->setReturnType('ContainerInterface')
+            ->getNode();
+
         $classBuilder = $this->builder
             ->class($className)
             ->addStmt($this->generateCreate($specification))
-            ->addStmt($this->generateRegisterResponseMappers($specification))
             ->addStmt($initBaseClientMethod)
-            ->addStmt($initRequestMapperMethod);
+            ->addStmt($initRequestMapperMethod)
+            ->addStmt($initContaineMethod);
 
         $this->registerFile($fileRegistry, $classBuilder);
     }
@@ -122,7 +130,7 @@ class ClientFactoryGenerator extends GeneratorAbstract
                     [
                         $this->builder->localMethodCall(
                             'initBaseClient',
-                            [$this->builder->var('baseUrl'), $this->builder->var('options')]
+                            [$this->builder->var('baseUri'), $this->builder->var('options')]
                         ),
                         $this->builder->localMethodCall('initRequestMapper'),
                         $this->builder->new('ResponseHandler'),
@@ -139,71 +147,5 @@ class ClientFactoryGenerator extends GeneratorAbstract
             ->setReturnType($clientClassName)
             ->composeDocBlock($params, $clientClassName)
             ->getNode();
-    }
-
-    protected function generateRegisterResponseMappers(Specification $specification): ClassMethod
-    {
-        $statements = [];
-
-        $param = $this->builder
-            ->param('registry')
-            ->setType('ResponseMapperRegistryInterface')
-            ->getNode();
-
-        $registryVar     = $this->builder->var('registry');
-        $compositeFields = $specification->getCompositeResponseFields()->getUniqueByPhpClassName();
-        foreach ($compositeFields as $field) {
-            /** @var Field $field */
-            $closureStatements = [];
-            $mapperClass       = ResponseMapperNaming::getClassName($field);
-            $this->addImport(
-                sprintf(
-                    '%s%s\\%s',
-                    $this->baseNamespace,
-                    ResponseMapperGenerator::NAMESPACE_SUBPATH,
-                    $mapperClass
-                )
-            );
-
-            $mapperClassConst = $this->builder->classConstFetch($mapperClass, 'class');
-
-            $closureStatements[] = $this->builder->return($this->buildMapperDependencies($field, $registryVar));
-
-            $closure = $this->builder->closure($closureStatements, [], [$registryVar], $mapperClass);
-
-            $statements[] = $this->builder->methodCall($registryVar, 'add', [$mapperClassConst, $closure]);
-        }
-
-        return $this->builder
-            ->method('registerResponseMappers')
-            ->addParam($param)
-            ->addStmts($statements)
-            ->setReturnType(null)
-            ->composeDocBlock([$param], '', [])
-            ->getNode();
-    }
-
-    private function buildMapperDependencies(Field $field, Variable $registryVar): New_
-    {
-        $dependencies = [];
-        if ($field->isObject()) {
-            $alreadyInjected = [];
-            foreach ($field->getObjectProperties() as $subfield) {
-                if ($subfield->isComposite() && !isset($alreadyInjected[$subfield->getPhpClassName()])) {
-                    $getMethodArg   =
-                        $this->builder->classConstFetch(ResponseMapperNaming::getClassName($subfield), 'class');
-                    $dependencies[] = $this->builder->methodCall($registryVar, 'get', [$getMethodArg]);
-
-                    $alreadyInjected[$subfield->getPhpClassName()] = true;
-                }
-            }
-        }
-        if ($field->isArrayOfObjects()) {
-            $getMethodArg   =
-                $this->builder->classConstFetch(ResponseMapperNaming::getClassName($field->getArrayItem()), 'class');
-            $dependencies[] = $this->builder->methodCall($registryVar, 'get', [$getMethodArg]);
-        }
-
-        return $this->builder->new(ResponseMapperNaming::getClassName($field), $dependencies);
     }
 }

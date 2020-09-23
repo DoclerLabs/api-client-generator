@@ -8,7 +8,7 @@ use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpClient\Guzzle6Htt
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpClient\Guzzle7HttpClient;
 use UnexpectedValueException;
 
-class HttpClientImplementation implements HttpClientImplementationInterface
+class HttpClientImplementationStrategy implements HttpClientImplementationInterface
 {
     public const  HTTP_CLIENT_GUZZLE6         = 'guzzle6';
     public const  HTTP_CLIENT_GUZZLE7         = 'guzzle7';

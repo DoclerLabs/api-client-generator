@@ -11,9 +11,9 @@ use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\Mapper\RequestMapperInterface;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\RequestInterface as ClientRequestInterface;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Handler\ResponseHandlerInterface;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\ResponseMapperRegistryInterface;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -162,7 +162,7 @@ class ClientGenerator extends GeneratorAbstract
             ->addImport(RequestMapperInterface::class)
             ->addImport(ClientRequestInterface::class, 'ClientRequestInterface')
             ->addImport(ResponseHandlerInterface::class)
-            ->addImport(ResponseMapperRegistryInterface::class);
+            ->addImport(ContainerInterface::class);
 
         $parameters[] = $this->builder
             ->param('client')
@@ -193,7 +193,7 @@ class ClientGenerator extends GeneratorAbstract
 
         $parameters[] = $this->builder
             ->param('mapperRegistry')
-            ->setType('ResponseMapperRegistryInterface')
+            ->setType('ContainerInterface')
             ->getNode();
         $inits[]      = $this->builder->assign(
             $this->builder->localPropertyFetch('mapperRegistry'),

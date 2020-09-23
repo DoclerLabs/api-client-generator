@@ -8,13 +8,15 @@ use DoclerLabs\ApiClientGenerator\Ast\Visitor\NamespaceSubstituteVisitor;
 use DoclerLabs\ApiClientGenerator\Command\GenerateCommand;
 use DoclerLabs\ApiClientGenerator\Generator\ClientFactoryGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\ClientGenerator;
-use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpClientImplementation;
-use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementation;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationStrategy;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpClientImplementationStrategy;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\RequestGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\RequestMapperGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\ResponseMapperGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\SchemaCollectionGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\SchemaGenerator;
+use DoclerLabs\ApiClientGenerator\Generator\ServiceProviderGenerator;
 use DoclerLabs\ApiClientGenerator\Input\Configuration;
 use DoclerLabs\ApiClientGenerator\Input\Factory\FieldFactory;
 use DoclerLabs\ApiClientGenerator\Input\Factory\OperationCollectionFactory;
@@ -79,6 +81,7 @@ class ServiceProvider implements ServiceProviderInterface
             getenv('README_MD_TEMPLATE_DIR') ?: Configuration::DEFAULT_TEMPLATE_DIRECTORY,
             getenv('HTTP_CLIENT') ?: Configuration::DEFAULT_HTTP_CLIENT,
             getenv('HTTP_MESSAGE') ?: Configuration::DEFAULT_HTTP_MESSAGE,
+            getenv('CONTAINER') ?: Configuration::DEFAULT_CONTAINER,
         );
 
         $pimple[GenerateCommand::class] = static fn(Container $container) => new GenerateCommand(
@@ -102,7 +105,8 @@ class ServiceProvider implements ServiceProviderInterface
             ->add($container[RequestMapperGenerator::class])
             ->add($container[ResponseMapperGenerator::class])
             ->add($container[SchemaCollectionGenerator::class])
-            ->add($container[SchemaGenerator::class]);
+            ->add($container[SchemaGenerator::class])
+            ->add($container[ServiceProviderGenerator::class]);
 
         $pimple[MetaTemplateFacade::class] = static fn(Container $container) => (new MetaTemplateFacade())
             ->add($container[ComposerJsonTemplate::class])
@@ -130,7 +134,7 @@ class ServiceProvider implements ServiceProviderInterface
         $pimple[RequestMapperGenerator::class] = static fn(Container $container) => new RequestMapperGenerator(
             $container[Configuration::class]->getBaseNamespace(),
             $container[CodeBuilder::class],
-            $container[HttpMessageImplementation::class]
+            $container[HttpMessageImplementationStrategy::class]
         );
 
         $pimple[ResponseMapperGenerator::class] = static fn(Container $container) => new ResponseMapperGenerator(
@@ -156,19 +160,33 @@ class ServiceProvider implements ServiceProviderInterface
         $pimple[ClientFactoryGenerator::class] = static fn(Container $container) => new ClientFactoryGenerator(
             $container[Configuration::class]->getBaseNamespace(),
             $container[CodeBuilder::class],
-            $container[HttpClientImplementation::class],
-            $container[HttpMessageImplementation::class]
+            $container[HttpClientImplementationStrategy::class],
+            $container[HttpMessageImplementationStrategy::class],
+            $container[ContainerImplementationStrategy::class]
         );
 
-        $pimple[HttpClientImplementation::class] = static fn(Container $container) => new HttpClientImplementation(
-            $container[Configuration::class]->getHttpClient(),
+        $pimple[ServiceProviderGenerator::class] = static fn(Container $container) => new ServiceProviderGenerator(
+            $container[Configuration::class]->getBaseNamespace(),
             $container[CodeBuilder::class]
         );
 
-        $pimple[HttpMessageImplementation::class] = static fn(Container $container) => new HttpMessageImplementation(
-            $container[Configuration::class]->getHttpMessage(),
-            $container[CodeBuilder::class]
-        );
+        $pimple[HttpClientImplementationStrategy::class] =
+            static fn(Container $container) => new HttpClientImplementationStrategy(
+                $container[Configuration::class]->getHttpClient(),
+                $container[CodeBuilder::class]
+            );
+
+        $pimple[HttpMessageImplementationStrategy::class] =
+            static fn(Container $container) => new HttpMessageImplementationStrategy(
+                $container[Configuration::class]->getHttpMessage(),
+                $container[CodeBuilder::class]
+            );
+
+        $pimple[ContainerImplementationStrategy::class] =
+            static fn(Container $container) => new ContainerImplementationStrategy(
+                $container[Configuration::class]->getContainer(),
+                $container[CodeBuilder::class]
+            );
 
         $pimple[PhpFilePrinter::class] = static fn(Container $container) => new PhpFilePrinter(
             new Standard(),
@@ -205,8 +223,9 @@ class ServiceProvider implements ServiceProviderInterface
         $pimple[ComposerJsonTemplate::class] = static fn(Container $container) => new ComposerJsonTemplate(
             $container[Environment::class],
             $container[Configuration::class],
-            $container[HttpClientImplementation::class],
-            $container[HttpMessageImplementation::class]
+            $container[HttpClientImplementationStrategy::class],
+            $container[HttpMessageImplementationStrategy::class],
+            $container[ContainerImplementationStrategy::class]
         );
 
         $pimple[ReadmeMdTemplate::class] = static fn(Container $container) => new ReadmeMdTemplate(

@@ -6,31 +6,38 @@
  * Do not edit it manually.
  */
 
-namespace Test\Response\Mapper;
+namespace Test\Request\Mapper;
 
-use DateTimeImmutable;
-use DoclerLabs\ApiClientBase\Exception\UnexpectedResponseBodyException;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Mapper\ResponseMapperInterface;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Response;
-use Test\Schema\Resource;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\Mapper\RequestMapperInterface;
+use Nyholm\Psr7\ServerRequest;
+use Psr\Http\Message\ServerRequestInterface;
+use Test\Request\RequestInterface;
+use Test\Serializer\BodySerializer;
 
-class NyholmRequestMapper implements ResponseMapperInterface
+class NyholmRequestMapper implements RequestMapperInterface
 {
-    /**
-     * @param Response $response
-     *
-     * @throws UnexpectedResponseBodyException
-     *
-     * @return Resource
-     */
-    public function map(Response $response): Resource
-    {
-        $payload = $response->getPayload();
-        if (! isset($payload['mandatoryInteger'], $payload['mandatoryString'], $payload['mandatoryEnum'], $payload['mandatoryDate'])) {
-            $missingFields = \implode(', ', \array_diff(['mandatoryInteger', 'mandatoryString', 'mandatoryEnum', 'mandatoryDate'], \array_keys($payload)));
-            throw new UnexpectedResponseBodyException('Required attributes for `Resource` missing in the response body: ' . $missingFields);
-        }
+    /** @var BodySerializerInterface */
+    private $serializer;
 
-        return new Resource($payload['mandatoryInteger'], $payload['mandatoryString'], $payload['mandatoryEnum'], new DateTimeImmutable($payload['mandatoryDate']));
+    /**
+     * @param BodySerializerInterface $serializer
+     */
+    public function __construct(BodySerializerInterface $serializer)
+    {
+        $this->serializer = $serializer;
+    }
+
+    /**
+     * @param RequestInterface $request
+     *
+     * @return ServerRequestInterface
+     */
+    public function map(RequestInterface $request): ServerRequestInterface
+    {
+        $psr7Request = new ServerRequest($request->getMethod(), $request->getRoute(), $request->getHeaders(), $this->serializer->encode($request->getBody()), '1.1', []);
+        $psr7Request->withQueryParams($request->getQueryParameters());
+        $psr7Request->withCookieParams($request->getCookies());
+
+        return $psr7Request;
     }
 }

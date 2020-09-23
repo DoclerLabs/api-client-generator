@@ -16,6 +16,7 @@ class ConfigurationBuilder
     private string $readmeMdTemplateDir;
     private string $httpClient;
     private string $httpMessage;
+    private string $container;
 
     private function __construct()
     {
@@ -29,6 +30,7 @@ class ConfigurationBuilder
         $this->readmeMdTemplateDir     = Configuration::DEFAULT_TEMPLATE_DIRECTORY;
         $this->httpClient              = Configuration::DEFAULT_HTTP_CLIENT;
         $this->httpMessage             = Configuration::DEFAULT_HTTP_MESSAGE;
+        $this->container               = Configuration::DEFAULT_CONTAINER;
     }
 
     public static function fake(): self
@@ -106,6 +108,13 @@ class ConfigurationBuilder
         return $this;
     }
 
+    public function withContainer(string $container): self
+    {
+        $this->container = $container;
+
+        return $this;
+    }
+
     public function build(): Configuration
     {
         return new Configuration(
@@ -118,7 +127,8 @@ class ConfigurationBuilder
             $this->composerJsonTemplateDir,
             $this->readmeMdTemplateDir,
             $this->httpClient,
-            $this->httpMessage
+            $this->httpMessage,
+            $this->container
         );
     }
 }

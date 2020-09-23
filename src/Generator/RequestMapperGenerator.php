@@ -3,13 +3,13 @@
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
-use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementation;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\StaticClassNamespace;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\Mapper\RequestMapperInterface;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\RequestInterface;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Serializer\BodySerializerInterface;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Serializer\BodySerializer;
 use PhpParser\Node\Stmt\ClassMethod;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -17,12 +17,12 @@ class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 {
     public const NAMESPACE_SUBPATH = '\\Request\\Mapper';
     public const SUBDIRECTORY      = 'Request/Mapper/';
-    private HttpMessageImplementation $messageImplementation;
+    private HttpMessageImplementationStrategy $messageImplementation;
 
     public function __construct(
         string $baseNamespace,
         CodeBuilder $builder,
-        HttpMessageImplementation $messageImplementation
+        HttpMessageImplementationStrategy $messageImplementation
     ) {
         parent::__construct($baseNamespace, $builder);
         $this->messageImplementation = $messageImplementation;
@@ -32,7 +32,11 @@ class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
     {
         $this
             ->addImport(RequestMapperInterface::class)
-            ->addImport(StaticClassNamespace::getImport($this->baseNamespace, BodySerializerInterface::class));
+            ->addImport(StaticClassNamespace::getImport($this->baseNamespace, BodySerializer::class));
+
+        foreach ($this->messageImplementation->getInitMessageImports() as $import) {
+            $this->addImport($import);
+        }
 
         $serializerPropertyName = 'serializer';
 

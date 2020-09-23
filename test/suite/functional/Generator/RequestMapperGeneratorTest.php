@@ -2,40 +2,39 @@
 
 namespace DoclerLabs\ApiClientGenerator\Test\Functional\Generator;
 
-use DoclerLabs\ApiClientGenerator\Generator\RequestGenerator;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
+use DoclerLabs\ApiClientGenerator\Generator\RequestMapperGenerator;
 use DoclerLabs\ApiClientGenerator\Test\Functional\ConfigurationBuilder;
 
 /**
- * @coversDefaultClass RequestGenerator
+ * @coversDefaultClass RequestMapperGenerator
  */
 class RequestMapperGeneratorTest extends AbstractGeneratorTest
 {
     public function exampleProvider(): array
     {
         return [
-            'Request with body'                             => [
-                '/Request/patchResource.yaml',
-                '/Request/PatchResourceRequest.php',
-                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\PatchResourceRequest',
-                ConfigurationBuilder::fake()->build(),
+            'With Guzzle message' => [
+                '/RequestMapper/petstore.yaml',
+                '/RequestMapper/GuzzleRequestMapper.php',
+                self::BASE_NAMESPACE . RequestMapperGenerator::NAMESPACE_SUBPATH . '\\GuzzleRequestMapper',
+                ConfigurationBuilder::fake()
+                    ->withHttpMessage(HttpMessageImplementationStrategy::HTTP_MESSAGE_GUZZLE)
+                    ->build(),
             ],
-            'Request with mandatory parameters and body'    => [
-                '/Request/putResourceById.yaml',
-                '/Request/PutResourceByIdRequest.php',
-                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\PutResourceByIdRequest',
-                ConfigurationBuilder::fake()->build(),
-            ],
-            'Request without mandatory parameters and body' => [
-                '/Request/getResources.yaml',
-                '/Request/GetResourcesRequest.php',
-                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetResourcesRequest',
-                ConfigurationBuilder::fake()->build(),
+            'With Nyholm message' => [
+                '/RequestMapper/petstore.yaml',
+                '/RequestMapper/NyholmRequestMapper.php',
+                self::BASE_NAMESPACE . RequestMapperGenerator::NAMESPACE_SUBPATH . '\\NyholmRequestMapper',
+                ConfigurationBuilder::fake()
+                    ->withHttpMessage(HttpMessageImplementationStrategy::HTTP_MESSAGE_NYHOLM)
+                    ->build(),
             ],
         ];
     }
 
     protected function generatorClassName(): string
     {
-        return RequestGenerator::class;
+        return RequestMapperGenerator::class;
     }
 }

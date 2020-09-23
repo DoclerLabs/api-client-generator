@@ -12,6 +12,8 @@
         "docler-labs/api-client-exception": "^1.0",
         "guzzle/guzzle": "^7.1",
         "guzzlehttp/psr7": "^1.6",
+        "pimple/pimple": "^3.0",
+        "psr/container": "^1.0",
         "psr/http-client": "^1.0",
         "psr/http-client-implementation": "^1.0",
         "psr/http-factory": "^1.0"

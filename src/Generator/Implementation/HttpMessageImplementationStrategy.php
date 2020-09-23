@@ -8,7 +8,7 @@ use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessage\GuzzleHtt
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessage\NyholmHttpMessage;
 use UnexpectedValueException;
 
-class HttpMessageImplementation implements HttpMessageImplementationInterface
+class HttpMessageImplementationStrategy implements HttpMessageImplementationInterface
 {
     public const HTTP_MESSAGE_GUZZLE          = 'guzzle';
     public const HTTP_MESSAGE_NYHOLM          = 'nyholm';
@@ -40,6 +40,11 @@ class HttpMessageImplementation implements HttpMessageImplementationInterface
     public function generateRequestMapMethod(): MethodBuilder
     {
         return $this->httpMessageImplementation->generateRequestMapMethod();
+    }
+
+    public function getInitMessageImports(): array
+    {
+        return $this->httpMessageImplementation->getInitMessageImports();
     }
 
     public function getPackages(): array
