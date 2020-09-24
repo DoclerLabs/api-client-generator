@@ -11,7 +11,9 @@ use DoclerLabs\ApiClientGenerator\Naming\ResponseMapperNaming;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\Mapper\RequestMapperInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\RequestInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Response\Handler\ErrorHandler;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Response\Mapper\ResponseMapperInterface;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
+use InvalidArgumentException;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
 use Psr\Container\ContainerInterface;
@@ -22,21 +24,23 @@ class ClientGenerator extends GeneratorAbstract
 {
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
     {
-        $methods = [$this->generateResponseAction()];
-        foreach ($specification->getOperations() as $operation) {
-            $methods[] = $this->generateAction($operation);
-        }
-
         $classBuilder = $this->builder
             ->class(ClientNaming::getClassName($specification))
             ->addStmts($this->generateProperties())
-            ->addStmt($this->generateConstructor())
-            ->addStmts($methods);
+            ->addStmt($this->generateConstructor());
+
+        foreach ($specification->getOperations() as $operation) {
+            $classBuilder->addStmt($this->generateAction($operation));
+        }
+
+        $classBuilder
+            ->addStmt($this->generateSendRequestMethod())
+            ->addStmt($this->generateGetResponseMapperMethod());
 
         $this->registerFile($fileRegistry, $classBuilder);
     }
 
-    protected function generateResponseAction(): ClassMethod
+    protected function generateSendRequestMethod(): ClassMethod
     {
         $requestVar  = $this->builder->var('request');
         $methodParam = $this->builder
@@ -54,18 +58,64 @@ class ClientGenerator extends GeneratorAbstract
             'sendRequest',
             [$mapMethodCall]
         );
-        $responseStmt  = $this->builder->methodCall(
-            $this->builder->localPropertyFetch('errorHandler'),
-            'handle',
-            $this->builder->args([$clientCall])
-        );
 
-        return $this->builder->method('getResponse')
+        return $this->builder->method('sendRequest')
             ->makePublic()
             ->addParam($methodParam)
-            ->addStmt($this->builder->return($responseStmt))
+            ->addStmt($this->builder->return($clientCall))
             ->setReturnType('ResponseInterface')
             ->composeDocBlock([$methodParam], 'ResponseInterface')
+            ->getNode();
+    }
+
+    protected function generateGetResponseMapperMethod(): ClassMethod
+    {
+        $this
+            ->addImport(InvalidArgumentException::class)
+            ->addImport(CopiedNamespace::getImport($this->baseNamespace, ResponseMapperInterface::class));
+
+        $statements       = [];
+        $mapperClassParam = $this->builder
+            ->param('mapperClass')
+            ->setType('string')
+            ->getNode();
+
+        $mapperClassVariable = $this->builder->var('mapperClass');
+
+        $ifCondition = $this->builder->not(
+            $this->builder->methodCall(
+                $this->builder->localPropertyFetch('container'),
+                'has',
+                [$mapperClassVariable]
+            )
+        );
+
+        $statements[] = $this->builder->if(
+            $ifCondition,
+            [
+                $this->builder->throw(
+                    InvalidArgumentException::class,
+                    $this->builder->concat(
+                        $this->builder->val('Response mapper not found: '),
+                        $mapperClassVariable
+                    )
+                ),
+            ]
+        );
+        $statements[] = $this->builder->return(
+            $this->builder->methodCall(
+                $this->builder->localPropertyFetch('container'),
+                'get',
+                [$mapperClassVariable]
+            )
+        );
+
+        return $this->builder->method('getResponseMapper')
+            ->makePublic()
+            ->addParam($mapperClassParam)
+            ->addStmts($statements)
+            ->setReturnType('ResponseMapperInterface')
+            ->composeDocBlock([$mapperClassParam], 'ResponseMapperInterface')
             ->getNode();
     }
 
@@ -88,14 +138,21 @@ class ClientGenerator extends GeneratorAbstract
             ->setType($requestClassName)
             ->getNode();
 
-        $responseStmt = $this->builder->localMethodCall('getResponse', [$requestVar]);
+        $responseStmt = $this->builder->localMethodCall('sendRequest', [$requestVar]);
+
+        $errorHandledStmt = $this->builder->methodCall(
+            $this->builder->localPropertyFetch('errorHandler'),
+            'handle',
+            $this->builder->args([$responseStmt])
+        );
 
         $responseBody = $operation->getSuccessfulResponse()->getBody();
         if ($responseBody === null) {
             return $this->builder->method($operation->getName())
                 ->makePublic()
                 ->addParam($methodParam)
-                ->addStmt($responseStmt)
+                ->addStmt($errorHandledStmt)
+                ->setReturnType(null)
                 ->composeDocBlock([$methodParam])
                 ->getNode();
         }
@@ -110,13 +167,12 @@ class ClientGenerator extends GeneratorAbstract
             )
         );
 
-        $getMethod = $this->builder->methodCall(
-            $this->builder->localPropertyFetch('container'),
-            'get',
+        $getMethod = $this->builder->localMethodCall(
+            'getResponseMapper',
             [$this->builder->classConstFetch($mapperClassName, 'class')]
         );
 
-        $mapMethod  = $this->builder->methodCall($getMethod, 'map', [$responseStmt]);
+        $mapMethod  = $this->builder->methodCall($getMethod, 'map', [$errorHandledStmt]);
         $returnStmt = $this->builder->return($mapMethod);
 
         $this->addImport(

@@ -17,7 +17,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientInterface;
 use Test\Request\Mapper\GuzzleRequestMapper;
 use Test\Request\Mapper\RequestMapperInterface;
-use Test\Response\Handler\ResponseHandler;
+use Test\Response\Handler\ErrorHandler;
 use Test\Serializer\BodySerializer;
 
 class SwaggerPetstoreClientFactory
@@ -30,7 +30,7 @@ class SwaggerPetstoreClientFactory
      */
     public function create(string $baseUri, array $options = []): SwaggerPetstoreClient
     {
-        return new SwaggerPetstoreClient($this->initBaseClient($baseUri, $options), $this->initRequestMapper(), new ResponseHandler(), $this->initContainer());
+        return new SwaggerPetstoreClient($this->initBaseClient($baseUri, $options), $this->initRequestMapper(), new ErrorHandler(), $this->initContainer());
     }
 
     private function initBaseClient(string $baseUri, array $options): ClientInterface
