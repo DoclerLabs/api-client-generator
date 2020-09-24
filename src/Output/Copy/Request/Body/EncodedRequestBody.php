@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request;
+namespace DoclerLabs\ApiClientGenerator\Output\Copy\Request\Body;
 
 use GuzzleHttp\Psr7\StreamDecoratorTrait;
 use Psr\Http\Message\StreamInterface;

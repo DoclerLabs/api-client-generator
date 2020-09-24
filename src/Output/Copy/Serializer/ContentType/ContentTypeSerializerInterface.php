@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace DoclerLabs\ApiClientGenerator\Output\StaticPhp\Serializer\ContentType;
+namespace DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType;
 
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\DecodedResponseBody;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Response\Body\DecodedResponseBody;
 use Psr\Http\Message\StreamInterface;
 
 interface ContentTypeSerializerInterface

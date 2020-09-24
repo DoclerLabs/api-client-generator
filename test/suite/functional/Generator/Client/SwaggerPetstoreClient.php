@@ -8,9 +8,6 @@
 
 namespace Test;
 
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\Mapper\RequestMapperInterface;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\RequestInterface as ClientRequestInterface;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Handler\ResponseHandlerInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -19,6 +16,9 @@ use Test\Request\CountPetsRequest;
 use Test\Request\DeletePetRequest;
 use Test\Request\FindPetByIdRequest;
 use Test\Request\FindPetsRequest;
+use Test\Request\Mapper\RequestMapperInterface;
+use Test\Request\RequestInterface;
+use Test\Response\Handler\ResponseHandlerInterface;
 use Test\Response\Mapper\PetCollectionResponseMapper;
 use Test\Response\Mapper\PetResponseMapper;
 use Test\Schema\Pet;
@@ -35,31 +35,31 @@ class SwaggerPetstoreClient
     /** @var ResponseHandlerInterface */
     private $responseHandler;
 
-    /** @var ResponseMapperRegistryInterface */
-    private $mapperRegistry;
+    /** @var ContainerInterface */
+    private $container;
 
     /**
      * @param ClientInterface          $client
      * @param RequestMapperInterface   $requestHandler
      * @param ResponseHandlerInterface $responseHandler
-     * @param ContainerInterface       $mapperRegistry
+     * @param ContainerInterface       $container
      */
-    public function __construct(ClientInterface $client, RequestMapperInterface $requestHandler, ResponseHandlerInterface $responseHandler, ContainerInterface $mapperRegistry)
+    public function __construct(ClientInterface $client, RequestMapperInterface $requestHandler, ResponseHandlerInterface $responseHandler, ContainerInterface $container)
     {
         $this->client          = $client;
         $this->requestHandler  = $requestHandler;
         $this->responseHandler = $responseHandler;
-        $this->mapperRegistry  = $mapperRegistry;
+        $this->container       = $container;
     }
 
     /**
      * @param RequestInterface $request
      *
-     * @return Response
+     * @return ResponseInterface
      */
-    public function getResponse(RequestInterface $request): Response
+    public function getResponse(RequestInterface $request): ResponseInterface
     {
-        return $this->responseHandler->handle($this->client->request($request->getMethod(), $request->getRoute(), $this->requestHandler->getParameters($request)));
+        return $this->responseHandler->handle($this->client->sendRequest($this->requestHandler->map($request)));
     }
 
     /**
@@ -69,7 +69,7 @@ class SwaggerPetstoreClient
      */
     public function findPets(FindPetsRequest $request): PetCollection
     {
-        return $this->mapperRegistry->get(PetCollectionResponseMapper::class)->map($this->getResponse($request));
+        return $this->container->get(PetCollectionResponseMapper::class)->map($this->getResponse($request));
     }
 
     /**
@@ -79,7 +79,7 @@ class SwaggerPetstoreClient
      */
     public function addPet(AddPetRequest $request): Pet
     {
-        return $this->mapperRegistry->get(PetResponseMapper::class)->map($this->getResponse($request));
+        return $this->container->get(PetResponseMapper::class)->map($this->getResponse($request));
     }
 
     /**
@@ -97,7 +97,7 @@ class SwaggerPetstoreClient
      */
     public function findPetById(FindPetByIdRequest $request): Pet
     {
-        return $this->mapperRegistry->get(PetResponseMapper::class)->map($this->getResponse($request));
+        return $this->container->get(PetResponseMapper::class)->map($this->getResponse($request));
     }
 
     /**

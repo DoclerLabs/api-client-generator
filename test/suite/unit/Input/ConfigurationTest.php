@@ -17,6 +17,7 @@ class ConfigurationTest extends TestCase
         string $openapiFilePath,
         string $namespace,
         string $outputDirectory,
+        string $sourceDirectory,
         string $codeStyleConfig,
         string $packageName,
         string $phpVersion,
@@ -30,6 +31,7 @@ class ConfigurationTest extends TestCase
             $openapiFilePath,
             $namespace,
             $outputDirectory,
+            $sourceDirectory,
             $codeStyleConfig,
             $packageName,
             $phpVersion,
@@ -43,6 +45,7 @@ class ConfigurationTest extends TestCase
         self::assertEquals($openapiFilePath, $sut->getSpecificationFilePath());
         self::assertEquals($namespace, $sut->getBaseNamespace());
         self::assertEquals($outputDirectory, $sut->getOutputDirectory());
+        self::assertEquals($sourceDirectory, $sut->getSourceDirectory());
         self::assertEquals($codeStyleConfig, $sut->getCodeStyleConfig());
         self::assertEquals($packageName, $sut->getPackageName());
         self::assertEquals($phpVersion, $sut->getPhpVersion());
@@ -60,6 +63,7 @@ class ConfigurationTest extends TestCase
                 '/dir/path/openapi.yaml',
                 'Test',
                 '/dir/output',
+                'another-dir',
                 '/dir/.php_cs.php',
                 'test/test-api-client',
                 '7.1',

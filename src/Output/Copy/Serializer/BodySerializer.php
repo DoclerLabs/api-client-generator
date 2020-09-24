@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace DoclerLabs\ApiClientGenerator\Output\StaticPhp\Serializer;
+namespace DoclerLabs\ApiClientGenerator\Output\Copy\Serializer;
 
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Serializer\ContentType\JsonContentTypeSerializer;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\JsonContentTypeSerializer;
 use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
 

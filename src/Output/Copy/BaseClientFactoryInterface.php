@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace DoclerLabs\ApiClientGenerator\Output\StaticPhp;
+namespace DoclerLabs\ApiClientGenerator\Output\Copy;
 
 use Psr\Http\Client\ClientInterface;
 

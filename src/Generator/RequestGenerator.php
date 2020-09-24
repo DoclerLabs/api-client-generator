@@ -9,7 +9,6 @@ use DoclerLabs\ApiClientGenerator\Entity\RequestFieldRegistry;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\RequestNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\RequestInterface;
 use JsonSerializable;
 use PhpParser\Node\Stmt\ClassMethod;
 
@@ -29,8 +28,6 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
     {
         $className = RequestNaming::getClassName($operation);
         $request   = $operation->getRequest();
-
-        $this->addImport(RequestInterface::class);
 
         $classBuilder = $this->builder
             ->class($className)

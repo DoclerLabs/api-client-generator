@@ -7,7 +7,7 @@ use PhpParser\NodeTraverser;
 use PhpParser\Parser\Php7;
 use Symfony\Component\Finder\SplFileInfo;
 
-class StaticPhpFilePrinter
+class StaticPhpFileCopier
 {
     private Php7           $parser;
     private PhpFilePrinter $printer;
@@ -23,7 +23,7 @@ class StaticPhpFilePrinter
         $this->traverser = $traverser;
     }
 
-    public function print(string $destinationPath, SplFileInfo $originalFile): void
+    public function copy(string $destinationPath, SplFileInfo $originalFile): void
     {
         if ($originalFile->getExtension() !== 'php') {
             return;

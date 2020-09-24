@@ -12,7 +12,7 @@ use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFileCollection;
 use DoclerLabs\ApiClientGenerator\Output\MetaFilePrinter;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use DoclerLabs\ApiClientGenerator\Output\PhpFilePrinter;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhpFilePrinter;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhpFileCopier;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,7 +29,7 @@ class GenerateCommand extends Command
     private MetaTemplateFacade   $metaTemplate;
     private MetaFilePrinter      $templatePrinter;
     private Finder               $fileFinder;
-    private StaticPhpFilePrinter $staticPhpPrinter;
+    private StaticPhpFileCopier  $staticPhpPrinter;
 
     public function __construct(
         Configuration $configuration,
@@ -40,7 +40,7 @@ class GenerateCommand extends Command
         MetaTemplateFacade $metaTemplate,
         MetaFilePrinter $templatePrinter,
         Finder $fileFinder,
-        StaticPhpFilePrinter $staticPhpCopier
+        StaticPhpFileCopier $staticPhpCopier
     ) {
         parent::__construct();
         $this->configuration    = $configuration;
@@ -91,7 +91,12 @@ class GenerateCommand extends Command
         $progressBar->start();
         foreach ($phpFiles as $phpFile) {
             $this->phpPrinter->print(
-                sprintf('%s/%s', $this->configuration->getOutputDirectory(), $phpFile->getFileName()),
+                sprintf(
+                    '%s/%s/%s',
+                    $this->configuration->getOutputDirectory(),
+                    $this->configuration->getSourceDirectory(),
+                    $phpFile->getFileName()
+                ),
                 $phpFile
             );
             $progressBar->advance();
@@ -133,12 +138,13 @@ class GenerateCommand extends Command
         $progressBar->start();
         foreach ($originalFiles as $originalFile) {
             $destinationPath = sprintf(
-                '%s/%s',
+                '%s/%s/%s',
                 $this->configuration->getOutputDirectory(),
+                $this->configuration->getSourceDirectory(),
                 $originalFile->getRelativePathname()
             );
 
-            $this->staticPhpPrinter->print(
+            $this->staticPhpPrinter->copy(
                 $destinationPath,
                 $originalFile
             );

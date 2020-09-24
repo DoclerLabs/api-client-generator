@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Mapper;
+namespace DoclerLabs\ApiClientGenerator\Output\Copy\Response\Mapper;
 
 use Psr\Http\Message\ResponseInterface;
 

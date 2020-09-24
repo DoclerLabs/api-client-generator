@@ -9,6 +9,7 @@ class ConfigurationBuilder
     private string $specificationFilePath;
     private string $baseNamespace;
     private string $outputDirectory;
+    private string $sourceDirectory;
     private string $codeStyleConfig;
     private string $packageName;
     private string $phpVersion;
@@ -23,6 +24,7 @@ class ConfigurationBuilder
         $this->specificationFilePath   = '/dir/path/openapi.yaml';
         $this->baseNamespace           = 'Test';
         $this->outputDirectory         = '/dir/output';
+        $this->sourceDirectory         = Configuration::DEFAULT_SOURCE_DIRECTORY;
         $this->codeStyleConfig         = __DIR__ . '/../../../.php_cs.php';
         $this->packageName             = 'test/test-api-client';
         $this->phpVersion              = Configuration::DEFAULT_PHP_VERSION;
@@ -55,6 +57,13 @@ class ConfigurationBuilder
     public function withOutputDirectory(string $outputDirectory): self
     {
         $this->outputDirectory = $outputDirectory;
+
+        return $this;
+    }
+
+    public function withSourceDirectory(string $sourceDirectory): self
+    {
+        $this->sourceDirectory = $sourceDirectory;
 
         return $this;
     }
@@ -121,6 +130,7 @@ class ConfigurationBuilder
             $this->specificationFilePath,
             $this->baseNamespace,
             $this->outputDirectory,
+            $this->sourceDirectory,
             $this->codeStyleConfig,
             $this->packageName,
             $this->phpVersion,

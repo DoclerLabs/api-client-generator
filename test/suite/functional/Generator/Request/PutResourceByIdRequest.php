@@ -11,7 +11,6 @@ namespace Test\Request;
 use DateTimeInterface;
 use DoclerLabs\ApiClientBase\Json\Json;
 use DoclerLabs\ApiClientGenerator\Generator\RequestValidationException;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\RequestInterface;
 use JsonSerializable;
 use Test\Schema\EmbeddedObject;
 use Test\Schema\PutResourceByIdRequestBody;

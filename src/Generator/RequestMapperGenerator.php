@@ -6,9 +6,9 @@ use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Request\RequestInterface;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\BodySerializer;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\RequestInterface;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Serializer\BodySerializer;
 use PhpParser\Node\Stmt\ClassMethod;
 use Psr\Http\Message\ServerRequestInterface;
 

@@ -13,14 +13,16 @@ class Configuration
     public const DEFAULT_CODE_STYLE_CONFIG      = __DIR__ . '/../../.php_cs.php';
     public const DEFAULT_TEMPLATE_DIRECTORY     = __DIR__ . '/../../template';
     public const DEFAULT_PHP_VERSION            = PhpVersion::VERSION_PHP72;
+    public const DEFAULT_SOURCE_DIRECTORY       = 'src';
     public const DEFAULT_HTTP_CLIENT            = HttpClientImplementationStrategy::HTTP_CLIENT_GUZZLE7;
     public const DEFAULT_HTTP_MESSAGE           = HttpMessageImplementationStrategy::HTTP_MESSAGE_GUZZLE;
     public const DEFAULT_CONTAINER              = ContainerImplementationStrategy::CONTAINER_PIMPLE;
-    public const STATIC_PHP_FILE_BASE_NAMESPACE = 'DoclerLabs\\ApiClientGenerator\\Output\\StaticPhp';
-    public const STATIC_PHP_FILE_DIRECTORY      = __DIR__ . '/../Output/StaticPhp';
+    public const STATIC_PHP_FILE_BASE_NAMESPACE = 'DoclerLabs\\ApiClientGenerator\\Output\\Copy';
+    public const STATIC_PHP_FILE_DIRECTORY      = __DIR__ . '/../Output/Copy';
     private string $specificationFilePath;
     private string $baseNamespace;
     private string $outputDirectory;
+    private string $sourceDirectory;
     private string $codeStyleConfig;
     private string $packageName;
     private string $phpVersion;
@@ -34,6 +36,7 @@ class Configuration
         string $specificationFilePath,
         string $baseNamespace,
         string $outputDirectory,
+        string $sourceDirectory,
         string $codeStyleConfig,
         string $packageName,
         string $phpVersion,
@@ -46,6 +49,7 @@ class Configuration
         Assert::notEmpty($specificationFilePath, 'Specification file path is not provided.');
         Assert::notEmpty($baseNamespace, 'Namespace for generated code is not provided.');
         Assert::notEmpty($outputDirectory, 'Output directory is not provided.');
+        Assert::notEmpty($sourceDirectory, 'Source directory is not provided.');
         Assert::notEmpty($codeStyleConfig, 'Code style config is not provided.');
         Assert::notEmpty($packageName, 'Composer package name is not provided.');
         Assert::notEmpty($phpVersion, 'Php version is not provided.');
@@ -58,6 +62,7 @@ class Configuration
         $this->specificationFilePath   = $specificationFilePath;
         $this->baseNamespace           = $baseNamespace;
         $this->outputDirectory         = $outputDirectory;
+        $this->sourceDirectory         = $sourceDirectory;
         $this->codeStyleConfig         = $codeStyleConfig;
         $this->packageName             = $packageName;
         $this->phpVersion              = $phpVersion;
@@ -81,6 +86,11 @@ class Configuration
     public function getOutputDirectory(): string
     {
         return $this->outputDirectory;
+    }
+
+    public function getSourceDirectory(): string
+    {
+        return $this->sourceDirectory;
     }
 
     public function getCodeStyleConfig(): string

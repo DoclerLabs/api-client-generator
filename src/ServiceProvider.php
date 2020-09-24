@@ -33,7 +33,7 @@ use DoclerLabs\ApiClientGenerator\Output\DirectoryPrinter;
 use DoclerLabs\ApiClientGenerator\Output\MetaFilePrinter;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpCodeStyleFixer;
 use DoclerLabs\ApiClientGenerator\Output\PhpFilePrinter;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhpFilePrinter;
+use DoclerLabs\ApiClientGenerator\Output\StaticPhpFileCopier;
 use DoclerLabs\ApiClientGenerator\Output\TextFilePrinter;
 use DoclerLabs\ApiClientGenerator\Output\WarningFormatter;
 use PhpCsFixer\Console\Command\FixCommand;
@@ -74,6 +74,7 @@ class ServiceProvider implements ServiceProviderInterface
             getenv('OPENAPI') ?: '',
             getenv('NAMESPACE') ?: '',
             getenv('OUTPUT_DIR') ?: '',
+            getenv('SOURCE_DIR') ?: Configuration::DEFAULT_SOURCE_DIRECTORY,
             getenv('CODE_STYLE') ?: Configuration::DEFAULT_CODE_STYLE_CONFIG,
             getenv('PACKAGE') ?: '',
             getenv('CLIENT_PHP_VERSION') ?: Configuration::DEFAULT_PHP_VERSION,
@@ -93,7 +94,7 @@ class ServiceProvider implements ServiceProviderInterface
             $container[MetaTemplateFacade::class],
             $container[MetaFilePrinter::class],
             $container[Finder::class],
-            $container[StaticPhpFilePrinter::class]
+            $container[StaticPhpFileCopier::class]
         );
 
         $pimple[Finder::class] = static fn(Container $container) => new Finder();
@@ -266,7 +267,7 @@ class ServiceProvider implements ServiceProviderInterface
 
         $pimple[DirectoryPrinter::class] = static fn() => new DirectoryPrinter();
 
-        $pimple[StaticPhpFilePrinter::class] = static function (Container $container) {
+        $pimple[StaticPhpFileCopier::class] = static function (Container $container) {
             $traverser = new NodeTraverser();
             $traverser->addVisitor(
                 new NamespaceSubstituteVisitor(
@@ -275,7 +276,7 @@ class ServiceProvider implements ServiceProviderInterface
                 )
             );
 
-            return new StaticPhpFilePrinter(
+            return new StaticPhpFileCopier(
                 $container[PhpParser::class],
                 $container[PhpFilePrinter::class],
                 $traverser

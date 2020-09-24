@@ -9,10 +9,10 @@ use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementa
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\ClientNaming;
 use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Request\Mapper\RequestMapperInterface;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Response\Handler\ResponseHandler;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\BodySerializer;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\Mapper\RequestMapperInterface;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Handler\ResponseHandler;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Serializer\BodySerializer;
 use PhpParser\Node\Stmt\ClassMethod;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientInterface;

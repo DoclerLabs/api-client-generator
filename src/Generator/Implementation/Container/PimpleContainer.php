@@ -102,7 +102,7 @@ class PimpleContainer implements ContainerImplementationInterface
     public function getContainerInitImports(): array
     {
         return [
-            'Psr\Container\ContainerInterface as Psr11Container',
+            'Pimple\Psr11\Container as Psr11Container',
             Container::class,
         ];
     }

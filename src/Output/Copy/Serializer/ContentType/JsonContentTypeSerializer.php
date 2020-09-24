@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace DoclerLabs\ApiClientGenerator\Output\StaticPhp\Serializer\ContentType;
+namespace DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType;
 
 use DoclerLabs\ApiClientException\RequestValidationException;
 use DoclerLabs\ApiClientException\UnexpectedResponseBodyException;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\DecodedResponseBody;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Response\Body\DecodedResponseBody;
 use Psr\Http\Message\StreamInterface;
 
 class JsonContentTypeSerializer implements ContentTypeSerializerInterface
