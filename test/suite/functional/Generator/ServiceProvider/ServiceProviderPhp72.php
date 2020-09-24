@@ -8,26 +8,31 @@
 
 namespace Test;
 
-use Psr\Container\ContainerInterface;
+use Pimple\Container;
 use Test\Response\Mapper\FoodResponseMapper;
 use Test\Response\Mapper\PetCollectionResponseMapper;
 use Test\Response\Mapper\PetResponseMapper;
 
 class ServiceProvider
 {
-    /**
-     * @param ContainerInterface $container
-     */
-    public function registerResponseMappers(ContainerInterface $container): void
+    public function register(Container $container)
     {
-        $container->add(PetCollectionResponseMapper::class, static function () use ($container): PetCollectionResponseMapper {
-            return new PetCollectionResponseMapper($container->get(PetResponseMapper::class));
-        });
-        $container->add(PetResponseMapper::class, static function () use ($container): PetResponseMapper {
-            return new PetResponseMapper($container->get(FoodResponseMapper::class));
-        });
-        $container->add(FoodResponseMapper::class, static function () use ($container): FoodResponseMapper {
+        $this->registerResponseMappers($container);
+    }
+
+    /**
+     * @param Container $container
+     */
+    private function registerResponseMappers(Container $container): void
+    {
+        $container[PetCollectionResponseMapper::class] = static function () use ($container): PetCollectionResponseMapper {
+            return new PetCollectionResponseMapper($container[PetResponseMapper::class]);
+        };
+        $container[PetResponseMapper::class] = static function () use ($container): PetResponseMapper {
+            return new PetResponseMapper($container[FoodResponseMapper::class]);
+        };
+        $container[FoodResponseMapper::class] = static function () use ($container): FoodResponseMapper {
             return new FoodResponseMapper();
-        });
+        };
     }
 }

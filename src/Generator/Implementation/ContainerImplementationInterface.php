@@ -8,7 +8,11 @@ interface ContainerImplementationInterface
 {
     public function generateInitContainerMethod(): MethodBuilder;
 
-    public function getInitContainerImports(): array;
+    public function generateRegisterResponseMappers(array $compositeFields): MethodBuilder;
 
     public function getPackages(): array;
+
+    public function getContainerInitImports(): array;
+
+    public function getContainerRegisterImports(): array;
 }

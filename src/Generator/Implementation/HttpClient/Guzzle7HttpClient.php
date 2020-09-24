@@ -35,7 +35,7 @@ class Guzzle7HttpClient extends GuzzleHttpClientAbstract implements HttpClientIm
     public function getPackages(): array
     {
         return [
-            'guzzle/guzzle' => '^7.1',
+            'guzzlehttp/guzzle' => '^7.1',
         ];
     }
 }

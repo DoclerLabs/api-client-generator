@@ -11,8 +11,9 @@ namespace Test;
 use GuzzleHttp\Client;
 use Http\Adapter\Guzzle6\Client as ClientAdapter;
 use InvalidArgumentException;
-use Pimple\Psr11\Container;
+use Pimple\Container;
 use Psr\Container\ContainerInterface;
+use Psr\Container\ContainerInterface as Psr11Container;
 use Psr\Http\Client\ClientInterface;
 use Test\Request\Mapper\GuzzleRequestMapper;
 use Test\Request\Mapper\RequestMapperInterface;
@@ -29,10 +30,7 @@ class SwaggerPetstoreClientFactory
      */
     public function create(string $baseUri, array $options = []): SwaggerPetstoreClient
     {
-        $registry = new ResponseMapperRegistry();
-        $this->registerResponseMappers($registry);
-
-        return new SwaggerPetstoreClient($this->initBaseClient($baseUri, $options), $this->initRequestMapper(), new ResponseHandler(), $registry);
+        return new SwaggerPetstoreClient($this->initBaseClient($baseUri, $options), $this->initRequestMapper(), new ResponseHandler(), $this->initContainer());
     }
 
     private function initBaseClient(string $baseUri, array $options): ClientInterface
@@ -53,9 +51,10 @@ class SwaggerPetstoreClientFactory
 
     private function initContainer(): ContainerInterface
     {
-        $container       = new Container();
+        $pimpleContainer = new Container();
+        $container       = new Psr11Container($pimpleContainer);
         $serviceProvider = new ServiceProvider();
-        $serviceProvider->registerResponseMappers($container);
+        $serviceProvider->register($pimpleContainer);
 
         return $container;
     }

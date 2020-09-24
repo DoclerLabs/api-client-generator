@@ -8,7 +8,7 @@ use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpClientImplementat
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\ClientNaming;
-use DoclerLabs\ApiClientGenerator\Naming\StaticClassNamespace;
+use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\Mapper\RequestMapperInterface;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Response\Handler\ResponseHandler;
@@ -43,9 +43,9 @@ class ClientFactoryGenerator extends GeneratorAbstract
         $this
             ->addImport(ClientInterface::class)
             ->addImport(ContainerInterface::class)
-            ->addImport(StaticClassNamespace::getImport($this->baseNamespace, RequestMapperInterface::class))
-            ->addImport(StaticClassNamespace::getImport($this->baseNamespace, ResponseHandler::class))
-            ->addImport(StaticClassNamespace::getImport($this->baseNamespace, BodySerializer::class))
+            ->addImport(CopiedNamespace::getImport($this->baseNamespace, RequestMapperInterface::class))
+            ->addImport(CopiedNamespace::getImport($this->baseNamespace, ResponseHandler::class))
+            ->addImport(CopiedNamespace::getImport($this->baseNamespace, BodySerializer::class))
             ->addImport(
                 sprintf(
                     '%s%s\\%s',
@@ -59,7 +59,7 @@ class ClientFactoryGenerator extends GeneratorAbstract
             $this->addImport($import);
         }
 
-        foreach ($this->containerImplementation->getInitContainerImports() as $import) {
+        foreach ($this->containerImplementation->getContainerInitImports() as $import) {
             $this->addImport($import);
         }
 
@@ -115,13 +115,6 @@ class ClientFactoryGenerator extends GeneratorAbstract
             ->setDefault($this->builder->val([]))
             ->getNode();
 
-        $registryVar  = $this->builder->var('registry');
-        $statements[] = $this->builder->assign(
-            $registryVar,
-            $this->builder->new('ResponseMapperRegistry')
-        );
-
-        $statements[]    = $this->builder->localMethodCall('registerResponseMappers', [$registryVar]);
         $clientClassName = ClientNaming::getClassName($specification);
         $statements[]    = $this->builder->return(
             $this->builder->new(
@@ -134,7 +127,7 @@ class ClientFactoryGenerator extends GeneratorAbstract
                         ),
                         $this->builder->localMethodCall('initRequestMapper'),
                         $this->builder->new('ResponseHandler'),
-                        $registryVar,
+                        $this->builder->localMethodCall('initContainer'),
                     ]
                 )
             )

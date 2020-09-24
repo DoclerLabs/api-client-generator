@@ -5,9 +5,8 @@ namespace DoclerLabs\ApiClientGenerator\Generator;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
-use DoclerLabs\ApiClientGenerator\Naming\StaticClassNamespace;
+use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\Mapper\RequestMapperInterface;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\RequestInterface;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Serializer\BodySerializer;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -31,8 +30,7 @@ class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
     {
         $this
-            ->addImport(RequestMapperInterface::class)
-            ->addImport(StaticClassNamespace::getImport($this->baseNamespace, BodySerializer::class));
+            ->addImport(CopiedNamespace::getImport($this->baseNamespace, BodySerializer::class));
 
         foreach ($this->messageImplementation->getInitMessageImports() as $import) {
             $this->addImport($import);
@@ -43,14 +41,14 @@ class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         $properties   = [];
         $properties[] = $this->builder->localProperty(
             $serializerPropertyName,
-            'BodySerializerInterface',
-            'BodySerializerInterface'
+            'BodySerializer',
+            'BodySerializer'
         );
 
         $parameters   = [];
         $parameters[] = $this->builder
             ->param($serializerPropertyName)
-            ->setType('BodySerializerInterface')
+            ->setType('BodySerializer')
             ->getNode();
 
         $paramInits[] = $this->builder->assign(
@@ -81,7 +79,7 @@ class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
     {
         $this
             ->addImport(ServerRequestInterface::class)
-            ->addImport(StaticClassNamespace::getImport($this->baseNamespace, RequestInterface::class));
+            ->addImport(CopiedNamespace::getImport($this->baseNamespace, RequestInterface::class));
 
         $requestParam = $this->builder
             ->param('request')

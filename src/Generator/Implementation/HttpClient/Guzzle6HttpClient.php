@@ -37,7 +37,7 @@ class Guzzle6HttpClient extends GuzzleHttpClientAbstract implements HttpClientIm
     public function getPackages(): array
     {
         return [
-            'guzzle/guzzle'            => '^6.5',
+            'guzzlehttp/guzzle'        => '^6.5',
             'php-http/guzzle6-adapter' => '^2.0',
         ];
     }

@@ -13,9 +13,9 @@ class ContainerImplementationStrategy implements ContainerImplementationInterfac
     public const CONTAINER_IMPLEMENTATIONS = [
         self::CONTAINER_PIMPLE => PimpleContainer::class,
     ];
-    private $containerImplementation;
+    private ContainerImplementationInterface $containerImplementation;
 
-    public function __construct(string $container, CodeBuilder $builder)
+    public function __construct(string $container, string $baseNamespace, CodeBuilder $builder)
     {
         if (!isset(self::CONTAINER_IMPLEMENTATIONS[$container])) {
             $supported = json_encode(self::CONTAINER_IMPLEMENTATIONS, JSON_THROW_ON_ERROR);
@@ -26,7 +26,7 @@ class ContainerImplementationStrategy implements ContainerImplementationInterfac
         }
         $implementationClassName = self::CONTAINER_IMPLEMENTATIONS[$container];
 
-        $this->containerImplementation = new $implementationClassName($builder);
+        $this->containerImplementation = new $implementationClassName($baseNamespace, $builder);
     }
 
     public function generateInitContainerMethod(): MethodBuilder
@@ -34,13 +34,23 @@ class ContainerImplementationStrategy implements ContainerImplementationInterfac
         return $this->containerImplementation->generateInitContainerMethod();
     }
 
-    public function getInitContainerImports(): array
+    public function generateRegisterResponseMappers(array $compositeFields): MethodBuilder
     {
-        return $this->containerImplementation->getInitContainerImports();
+        return $this->containerImplementation->generateRegisterResponseMappers($compositeFields);
     }
 
     public function getPackages(): array
     {
         return $this->containerImplementation->getPackages();
+    }
+
+    public function getContainerInitImports(): array
+    {
+        return $this->containerImplementation->getContainerInitImports();
+    }
+
+    public function getContainerRegisterImports(): array
+    {
+        return $this->containerImplementation->getContainerRegisterImports();
     }
 }

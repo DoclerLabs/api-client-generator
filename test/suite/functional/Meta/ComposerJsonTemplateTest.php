@@ -77,7 +77,11 @@ class ComposerJsonTemplateTest extends AbstractTemplateTest
             $configuration,
             new HttpClientImplementationStrategy($configuration->getHttpClient(), $codeBuilder),
             new HttpMessageImplementationStrategy($configuration->getHttpMessage(), $codeBuilder),
-            new ContainerImplementationStrategy($configuration->getContainer(), $codeBuilder)
+            new ContainerImplementationStrategy(
+                $configuration->getContainer(),
+                $configuration->getBaseNamespace(),
+                $codeBuilder
+            )
         );
     }
 }

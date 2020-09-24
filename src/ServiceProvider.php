@@ -167,7 +167,8 @@ class ServiceProvider implements ServiceProviderInterface
 
         $pimple[ServiceProviderGenerator::class] = static fn(Container $container) => new ServiceProviderGenerator(
             $container[Configuration::class]->getBaseNamespace(),
-            $container[CodeBuilder::class]
+            $container[CodeBuilder::class],
+            $container[ContainerImplementationStrategy::class]
         );
 
         $pimple[HttpClientImplementationStrategy::class] =
@@ -185,6 +186,7 @@ class ServiceProvider implements ServiceProviderInterface
         $pimple[ContainerImplementationStrategy::class] =
             static fn(Container $container) => new ContainerImplementationStrategy(
                 $container[Configuration::class]->getContainer(),
+                $container[Configuration::class]->getBaseNamespace(),
                 $container[CodeBuilder::class]
             );
 

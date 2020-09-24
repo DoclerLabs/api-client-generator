@@ -4,7 +4,7 @@ namespace DoclerLabs\ApiClientGenerator\Naming;
 
 use DoclerLabs\ApiClientGenerator\Input\Configuration;
 
-class StaticClassNamespace
+class CopiedNamespace
 {
     public static function getImport(string $baseNamespace, string $staticClassFqdn): string
     {

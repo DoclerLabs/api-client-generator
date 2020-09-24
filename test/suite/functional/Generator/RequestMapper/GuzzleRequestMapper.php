@@ -8,7 +8,6 @@
 
 namespace Test\Request\Mapper;
 
-use DoclerLabs\ApiClientGenerator\Output\StaticPhp\Request\Mapper\RequestMapperInterface;
 use GuzzleHttp\Psr7\ServerRequest;
 use Psr\Http\Message\ServerRequestInterface;
 use Test\Request\RequestInterface;
@@ -16,13 +15,13 @@ use Test\Serializer\BodySerializer;
 
 class GuzzleRequestMapper implements RequestMapperInterface
 {
-    /** @var BodySerializerInterface */
+    /** @var BodySerializer */
     private $serializer;
 
     /**
-     * @param BodySerializerInterface $serializer
+     * @param BodySerializer $serializer
      */
-    public function __construct(BodySerializerInterface $serializer)
+    public function __construct(BodySerializer $serializer)
     {
         $this->serializer = $serializer;
     }
