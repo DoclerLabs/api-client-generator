@@ -10,7 +10,7 @@ use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\ClientNaming;
 use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\Mapper\RequestMapperInterface;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Response\Handler\ResponseHandler;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Response\Handler\ErrorHandler;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\BodySerializer;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -44,7 +44,7 @@ class ClientFactoryGenerator extends GeneratorAbstract
             ->addImport(ClientInterface::class)
             ->addImport(ContainerInterface::class)
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, RequestMapperInterface::class))
-            ->addImport(CopiedNamespace::getImport($this->baseNamespace, ResponseHandler::class))
+            ->addImport(CopiedNamespace::getImport($this->baseNamespace, ErrorHandler::class))
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, BodySerializer::class))
             ->addImport(
                 sprintf(
@@ -126,7 +126,7 @@ class ClientFactoryGenerator extends GeneratorAbstract
                             [$this->builder->var('baseUri'), $this->builder->var('options')]
                         ),
                         $this->builder->localMethodCall('initRequestMapper'),
-                        $this->builder->new('ResponseHandler'),
+                        $this->builder->new('ErrorHandler'),
                         $this->builder->localMethodCall('initContainer'),
                     ]
                 )

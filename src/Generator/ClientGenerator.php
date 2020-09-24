@@ -10,7 +10,7 @@ use DoclerLabs\ApiClientGenerator\Naming\RequestNaming;
 use DoclerLabs\ApiClientGenerator\Naming\ResponseMapperNaming;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\Mapper\RequestMapperInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\RequestInterface;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Response\Handler\ResponseHandlerInterface;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Response\Handler\ErrorHandler;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
@@ -45,7 +45,7 @@ class ClientGenerator extends GeneratorAbstract
             ->getNode();
 
         $mapMethodCall = $this->builder->methodCall(
-            $this->builder->localPropertyFetch('requestHandler'),
+            $this->builder->localPropertyFetch('requestMapper'),
             'map',
             $this->builder->args([$requestVar])
         );
@@ -55,7 +55,7 @@ class ClientGenerator extends GeneratorAbstract
             [$mapMethodCall]
         );
         $responseStmt  = $this->builder->methodCall(
-            $this->builder->localPropertyFetch('responseHandler'),
+            $this->builder->localPropertyFetch('errorHandler'),
             'handle',
             $this->builder->args([$clientCall])
         );
@@ -144,8 +144,8 @@ class ClientGenerator extends GeneratorAbstract
     {
         return [
             $this->builder->localProperty('client', 'ClientInterface', 'ClientInterface'),
-            $this->builder->localProperty('requestHandler', 'RequestMapperInterface', 'RequestMapperInterface'),
-            $this->builder->localProperty('responseHandler', 'ResponseHandlerInterface', 'ResponseHandlerInterface'),
+            $this->builder->localProperty('requestMapper', 'RequestMapperInterface', 'RequestMapperInterface'),
+            $this->builder->localProperty('errorHandler', 'ErrorHandler', 'ErrorHandler'),
             $this->builder->localProperty(
                 'container',
                 'ContainerInterface',
@@ -161,7 +161,7 @@ class ClientGenerator extends GeneratorAbstract
             ->addImport(ResponseInterface::class)
             ->addImport(ContainerInterface::class)
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, RequestMapperInterface::class))
-            ->addImport(CopiedNamespace::getImport($this->baseNamespace, ResponseHandlerInterface::class))
+            ->addImport(CopiedNamespace::getImport($this->baseNamespace, ErrorHandler::class))
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, RequestInterface::class));
 
         $parameters[] = $this->builder
@@ -169,12 +169,12 @@ class ClientGenerator extends GeneratorAbstract
             ->setType('ClientInterface')
             ->getNode();
         $parameters[] = $this->builder
-            ->param('requestHandler')
+            ->param('requestMapper')
             ->setType('RequestMapperInterface')
             ->getNode();
         $parameters[] = $this->builder
-            ->param('responseHandler')
-            ->setType('ResponseHandlerInterface')
+            ->param('errorHandler')
+            ->setType('ErrorHandler')
             ->getNode();
         $parameters[] = $this->builder
             ->param('container')
@@ -186,12 +186,12 @@ class ClientGenerator extends GeneratorAbstract
             $this->builder->var('client')
         );
         $inits[] = $this->builder->assign(
-            $this->builder->localPropertyFetch('requestHandler'),
-            $this->builder->var('requestHandler')
+            $this->builder->localPropertyFetch('requestMapper'),
+            $this->builder->var('requestMapper')
         );
         $inits[] = $this->builder->assign(
-            $this->builder->localPropertyFetch('responseHandler'),
-            $this->builder->var('responseHandler')
+            $this->builder->localPropertyFetch('errorHandler'),
+            $this->builder->var('errorHandler')
         );
         $inits[] = $this->builder->assign(
             $this->builder->localPropertyFetch('container'),
