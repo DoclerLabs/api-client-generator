@@ -2,12 +2,12 @@
 
 namespace DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType;
 
-use DoclerLabs\ApiClientGenerator\Output\Copy\Response\Body\DecodedResponseBody;
-use Psr\Http\Message\StreamInterface;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Request\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 interface ContentTypeSerializerInterface
 {
-    public function encode(array $requestBody): StreamInterface;
+    public function encodeBody(RequestInterface $request): string;
 
-    public function decode(StreamInterface $responseBody): DecodedResponseBody;
+    public function decodeBody(ResponseInterface $response): array;
 }

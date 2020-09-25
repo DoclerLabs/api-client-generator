@@ -3,11 +3,13 @@
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DateTimeInterface;
-use DoclerLabs\ApiClientBase\Json\Json;
+use DoclerLabs\ApiClientException\RequestValidationException;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
+use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaNaming;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\Json\Json;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -125,7 +127,7 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
         }
 
         $this
-            ->addImport(Json::class)
+            ->addImport(CopiedNamespace::getImport($this->baseNamespace, Json::class))
             ->addImport(RequestValidationException::class);
 
         $propertyVar       = $this->builder->var($root->getPhpVariableName());

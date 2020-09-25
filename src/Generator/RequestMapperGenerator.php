@@ -7,7 +7,7 @@ use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementa
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\RequestInterface;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\BodySerializer;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\BodySerializerRegistry;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use PhpParser\Node\Stmt\ClassMethod;
 use Psr\Http\Message\ServerRequestInterface;
@@ -30,25 +30,25 @@ class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
     {
         $this
-            ->addImport(CopiedNamespace::getImport($this->baseNamespace, BodySerializer::class));
+            ->addImport(CopiedNamespace::getImport($this->baseNamespace, BodySerializerRegistry::class));
 
         foreach ($this->messageImplementation->getInitMessageImports() as $import) {
             $this->addImport($import);
         }
 
-        $serializerPropertyName = 'serializer';
+        $serializerPropertyName = 'serializerRegistry';
 
         $properties   = [];
         $properties[] = $this->builder->localProperty(
             $serializerPropertyName,
-            'BodySerializer',
-            'BodySerializer'
+            'BodySerializerRegistry',
+            'BodySerializerRegistry'
         );
 
         $parameters   = [];
         $parameters[] = $this->builder
             ->param($serializerPropertyName)
-            ->setType('BodySerializer')
+            ->setType('BodySerializerRegistry')
             ->getNode();
 
         $paramInits[] = $this->builder->assign(

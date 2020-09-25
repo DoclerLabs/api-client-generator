@@ -9,11 +9,10 @@
 namespace Test\Schema;
 
 use DateTimeInterface;
-use DoclerLabs\ApiClientBase\Json\Json;
-use DoclerLabs\ApiClientGenerator\Generator\RequestValidationException;
-use JsonSerializable;
+use DoclerLabs\ApiClientException\RequestValidationException;
+use Test\Serializer\ContentType\Json\Json;
 
-class Item implements JsonSerializable
+class Item implements SerializableRequestBodyInterface
 {
     const MANDATORY_ENUM_ONE_OPTION = 'one option';
 
@@ -380,7 +379,7 @@ class Item implements JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerialize(): array
+    public function toArray(): array
     {
         $fields                     = [];
         $fields['mandatoryInteger'] = $this->mandatoryInteger;
@@ -390,8 +389,8 @@ class Item implements JsonSerializable
         $fields['mandatoryFloat']   = $this->mandatoryFloat;
         $fields['mandatoryBoolean'] = $this->mandatoryBoolean;
         $fields['mandatoryArray']   = $this->mandatoryArray;
-        $fields['mandatoryObject']  = $this->mandatoryObject->jsonSerialize();
-        $fields['nullableObject']   = $this->nullableObject !== null ? $this->nullableObject->jsonSerialize() : null;
+        $fields['mandatoryObject']  = $this->mandatoryObject->toArray();
+        $fields['nullableObject']   = $this->nullableObject !== null ? $this->nullableObject->toArray() : null;
         $fields['nullableDate']     = $this->nullableDate   !== null ? $this->nullableDate->format(DATE_RFC3339) : null;
         if ($this->optionalInteger !== null) {
             $fields['optionalInteger'] = $this->optionalInteger;
@@ -415,7 +414,7 @@ class Item implements JsonSerializable
             $fields['optionalArray'] = $this->optionalArray;
         }
         if ($this->optionalObject !== null) {
-            $fields['optionalObject'] = $this->optionalObject->jsonSerialize();
+            $fields['optionalObject'] = $this->optionalObject->toArray();
         }
 
         return $fields;

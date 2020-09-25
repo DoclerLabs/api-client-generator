@@ -6,7 +6,6 @@ use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\FieldType;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
-use JsonSerializable;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\ClassMethod;
 
@@ -27,19 +26,17 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
 
     protected function generateSchema(Field $field, PhpFileCollection $fileRegistry): void
     {
-        $this->addImport(JsonSerializable::class);
         $className = $field->getPhpClassName();
 
         $classBuilder = $this->builder
             ->class($className)
+            ->implement('SerializableRequestBodyInterface')
             ->addStmts($this->generateEnumConsts($field))
             ->addStmts($this->generateProperties($field))
             ->addStmt($this->generateConstructor($field))
             ->addStmts($this->generateSetMethods($field))
             ->addStmts($this->generateGetMethods($field))
-            ->addStmt($this->generateJsonSerialize($field));
-
-        $classBuilder->implement('JsonSerializable');
+            ->addStmt($this->generateToArray($field));
 
         $this->registerFile($fileRegistry, $classBuilder, self::SUBDIRECTORY, self::NAMESPACE_SUBPATH);
     }
@@ -131,7 +128,7 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
         return $statements;
     }
 
-    protected function generateJsonSerialize(Field $root): ClassMethod
+    protected function generateToArray(Field $root): ClassMethod
     {
         $statements    = [];
         $arrayVariable = $this->builder->var('fields');
@@ -144,7 +141,7 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
         $returnType = FieldType::PHP_TYPE_ARRAY;
 
         return $this->builder
-            ->method('jsonSerialize')
+            ->method('toArray')
             ->makePublic()
             ->addStmts($statements)
             ->setReturnType($returnType)
@@ -158,7 +155,7 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
         foreach ($root->getObjectProperties() as $propertyField) {
             $value = $this->builder->localPropertyFetch($propertyField->getPhpVariableName());
             if ($propertyField->isComposite()) {
-                $methodCall = $this->builder->methodCall($value, 'jsonSerialize');
+                $methodCall = $this->builder->methodCall($value, 'toArray');
                 if ($propertyField->isNullable()) {
                     $value = $this->builder->ternary(
                         $this->builder->notEquals($value, $this->builder->val(null)),

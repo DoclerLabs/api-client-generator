@@ -11,19 +11,19 @@ namespace Test\Request\Mapper;
 use GuzzleHttp\Psr7\ServerRequest;
 use Psr\Http\Message\ServerRequestInterface;
 use Test\Request\RequestInterface;
-use Test\Serializer\BodySerializer;
+use Test\Serializer\BodySerializerRegistry;
 
 class GuzzleRequestMapper implements RequestMapperInterface
 {
-    /** @var BodySerializer */
-    private $serializer;
+    /** @var BodySerializerRegistry */
+    private $serializerRegistry;
 
     /**
-     * @param BodySerializer $serializer
+     * @param BodySerializerRegistry $serializerRegistry
      */
-    public function __construct(BodySerializer $serializer)
+    public function __construct(BodySerializerRegistry $serializerRegistry)
     {
-        $this->serializer = $serializer;
+        $this->serializerRegistry = $serializerRegistry;
     }
 
     /**
@@ -33,7 +33,8 @@ class GuzzleRequestMapper implements RequestMapperInterface
      */
     public function map(RequestInterface $request): ServerRequestInterface
     {
-        $psr7Request = new ServerRequest($request->getMethod(), $request->getRoute(), $request->getHeaders(), $this->serializer->encode($request->getBody()), '1.1', []);
+        $body        = $this->serializerRegistry->getContentTypeSerializer($request->getContentType())->encode($request->getBody());
+        $psr7Request = new ServerRequest($request->getMethod(), $request->getRoute(), $request->getHeaders(), $body, '1.1', []);
         $psr7Request->withQueryParams($request->getQueryParameters());
         $psr7Request->withCookieParams($request->getCookies());
 

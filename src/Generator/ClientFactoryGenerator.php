@@ -11,7 +11,7 @@ use DoclerLabs\ApiClientGenerator\Naming\ClientNaming;
 use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\Mapper\RequestMapperInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Response\Handler\ErrorHandler;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\BodySerializer;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\BodySerializerRegistry;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use PhpParser\Node\Stmt\ClassMethod;
 use Psr\Container\ContainerInterface;
@@ -45,7 +45,7 @@ class ClientFactoryGenerator extends GeneratorAbstract
             ->addImport(ContainerInterface::class)
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, RequestMapperInterface::class))
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, ErrorHandler::class))
-            ->addImport(CopiedNamespace::getImport($this->baseNamespace, BodySerializer::class))
+            ->addImport(CopiedNamespace::getImport($this->baseNamespace, BodySerializerRegistry::class))
             ->addImport(
                 sprintf(
                     '%s%s\\%s',
@@ -86,7 +86,7 @@ class ClientFactoryGenerator extends GeneratorAbstract
             ->setReturnType('RequestMapperInterface')
             ->getNode();
 
-        $initContaineMethod = $this->containerImplementation
+        $initContainerMethod = $this->containerImplementation
             ->generateInitContainerMethod()
             ->makePrivate()
             ->setReturnType('ContainerInterface')
@@ -97,7 +97,7 @@ class ClientFactoryGenerator extends GeneratorAbstract
             ->addStmt($this->generateCreate($specification))
             ->addStmt($initBaseClientMethod)
             ->addStmt($initRequestMapperMethod)
-            ->addStmt($initContaineMethod);
+            ->addStmt($initContainerMethod);
 
         $this->registerFile($fileRegistry, $classBuilder);
     }
@@ -126,7 +126,7 @@ class ClientFactoryGenerator extends GeneratorAbstract
                             [$this->builder->var('baseUri'), $this->builder->var('options')]
                         ),
                         $this->builder->localMethodCall('initRequestMapper'),
-                        $this->builder->new('ErrorHandler'),
+                        $this->builder->new('ErrorHandler', [$this->builder->new('ResponseExceptionFactory')]),
                         $this->builder->localMethodCall('initContainer'),
                     ]
                 )

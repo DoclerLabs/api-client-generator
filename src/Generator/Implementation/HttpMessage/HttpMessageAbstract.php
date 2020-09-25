@@ -33,14 +33,36 @@ abstract class HttpMessageAbstract
         $requestVariable     = $this->builder->var('request');
         $psr7RequestVariable = $this->builder->var('psr7Request');
 
+        $bodyVariable = $this->builder->var('body');
+
+        $getContentTypeSerializerMethodCall = $this->builder->methodCall(
+            $this->builder->localPropertyFetch('serializerRegistry'),
+            'getContentTypeSerializer',
+            [
+                $this->builder->methodCall(
+                    $requestVariable,
+                    'getContentType'
+                ),
+            ]
+        );
+
+        $encodeMethodCall = $this->builder->methodCall(
+            $getContentTypeSerializerMethodCall,
+            'encode',
+            [
+                $this->builder->methodCall(
+                    $requestVariable,
+                    'getBody'
+                ),
+            ]
+        );
+
+        $statements[] = $this->builder->assign($bodyVariable, $encodeMethodCall);
+
         $arguments[] = $this->builder->methodCall($requestVariable, 'getMethod');
         $arguments[] = $this->builder->methodCall($requestVariable, 'getRoute');
         $arguments[] = $this->builder->methodCall($requestVariable, 'getHeaders');
-        $arguments[] = $this->builder->methodCall(
-            $this->builder->localPropertyFetch('serializer'),
-            'encode',
-            [$this->builder->methodCall($requestVariable, 'getBody')]
-        );
+        $arguments[] = $bodyVariable;
         $arguments[] = $this->builder->val('1.1');
         $arguments[] = $this->builder->array([]);
 

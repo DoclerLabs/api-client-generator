@@ -8,9 +8,7 @@
 
 namespace Test\Schema;
 
-use JsonSerializable;
-
-class ExtendedItem implements JsonSerializable
+class ExtendedItem implements SerializableRequestBodyInterface
 {
     /** @var string */
     private $madatoryParentString;
@@ -93,7 +91,7 @@ class ExtendedItem implements JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerialize(): array
+    public function toArray(): array
     {
         $fields                         = [];
         $fields['madatoryParentString'] = $this->madatoryParentString;

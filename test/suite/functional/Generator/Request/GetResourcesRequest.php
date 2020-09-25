@@ -8,7 +8,7 @@
 
 namespace Test\Request;
 
-use JsonSerializable;
+use Test\Request\SerializableRequestBodyInterface;
 
 class GetResourcesRequest implements RequestInterface
 {
@@ -79,7 +79,7 @@ class GetResourcesRequest implements RequestInterface
     public function getQueryParameters(): array
     {
         return \array_map(static function ($value) {
-            return $value instanceof JsonSerializable ? \json_decode(\json_encode($value), false) : $value;
+            return $value instanceof SerializableRequestBody ? $value->toArray() : $value;
         }, \array_filter(['filterById' => $this->filterById, 'filterByName' => $this->filterByName, 'filterByIds' => $this->filterByIds], static function ($value) {
             return null !== $value;
         }));
@@ -101,8 +101,7 @@ class GetResourcesRequest implements RequestInterface
         return [];
     }
 
-    public function getBody()
+    public function getBody(): void
     {
-        return null;
     }
 }

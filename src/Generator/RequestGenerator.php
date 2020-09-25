@@ -7,9 +7,10 @@ use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Entity\Request;
 use DoclerLabs\ApiClientGenerator\Entity\RequestFieldRegistry;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
+use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Naming\RequestNaming;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Request\SerializableRequestBodyInterface;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
-use JsonSerializable;
 use PhpParser\Node\Stmt\ClassMethod;
 
 class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
@@ -222,23 +223,17 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                 [$this->builder->array($fieldsArr), $filterCallback]
             );
 
-            $this->addImport(JsonSerializable::class);
+            $this->addImport(CopiedNamespace::getImport($this->baseNamespace, SerializableRequestBodyInterface::class));
             $closureVariable = $this->builder->var('value');
             $closureBody     = $this->builder->return(
                 $this->builder->ternary(
                     $this->builder->instanceOf(
                         $closureVariable,
-                        $this->builder->className(JsonSerializable::class)
+                        $this->builder->className('SerializableRequestBody')
                     ),
-                    $this->builder->funcCall(
-                        'json_decode',
-                        [
-                            $this->builder->funcCall(
-                                'json_encode',
-                                [$closureVariable]
-                            ),
-                            false,
-                        ]
+                    $this->builder->methodCall(
+                        $closureVariable,
+                        'toArray'
                     ),
                     $closureVariable
                 )
@@ -272,6 +267,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             return $this->builder
                 ->method('getBody')
                 ->makePublic()
+                ->setReturnType('SerializableRequestBodyInterface')
                 ->addStmt($this->builder->return($this->builder->localPropertyFetch($body->getPhpVariableName())))
                 ->setReturnType($returnType, $body->isNullable())
                 ->composeDocBlock([], $returnType)
@@ -281,7 +277,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         return $this->builder
             ->method('getBody')
             ->makePublic()
-            ->addStmt($this->builder->return($this->builder->val(null)))
+            ->setReturnType(null)
             ->getNode();
     }
 }

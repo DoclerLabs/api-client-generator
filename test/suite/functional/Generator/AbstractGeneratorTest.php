@@ -15,11 +15,11 @@ use Pimple\Container;
 abstract class AbstractGeneratorTest extends TestCase
 {
     public const BASE_NAMESPACE = 'Test';
-    protected GeneratorInterface           $sut;
-    protected FileReader                   $specificationReader;
-    protected Parser                       $specificationParser;
-    protected PhpFileCollection            $fileRegistry;
-    protected PhpFilePrinter               $printer;
+    protected GeneratorInterface $sut;
+    protected FileReader         $specificationReader;
+    protected Parser             $specificationParser;
+    protected PhpFileCollection  $fileRegistry;
+    protected PhpFilePrinter     $printer;
 
     /**
      * @dataProvider exampleProvider
