@@ -20,7 +20,10 @@ abstract class HttpMessageAbstract
             ->method('initRequestMapper')
             ->addStmt(
                 $this->builder->return(
-                    $this->builder->new($this->getRequestMapperClassName(), [$this->builder->new('BodySerializer')])
+                    $this->builder->new(
+                        $this->getRequestMapperClassName(),
+                        [$this->builder->new('BodySerializer')]
+                    )
                 )
             );
     }
@@ -35,25 +38,11 @@ abstract class HttpMessageAbstract
 
         $bodyVariable = $this->builder->var('body');
 
-        $getContentTypeSerializerMethodCall = $this->builder->methodCall(
-            $this->builder->localPropertyFetch('serializerRegistry'),
-            'getContentTypeSerializer',
-            [
-                $this->builder->methodCall(
-                    $requestVariable,
-                    'getContentType'
-                ),
-            ]
-        );
-
         $encodeMethodCall = $this->builder->methodCall(
-            $getContentTypeSerializerMethodCall,
-            'encode',
+            $this->builder->localPropertyFetch('serializer'),
+            'encodeBody',
             [
-                $this->builder->methodCall(
-                    $requestVariable,
-                    'getBody'
-                ),
+                $requestVariable,
             ]
         );
 

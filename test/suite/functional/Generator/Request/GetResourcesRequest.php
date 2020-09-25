@@ -60,6 +60,14 @@ class GetResourcesRequest implements RequestInterface
     /**
      * @return string
      */
+    public function getContentType(): string
+    {
+        return '';
+    }
+
+    /**
+     * @return string
+     */
     public function getMethod(): string
     {
         return 'GET';

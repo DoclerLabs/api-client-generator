@@ -26,6 +26,14 @@ class PatchResourceRequest implements RequestInterface
     /**
      * @return string
      */
+    public function getContentType(): string
+    {
+        return 'application/json';
+    }
+
+    /**
+     * @return string
+     */
     public function getMethod(): string
     {
         return 'PATCH';
@@ -60,7 +68,7 @@ class PatchResourceRequest implements RequestInterface
      */
     public function getHeaders(): array
     {
-        return [];
+        return ['Content-Type' => 'application/json'];
     }
 
     /**

@@ -29,12 +29,17 @@ class ResponseFactory
             }
 
             if (200 <= $code && $code < 300) {
+                if (count($response->content) > 1) {
+                    throw new InvalidSpecificationException(
+                        'Only one content-type per response is currently supported.'
+                    );
+                }
                 $content = current($response->content);
                 if ($content === false) {
                     return new Response((int)$code, null);
                 }
 
-                $schema     = $content->schema;
+                $schema = $content->schema;
                 $schemaName = SchemaNaming::getClassName($schema, ucfirst($operationName) . 'ResponseBody');
 
                 $body = $this->fieldMapper->create(

@@ -11,15 +11,15 @@ class Field
     public const FORMAT_DATE      = 'date';
     public const FORMAT_DATE_TIME = 'date-time';
     public const TYPE_MIXED       = 'mixed';
-    private string         $name;
-    private FieldType      $type;
-    private string         $referenceName;
-    private bool           $required;
-    private bool           $nullable;
-    private ?Field         $arrayItem        = null;
-    private array          $objectProperties = [];
-    private array          $enumValues       = [];
-    private string         $format           = '';
+    private string    $name;
+    private FieldType $type;
+    private string    $referenceName;
+    private bool      $required;
+    private bool      $nullable;
+    private ?Field    $arrayItem        = null;
+    private array     $objectProperties = [];
+    private array     $enumValues       = [];
+    private string    $format           = '';
 
     public function __construct(
         string $name,

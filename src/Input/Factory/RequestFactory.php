@@ -6,6 +6,7 @@ use cebe\openapi\spec\Reference;
 use cebe\openapi\spec\RequestBody;
 use DoclerLabs\ApiClientGenerator\Entity\Request;
 use DoclerLabs\ApiClientGenerator\Entity\RequestFieldRegistry;
+use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaNaming;
 
 class RequestFactory
@@ -24,7 +25,8 @@ class RequestFactory
         array $parameters,
         RequestBody $body = null
     ): Request {
-        $collection = new RequestFieldRegistry();
+        $requestBodyContentType = '';
+        $collection             = new RequestFieldRegistry();
         foreach ($parameters as $parameter) {
             if ($parameter instanceof Reference) {
                 $parameter = $parameter->resolve();
@@ -42,7 +44,10 @@ class RequestFactory
         }
 
         if ($body !== null) {
-            foreach ($body->content as $content) {
+            if (count($body->content) > 1) {
+                throw new InvalidSpecificationException('Only one content-type per request is currently supported.');
+            }
+            foreach ($body->content as $contentType => $content) {
                 if ($content->schema !== null) {
                     $schema     = $content->schema;
                     $schemaName = SchemaNaming::getClassName($schema, ucfirst($operationName) . 'RequestBody');
@@ -57,10 +62,12 @@ class RequestFactory
                             $schemaName
                         )
                     );
+
+                    $requestBodyContentType = $contentType;
                 }
             }
         }
 
-        return new Request($path, $method, $collection);
+        return new Request($path, $method, $collection, $requestBodyContentType);
     }
 }

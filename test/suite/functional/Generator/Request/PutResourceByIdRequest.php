@@ -240,6 +240,14 @@ class PutResourceByIdRequest implements RequestInterface
     /**
      * @return string
      */
+    public function getContentType(): string
+    {
+        return 'application/json';
+    }
+
+    /**
+     * @return string
+     */
     public function getMethod(): string
     {
         return 'PUT';
@@ -282,11 +290,11 @@ class PutResourceByIdRequest implements RequestInterface
      */
     public function getHeaders(): array
     {
-        return \array_map(static function ($value) {
+        return \array_merge(['Content-Type' => 'application/json'], \array_map(static function ($value) {
             return $value instanceof SerializableRequestBody ? $value->toArray() : $value;
         }, \array_filter(['X-Request-ID' => $this->xRequestId], static function ($value) {
             return null !== $value;
-        }));
+        })));
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace DoclerLabs\ApiClientGenerator\Output\Copy\Response\Handler;
+namespace DoclerLabs\ApiClientGenerator\Output\Copy\Response;
 
 use DoclerLabs\ApiClientException\Factory\ResponseExceptionFactory;
 use Psr\Http\Message\ResponseInterface;

@@ -10,7 +10,7 @@ use DoclerLabs\ApiClientGenerator\Naming\RequestNaming;
 use DoclerLabs\ApiClientGenerator\Naming\ResponseMapperNaming;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\Mapper\RequestMapperInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\RequestInterface;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Response\Handler\ErrorHandler;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Response\ErrorHandler;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Response\Mapper\ResponseMapperInterface;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use InvalidArgumentException;

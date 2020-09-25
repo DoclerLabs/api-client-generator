@@ -11,19 +11,19 @@ namespace Test\Request\Mapper;
 use Nyholm\Psr7\ServerRequest;
 use Psr\Http\Message\ServerRequestInterface;
 use Test\Request\RequestInterface;
-use Test\Serializer\BodySerializerRegistry;
+use Test\Serializer\BodySerializer;
 
 class NyholmRequestMapper implements RequestMapperInterface
 {
-    /** @var BodySerializerRegistry */
-    private $serializerRegistry;
+    /** @var BodySerializer */
+    private $serializer;
 
     /**
-     * @param BodySerializerRegistry $serializerRegistry
+     * @param BodySerializer $serializer
      */
-    public function __construct(BodySerializerRegistry $serializerRegistry)
+    public function __construct(BodySerializer $serializer)
     {
-        $this->serializerRegistry = $serializerRegistry;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -33,7 +33,7 @@ class NyholmRequestMapper implements RequestMapperInterface
      */
     public function map(RequestInterface $request): ServerRequestInterface
     {
-        $body        = $this->serializerRegistry->getContentTypeSerializer($request->getContentType())->encode($request->getBody());
+        $body        = $this->serializer->encodeBody($request);
         $psr7Request = new ServerRequest($request->getMethod(), $request->getRoute(), $request->getHeaders(), $body, '1.1', []);
         $psr7Request->withQueryParams($request->getQueryParameters());
         $psr7Request->withCookieParams($request->getCookies());

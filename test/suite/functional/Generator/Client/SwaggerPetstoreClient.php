@@ -19,7 +19,7 @@ use Test\Request\FindPetByIdRequest;
 use Test\Request\FindPetsRequest;
 use Test\Request\Mapper\RequestMapperInterface;
 use Test\Request\RequestInterface;
-use Test\Response\Handler\ErrorHandler;
+use Test\Response\ErrorHandler;
 use Test\Response\Mapper\PetCollectionResponseMapper;
 use Test\Response\Mapper\PetResponseMapper;
 use Test\Response\Mapper\ResponseMapperInterface;

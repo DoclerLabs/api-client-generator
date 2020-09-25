@@ -8,6 +8,7 @@
 
 namespace Test;
 
+use DoclerLabs\ApiClientException\Factory\ResponseExceptionFactory;
 use GuzzleHttp\Client;
 use InvalidArgumentException;
 use Pimple\Container;
@@ -16,8 +17,8 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientInterface;
 use Test\Request\Mapper\GuzzleRequestMapper;
 use Test\Request\Mapper\RequestMapperInterface;
-use Test\Response\Handler\ErrorHandler;
-use Test\Serializer\BodySerializerRegistry;
+use Test\Response\ErrorHandler;
+use Test\Serializer\BodySerializer;
 
 class SwaggerPetstoreClientFactory
 {

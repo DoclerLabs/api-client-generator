@@ -2,23 +2,18 @@
 
 namespace DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType;
 
-use DoclerLabs\ApiClientGenerator\Output\Copy\Request\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Request\SerializableRequestBodyInterface;
+use Psr\Http\Message\StreamInterface;
 
 class FormUrlencodedContentTypeSerializer implements ContentTypeSerializerInterface
 {
-    public function encodeBody(RequestInterface $request): string
+    public function encode(SerializableRequestBodyInterface $body): string
     {
-        if ($request->getBody() === null) {
-            return '';
-        }
-
-        return http_build_query($request->getBody()->toArray());
+        return http_build_query($body->toArray());
     }
 
-    public function decodeBody(ResponseInterface $response): array
+    public function decode(StreamInterface $body): array
     {
-        $body = $response->getBody();
         $body->rewind();
         parse_str($body->getContents(), $decoded);
 
