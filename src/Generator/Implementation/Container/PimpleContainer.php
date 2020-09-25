@@ -7,7 +7,11 @@ use DoclerLabs\ApiClientGenerator\Ast\Builder\MethodBuilder;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationInterface;
 use DoclerLabs\ApiClientGenerator\Generator\ResponseMapperGenerator;
+use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Naming\ResponseMapperNaming;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\BodySerializer;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\FormUrlencodedContentTypeSerializer;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\JsonContentTypeSerializer;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\Variable;
 use Pimple\Container;
@@ -59,7 +63,7 @@ class PimpleContainer implements ContainerImplementationInterface
             ->addStmts($statements);
     }
 
-    public function generateRegisterResponseMappers(array $compositeFields): MethodBuilder
+    public function generateRegisterMethod(array $compositeFields): MethodBuilder
     {
         $statements = [];
 
@@ -69,6 +73,40 @@ class PimpleContainer implements ContainerImplementationInterface
             ->getNode();
 
         $containerVariable = $this->builder->var('container');
+
+        $registerBodySerializerClosureSubCall = $this->builder->methodCall(
+            $this->builder->new('BodySerializer'),
+            'add',
+            [
+                $this->builder->val('application/json'),
+                $this->builder->new('JsonContentTypeSerializer'),
+            ]
+        );
+        $registerBodySerializerClosure        = $this->builder->methodCall(
+            $registerBodySerializerClosureSubCall,
+            'add',
+            [
+                $this->builder->val('application/x-www-form-urlencoded'),
+                $this->builder->new('FormUrlencodedContentTypeSerializer'),
+            ]
+        );
+
+        $registerBodySerializerClosureStatements[] = $this->builder->return($registerBodySerializerClosure);
+
+        $registerBodySerializerClosure = $this->builder->closure(
+            $registerBodySerializerClosureStatements,
+            [],
+            [],
+            'BodySerializer'
+        );
+
+        $statements[] = $this->builder->assign(
+            $this->builder->getArrayItem(
+                $containerVariable,
+                $this->builder->classConstFetch('BodySerializer', 'class')
+            ),
+            $registerBodySerializerClosure
+        );
         foreach ($compositeFields as $field) {
             /** @var Field $field */
             $closureStatements       = [];
@@ -93,7 +131,7 @@ class PimpleContainer implements ContainerImplementationInterface
         }
 
         return $this->builder
-            ->method('registerResponseMappers')
+            ->method('register')
             ->addParam($param)
             ->addStmts($statements)
             ->composeDocBlock([$param], '', []);
@@ -109,9 +147,15 @@ class PimpleContainer implements ContainerImplementationInterface
 
     public function getContainerRegisterImports(): array
     {
-        $this->registerImports[] = Container::class;
-
-        return $this->registerImports;
+        return array_merge(
+            [
+                Container::class,
+                CopiedNamespace::getImport($this->baseNamespace, BodySerializer::class),
+                CopiedNamespace::getImport($this->baseNamespace, JsonContentTypeSerializer::class),
+                CopiedNamespace::getImport($this->baseNamespace, FormUrlencodedContentTypeSerializer::class),
+            ],
+            $this->registerImports
+        );
     }
 
     public function getPackages(): array

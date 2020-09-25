@@ -6,23 +6,20 @@ use DoclerLabs\ApiClientException\RequestValidationException;
 use DoclerLabs\ApiClientException\UnexpectedResponseBodyException;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\RequestInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\ContentTypeSerializerInterface;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\FormUrlencodedContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\Json\Json;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\JsonContentTypeSerializer;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
 class BodySerializer
 {
-    private array $contentTypeSerializers;
+    private $contentTypeSerializers;
 
-    public function __construct()
+    public function add(string $contentType, ContentTypeSerializerInterface $contentTypeSerializer): self
     {
-        $this->contentTypeSerializers = [
-            'application/json'                  => new JsonContentTypeSerializer(),
-            'application/x-www-form-urlencoded' => new FormUrlencodedContentTypeSerializer(),
-        ];
+        $this->contentTypeSerializers[$contentType] = $contentTypeSerializer;
+
+        return $this;
     }
 
     /**
@@ -63,10 +60,10 @@ class BodySerializer
     {
         if (!isset($this->contentTypeSerializers[$contentType])) {
             throw new InvalidArgumentException(
-                sprintf(
+                \sprintf(
                     'Serializer for `%s` is not found. Supported: %s',
                     $contentType,
-                    Json::encode(array_keys($this->contentTypeSerializers))
+                    Json::encode(\array_keys($this->contentTypeSerializers))
                 )
             );
         }

@@ -34,9 +34,9 @@ class ContainerImplementationStrategy implements ContainerImplementationInterfac
         return $this->containerImplementation->generateInitContainerMethod();
     }
 
-    public function generateRegisterResponseMappers(array $compositeFields): MethodBuilder
+    public function generateRegisterMethod(array $compositeFields): MethodBuilder
     {
-        return $this->containerImplementation->generateRegisterResponseMappers($compositeFields);
+        return $this->containerImplementation->generateRegisterMethod($compositeFields);
     }
 
     public function getPackages(): array

@@ -109,7 +109,8 @@ class GetResourcesRequest implements RequestInterface
         return [];
     }
 
-    public function getBody(): void
+    public function getBody()
     {
+        return null;
     }
 }

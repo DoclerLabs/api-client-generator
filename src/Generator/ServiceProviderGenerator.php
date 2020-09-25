@@ -2,11 +2,11 @@
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
+use DhJasmin\StoryApiClient\Serializer\BodySerializer;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
-use PhpParser\Node\Stmt\ClassMethod;
 
 class ServiceProviderGenerator extends GeneratorAbstract
 {
@@ -26,14 +26,13 @@ class ServiceProviderGenerator extends GeneratorAbstract
         $compositeFields = $specification->getCompositeResponseFields()->getUniqueByPhpClassName();
 
         $registerResponseMapperMethod = $this->containerImplementation
-            ->generateRegisterResponseMappers($compositeFields)
+            ->generateRegisterMethod($compositeFields)
             ->makePrivate()
             ->setReturnType(null)
             ->getNode();
 
         $classBuilder = $this->builder
             ->class('ServiceProvider')
-            ->addStmt($this->generateRegister())
             ->addStmt($registerResponseMapperMethod);
 
         foreach ($this->containerImplementation->getContainerRegisterImports() as $import) {
@@ -41,20 +40,5 @@ class ServiceProviderGenerator extends GeneratorAbstract
         }
 
         $this->registerFile($fileRegistry, $classBuilder);
-    }
-
-    public function generateRegister(): ClassMethod
-    {
-        $param = $this->builder
-            ->param('container')
-            ->setType('Container')
-            ->getNode();
-
-        return $this->builder
-            ->method('register')
-            ->addParam($param)
-            ->addStmt(
-                $this->builder->localMethodCall('registerResponseMappers', [$this->builder->var('container')])
-            )->getNode();
     }
 }

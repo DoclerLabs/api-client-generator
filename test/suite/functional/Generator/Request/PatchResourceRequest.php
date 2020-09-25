@@ -74,7 +74,7 @@ class PatchResourceRequest implements RequestInterface
     /**
      * @return PatchResourceRequestBody
      */
-    public function getBody(): PatchResourceRequestBody
+    public function getBody()
     {
         return $this->patchResourceRequestBody;
     }

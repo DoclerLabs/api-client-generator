@@ -11,9 +11,9 @@ namespace Test\Schema;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
-use JsonSerializable;
+use Test\Request\SerializableRequestBodyInterface;
 
-class ItemCollection implements IteratorAggregate, JsonSerializable, Countable
+class ItemCollection implements IteratorAggregate, SerializableRequestBodyInterface, Countable
 {
     private array $items;
 
@@ -44,9 +44,9 @@ class ItemCollection implements IteratorAggregate, JsonSerializable, Countable
     /**
      * @return Item[]
      */
-    public function jsonSerialize(): array
+    public function toArray(): array
     {
-        return $this->toArray();
+        return $this->items;
     }
 
     /**

@@ -12,19 +12,20 @@ use Pimple\Container;
 use Test\Response\Mapper\FoodResponseMapper;
 use Test\Response\Mapper\PetCollectionResponseMapper;
 use Test\Response\Mapper\PetResponseMapper;
+use Test\Serializer\BodySerializer;
+use Test\Serializer\ContentType\FormUrlencodedContentTypeSerializer;
+use Test\Serializer\ContentType\JsonContentTypeSerializer;
 
 class ServiceProvider
 {
-    public function register(Container $container)
-    {
-        $this->registerResponseMappers($container);
-    }
-
     /**
      * @param Container $container
      */
-    private function registerResponseMappers(Container $container): void
+    private function register(Container $container): void
     {
+        $container[BodySerializer::class] = static function (): BodySerializer {
+            return (new BodySerializer())->add('application/json', new JsonContentTypeSerializer())->add('application/x-www-form-urlencoded', new FormUrlencodedContentTypeSerializer());
+        };
         $container[PetCollectionResponseMapper::class] = static function () use ($container): PetCollectionResponseMapper {
             return new PetCollectionResponseMapper($container[PetResponseMapper::class]);
         };

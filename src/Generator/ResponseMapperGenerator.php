@@ -6,6 +6,7 @@ use DateTimeImmutable;
 use DoclerLabs\ApiClientException\UnexpectedResponseBodyException;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
+use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Naming\ResponseMapperNaming;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Response\Mapper\ResponseMapperInterface;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
@@ -28,7 +29,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
     protected function generateMapper(PhpFileCollection $fileRegistry, Field $root): void
     {
         $this
-            ->addImport(ResponseMapperInterface::class);
+            ->addImport(CopiedNamespace::getImport($this->baseNamespace, ResponseMapperInterface::class));
 
         $this->mapMethodThrownExceptions = [];
 

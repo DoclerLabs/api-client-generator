@@ -5,6 +5,8 @@ namespace DoclerLabs\ApiClientGenerator\Generator;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\FieldType;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
+use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Request\SerializableRequestBodyInterface;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -27,6 +29,8 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
     protected function generateSchema(Field $field, PhpFileCollection $fileRegistry): void
     {
         $className = $field->getPhpClassName();
+
+        $this->addImport(CopiedNamespace::getImport($this->baseNamespace, SerializableRequestBodyInterface::class));
 
         $classBuilder = $this->builder
             ->class($className)

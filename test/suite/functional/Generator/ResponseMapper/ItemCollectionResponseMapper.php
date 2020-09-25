@@ -8,7 +8,7 @@
 
 namespace Test\Response\Mapper;
 
-use DoclerLabs\ApiClientGenerator\Output\Copy\Response\Mapper\ResponseMapperInterface;
+use Test\Response\Mapper\ResponseMapperInterface;
 use Test\Schema\ItemCollection;
 
 class ItemCollectionResponseMapper implements ResponseMapperInterface

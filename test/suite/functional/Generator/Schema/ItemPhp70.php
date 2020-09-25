@@ -10,6 +10,7 @@ namespace Test\Schema;
 
 use DateTimeInterface;
 use DoclerLabs\ApiClientException\RequestValidationException;
+use Test\Request\SerializableRequestBodyInterface;
 use Test\Serializer\ContentType\Json\Json;
 
 class Item implements SerializableRequestBodyInterface

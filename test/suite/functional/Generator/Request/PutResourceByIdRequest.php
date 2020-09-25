@@ -300,7 +300,7 @@ class PutResourceByIdRequest implements RequestInterface
     /**
      * @return PutResourceByIdRequestBody
      */
-    public function getBody(): PutResourceByIdRequestBody
+    public function getBody()
     {
         return $this->putResourceByIdRequestBody;
     }

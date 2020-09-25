@@ -16,5 +16,5 @@ interface RequestInterface
 
     public function getQueryParameters(): array;
 
-    public function getBody(): SerializableRequestBodyInterface;
+    public function getBody();
 }

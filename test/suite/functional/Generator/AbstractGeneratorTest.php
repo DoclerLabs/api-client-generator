@@ -41,7 +41,7 @@ abstract class AbstractGeneratorTest extends TestCase
 
         $this->sut->generate($specification, $this->fileRegistry);
 
-        $actualResultPath = sprintf('%s/temp2.php', sys_get_temp_dir());
+        $actualResultPath = sprintf('%s/_temp.php', sys_get_temp_dir());
         $this->printer->print($actualResultPath, $this->fileRegistry->get($resultClassName));
 
         self::assertFileEquals($expectedResultPath, $actualResultPath);

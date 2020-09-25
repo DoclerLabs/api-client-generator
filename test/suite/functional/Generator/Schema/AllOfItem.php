@@ -8,6 +8,8 @@
 
 namespace Test\Schema;
 
+use Test\Request\SerializableRequestBodyInterface;
+
 class ExtendedItem implements SerializableRequestBodyInterface
 {
     /** @var string */

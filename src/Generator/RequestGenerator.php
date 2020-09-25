@@ -243,7 +243,6 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             return $this->builder
                 ->method('getBody')
                 ->makePublic()
-                ->setReturnType($returnType, $body->isNullable())
                 ->addStmt($this->builder->return($this->builder->localPropertyFetch($body->getPhpVariableName())))
                 ->composeDocBlock([], $returnType)
                 ->getNode();
@@ -252,7 +251,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         return $this->builder
             ->method('getBody')
             ->makePublic()
-            ->setReturnType(null)
+            ->addStmt($this->builder->return($this->builder->val(null)))
             ->getNode();
     }
 
