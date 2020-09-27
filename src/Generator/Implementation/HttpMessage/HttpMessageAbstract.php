@@ -40,7 +40,7 @@ abstract class HttpMessageAbstract
 
         $encodeMethodCall = $this->builder->methodCall(
             $this->builder->localPropertyFetch('serializer'),
-            'encodeBody',
+            'serializeRequest',
             [
                 $requestVariable,
             ]

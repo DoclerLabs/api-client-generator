@@ -25,7 +25,7 @@ class BodySerializer
     /**
      * @throws RequestValidationException
      */
-    public function encodeBody(RequestInterface $request): string
+    public function serializeRequest(RequestInterface $request): string
     {
         try {
             $body = $request->getBody();
@@ -42,7 +42,7 @@ class BodySerializer
     /**
      * @throws UnexpectedResponseBodyException
      */
-    public function decodeBody(ResponseInterface $response): array
+    public function unserializeResponse(ResponseInterface $response): array
     {
         try {
             $body = $response->getBody();

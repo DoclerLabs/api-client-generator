@@ -6,7 +6,7 @@ use DoclerLabs\ApiClientGenerator\Entity\Field;
 
 class ResponseMapperNaming
 {
-    private const FILE_SUFFIX = 'ResponseMapper';
+    private const FILE_SUFFIX = 'Mapper';
 
     public static function getClassName(Field $field): string
     {

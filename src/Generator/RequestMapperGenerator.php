@@ -36,7 +36,7 @@ class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             $this->addImport($import);
         }
 
-        $serializerPropertyName = 'serializer';
+        $serializerPropertyName = 'bodySerializer';
 
         $properties   = [];
         $properties[] = $this->builder->localProperty(
