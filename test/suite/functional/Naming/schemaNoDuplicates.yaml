@@ -1,0 +1,75 @@
+openapi: 3.0.0
+info:
+  title: Shop API
+  version: '1'
+paths:
+  /v1/orders/{id}:
+    get:
+      summary: Get Order
+      operationId: getOrder
+      responses:
+        '200':
+          $ref: '#/components/responses/OrderResponse'
+  /v1/shippings:
+    get:
+      summary: Find Shipping information
+      operationId: findShipping
+      responses:
+        '200':
+          $ref: '#/components/responses/FindShippingResponse'
+components:
+  responses:
+    OrderResponse:
+      description: Order information
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/Order'
+    FindShippingResponse:
+      description: Shippings information
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/Shippings'
+  schemas:
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        externalId:
+          type: integer
+        transactionId:
+          type: integer
+        userId:
+          type: integer
+        createdAt:
+          type: string
+          format: 'date-time'
+      required:
+        - id
+    Shippings:
+      type: array
+      items:
+        $ref: '#/components/schemas/Shipping'
+    Shipping:
+      type: object
+      properties:
+        id:
+          type: integer
+        order:
+          type: object
+          properties:
+            id:
+              type: integer
+          required:
+            - id
+      required:
+        - id
+        - order

@@ -16,7 +16,7 @@ use UnexpectedValueException;
 
 class FieldFactory
 {
-    private PhpNameValidator      $nameValidator;
+    private PhpNameValidator $nameValidator;
 
     public function __construct(PhpNameValidator $nameValidator)
     {
@@ -28,7 +28,8 @@ class FieldFactory
         string $fieldName,
         SpecObjectInterface $schemaOrReference,
         bool $required,
-        string $referenceName = ''
+        string $referenceName = '',
+        string $parentReferenceName = ''
     ): Field {
         try {
             $arrayItem        = null;
@@ -45,7 +46,9 @@ class FieldFactory
             }
 
             $type = $schema->type;
-            if (isset($schema->allOf)) {
+            if (isset($schema->oneOf)) {
+                throw new InvalidSpecificationException('oneOf keyword is not currently supported.');
+            } elseif (isset($schema->allOf)) {
                 $type = FieldType::SPEC_TYPE_OBJECT;
                 if ($referenceName === '') {
                     $referenceName = SchemaNaming::getClassName($schemaReference, $fieldName);
@@ -74,10 +77,13 @@ class FieldFactory
                 );
             } elseif (FieldType::isSpecificationTypeObject($type)) {
                 if ($referenceName === '') {
-                    $referenceName = SchemaNaming::getClassName($schemaReference, $fieldName);
+                    $referenceName = SchemaNaming::getClassName(
+                        $schemaReference,
+                        sprintf('%s%s', ucfirst($parentReferenceName), ucfirst($fieldName))
+                    );
                 }
 
-                $objectProperties = $this->mapProperties($operationName, $schema);
+                $objectProperties = $this->mapProperties($operationName, $schema, $referenceName);
             }
 
             $field = new Field(
@@ -115,15 +121,18 @@ class FieldFactory
         }
     }
 
-    protected function mapProperties(string $operationName, SpecObjectInterface $schema): array
-    {
+    protected function mapProperties(
+        string $operationName,
+        SpecObjectInterface $schema,
+        string $schemaReferenceName
+    ): array {
         $fields = [];
         foreach ($schema->properties as $childName => $child) {
             $required = false;
             if (isset($schema->required) && is_array($schema->required)) {
                 $required = in_array($childName, $schema->required, true);
             }
-            $fields[] = $this->create($operationName, $childName, $child, $required, '');
+            $fields[] = $this->create($operationName, $childName, $child, $required, '', $schemaReferenceName);
         }
 
         return $fields;
@@ -154,7 +163,7 @@ class FieldFactory
             if ($allOfSchema instanceof Reference) {
                 $allOfSchema = $allOfSchema->resolve();
             }
-            $allOfProperties[] = $this->mapProperties($operationName, $allOfSchema);
+            $allOfProperties[] = $this->mapProperties($operationName, $allOfSchema, '');
         }
 
         return array_merge([], ...$allOfProperties);

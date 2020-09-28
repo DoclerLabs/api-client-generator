@@ -40,9 +40,9 @@ class Item implements SerializableInterface
 
     private array $mandatoryArray;
 
-    private EmbeddedObject $mandatoryObject;
+    private ItemMandatoryObject $mandatoryObject;
 
-    private NullableObject $nullableObject;
+    private ItemNullableObject $nullableObject;
 
     private DateTimeInterface $nullableDate;
 
@@ -63,18 +63,18 @@ class Item implements SerializableInterface
     private EmbeddedObject $optionalObject;
 
     /**
-     * @param int               $mandatoryInteger
-     * @param string            $mandatoryString
-     * @param string            $mandatoryEnum
-     * @param DateTimeInterface $mandatoryDate
-     * @param float             $mandatoryFloat
-     * @param bool              $mandatoryBoolean
-     * @param array             $mandatoryArray
-     * @param EmbeddedObject    $mandatoryObject
+     * @param int                 $mandatoryInteger
+     * @param string              $mandatoryString
+     * @param string              $mandatoryEnum
+     * @param DateTimeInterface   $mandatoryDate
+     * @param float               $mandatoryFloat
+     * @param bool                $mandatoryBoolean
+     * @param array               $mandatoryArray
+     * @param ItemMandatoryObject $mandatoryObject
      *
      * @throws RequestValidationException
      */
-    public function __construct(int $mandatoryInteger, string $mandatoryString, string $mandatoryEnum, DateTimeInterface $mandatoryDate, float $mandatoryFloat, bool $mandatoryBoolean, array $mandatoryArray, EmbeddedObject $mandatoryObject)
+    public function __construct(int $mandatoryInteger, string $mandatoryString, string $mandatoryEnum, DateTimeInterface $mandatoryDate, float $mandatoryFloat, bool $mandatoryBoolean, array $mandatoryArray, ItemMandatoryObject $mandatoryObject)
     {
         $this->mandatoryInteger = $mandatoryInteger;
         $this->mandatoryString  = $mandatoryString;
@@ -90,11 +90,11 @@ class Item implements SerializableInterface
     }
 
     /**
-     * @param NullableObject|null $nullableObject
+     * @param ItemNullableObject|null $nullableObject
      *
      * @return self
      */
-    public function setNullableObject(?NullableObject $nullableObject): self
+    public function setNullableObject(?ItemNullableObject $nullableObject): self
     {
         $this->nullableObject = $nullableObject;
 
@@ -271,17 +271,17 @@ class Item implements SerializableInterface
     }
 
     /**
-     * @return EmbeddedObject
+     * @return ItemMandatoryObject
      */
-    public function getMandatoryObject(): EmbeddedObject
+    public function getMandatoryObject(): ItemMandatoryObject
     {
         return $this->mandatoryObject;
     }
 
     /**
-     * @return NullableObject|null
+     * @return ItemNullableObject|null
      */
-    public function getNullableObject(): ?NullableObject
+    public function getNullableObject(): ?ItemNullableObject
     {
         return $this->nullableObject;
     }
