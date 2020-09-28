@@ -230,11 +230,7 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             $unexpectedResponseBodyException = 'UnexpectedResponseBodyException';
             $this->addImport(UnexpectedResponseBodyException::class);
 
-            $requiredIsset = $this->builder->not(
-                $this->builder->funcCall('isset', $requiredResponseItems)
-            );
-
-            $missingFieldsVar       = $this->builder->var('missingFields');
+            $missingFieldsVariable  = $this->builder->var('missingFields');
             $missingFieldsArrayKeys = $this->builder->funcCall('array_keys', [$payloadVariable]);
             $missingFieldsArrayDiff = $this->builder->funcCall(
                 'array_diff',
@@ -245,18 +241,25 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 [$this->builder->val(', '), $missingFieldsArrayDiff]
             );
 
+            $statements[] = $this->builder->expr(
+                $this->builder->assign($missingFieldsVariable, $missingFieldsImplode)
+            );
+
+            $requiredFieldsIfCondition = $this->builder->not(
+                $this->builder->funcCall('empty', [$missingFieldsVariable])
+            );
+
             $exceptionMsg = sprintf(
                 'Required attributes for `%s` missing in the response body: ',
                 $root->getPhpClassName()
             );
 
-            $ifStmts[] = $this->builder->expr($this->builder->assign($missingFieldsVar, $missingFieldsImplode));
-            $ifStmts[] = $this->builder->throw(
+            $requiredFieldsIfStatements[] = $this->builder->throw(
                 $unexpectedResponseBodyException,
-                $this->builder->concat($this->builder->val($exceptionMsg), $missingFieldsVar)
+                $this->builder->concat($this->builder->val($exceptionMsg), $missingFieldsVariable)
             );
 
-            $statements[] = $this->builder->if($requiredIsset, $ifStmts);
+            $statements[] = $this->builder->if($requiredFieldsIfCondition, $requiredFieldsIfStatements);
 
             $this->mapMethodThrownExceptions[$unexpectedResponseBodyException] = true;
         }

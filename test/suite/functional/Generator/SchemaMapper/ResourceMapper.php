@@ -6,27 +6,25 @@
  * Do not edit it manually.
  */
 
-namespace Test\Response\Mapper;
+namespace Test\Schema\Mapper;
 
 use DateTimeImmutable;
 use DoclerLabs\ApiClientException\UnexpectedResponseBodyException;
-use Test\Response\Mapper\ResponseMapperInterface;
 use Test\Schema\Resource;
 
-class ResourceResponseMapper implements ResponseMapperInterface
+class ResourceMapper implements SchemaMapperInterface
 {
     /**
-     * @param Response $response
+     * @param array $payload
      *
      * @throws UnexpectedResponseBodyException
      *
      * @return Resource
      */
-    public function map(Response $response): Resource
+    public function toSchema(array $payload): Resource
     {
-        $payload = $response->getPayload();
-        if (! isset($payload['mandatoryInteger'], $payload['mandatoryString'], $payload['mandatoryEnum'], $payload['mandatoryDate'])) {
-            $missingFields = \implode(', ', \array_diff(['mandatoryInteger', 'mandatoryString', 'mandatoryEnum', 'mandatoryDate'], \array_keys($payload)));
+        $missingFields = \implode(', ', \array_diff(['mandatoryInteger', 'mandatoryString', 'mandatoryEnum', 'mandatoryDate'], \array_keys($payload)));
+        if (! empty($missingFields)) {
             throw new UnexpectedResponseBodyException('Required attributes for `Resource` missing in the response body: ' . $missingFields);
         }
 

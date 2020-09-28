@@ -14,21 +14,21 @@ class SchemaMapperGeneratorTest extends AbstractGeneratorTest
     {
         return [
             'Single object response'         => [
-                '/ResponseMapper/item.yaml',
-                '/ResponseMapper/ItemResponseMapper.php',
-                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ItemResponseMapper',
+                '/SchemaMapper/item.yaml',
+                '/SchemaMapper/ItemMapper.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ItemMapper',
                 ConfigurationBuilder::fake()->build(),
             ],
             'Collection response'            => [
-                '/ResponseMapper/itemCollection.yaml',
-                '/ResponseMapper/ItemCollectionResponseMapper.php',
-                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ItemCollectionResponseMapper',
+                '/SchemaMapper/itemCollection.yaml',
+                '/SchemaMapper/ItemCollectionMapper.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ItemCollectionMapper',
                 ConfigurationBuilder::fake()->build(),
             ],
             'No optional fields in response' => [
-                '/ResponseMapper/noOptional.yaml',
-                '/ResponseMapper/ResourceResponseMapper.php',
-                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ResourceResponseMapper',
+                '/SchemaMapper/noOptional.yaml',
+                '/SchemaMapper/ResourceMapper.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ResourceMapper',
                 ConfigurationBuilder::fake()->build(),
             ],
         ];
