@@ -13,7 +13,7 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 use Test\Request\AddPetRequest;
 use Test\Request\CountPetsRequest;
-use Test\Request\DeletePetRequest;
+use Test\Request\DeletePetsIdPetFoodFoodIdRequest;
 use Test\Request\FindPetByIdRequest;
 use Test\Request\FindPetsRequest;
 use Test\Request\Mapper\RequestMapperInterface;
@@ -81,9 +81,9 @@ class SwaggerPetstoreClient
     }
 
     /**
-     * @param DeletePetRequest $request
+     * @param DeletePetsIdPetFoodFoodIdRequest $request
      */
-    public function deletePet(DeletePetRequest $request): void
+    public function deletePetsIdPetFoodFoodId(DeletePetsIdPetFoodFoodIdRequest $request): void
     {
         $this->container->get(ResponseHandler::class)->handle($this->sendRequest($request));
     }

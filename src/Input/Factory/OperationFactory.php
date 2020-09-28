@@ -6,6 +6,7 @@ use cebe\openapi\spec\Operation as OpenApiOperation;
 use cebe\openapi\spec\Reference;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
+use DoclerLabs\ApiClientGenerator\Naming\CaseCaster;
 use Throwable;
 
 class OperationFactory
@@ -27,13 +28,19 @@ class OperationFactory
         string $method,
         array $commonParameters
     ): Operation {
-        if ($operation->operationId === null) {
-            throw new InvalidSpecificationException(
-                sprintf('Mandatory operationId field is missing: [%s] %s', $method, $path)
+        $operationId = $operation->operationId;
+        if ($operationId === null) {
+            $noBracesPath   = preg_replace('/[{}]/', '', $path);
+            $underscorePath = preg_replace('/[\/\-]/', '_', $noBracesPath);
+            $operationId    = sprintf('%s%s', strtolower($method), CaseCaster::toPascal($underscorePath));
+
+            $warningMessage = sprintf(
+                'Fallback operation naming used: %s. Consider adding operationId parameter to set the name explicitly.',
+                $operationId
             );
+            trigger_error($warningMessage, E_USER_WARNING);
         }
 
-        $operationId = $operation->operationId;
         $parameters  = array_merge($commonParameters, $operation->parameters ?? []);
         $requestBody = $operation->requestBody;
         if ($requestBody instanceof Reference) {
