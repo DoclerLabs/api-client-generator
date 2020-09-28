@@ -8,9 +8,7 @@
 
 namespace Test\Schema;
 
-use Test\Request\SerializableRequestBodyInterface;
-
-class ExtendedItem implements SerializableRequestBodyInterface
+class ExtendedItem implements SerializableInterface
 {
     /** @var string */
     private $madatoryParentString;

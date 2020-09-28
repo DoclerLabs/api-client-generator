@@ -7,9 +7,7 @@ use Countable;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\FieldType;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
-use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaCollectionNaming;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Request\SerializableRequestBodyInterface;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use IteratorAggregate;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -33,7 +31,6 @@ class SchemaCollectionGenerator extends GeneratorAbstract
     protected function generateSchemaCollection(Field $field, PhpFileCollection $fileRegistry): void
     {
         $this
-            ->addImport(CopiedNamespace::getImport($this->baseNamespace, SerializableRequestBodyInterface::class))
             ->addImport(Countable::class)
             ->addImport(IteratorAggregate::class)
             ->addImport(ArrayIterator::class);
@@ -41,7 +38,7 @@ class SchemaCollectionGenerator extends GeneratorAbstract
         $className    = $field->getPhpClassName();
         $classBuilder = $this->builder
             ->class($className)
-            ->implement('IteratorAggregate', 'SerializableRequestBodyInterface', 'Countable')
+            ->implement('IteratorAggregate', 'SerializableInterface', 'Countable')
             ->addStmt(
                 $this->builder->localProperty(
                     self::INTERNAL_ARRAY_NAME,
@@ -52,7 +49,6 @@ class SchemaCollectionGenerator extends GeneratorAbstract
             ->addStmt($this->generateConstructor($field->getArrayItem()))
             ->addStmt($this->generateToArray($field))
             ->addStmt($this->generateGetIterator($field))
-            ->addStmt($this->generateToArray($field))
             ->addStmt($this->generateCount())
             ->addStmt($this->generateFirst($field->getArrayItem()));
 

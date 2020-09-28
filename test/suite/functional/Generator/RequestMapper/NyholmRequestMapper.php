@@ -16,14 +16,14 @@ use Test\Serializer\BodySerializer;
 class NyholmRequestMapper implements RequestMapperInterface
 {
     /** @var BodySerializer */
-    private $serializer;
+    private $bodySerializer;
 
     /**
-     * @param BodySerializer $serializer
+     * @param BodySerializer $bodySerializer
      */
-    public function __construct(BodySerializer $serializer)
+    public function __construct(BodySerializer $bodySerializer)
     {
-        $this->serializer = $serializer;
+        $this->bodySerializer = $bodySerializer;
     }
 
     /**
@@ -33,7 +33,7 @@ class NyholmRequestMapper implements RequestMapperInterface
      */
     public function map(RequestInterface $request): ServerRequestInterface
     {
-        $body        = $this->serializer->encodeBody($request);
+        $body        = $this->bodySerializer->serializeRequest($request);
         $psr7Request = new ServerRequest($request->getMethod(), $request->getRoute(), $request->getHeaders(), $body, '1.1', []);
         $psr7Request->withQueryParams($request->getQueryParameters());
         $psr7Request->withCookieParams($request->getCookies());

@@ -11,9 +11,8 @@ namespace Test\Schema;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
-use Test\Request\SerializableRequestBodyInterface;
 
-class ItemCollection implements IteratorAggregate, SerializableRequestBodyInterface, Countable
+class ItemCollection implements IteratorAggregate, SerializableInterface, Countable
 {
     /** @var Item[] */
     private $items;
@@ -40,14 +39,6 @@ class ItemCollection implements IteratorAggregate, SerializableRequestBodyInterf
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->toArray());
-    }
-
-    /**
-     * @return Item[]
-     */
-    public function toArray(): array
-    {
-        return $this->items;
     }
 
     /**

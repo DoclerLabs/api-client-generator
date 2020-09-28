@@ -13,9 +13,9 @@ use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpClientImplementat
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\RequestGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\RequestMapperGenerator;
-use DoclerLabs\ApiClientGenerator\Generator\ResponseMapperGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\SchemaCollectionGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\SchemaGenerator;
+use DoclerLabs\ApiClientGenerator\Generator\SchemaMapperGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\ServiceProviderGenerator;
 use DoclerLabs\ApiClientGenerator\Input\Configuration;
 use DoclerLabs\ApiClientGenerator\Input\Factory\FieldFactory;
@@ -104,7 +104,7 @@ class ServiceProvider implements ServiceProviderInterface
             ->add($container[ClientGenerator::class])
             ->add($container[RequestGenerator::class])
             ->add($container[RequestMapperGenerator::class])
-            ->add($container[ResponseMapperGenerator::class])
+            ->add($container[SchemaMapperGenerator::class])
             ->add($container[SchemaCollectionGenerator::class])
             ->add($container[SchemaGenerator::class])
             ->add($container[ServiceProviderGenerator::class]);
@@ -138,7 +138,7 @@ class ServiceProvider implements ServiceProviderInterface
             $container[HttpMessageImplementationStrategy::class]
         );
 
-        $pimple[ResponseMapperGenerator::class] = static fn(Container $container) => new ResponseMapperGenerator(
+        $pimple[SchemaMapperGenerator::class] = static fn(Container $container) => new SchemaMapperGenerator(
             $container[Configuration::class]->getBaseNamespace(),
             $container[CodeBuilder::class]
         );
@@ -169,7 +169,8 @@ class ServiceProvider implements ServiceProviderInterface
         $pimple[ServiceProviderGenerator::class] = static fn(Container $container) => new ServiceProviderGenerator(
             $container[Configuration::class]->getBaseNamespace(),
             $container[CodeBuilder::class],
-            $container[ContainerImplementationStrategy::class]
+            $container[ContainerImplementationStrategy::class],
+            $container[HttpMessageImplementationStrategy::class],
         );
 
         $pimple[HttpClientImplementationStrategy::class] =

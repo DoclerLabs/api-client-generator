@@ -6,19 +6,15 @@ use DateTimeImmutable;
 use DoclerLabs\ApiClientException\UnexpectedResponseBodyException;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
-use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
-use DoclerLabs\ApiClientGenerator\Naming\ResponseMapperNaming;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Response\Mapper\ResponseMapperInterface;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\BodySerializer;
+use DoclerLabs\ApiClientGenerator\Naming\SchemaMapperNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\ClassMethod;
-use Psr\Http\Message\ResponseInterface;
 
-class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
+class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 {
-    public const NAMESPACE_SUBPATH = '\\Response\\Mapper';
-    public const SUBDIRECTORY      = 'Response/Mapper/';
+    public const NAMESPACE_SUBPATH = '\\Schema\\Mapper';
+    public const SUBDIRECTORY      = 'Schema/Mapper/';
     private array $mapMethodThrownExceptions;
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
@@ -30,17 +26,12 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 
     protected function generateMapper(PhpFileCollection $fileRegistry, Field $root): void
     {
-        $this
-            ->addImport(ResponseInterface::class)
-            ->addImport(CopiedNamespace::getImport($this->baseNamespace, ResponseMapperInterface::class))
-            ->addImport(CopiedNamespace::getImport($this->baseNamespace, BodySerializer::class));
-
         $this->mapMethodThrownExceptions = [];
 
-        $className    = ResponseMapperNaming::getClassName($root);
+        $className    = SchemaMapperNaming::getClassName($root);
         $classBuilder = $this->builder
             ->class($className)
-            ->implement('ResponseMapperInterface')
+            ->implement('SchemaMapperInterface')
             ->addStmts($this->generateProperties($root))
             ->addStmt($this->generateConstructor($root))
             ->addStmt($this->generateMap($root));
@@ -50,19 +41,14 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 
     protected function generateProperties(Field $root): array
     {
-        $properties   = [];
-        $properties[] = $this->builder->localProperty(
-            'bodySerializer',
-            'BodySerializer',
-            'BodySerializer'
-        );
+        $properties = [];
         if ($root->isObject()) {
             $alreadyInjected = [];
             foreach ($root->getObjectProperties() as $child) {
                 if ($child->isComposite()) {
-                    $childClassName = ResponseMapperNaming::getClassName($child);
+                    $childClassName = SchemaMapperNaming::getClassName($child);
                     if (!isset($alreadyInjected[$childClassName])) {
-                        $propertyName = ResponseMapperNaming::getPropertyName($child);
+                        $propertyName = SchemaMapperNaming::getPropertyName($child);
                         $properties[] = $this->builder->localProperty($propertyName, $childClassName, $childClassName);
 
                         $alreadyInjected[$childClassName] = true;
@@ -74,8 +60,8 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         if ($root->isArrayOfObjects()) {
             $child = $root->getArrayItem();
             if ($child !== null && $child->isComposite()) {
-                $propertyName   = ResponseMapperNaming::getPropertyName($child);
-                $childClassName = ResponseMapperNaming::getClassName($child);
+                $propertyName   = SchemaMapperNaming::getPropertyName($child);
+                $childClassName = SchemaMapperNaming::getClassName($child);
                 $properties[]   = $this->builder->localProperty(
                     $propertyName,
                     $childClassName,
@@ -92,21 +78,13 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         $params     = [];
         $paramInits = [];
 
-        $params[]     = $this->builder
-            ->param('bodySerializer')
-            ->setType('BodySerializer')
-            ->getNode();
-        $paramInits[] = $this->builder->assign(
-            $this->builder->localPropertyFetch('bodySerializer'),
-            $this->builder->var('bodySerializer')
-        );
         if ($root->isObject()) {
             $alreadyInjected = [];
             foreach ($root->getObjectProperties() as $child) {
                 if ($child->isComposite()) {
-                    $childClassName = ResponseMapperNaming::getClassName($child);
+                    $childClassName = SchemaMapperNaming::getClassName($child);
                     if (!isset($alreadyInjected[$childClassName])) {
-                        $propertyName = ResponseMapperNaming::getPropertyName($child);
+                        $propertyName = SchemaMapperNaming::getPropertyName($child);
                         $params[]     = $this->builder
                             ->param($propertyName)
                             ->setType($childClassName)
@@ -125,10 +103,10 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         if ($root->isArrayOfObjects()) {
             $child = $root->getArrayItem();
             if ($child !== null && $child->isComposite()) {
-                $propertyName = ResponseMapperNaming::getPropertyName($child);
+                $propertyName = SchemaMapperNaming::getPropertyName($child);
                 $params[]     = $this->builder
                     ->param($propertyName)
-                    ->setType(ResponseMapperNaming::getClassName($child))
+                    ->setType(SchemaMapperNaming::getClassName($child))
                     ->getNode();
 
                 $paramInits[] = $this->builder->assign(
@@ -153,24 +131,14 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 
     protected function generateMap(Field $root): ClassMethod
     {
-        $statements       = [];
-        $returnObj        = null;
-        $responseParam    = $this->builder
-            ->param('response')
-            ->setType('ResponseInterface')
+        $statements   = [];
+        $returnObj    = null;
+        $payloadParam = $this->builder
+            ->param('payload')
+            ->setType('array')
             ->getNode();
-        $responseVariable = $this->builder->var('response');
-        $payloadVariable  = $this->builder->var('payload');
 
-        $statements[] = $this->builder->assign(
-            $payloadVariable,
-            $this->builder->methodCall(
-                $this->builder->localPropertyFetch('bodySerializer'),
-                'unserializeResponse',
-                [$responseVariable]
-            )
-        );
-
+        $payloadVariable = $this->builder->var('payload');
         $this->addImport(
             sprintf(
                 '%s%s\\%s',
@@ -181,29 +149,27 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         );
 
         if ($root->isObject()) {
-            $statements =
-                array_merge(
-                    $statements,
-                    $this->generateMapStatementsForObject($root, $payloadVariable, $responseVariable)
-                );
+            $statements = array_merge(
+                $statements,
+                $this->generateMapStatementsForObject($root, $payloadVariable)
+            );
         }
 
         if ($root->isArrayOfObjects()) {
-            $statements =
-                array_merge(
-                    $statements,
-                    $this->generateMapStatementsForArrayOfObjects($root, $payloadVariable, $responseVariable)
-                );
+            $statements = array_merge(
+                $statements,
+                $this->generateMapStatementsForArrayOfObjects($root, $payloadVariable)
+            );
         }
 
         return $this->builder
-            ->method('map')
+            ->method('toSchema')
             ->makePublic()
-            ->addParam($responseParam)
+            ->addParam($payloadParam)
             ->addStmts($statements)
             ->setReturnType($root->getPhpTypeHint(), $root->isNullable())
             ->composeDocBlock(
-                [$responseParam],
+                [$payloadParam],
                 $root->getPhpDocType(false),
                 array_keys($this->mapMethodThrownExceptions)
             )
@@ -212,26 +178,19 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 
     protected function generateMapStatementsForArrayOfObjects(
         Field $field,
-        Variable $payloadVar,
-        Variable $responseVar
+        Variable $payloadVariable
     ): array {
         $itemsVar     = $this->builder->var('items');
         $statements[] = $this->builder->assign($itemsVar, $this->builder->array([]));
 
-        $as             = $this->builder->var('payloadItem');
-        $itemMapper     = $this->builder->localPropertyFetch(
-            ResponseMapperNaming::getPropertyName($field->getArrayItem())
+        $payloadItemVariable = $this->builder->var('payloadItem');
+        $itemMapper          = $this->builder->localPropertyFetch(
+            SchemaMapperNaming::getPropertyName($field->getArrayItem())
         );
-        $statusCodeCall = $this->builder->methodCall($responseVar, 'getStatusCode');
-
-        $itemMapperCall      = $this->builder->methodCall(
-            $itemMapper,
-            'map',
-            [$this->builder->new('Response', $this->builder->args([$statusCodeCall, $as]))]
-        );
+        $itemMapperCall      = $this->builder->methodCall($itemMapper, 'toSchema', [$payloadItemVariable]);
         $foreachStatements[] = $this->builder->appendToArray($itemsVar, $itemMapperCall);
 
-        $statements[] = $this->builder->foreach($payloadVar, $as, $foreachStatements);
+        $statements[] = $this->builder->foreach($payloadVariable, $payloadItemVariable, $foreachStatements);
 
         $statements[] = $this->builder->return(
             $this->builder->new(
@@ -243,7 +202,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         return $statements;
     }
 
-    protected function generateMapStatementsForObject(Field $root, Variable $payloadVar, Variable $responseVar): array
+    protected function generateMapStatementsForObject(Field $root, Variable $payloadVariable): array
     {
         $statements = [];
 
@@ -257,11 +216,11 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 $requiredFields[]        = $property;
                 $requiredItemName        = $this->builder->val($property->getName());
                 $requiredItemsNames[]    = $requiredItemName;
-                $requiredResponseItems[] = $this->builder->getArrayItem($payloadVar, $requiredItemName);
+                $requiredResponseItems[] = $this->builder->getArrayItem($payloadVariable, $requiredItemName);
             } else {
                 $optionalFields[]        = $property;
                 $optionalResponseItems[] = $this->builder->getArrayItem(
-                    $payloadVar,
+                    $payloadVariable,
                     $this->builder->val($property->getName())
                 );
             }
@@ -276,7 +235,7 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             );
 
             $missingFieldsVar       = $this->builder->var('missingFields');
-            $missingFieldsArrayKeys = $this->builder->funcCall('array_keys', [$payloadVar]);
+            $missingFieldsArrayKeys = $this->builder->funcCall('array_keys', [$payloadVariable]);
             $missingFieldsArrayDiff = $this->builder->funcCall(
                 'array_diff',
                 [$this->builder->array($requiredItemsNames), $missingFieldsArrayKeys]
@@ -307,19 +266,9 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             /** @var Field $field */
             if ($field->isComposite()) {
                 $requiredVars[] = $this->builder->methodCall(
-                    $this->builder->localPropertyFetch(ResponseMapperNaming::getPropertyName($field)),
-                    'map',
-                    [
-                        $this->builder->new(
-                            'Response',
-                            $this->builder->args(
-                                [
-                                    $this->builder->methodCall($responseVar, 'getStatusCode'),
-                                    $requiredResponseItems[$i],
-                                ]
-                            )
-                        ),
-                    ]
+                    $this->builder->localPropertyFetch(SchemaMapperNaming::getPropertyName($field)),
+                    'toSchema',
+                    [$requiredResponseItems[$i]]
                 );
             } elseif ($field->isDate()) {
                 $this->addImport(DateTimeImmutable::class);
@@ -336,21 +285,11 @@ class ResponseMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 
             foreach ($optionalFields as $i => $field) {
                 if ($field->isComposite()) {
-                    $mapper      = $this->builder->localPropertyFetch(ResponseMapperNaming::getPropertyName($field));
+                    $mapper      = $this->builder->localPropertyFetch(SchemaMapperNaming::getPropertyName($field));
                     $optionalVar = $this->builder->methodCall(
                         $mapper,
-                        'map',
-                        [
-                            $this->builder->new(
-                                'Response',
-                                $this->builder->args(
-                                    [
-                                        $this->builder->methodCall($responseVar, 'getStatusCode'),
-                                        $optionalResponseItems[$i],
-                                    ]
-                                )
-                            ),
-                        ]
+                        'toSchema',
+                        [$optionalResponseItems[$i]]
                     );
                 } elseif ($field->isDate()) {
                     $this->addImport(DateTimeImmutable::class);

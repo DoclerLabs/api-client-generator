@@ -13,7 +13,7 @@ use Throwable;
 
 class BodySerializer
 {
-    private $contentTypeSerializers;
+    private $contentTypeSerializers = [];
 
     public function add(string $contentType, ContentTypeSerializerInterface $contentTypeSerializer): self
     {
@@ -35,7 +35,7 @@ class BodySerializer
 
             return $this->getContentTypeSerializer($request->getContentType())->encode($body);
         } catch (Throwable $exception) {
-            throw new RequestValidationException($exception->getMessage());
+            throw new RequestValidationException($exception->getMessage(), 0, $exception);
         }
     }
 
@@ -52,7 +52,7 @@ class BodySerializer
 
             return $this->getContentTypeSerializer($response->getHeaderLine('Content-Type'))->decode($body);
         } catch (Throwable $exception) {
-            throw new UnexpectedResponseBodyException($exception->getMessage(), $response);
+            throw new UnexpectedResponseBodyException($exception->getMessage(), $response, $exception);
         }
     }
 

@@ -2,6 +2,7 @@
 
 namespace DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessage;
 
+use DhJasmin\StoryApiClient\Request\Mapper\RequestMapperInterface;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\MethodBuilder;
 
@@ -12,20 +13,6 @@ abstract class HttpMessageAbstract
     public function __construct(CodeBuilder $builder)
     {
         $this->builder = $builder;
-    }
-
-    public function generateInitRequestMapperMethod(): MethodBuilder
-    {
-        return $this->builder
-            ->method('initRequestMapper')
-            ->addStmt(
-                $this->builder->return(
-                    $this->builder->new(
-                        $this->getRequestMapperClassName(),
-                        [$this->builder->new('BodySerializer')]
-                    )
-                )
-            );
     }
 
     public function generateRequestMapMethod(): MethodBuilder
@@ -39,7 +26,7 @@ abstract class HttpMessageAbstract
         $bodyVariable = $this->builder->var('body');
 
         $encodeMethodCall = $this->builder->methodCall(
-            $this->builder->localPropertyFetch('serializer'),
+            $this->builder->localPropertyFetch('bodySerializer'),
             'serializeRequest',
             [
                 $requestVariable,

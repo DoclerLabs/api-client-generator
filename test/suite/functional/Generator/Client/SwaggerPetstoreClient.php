@@ -8,7 +8,6 @@
 
 namespace Test;
 
-use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -19,10 +18,9 @@ use Test\Request\FindPetByIdRequest;
 use Test\Request\FindPetsRequest;
 use Test\Request\Mapper\RequestMapperInterface;
 use Test\Request\RequestInterface;
-use Test\Response\ErrorHandler;
-use Test\Response\Mapper\PetCollectionResponseMapper;
-use Test\Response\Mapper\PetResponseMapper;
-use Test\Response\Mapper\ResponseMapperInterface;
+use Test\Response\ResponseHandler;
+use Test\Schema\Mapper\PetCollectionMapper;
+use Test\Schema\Mapper\PetMapper;
 use Test\Schema\Pet;
 use Test\Schema\PetCollection;
 
@@ -31,27 +29,17 @@ class SwaggerPetstoreClient
     /** @var ClientInterface */
     private $client;
 
-    /** @var RequestMapperInterface */
-    private $requestMapper;
-
-    /** @var ErrorHandler */
-    private $errorHandler;
-
     /** @var ContainerInterface */
     private $container;
 
     /**
-     * @param ClientInterface        $client
-     * @param RequestMapperInterface $requestMapper
-     * @param ErrorHandler           $errorHandler
-     * @param ContainerInterface     $container
+     * @param ClientInterface    $client
+     * @param ContainerInterface $container
      */
-    public function __construct(ClientInterface $client, RequestMapperInterface $requestMapper, ErrorHandler $errorHandler, ContainerInterface $container)
+    public function __construct(ClientInterface $client, ContainerInterface $container)
     {
-        $this->client        = $client;
-        $this->requestMapper = $requestMapper;
-        $this->errorHandler  = $errorHandler;
-        $this->container     = $container;
+        $this->client    = $client;
+        $this->container = $container;
     }
 
     /**
@@ -61,7 +49,7 @@ class SwaggerPetstoreClient
      */
     public function findPets(FindPetsRequest $request): PetCollection
     {
-        return $this->getResponseMapper(PetCollectionResponseMapper::class)->map($this->errorHandler->handle($this->sendRequest($request)));
+        return $this->container->get(PetCollectionMapper::class)->toSchema($this->container->get(ResponseHandler::class)->handle($this->sendRequest($request)));
     }
 
     /**
@@ -71,7 +59,7 @@ class SwaggerPetstoreClient
      */
     public function addPet(AddPetRequest $request): Pet
     {
-        return $this->getResponseMapper(PetResponseMapper::class)->map($this->errorHandler->handle($this->sendRequest($request)));
+        return $this->container->get(PetMapper::class)->toSchema($this->container->get(ResponseHandler::class)->handle($this->sendRequest($request)));
     }
 
     /**
@@ -79,7 +67,7 @@ class SwaggerPetstoreClient
      */
     public function countPets(CountPetsRequest $request): void
     {
-        $this->errorHandler->handle($this->sendRequest($request));
+        $this->container->get(ResponseHandler::class)->handle($this->sendRequest($request));
     }
 
     /**
@@ -89,7 +77,7 @@ class SwaggerPetstoreClient
      */
     public function findPetById(FindPetByIdRequest $request): Pet
     {
-        return $this->getResponseMapper(PetResponseMapper::class)->map($this->errorHandler->handle($this->sendRequest($request)));
+        return $this->container->get(PetMapper::class)->toSchema($this->container->get(ResponseHandler::class)->handle($this->sendRequest($request)));
     }
 
     /**
@@ -97,7 +85,7 @@ class SwaggerPetstoreClient
      */
     public function deletePet(DeletePetRequest $request): void
     {
-        $this->errorHandler->handle($this->sendRequest($request));
+        $this->container->get(ResponseHandler::class)->handle($this->sendRequest($request));
     }
 
     /**
@@ -107,20 +95,6 @@ class SwaggerPetstoreClient
      */
     public function sendRequest(RequestInterface $request): ResponseInterface
     {
-        return $this->client->sendRequest($this->requestMapper->map($request));
-    }
-
-    /**
-     * @param string $mapperClass
-     *
-     * @return ResponseMapperInterface
-     */
-    public function getResponseMapper(string $mapperClass): ResponseMapperInterface
-    {
-        if (! $this->container->has($mapperClass)) {
-            throw new InvalidArgumentException('Response mapper not found: ' . $mapperClass);
-        }
-
-        return $this->container->get($mapperClass);
+        return $this->client->sendRequest($this->container->get(RequestMapperInterface::class)->map($request));
     }
 }

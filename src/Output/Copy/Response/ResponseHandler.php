@@ -3,28 +3,32 @@
 namespace DoclerLabs\ApiClientGenerator\Output\Copy\Response;
 
 use DoclerLabs\ApiClientException\Factory\ResponseExceptionFactory;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\BodySerializer;
 use Psr\Http\Message\ResponseInterface;
 
-class ErrorHandler
+class ResponseHandler
 {
+    /** @var BodySerializer */
+    private $bodySerializer;
     /** @var ResponseExceptionFactory */
     private $responseExceptionFactory;
 
-    public function __construct(ResponseExceptionFactory $exceptionFactory)
+    public function __construct(BodySerializer $bodySerializer, ResponseExceptionFactory $exceptionFactory)
     {
+        $this->bodySerializer           = $bodySerializer;
         $this->responseExceptionFactory = $exceptionFactory;
     }
 
     /**
      * @param ResponseInterface $response
      *
-     * @return ResponseInterface
+     * @return array
      */
-    public function handle(ResponseInterface $response): ResponseInterface
+    public function handle(ResponseInterface $response): array
     {
         $statusCode = $response->getStatusCode();
         if ($statusCode >= 200 && $statusCode < 300) {
-            return $response;
+            return $this->bodySerializer->unserializeResponse($response);
         }
 
         throw $this->responseExceptionFactory->create(

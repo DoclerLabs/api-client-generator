@@ -6,8 +6,6 @@ use DoclerLabs\ApiClientGenerator\Ast\Builder\MethodBuilder;
 
 interface HttpMessageImplementationInterface
 {
-    public function generateInitRequestMapperMethod(): MethodBuilder;
-
     public function generateRequestMapMethod(): MethodBuilder;
 
     public function getRequestMapperClassName(): string;

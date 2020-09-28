@@ -32,11 +32,6 @@ class HttpMessageImplementationStrategy implements HttpMessageImplementationInte
         $this->httpMessageImplementation = new $implementationClassName($builder);
     }
 
-    public function generateInitRequestMapperMethod(): MethodBuilder
-    {
-        return $this->httpMessageImplementation->generateInitRequestMapperMethod();
-    }
-
     public function generateRequestMapMethod(): MethodBuilder
     {
         return $this->httpMessageImplementation->generateRequestMapMethod();

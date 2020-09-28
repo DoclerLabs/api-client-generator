@@ -8,17 +8,12 @@
 
 namespace Test;
 
-use DoclerLabs\ApiClientException\Factory\ResponseExceptionFactory;
 use GuzzleHttp\Client;
 use InvalidArgumentException;
 use Pimple\Container;
 use Pimple\Psr11\Container as Psr11Container;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientInterface;
-use Test\Request\Mapper\GuzzleRequestMapper;
-use Test\Request\Mapper\RequestMapperInterface;
-use Test\Response\ErrorHandler;
-use Test\Serializer\BodySerializer;
 
 class SwaggerPetstoreClientFactory
 {
@@ -30,7 +25,7 @@ class SwaggerPetstoreClientFactory
      */
     public function create(string $baseUri, array $options = []): SwaggerPetstoreClient
     {
-        return new SwaggerPetstoreClient($this->initBaseClient($baseUri, $options), $this->initRequestMapper(), new ErrorHandler(new ResponseExceptionFactory()), $this->initContainer());
+        return new SwaggerPetstoreClient($this->initBaseClient($baseUri, $options), $this->initContainer());
     }
 
     private function initBaseClient(string $baseUri, array $options): ClientInterface
@@ -42,11 +37,6 @@ class SwaggerPetstoreClientFactory
         $config  = \array_replace_recursive($default, $options);
 
         return new Client($config);
-    }
-
-    private function initRequestMapper(): RequestMapperInterface
-    {
-        return new GuzzleRequestMapper(new BodySerializer());
     }
 
     private function initContainer(): ContainerInterface

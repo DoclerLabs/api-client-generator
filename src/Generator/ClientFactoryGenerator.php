@@ -2,17 +2,12 @@
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
-use DoclerLabs\ApiClientException\Factory\ResponseExceptionFactory;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpClientImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\ClientNaming;
-use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Request\Mapper\RequestMapperInterface;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Response\ErrorHandler;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\BodySerializer;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use PhpParser\Node\Stmt\ClassMethod;
 use Psr\Container\ContainerInterface;
@@ -43,19 +38,7 @@ class ClientFactoryGenerator extends GeneratorAbstract
 
         $this
             ->addImport(ClientInterface::class)
-            ->addImport(ContainerInterface::class)
-            ->addImport(ResponseExceptionFactory::class)
-            ->addImport(CopiedNamespace::getImport($this->baseNamespace, RequestMapperInterface::class))
-            ->addImport(CopiedNamespace::getImport($this->baseNamespace, ErrorHandler::class))
-            ->addImport(CopiedNamespace::getImport($this->baseNamespace, BodySerializer::class))
-            ->addImport(
-                sprintf(
-                    '%s%s\\%s',
-                    $this->baseNamespace,
-                    RequestMapperGenerator::NAMESPACE_SUBPATH,
-                    $this->messageImplementation->getRequestMapperClassName()
-                )
-            );
+            ->addImport(ContainerInterface::class);
 
         foreach ($this->clientImplementation->getInitBaseClientImports() as $import) {
             $this->addImport($import);
@@ -82,12 +65,6 @@ class ClientFactoryGenerator extends GeneratorAbstract
             ->setReturnType('ClientInterface')
             ->getNode();
 
-        $initRequestMapperMethod = $this->messageImplementation
-            ->generateInitRequestMapperMethod()
-            ->makePrivate()
-            ->setReturnType('RequestMapperInterface')
-            ->getNode();
-
         $initContainerMethod = $this->containerImplementation
             ->generateInitContainerMethod()
             ->makePrivate()
@@ -98,7 +75,6 @@ class ClientFactoryGenerator extends GeneratorAbstract
             ->class($className)
             ->addStmt($this->generateCreate($specification))
             ->addStmt($initBaseClientMethod)
-            ->addStmt($initRequestMapperMethod)
             ->addStmt($initContainerMethod);
 
         $this->registerFile($fileRegistry, $classBuilder);
@@ -127,8 +103,6 @@ class ClientFactoryGenerator extends GeneratorAbstract
                             'initBaseClient',
                             [$this->builder->var('baseUri'), $this->builder->var('options')]
                         ),
-                        $this->builder->localMethodCall('initRequestMapper'),
-                        $this->builder->new('ErrorHandler', [$this->builder->new('ResponseExceptionFactory')]),
                         $this->builder->localMethodCall('initContainer'),
                     ]
                 )

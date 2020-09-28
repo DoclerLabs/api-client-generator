@@ -4,7 +4,7 @@ namespace DoclerLabs\ApiClientGenerator\Naming;
 
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 
-class ResponseMapperNaming
+class SchemaMapperNaming
 {
     private const FILE_SUFFIX = 'Mapper';
 

@@ -2,19 +2,26 @@
 
 namespace DoclerLabs\ApiClientGenerator\Generator\Implementation\Container;
 
+use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\MethodBuilder;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationInterface;
-use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\BodySerializer;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\FormUrlencodedContentTypeSerializer;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\JsonContentTypeSerializer;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\Variable;
 use Pimple\Container;
 
-class PimpleContainer extends RegisterContainerAbstract implements ContainerImplementationInterface
+class PimpleContainer implements ContainerImplementationInterface
 {
+    protected string      $baseNamespace;
+    protected CodeBuilder $builder;
+    protected array       $registerImports;
+
+    public function __construct(string $baseNamespace, CodeBuilder $builder)
+    {
+        $this->baseNamespace = $baseNamespace;
+        $this->builder       = $builder;
+    }
+
     public function generateInitContainerMethod(): MethodBuilder
     {
         $statements = [];
@@ -60,15 +67,9 @@ class PimpleContainer extends RegisterContainerAbstract implements ContainerImpl
 
     public function getContainerRegisterImports(): array
     {
-        return array_merge(
-            [
-                Container::class,
-                CopiedNamespace::getImport($this->baseNamespace, BodySerializer::class),
-                CopiedNamespace::getImport($this->baseNamespace, JsonContentTypeSerializer::class),
-                CopiedNamespace::getImport($this->baseNamespace, FormUrlencodedContentTypeSerializer::class),
-            ],
-            $this->registerImports
-        );
+        return [
+            Container::class,
+        ];
     }
 
     public function getPackages(): array
@@ -78,7 +79,7 @@ class PimpleContainer extends RegisterContainerAbstract implements ContainerImpl
         ];
     }
 
-    protected function registerClosure(Variable $containerVariable, Expr $key, Closure $closure): Expr
+    public function registerClosure(Variable $containerVariable, Expr $key, Closure $closure): Expr
     {
         return $this->builder->assign(
             $this->builder->getArrayItem($containerVariable, $key),
@@ -86,7 +87,7 @@ class PimpleContainer extends RegisterContainerAbstract implements ContainerImpl
         );
     }
 
-    protected function getClosure(Variable $containerVariable, Expr $key): Expr
+    public function getClosure(Variable $containerVariable, Expr $key): Expr
     {
         return $this->builder->getArrayItem($containerVariable, $key);
     }

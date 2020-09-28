@@ -8,10 +8,14 @@
 
 namespace Test;
 
+use DoclerLabs\ApiClientException\Factory\ResponseExceptionFactory;
 use Pimple\Container;
-use Test\Response\Mapper\FoodResponseMapper;
-use Test\Response\Mapper\PetCollectionResponseMapper;
-use Test\Response\Mapper\PetResponseMapper;
+use Test\Request\Mapper\GuzzleRequestMapper;
+use Test\Request\Mapper\RequestMapperInterface;
+use Test\Response\ResponseHandler;
+use Test\Schema\Mapper\FoodMapper;
+use Test\Schema\Mapper\PetCollectionMapper;
+use Test\Schema\Mapper\PetMapper;
 use Test\Serializer\BodySerializer;
 use Test\Serializer\ContentType\FormUrlencodedContentTypeSerializer;
 use Test\Serializer\ContentType\JsonContentTypeSerializer;
@@ -21,19 +25,25 @@ class ServiceProvider
     /**
      * @param Container $container
      */
-    private function register(Container $container): void
+    public function register(Container $container): void
     {
         $container[BodySerializer::class] = static function (): BodySerializer {
             return (new BodySerializer())->add('application/json', new JsonContentTypeSerializer())->add('application/x-www-form-urlencoded', new FormUrlencodedContentTypeSerializer());
         };
-        $container[PetCollectionResponseMapper::class] = static function () use ($container): PetCollectionResponseMapper {
-            return new PetCollectionResponseMapper($container[PetResponseMapper::class]);
+        $container[ResponseHandler::class] = static function () use ($container): ResponseHandler {
+            return new ResponseHandler($container[BodySerializer::class], new ResponseExceptionFactory());
         };
-        $container[PetResponseMapper::class] = static function () use ($container): PetResponseMapper {
-            return new PetResponseMapper($container[FoodResponseMapper::class]);
+        $container[RequestMapperInterface::class] = static function () use ($container): RequestMapperInterface {
+            return new GuzzleRequestMapper($container[BodySerializer::class]);
         };
-        $container[FoodResponseMapper::class] = static function () use ($container): FoodResponseMapper {
-            return new FoodResponseMapper();
+        $container[PetCollectionMapper::class] = static function () use ($container): PetCollectionMapper {
+            return new PetCollectionMapper($container[PetMapper::class]);
+        };
+        $container[PetMapper::class] = static function () use ($container): PetMapper {
+            return new PetMapper($container[FoodMapper::class]);
+        };
+        $container[FoodMapper::class] = static function () use ($container): FoodMapper {
+            return new FoodMapper();
         };
     }
 }

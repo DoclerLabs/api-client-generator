@@ -8,7 +8,7 @@ use DoclerLabs\ApiClientGenerator\Entity\Request;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Naming\RequestNaming;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Request\SerializableRequestBodyInterface;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Request\SerializableInterface;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -300,7 +300,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             [$this->builder->array($fields), $filterCallback]
         );
 
-        $this->addImport(CopiedNamespace::getImport($this->baseNamespace, SerializableRequestBodyInterface::class));
+        $this->addImport(CopiedNamespace::getImport($this->baseNamespace, SerializableInterface::class));
         $closureVariable = $this->builder->var('value');
         $closureBody     = $this->builder->return(
             $this->builder->ternary(

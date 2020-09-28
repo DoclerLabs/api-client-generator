@@ -2,12 +2,12 @@
 
 namespace DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType;
 
-use DoclerLabs\ApiClientGenerator\Output\Copy\Request\SerializableRequestBodyInterface;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Schema\SerializableInterface;
 use Psr\Http\Message\StreamInterface;
 
 class FormUrlencodedContentTypeSerializer implements ContentTypeSerializerInterface
 {
-    public function encode(SerializableRequestBodyInterface $body): string
+    public function encode(SerializableInterface $body): string
     {
         return http_build_query($body->toArray());
     }

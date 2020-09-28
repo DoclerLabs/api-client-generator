@@ -7,13 +7,11 @@ use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\ClientNaming;
 use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Naming\RequestNaming;
-use DoclerLabs\ApiClientGenerator\Naming\ResponseMapperNaming;
+use DoclerLabs\ApiClientGenerator\Naming\SchemaMapperNaming;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\Mapper\RequestMapperInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\RequestInterface;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Response\ErrorHandler;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Response\Mapper\ResponseMapperInterface;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Response\ResponseHandler;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
-use InvalidArgumentException;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
 use Psr\Container\ContainerInterface;
@@ -33,25 +31,27 @@ class ClientGenerator extends GeneratorAbstract
             $classBuilder->addStmt($this->generateAction($operation));
         }
 
-        $classBuilder
-            ->addStmt($this->generateSendRequestMethod())
-            ->addStmt($this->generateGetResponseMapperMethod());
+        $classBuilder->addStmt($this->generateSendRequestMethod());
 
         $this->registerFile($fileRegistry, $classBuilder);
     }
 
     protected function generateSendRequestMethod(): ClassMethod
     {
-        $requestVar  = $this->builder->var('request');
-        $methodParam = $this->builder
+        $requestVariable = $this->builder->var('request');
+        $methodParameter = $this->builder
             ->param('request')
             ->setType('RequestInterface')
             ->getNode();
 
         $mapMethodCall = $this->builder->methodCall(
-            $this->builder->localPropertyFetch('requestMapper'),
+            $this->builder->methodCall(
+                $this->builder->localPropertyFetch('container'),
+                'get',
+                [$this->builder->classConstFetch('RequestMapperInterface', 'class')]
+            ),
             'map',
-            $this->builder->args([$requestVar])
+            $this->builder->args([$requestVariable])
         );
         $clientCall    = $this->builder->methodCall(
             $this->builder->localPropertyFetch('client'),
@@ -61,61 +61,10 @@ class ClientGenerator extends GeneratorAbstract
 
         return $this->builder->method('sendRequest')
             ->makePublic()
-            ->addParam($methodParam)
+            ->addParam($methodParameter)
             ->addStmt($this->builder->return($clientCall))
             ->setReturnType('ResponseInterface')
-            ->composeDocBlock([$methodParam], 'ResponseInterface')
-            ->getNode();
-    }
-
-    protected function generateGetResponseMapperMethod(): ClassMethod
-    {
-        $this
-            ->addImport(InvalidArgumentException::class)
-            ->addImport(CopiedNamespace::getImport($this->baseNamespace, ResponseMapperInterface::class));
-
-        $statements       = [];
-        $mapperClassParam = $this->builder
-            ->param('mapperClass')
-            ->setType('string')
-            ->getNode();
-
-        $mapperClassVariable = $this->builder->var('mapperClass');
-
-        $ifCondition = $this->builder->not(
-            $this->builder->methodCall(
-                $this->builder->localPropertyFetch('container'),
-                'has',
-                [$mapperClassVariable]
-            )
-        );
-
-        $statements[] = $this->builder->if(
-            $ifCondition,
-            [
-                $this->builder->throw(
-                    InvalidArgumentException::class,
-                    $this->builder->concat(
-                        $this->builder->val('Response mapper not found: '),
-                        $mapperClassVariable
-                    )
-                ),
-            ]
-        );
-        $statements[] = $this->builder->return(
-            $this->builder->methodCall(
-                $this->builder->localPropertyFetch('container'),
-                'get',
-                [$mapperClassVariable]
-            )
-        );
-
-        return $this->builder->method('getResponseMapper')
-            ->makePublic()
-            ->addParam($mapperClassParam)
-            ->addStmts($statements)
-            ->setReturnType('ResponseMapperInterface')
-            ->composeDocBlock([$mapperClassParam], 'ResponseMapperInterface')
+            ->composeDocBlock([$methodParameter], 'ResponseInterface')
             ->getNode();
     }
 
@@ -141,7 +90,11 @@ class ClientGenerator extends GeneratorAbstract
         $responseStmt = $this->builder->localMethodCall('sendRequest', [$requestVar]);
 
         $errorHandledStmt = $this->builder->methodCall(
-            $this->builder->localPropertyFetch('errorHandler'),
+            $this->builder->methodCall(
+                $this->builder->localPropertyFetch('container'),
+                'get',
+                [$this->builder->classConstFetch('ResponseHandler', 'class')]
+            ),
             'handle',
             $this->builder->args([$responseStmt])
         );
@@ -157,22 +110,23 @@ class ClientGenerator extends GeneratorAbstract
                 ->getNode();
         }
 
-        $mapperClassName = ResponseMapperNaming::getClassName($responseBody);
+        $mapperClassName = SchemaMapperNaming::getClassName($responseBody);
         $this->addImport(
             sprintf(
                 '%s%s\\%s',
                 $this->baseNamespace,
-                ResponseMapperGenerator::NAMESPACE_SUBPATH,
+                SchemaMapperGenerator::NAMESPACE_SUBPATH,
                 $mapperClassName
             )
         );
 
-        $getMethod = $this->builder->localMethodCall(
-            'getResponseMapper',
+        $getMethod = $this->builder->methodCall(
+            $this->builder->localPropertyFetch('container'),
+            'get',
             [$this->builder->classConstFetch($mapperClassName, 'class')]
         );
 
-        $mapMethod  = $this->builder->methodCall($getMethod, 'map', [$errorHandledStmt]);
+        $mapMethod  = $this->builder->methodCall($getMethod, 'toSchema', [$errorHandledStmt]);
         $returnStmt = $this->builder->return($mapMethod);
 
         $this->addImport(
@@ -200,13 +154,7 @@ class ClientGenerator extends GeneratorAbstract
     {
         return [
             $this->builder->localProperty('client', 'ClientInterface', 'ClientInterface'),
-            $this->builder->localProperty('requestMapper', 'RequestMapperInterface', 'RequestMapperInterface'),
-            $this->builder->localProperty('errorHandler', 'ErrorHandler', 'ErrorHandler'),
-            $this->builder->localProperty(
-                'container',
-                'ContainerInterface',
-                'ContainerInterface'
-            ),
+            $this->builder->localProperty('container', 'ContainerInterface', 'ContainerInterface'),
         ];
     }
 
@@ -217,20 +165,12 @@ class ClientGenerator extends GeneratorAbstract
             ->addImport(ResponseInterface::class)
             ->addImport(ContainerInterface::class)
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, RequestMapperInterface::class))
-            ->addImport(CopiedNamespace::getImport($this->baseNamespace, ErrorHandler::class))
+            ->addImport(CopiedNamespace::getImport($this->baseNamespace, ResponseHandler::class))
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, RequestInterface::class));
 
         $parameters[] = $this->builder
             ->param('client')
             ->setType('ClientInterface')
-            ->getNode();
-        $parameters[] = $this->builder
-            ->param('requestMapper')
-            ->setType('RequestMapperInterface')
-            ->getNode();
-        $parameters[] = $this->builder
-            ->param('errorHandler')
-            ->setType('ErrorHandler')
             ->getNode();
         $parameters[] = $this->builder
             ->param('container')
@@ -240,14 +180,6 @@ class ClientGenerator extends GeneratorAbstract
         $inits[] = $this->builder->assign(
             $this->builder->localPropertyFetch('client'),
             $this->builder->var('client')
-        );
-        $inits[] = $this->builder->assign(
-            $this->builder->localPropertyFetch('requestMapper'),
-            $this->builder->var('requestMapper')
-        );
-        $inits[] = $this->builder->assign(
-            $this->builder->localPropertyFetch('errorHandler'),
-            $this->builder->var('errorHandler')
         );
         $inits[] = $this->builder->assign(
             $this->builder->localPropertyFetch('container'),

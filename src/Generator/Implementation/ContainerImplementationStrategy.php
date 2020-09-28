@@ -5,6 +5,9 @@ namespace DoclerLabs\ApiClientGenerator\Generator\Implementation;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\MethodBuilder;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\Container\PimpleContainer;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\Closure;
+use PhpParser\Node\Expr\Variable;
 use UnexpectedValueException;
 
 class ContainerImplementationStrategy implements ContainerImplementationInterface
@@ -34,9 +37,14 @@ class ContainerImplementationStrategy implements ContainerImplementationInterfac
         return $this->containerImplementation->generateInitContainerMethod();
     }
 
-    public function generateRegisterMethod(array $compositeFields): MethodBuilder
+    public function registerClosure(Variable $containerVariable, Expr $key, Closure $closure): Expr
     {
-        return $this->containerImplementation->generateRegisterMethod($compositeFields);
+        return $this->containerImplementation->registerClosure($containerVariable, $key, $closure);
+    }
+
+    public function getClosure(Variable $containerVariable, Expr $key): Expr
+    {
+        return $this->containerImplementation->getClosure($containerVariable, $key);
     }
 
     public function getPackages(): array

@@ -10,7 +10,7 @@ namespace Test\Request;
 
 use DateTimeInterface;
 use DoclerLabs\ApiClientException\RequestValidationException;
-use Test\Request\SerializableRequestBodyInterface;
+use Test\Request\SerializableInterface;
 use Test\Schema\EmbeddedObject;
 use Test\Schema\PutResourceByIdRequestBody;
 use Test\Serializer\ContentType\Json\Json;
