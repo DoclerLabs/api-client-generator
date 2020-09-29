@@ -4,12 +4,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [3.0.0] - In progress
-### Changed
- - Most of the static code copied to the client instead of depending on docler-labs/api-client-base
+## [3.0.0] - 2020-09-29
 ### Added
  - Progress bar added
  - PHP version syntax resolution
+ - Service provider generator added
+ - Content-type property added to the Request
+ - Request mapper generator added
+ - Specification file is copied to the client directory
+### Changed
+ - Most of the static code copied to the client instead of depending on docler-labs/api-client-base
+ - Headers removed from default Guzzle config
+ - Http client implementation abstracted behind PSR-17 interface
+ - Http message implementation abstracted behind PSR-7 interface
+ - Container implementation abstracted behind PSR-11 interface
+ - Source directory name is configurable
+ - Json and form-encoded serializers instead of built-in json
+ - SerializableInterface added
+ - ResponseMapper renamed to SchemaMapper
+ - Client dependencies initialization moved to service provider
+ - OperationId is no longer mandatory
+### Fixed
+ - CS Fixer fails on invalid generated PHP file
+ - Nullable fields schema mapper fix
+ - Naming collisions in embedded objects handled
 
 ## [2.0.0] - 2020-08-31
 ### Changed
