@@ -47,6 +47,7 @@ use Pimple\ServiceProviderInterface;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -94,10 +95,13 @@ class ServiceProvider implements ServiceProviderInterface
             $container[MetaTemplateFacade::class],
             $container[MetaFilePrinter::class],
             $container[Finder::class],
-            $container[StaticPhpFileCopier::class]
+            $container[StaticPhpFileCopier::class],
+            $container[Filesystem::class]
         );
 
         $pimple[Finder::class] = static fn(Container $container) => new Finder();
+
+        $pimple[Filesystem::class] = static fn(Container $container) => new Filesystem();
 
         $pimple[CodeGeneratorFacade::class] = static fn(Container $container) => (new CodeGeneratorFacade())
             ->add($container[ClientFactoryGenerator::class])

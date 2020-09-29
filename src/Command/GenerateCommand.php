@@ -17,6 +17,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 
 class GenerateCommand extends Command
@@ -30,6 +31,7 @@ class GenerateCommand extends Command
     private MetaFilePrinter      $templatePrinter;
     private Finder               $fileFinder;
     private StaticPhpFileCopier  $staticPhpPrinter;
+    private Filesystem           $filesystem;
 
     public function __construct(
         Configuration $configuration,
@@ -40,7 +42,8 @@ class GenerateCommand extends Command
         MetaTemplateFacade $metaTemplate,
         MetaFilePrinter $templatePrinter,
         Finder $fileFinder,
-        StaticPhpFileCopier $staticPhpCopier
+        StaticPhpFileCopier $staticPhpCopier,
+        Filesystem $filesystem
     ) {
         parent::__construct();
         $this->configuration    = $configuration;
@@ -52,6 +55,7 @@ class GenerateCommand extends Command
         $this->templatePrinter  = $templatePrinter;
         $this->fileFinder       = $fileFinder;
         $this->staticPhpPrinter = $staticPhpCopier;
+        $this->filesystem       = $filesystem;
     }
 
     public function configure(): void
@@ -73,6 +77,7 @@ class GenerateCommand extends Command
         );
 
         $this->generatePhpFiles($output, $specification);
+        $this->copySpecification($output);
         $this->generateMetaFiles($output, $specification);
         $this->copyStaticPhpFiles($output);
 
@@ -152,5 +157,21 @@ class GenerateCommand extends Command
             $progressBar->advance();
         }
         $progressBar->finish();
+    }
+
+    private function copySpecification(OutputInterface $output)
+    {
+        $output->writeln(sprintf('Copy specification file to %s.', $this->configuration->getOutputDirectory()));
+
+        $destinationPath = sprintf(
+            '%s/doc/%s',
+            $this->configuration->getOutputDirectory(),
+            basename($this->configuration->getSpecificationFilePath())
+        );
+
+        $this->filesystem->copy(
+            $this->configuration->getSpecificationFilePath(),
+            $destinationPath
+        );
     }
 }
