@@ -159,7 +159,7 @@ class GenerateCommand extends Command
         $progressBar->finish();
     }
 
-    private function copySpecification(OutputInterface $output)
+    private function copySpecification(OutputInterface $output): void
     {
         $output->writeln(sprintf('Copy specification file to %s.', $this->configuration->getOutputDirectory()));
 

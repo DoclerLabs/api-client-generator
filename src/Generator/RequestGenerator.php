@@ -8,7 +8,7 @@ use DoclerLabs\ApiClientGenerator\Entity\Request;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Naming\RequestNaming;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Request\SerializableInterface;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Schema\SerializableInterface;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -255,7 +255,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->getNode();
     }
 
-    private function generateGetHeadersMethod(Request $request, array $fields)
+    private function generateGetHeadersMethod(Request $request, array $fields): ClassMethod
     {
         $headers = [];
         if ($request->getContentType() !== '') {

@@ -2,6 +2,8 @@
 
 namespace DoclerLabs\ApiClientGenerator\Output\Copy\Request;
 
+use DoclerLabs\ApiClientGenerator\Output\Copy\Schema\SerializableInterface;
+
 interface RequestInterface
 {
     public function getContentType(): string;
@@ -16,5 +18,8 @@ interface RequestInterface
 
     public function getQueryParameters(): array;
 
+    /**
+     * @return SerializableInterface|null
+     */
     public function getBody();
 }

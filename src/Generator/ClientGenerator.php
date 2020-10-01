@@ -12,6 +12,7 @@ use DoclerLabs\ApiClientGenerator\Output\Copy\Request\Mapper\RequestMapperInterf
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\RequestInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Response\ResponseHandler;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
+use phpDocumentor\Reflection\Types\This;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
 use Psr\Container\ContainerInterface;
@@ -25,13 +26,14 @@ class ClientGenerator extends GeneratorAbstract
         $classBuilder = $this->builder
             ->class(ClientNaming::getClassName($specification))
             ->addStmts($this->generateProperties())
-            ->addStmt($this->generateConstructor());
+            ->addStmt($this->generateConstructor())
+            ->addStmt($this->generateSendRequestMethod());
 
         foreach ($specification->getOperations() as $operation) {
             $classBuilder->addStmt($this->generateAction($operation));
         }
 
-        $classBuilder->addStmt($this->generateSendRequestMethod());
+        $classBuilder->addStmt($this->generateHandleResponse());
 
         $this->registerFile($fileRegistry, $classBuilder);
     }
@@ -53,7 +55,7 @@ class ClientGenerator extends GeneratorAbstract
             'map',
             $this->builder->args([$requestVariable])
         );
-        $clientCall    = $this->builder->methodCall(
+        $clientCall = $this->builder->methodCall(
             $this->builder->localPropertyFetch('client'),
             'sendRequest',
             [$mapMethodCall]
@@ -81,7 +83,7 @@ class ClientGenerator extends GeneratorAbstract
             )
         );
 
-        $requestVar  = $this->builder->var('request');
+        $requestVar = $this->builder->var('request');
         $methodParam = $this->builder
             ->param('request')
             ->setType($requestClassName)
@@ -89,13 +91,8 @@ class ClientGenerator extends GeneratorAbstract
 
         $responseStmt = $this->builder->localMethodCall('sendRequest', [$requestVar]);
 
-        $errorHandledStmt = $this->builder->methodCall(
-            $this->builder->methodCall(
-                $this->builder->localPropertyFetch('container'),
-                'get',
-                [$this->builder->classConstFetch('ResponseHandler', 'class')]
-            ),
-            'handle',
+        $handleResponseStmt = $this->builder->localMethodCall(
+            'handleResponse',
             $this->builder->args([$responseStmt])
         );
 
@@ -104,7 +101,7 @@ class ClientGenerator extends GeneratorAbstract
             return $this->builder->method($operation->getName())
                 ->makePublic()
                 ->addParam($methodParam)
-                ->addStmt($errorHandledStmt)
+                ->addStmt($handleResponseStmt)
                 ->setReturnType(null)
                 ->composeDocBlock([$methodParam])
                 ->getNode();
@@ -126,7 +123,7 @@ class ClientGenerator extends GeneratorAbstract
             [$this->builder->classConstFetch($mapperClassName, 'class')]
         );
 
-        $mapMethod  = $this->builder->methodCall($getMethod, 'toSchema', [$errorHandledStmt]);
+        $mapMethod = $this->builder->methodCall($getMethod, 'toSchema', [$handleResponseStmt]);
         $returnStmt = $this->builder->return($mapMethod);
 
         $this->addImport(
@@ -191,6 +188,35 @@ class ClientGenerator extends GeneratorAbstract
             ->makePublic()
             ->addParams($parameters)
             ->addStmts($inits)
+            ->composeDocBlock($parameters)
+            ->getNode();
+    }
+
+    public function generateHandleResponse(): ClassMethod
+    {
+        $parameters[] = $this->builder
+            ->param('response')
+            ->setType('ResponseInterface')
+            ->getNode();
+        $response = $this->builder->var('response');
+
+        $handleResponseStatement = $this->builder->return(
+            $this->builder->methodCall(
+                $this->builder->methodCall(
+                    $this->builder->localPropertyFetch('container'),
+                    'get',
+                    [$this->builder->classConstFetch('ResponseHandler', 'class')]
+                ),
+                'handle',
+                $this->builder->args([$response])
+            )
+        );
+
+        return $this->builder
+            ->method('handleResponse')
+            ->makeProtected()
+            ->addParams($parameters)
+            ->addStmt($handleResponseStatement)
             ->composeDocBlock($parameters)
             ->getNode();
     }

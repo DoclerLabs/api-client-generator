@@ -281,7 +281,7 @@ class CodeBuilder extends BuilderFactory
         return new Arg($argument, $byRef, $unpack);
     }
 
-    public function constant(string $name, Expr $value, $visibility = Class_::MODIFIER_PUBLIC): ClassConst
+    public function constant(string $name, Expr $value, int $visibility = Class_::MODIFIER_PUBLIC): ClassConst
     {
         if ($this->versionResolver->isClassConstantVisibilitySupported()) {
             return new ClassConst([new Const_($name, $value)], $visibility);

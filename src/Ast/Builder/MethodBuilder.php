@@ -68,7 +68,7 @@ class MethodBuilder extends Method
         }
 
         if ($isNullable) {
-            if ($this->versionResolver->isNullableTypeHintSupported()) {
+            if ($this->versionResolver->isNullableTypeHintSupported() && is_string($type)) {
                 return parent::setReturnType(sprintf('?%s', $type));
             }
 

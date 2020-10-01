@@ -15,20 +15,22 @@ class NamespaceSubstituteVisitor extends NodeVisitorAbstract
 
     public function __construct(string $original, string $substitute)
     {
-        $this->original   = $original;
+        $this->original = $original;
         $this->substitute = $substitute;
     }
 
     public function leaveNode(Node $node)
     {
-        if ($node instanceof Namespace_) {
+        if ($node instanceof Namespace_ && $node->name !== null) {
             $newNamespace = str_replace($this->original, $this->substitute, $node->name->toString());
-            $node->name   = new Name($newNamespace);
+            $node->name = new Name($newNamespace);
         }
         if ($node instanceof Use_) {
-            $use       = $node->uses[0];
-            $newUse    = str_replace($this->original, $this->substitute, $use->name->toString());
-            $use->name = new Name($newUse);
+            $use = $node->uses[0];
+            if ($use->name !== null) {
+                $newUse = str_replace($this->original, $this->substitute, $use->name->toString());
+                $use->name = new Name($newUse);
+            }
         }
 
         return null;

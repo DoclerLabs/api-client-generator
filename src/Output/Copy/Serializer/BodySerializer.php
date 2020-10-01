@@ -3,7 +3,7 @@
 namespace DoclerLabs\ApiClientGenerator\Output\Copy\Serializer;
 
 use DoclerLabs\ApiClientException\RequestValidationException;
-use DoclerLabs\ApiClientException\UnexpectedResponseBodyException;
+use DoclerLabs\ApiClientException\UnexpectedResponseException;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\RequestInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\ContentTypeSerializerInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\Json\Json;
@@ -13,6 +13,7 @@ use Throwable;
 
 class BodySerializer
 {
+    /** @var ContentTypeSerializerInterface[] */
     private $contentTypeSerializers = [];
 
     public function add(string $contentType, ContentTypeSerializerInterface $contentTypeSerializer): self
@@ -40,19 +41,19 @@ class BodySerializer
     }
 
     /**
-     * @throws UnexpectedResponseBodyException
+     * @throws UnexpectedResponseException
      */
     public function unserializeResponse(ResponseInterface $response): array
     {
         try {
             $body = $response->getBody();
-            if ($body === null || (int)$body->getSize() === 0) {
+            if ((int)$body->getSize() === 0) {
                 return [];
             }
 
             return $this->getContentTypeSerializer($response->getHeaderLine('Content-Type'))->decode($body);
         } catch (Throwable $exception) {
-            throw new UnexpectedResponseBodyException($exception->getMessage(), $response, $exception);
+            throw new UnexpectedResponseException($exception->getMessage(), $response, $exception);
         }
     }
 

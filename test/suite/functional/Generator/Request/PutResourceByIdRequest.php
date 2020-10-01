@@ -10,9 +10,9 @@ namespace Test\Request;
 
 use DateTimeInterface;
 use DoclerLabs\ApiClientException\RequestValidationException;
-use Test\Request\SerializableInterface;
 use Test\Schema\EmbeddedObject;
 use Test\Schema\PutResourceByIdRequestBody;
+use Test\Schema\SerializableInterface;
 use Test\Serializer\ContentType\Json\Json;
 
 class PutResourceByIdRequest implements RequestInterface

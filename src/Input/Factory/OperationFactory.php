@@ -7,6 +7,7 @@ use cebe\openapi\spec\Reference;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
 use DoclerLabs\ApiClientGenerator\Naming\CaseCaster;
+use InvalidArgumentException;
 use Throwable;
 
 class OperationFactory
@@ -17,8 +18,9 @@ class OperationFactory
     public function __construct(
         RequestFactory $requestMapper,
         ResponseFactory $responseMapper
-    ) {
-        $this->requestMapper  = $requestMapper;
+    )
+    {
+        $this->requestMapper = $requestMapper;
         $this->responseMapper = $responseMapper;
     }
 
@@ -27,12 +29,19 @@ class OperationFactory
         string $path,
         string $method,
         array $commonParameters
-    ): Operation {
+    ): Operation
+    {
         $operationId = $operation->operationId;
         if ($operationId === null) {
-            $noBracesPath   = preg_replace('/[{}]/', '', $path);
+            $noBracesPath = preg_replace('/[{}]/', '', $path);
+            if ($noBracesPath === null) {
+                throw new InvalidArgumentException('Error during preg_replace in ' . $path);
+            }
             $underscorePath = preg_replace('/[\/\-]/', '_', $noBracesPath);
-            $operationId    = sprintf('%s%s', strtolower($method), CaseCaster::toPascal($underscorePath));
+            if ($underscorePath === null) {
+                throw new InvalidArgumentException('Error during preg_replace in ' . $noBracesPath);
+            }
+            $operationId = sprintf('%s%s', strtolower($method), CaseCaster::toPascal($underscorePath));
 
             $warningMessage = sprintf(
                 'Fallback operation naming used: %s. Consider adding operationId parameter to set the name explicitly.',
@@ -41,7 +50,7 @@ class OperationFactory
             trigger_error($warningMessage, E_USER_WARNING);
         }
 
-        $parameters  = array_merge($commonParameters, $operation->parameters ?? []);
+        $parameters = array_merge($commonParameters, $operation->parameters ?? []);
         $requestBody = $operation->requestBody;
         if ($requestBody instanceof Reference) {
             $requestBody = $requestBody->resolve();

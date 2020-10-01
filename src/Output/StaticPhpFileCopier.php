@@ -3,6 +3,7 @@
 namespace DoclerLabs\ApiClientGenerator\Output;
 
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFile;
+use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\Parser\Php7;
 use Symfony\Component\Finder\SplFileInfo;
@@ -29,6 +30,7 @@ class StaticPhpFileCopier
             return;
         }
 
+        /** @var Node[] $originalNodes */
         $originalNodes = $this->parser->parse($originalFile->getContents());
         $copiedFile    = new PhpFile(
             $originalFile->getFilename(),

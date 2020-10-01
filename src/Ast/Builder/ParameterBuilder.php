@@ -18,10 +18,10 @@ class ParameterBuilder extends Param
         $this->versionResolver = $versionResolver;
     }
 
-    public function setType($type, $isNullable = false): self
+    public function setType($type, bool $isNullable = false): self
     {
         if ($isNullable) {
-            if ($this->versionResolver->isNullableTypeHintSupported()) {
+            if ($this->versionResolver->isNullableTypeHintSupported() && is_string($type)) {
                 return parent::setType(sprintf('?%s', $type));
             }
 

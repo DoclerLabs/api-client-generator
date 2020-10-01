@@ -43,13 +43,23 @@ class SwaggerPetstoreClient
     }
 
     /**
+     * @param RequestInterface $request
+     *
+     * @return ResponseInterface
+     */
+    public function sendRequest(RequestInterface $request): ResponseInterface
+    {
+        return $this->client->sendRequest($this->container->get(RequestMapperInterface::class)->map($request));
+    }
+
+    /**
      * @param FindPetsRequest $request
      *
      * @return PetCollection
      */
     public function findPets(FindPetsRequest $request): PetCollection
     {
-        return $this->container->get(PetCollectionMapper::class)->toSchema($this->container->get(ResponseHandler::class)->handle($this->sendRequest($request)));
+        return $this->container->get(PetCollectionMapper::class)->toSchema($this->handleResponse($this->sendRequest($request)));
     }
 
     /**
@@ -59,7 +69,7 @@ class SwaggerPetstoreClient
      */
     public function addPet(AddPetRequest $request): Pet
     {
-        return $this->container->get(PetMapper::class)->toSchema($this->container->get(ResponseHandler::class)->handle($this->sendRequest($request)));
+        return $this->container->get(PetMapper::class)->toSchema($this->handleResponse($this->sendRequest($request)));
     }
 
     /**
@@ -67,7 +77,7 @@ class SwaggerPetstoreClient
      */
     public function countPets(CountPetsRequest $request): void
     {
-        $this->container->get(ResponseHandler::class)->handle($this->sendRequest($request));
+        $this->handleResponse($this->sendRequest($request));
     }
 
     /**
@@ -77,7 +87,7 @@ class SwaggerPetstoreClient
      */
     public function findPetById(FindPetByIdRequest $request): Pet
     {
-        return $this->container->get(PetMapper::class)->toSchema($this->container->get(ResponseHandler::class)->handle($this->sendRequest($request)));
+        return $this->container->get(PetMapper::class)->toSchema($this->handleResponse($this->sendRequest($request)));
     }
 
     /**
@@ -85,16 +95,14 @@ class SwaggerPetstoreClient
      */
     public function deletePetsIdPetFoodFoodId(DeletePetsIdPetFoodFoodIdRequest $request): void
     {
-        $this->container->get(ResponseHandler::class)->handle($this->sendRequest($request));
+        $this->handleResponse($this->sendRequest($request));
     }
 
     /**
-     * @param RequestInterface $request
-     *
-     * @return ResponseInterface
+     * @param ResponseInterface $response
      */
-    public function sendRequest(RequestInterface $request): ResponseInterface
+    protected function handleResponse(ResponseInterface $response)
     {
-        return $this->client->sendRequest($this->container->get(RequestMapperInterface::class)->map($request));
+        return $this->container->get(ResponseHandler::class)->handle($response);
     }
 }

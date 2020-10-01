@@ -20,7 +20,7 @@ class Json
         $encodedData = json_encode($data, $options);
 
         static::$lastErrorCode = json_last_error();
-        if (static::$lastErrorCode === JSON_ERROR_NONE) {
+        if (static::$lastErrorCode === JSON_ERROR_NONE && $encodedData !== false) {
             return $encodedData;
         }
 

@@ -8,7 +8,7 @@
 
 namespace Test\Request;
 
-use Test\Request\SerializableInterface;
+use Test\Schema\SerializableInterface;
 
 class GetResourcesRequest implements RequestInterface
 {
