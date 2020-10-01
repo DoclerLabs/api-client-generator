@@ -306,7 +306,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             $this->builder->ternary(
                 $this->builder->instanceOf(
                     $closureVariable,
-                    $this->builder->className('SerializableRequestBody')
+                    $this->builder->className('SerializableInterface')
                 ),
                 $this->builder->methodCall(
                     $closureVariable,
