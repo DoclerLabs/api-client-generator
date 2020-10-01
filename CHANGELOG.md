@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Request mapper generator added
  - Specification file is copied to the client directory
 ### Changed
+ - Breaking change! getResponse request renamed to sendRequest and return PSR7 ResponseInterface instead of DoclerLabs\ApiClientBase\Response\Response
  - Most of the static code copied to the client instead of depending on docler-labs/api-client-base
  - Headers removed from default Guzzle config
  - Http client implementation abstracted behind PSR-17 interface
