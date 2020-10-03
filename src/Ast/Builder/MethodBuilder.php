@@ -12,12 +12,12 @@ use PhpParser\Node\NullableType;
 
 class MethodBuilder extends Method
 {
-    private PhpVersion $versionResolver;
+    private PhpVersion $phpVersion;
 
-    public function __construct(string $name, PhpVersion $versionResolver)
+    public function __construct(string $name, PhpVersion $phpVersion)
     {
         parent::__construct($name);
-        $this->versionResolver = $versionResolver;
+        $this->phpVersion = $phpVersion;
     }
 
     public function composeDocBlock(
@@ -60,7 +60,7 @@ class MethodBuilder extends Method
         }
 
         if ($type === null) {
-            if ($this->versionResolver->isVoidReturnTypeSupported()) {
+            if ($this->phpVersion->isVoidReturnTypeSupported()) {
                 return parent::setReturnType('void');
             }
 
@@ -68,7 +68,7 @@ class MethodBuilder extends Method
         }
 
         if ($isNullable) {
-            if ($this->versionResolver->isNullableTypeHintSupported() && is_string($type)) {
+            if ($this->phpVersion->isNullableTypeHintSupported() && is_string($type)) {
                 return parent::setReturnType(sprintf('?%s', $type));
             }
 

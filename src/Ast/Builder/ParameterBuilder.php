@@ -10,18 +10,18 @@ use PhpParser\Node\Expr\Variable;
 class ParameterBuilder extends Param
 {
     protected string   $docBlockType = '';
-    private PhpVersion $versionResolver;
+    private PhpVersion $phpVersion;
 
-    public function __construct(string $name, PhpVersion $versionResolver)
+    public function __construct(string $name, PhpVersion $phpVersion)
     {
         parent::__construct($name);
-        $this->versionResolver = $versionResolver;
+        $this->phpVersion = $phpVersion;
     }
 
     public function setType($type, bool $isNullable = false): self
     {
         if ($isNullable) {
-            if ($this->versionResolver->isNullableTypeHintSupported() && is_string($type)) {
+            if ($this->phpVersion->isNullableTypeHintSupported() && is_string($type)) {
                 return parent::setType(sprintf('?%s', $type));
             }
 

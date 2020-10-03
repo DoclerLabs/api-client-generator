@@ -18,7 +18,7 @@ class NamespaceSubstituteVisitorTest extends TestCase
     private const SUBSTITUTE_NAMESPACE = 'Substitute\\Namespace';
     private NamespaceSubstituteVisitor $sut;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sut = new NamespaceSubstituteVisitor(self::ORIGINAL_NAMESPACE, self::SUBSTITUTE_NAMESPACE);
     }

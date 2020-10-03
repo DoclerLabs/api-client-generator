@@ -33,13 +33,9 @@ class OperationFactory
     {
         $operationId = $operation->operationId;
         if ($operationId === null) {
-            $noBracesPath = preg_replace('/[{}]/', '', $path);
-            if ($noBracesPath === null) {
-                throw new InvalidArgumentException('Error during preg_replace in ' . $path);
-            }
-            $underscorePath = preg_replace('/[\/\-]/', '_', $noBracesPath);
+            $underscorePath = preg_replace(['/[{}]/', '@[/-]@'], ['', '_'], $path);
             if ($underscorePath === null) {
-                throw new InvalidArgumentException('Error during preg_replace in ' . $noBracesPath);
+                throw new InvalidArgumentException('Error during preg_replace in ' . $path);
             }
             $operationId = sprintf('%s%s', strtolower($method), CaseCaster::toPascal($underscorePath));
 

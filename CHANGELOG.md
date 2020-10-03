@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [3.0.0] - 2020-09-29
 ### Added
  - Progress bar added
- - PHP version syntax resolution
+ - PHP version dependant syntax resolution
+ - PHP version 7.2, 7.3 support
  - Service provider generator added
  - Content-type property added to the Request
  - Request mapper generator added

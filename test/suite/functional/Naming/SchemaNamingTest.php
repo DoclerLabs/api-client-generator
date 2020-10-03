@@ -14,7 +14,7 @@ class SchemaNamingTest extends TestCase
     private FileReader $specificationReader;
     private Parser     $specificationParser;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $container = new Container();
         $container->register(new ServiceProvider());

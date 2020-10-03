@@ -15,7 +15,7 @@ class PhpFileCollectionTest extends TestCase
     /** @var PhpFileCollection */
     private $sut;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sut = new PhpFileCollection();
     }

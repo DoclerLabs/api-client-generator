@@ -3,10 +3,11 @@
 namespace DoclerLabs\ApiClientGenerator\Output\Php;
 
 use ArrayIterator;
+use Countable;
 use InvalidArgumentException;
 use IteratorAggregate;
 
-class PhpFileCollection implements IteratorAggregate
+class PhpFileCollection implements IteratorAggregate, Countable
 {
     private array $files = [];
 

@@ -17,7 +17,7 @@ abstract class AbstractTemplateTest extends TestCase
     protected Parser             $specificationParser;
     protected MetaFileCollection $fileRegistry;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $container = new Container();
         $container->register(new ServiceProvider());

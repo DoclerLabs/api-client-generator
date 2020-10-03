@@ -13,7 +13,7 @@ class TextFilePrinter
 
     public function print(string $destinationPath, string $data): void
     {
-        $this->directoryPrinter->print(dirname($destinationPath));
+        $this->directoryPrinter->ensureDirectoryExists(dirname($destinationPath));
 
         file_put_contents($destinationPath, $data, FILE_TEXT);
     }

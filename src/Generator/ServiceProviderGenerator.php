@@ -221,8 +221,7 @@ class ServiceProviderGenerator extends GeneratorAbstract
                     $alreadyInjected[$subfield->getPhpClassName()] = true;
                 }
             }
-        }
-        if ($field->isArrayOfObjects()) {
+        } elseif ($field->isArrayOfObjects()) {
             $getMethodArg   = $this->builder->classConstFetch(
                 SchemaMapperNaming::getClassName($field->getArrayItem()),
                 'class'

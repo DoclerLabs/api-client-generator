@@ -11,11 +11,11 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \DoclerLabs\ApiClientGenerator\Output\PhpFilePrinter
+ * @coversDefaultClass PhpFilePrinter
  */
 class PhpPrinterTest extends TestCase
 {
-    /** @var \DoclerLabs\ApiClientGenerator\Output\PhpFilePrinter */
+    /** @var PhpFilePrinter */
     private $sut;
     /** @var PrettyPrinterAbstract|MockObject */
     private $marshaler;
@@ -24,7 +24,7 @@ class PhpPrinterTest extends TestCase
     /** @var PhpCodeStyleFixer|MockObject */
     private $fixer;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->marshaler = $this->createMock(PrettyPrinterAbstract::class);
         $this->printer   = $this->createMock(TextFilePrinter::class);

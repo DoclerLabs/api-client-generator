@@ -58,16 +58,16 @@ use UnexpectedValueException;
 
 class CodeBuilder extends BuilderFactory
 {
-    private PhpVersion $versionResolver;
+    private PhpVersion $phpVersion;
 
-    public function __construct(PhpVersion $versionResolver)
+    public function __construct(PhpVersion $phpVersion)
     {
-        $this->versionResolver = $versionResolver;
+        $this->phpVersion = $phpVersion;
     }
 
     public function method(string $name): MethodBuilder
     {
-        return new MethodBuilder($name, $this->versionResolver);
+        return new MethodBuilder($name, $this->phpVersion);
     }
 
     public function closure(
@@ -135,7 +135,7 @@ class CodeBuilder extends BuilderFactory
             ->property($name)
             ->makePrivate();
 
-        if ($this->versionResolver->isPropertyTypeHintSupported()) {
+        if ($this->phpVersion->isPropertyTypeHintSupported()) {
             $property->setType($type);
         } else {
             $docComment = sprintf('/** @var %s */', $docType);
@@ -283,7 +283,7 @@ class CodeBuilder extends BuilderFactory
 
     public function constant(string $name, Expr $value, int $visibility = Class_::MODIFIER_PUBLIC): ClassConst
     {
-        if ($this->versionResolver->isClassConstantVisibilitySupported()) {
+        if ($this->phpVersion->isClassConstantVisibilitySupported()) {
             return new ClassConst([new Const_($name, $value)], $visibility);
         }
 
@@ -346,7 +346,7 @@ class CodeBuilder extends BuilderFactory
 
     public function param(string $name): ParameterBuilder
     {
-        return new ParameterBuilder($name, $this->versionResolver);
+        return new ParameterBuilder($name, $this->phpVersion);
     }
 
     private function getStmts(array $imports, Node $class): array

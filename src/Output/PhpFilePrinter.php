@@ -8,9 +8,9 @@ use PhpParser\PrettyPrinterAbstract;
 
 class PhpFilePrinter
 {
-    private PrettyPrinterAbstract         $marshaller;
-    private TextFilePrinter               $textPrinter;
-    private PhpCodeStyleFixer             $codeStyleFixer;
+    private PrettyPrinterAbstract $marshaller;
+    private TextFilePrinter       $textPrinter;
+    private PhpCodeStyleFixer     $codeStyleFixer;
 
     public function __construct(
         PrettyPrinterAbstract $marshaller,

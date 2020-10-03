@@ -15,7 +15,7 @@ class ParserTest extends TestCase
 {
     protected Parser $sut;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $container = new Container();
         $container->register(new ServiceProvider());

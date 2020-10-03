@@ -7,21 +7,21 @@ use PHPUnit\Framework\TestCase;
 use UnexpectedValueException;
 
 /**
- * @coversDefaultClass \DoclerLabs\ApiClientGenerator\Ast\Resolver\PhpVersion
+ * @coversDefaultClass PhpVersion
  */
-class PhpVersionResolverTest extends TestCase
+class PhpVersionTest extends TestCase
 {
     public function testInvalidVersion()
     {
         $this->expectException(UnexpectedValueException::class);
-        new \DoclerLabs\ApiClientGenerator\Ast\PhpVersion('8.0');
+        new PhpVersion('8.0');
     }
 
     public function testIsParameterTypeHintSupported()
     {
         self::assertFalse((new PhpVersion(PhpVersion::VERSION_PHP70))->isPropertyTypeHintSupported());
         self::assertFalse(
-            (new \DoclerLabs\ApiClientGenerator\Ast\PhpVersion(
+            (new PhpVersion(
                 PhpVersion::VERSION_PHP71
             ))->isPropertyTypeHintSupported()
         );
@@ -45,7 +45,7 @@ class PhpVersionResolverTest extends TestCase
     public function testIsClassConstantVisibilitySupported()
     {
         self::assertFalse(
-            (new \DoclerLabs\ApiClientGenerator\Ast\PhpVersion(
+            (new PhpVersion(
                 PhpVersion::VERSION_PHP70
             ))->isClassConstantVisibilitySupported()
         );
@@ -54,7 +54,7 @@ class PhpVersionResolverTest extends TestCase
         );
         self::assertTrue(
             (new PhpVersion(
-                \DoclerLabs\ApiClientGenerator\Ast\PhpVersion::VERSION_PHP74
+                PhpVersion::VERSION_PHP74
             ))->isClassConstantVisibilitySupported()
         );
     }

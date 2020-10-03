@@ -6,7 +6,7 @@ use RuntimeException;
 
 class DirectoryPrinter
 {
-    public function print(string $directoryPath): void
+    public function ensureDirectoryExists(string $directoryPath): void
     {
         $isSuccessful = is_dir($directoryPath)
                         || mkdir($directoryPath, 0755, true)

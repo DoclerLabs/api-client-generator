@@ -18,7 +18,7 @@ class MetaFilePrinterTest extends TestCase
     /** @var TextFilePrinter|MockObject */
     private $printer;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->printer = $this->createMock(TextFilePrinter::class);
 

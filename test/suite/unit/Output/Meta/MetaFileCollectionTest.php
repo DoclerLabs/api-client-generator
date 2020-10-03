@@ -15,7 +15,7 @@ class MetaFileCollectionTest extends TestCase
     /** @var MetaFileCollection */
     private $sut;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sut = new MetaFileCollection();
     }

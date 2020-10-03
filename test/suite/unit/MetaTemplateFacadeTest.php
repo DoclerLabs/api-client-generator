@@ -16,7 +16,7 @@ class MetaTemplateFacadeTest extends TestCase
     /** @var MetaTemplateFacade */
     private $sut;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sut = new MetaTemplateFacade();
     }

@@ -15,7 +15,7 @@ class PhpFileTest extends TestCase
     /** @var PhpFile */
     private $sut;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sut = new PhpFile(self::FILE_NAME, self::CLASS_NAME, []);
     }

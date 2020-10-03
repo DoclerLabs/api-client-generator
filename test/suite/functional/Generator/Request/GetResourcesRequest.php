@@ -87,7 +87,7 @@ class GetResourcesRequest implements RequestInterface
     public function getQueryParameters(): array
     {
         return \array_map(static function ($value) {
-            return $value instanceof SerializableRequestBody ? $value->toArray() : $value;
+            return $value instanceof SerializableInterface ? $value->toArray() : $value;
         }, \array_filter(['filterById' => $this->filterById, 'filterByName' => $this->filterByName, 'filterByIds' => $this->filterByIds], static function ($value) {
             return null !== $value;
         }));

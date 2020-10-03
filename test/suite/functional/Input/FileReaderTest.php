@@ -15,7 +15,7 @@ class FileReaderTest extends TestCase
 {
     protected FileReader  $sut;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $container = new Container();
         $container->register(new ServiceProvider());

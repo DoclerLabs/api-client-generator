@@ -21,7 +21,7 @@ class CodeBuilderTest extends TestCase
     private          $phpVersionResolver;
     private Standard $printer;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->phpVersionResolver = $this->createMock(PhpVersion::class);
         $this->sut                = new CodeBuilder($this->phpVersionResolver);

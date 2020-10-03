@@ -3,10 +3,11 @@
 namespace DoclerLabs\ApiClientGenerator\Output\Meta;
 
 use ArrayIterator;
+use Countable;
 use InvalidArgumentException;
 use IteratorAggregate;
 
-class MetaFileCollection implements IteratorAggregate
+class MetaFileCollection implements IteratorAggregate, Countable
 {
     private array  $files = [];
 

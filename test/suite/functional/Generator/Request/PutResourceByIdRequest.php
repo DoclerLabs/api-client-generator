@@ -267,7 +267,7 @@ class PutResourceByIdRequest implements RequestInterface
     public function getQueryParameters(): array
     {
         return \array_map(static function ($value) {
-            return $value instanceof SerializableRequestBody ? $value->toArray() : $value;
+            return $value instanceof SerializableInterface ? $value->toArray() : $value;
         }, \array_filter(['integerParameter' => $this->integerParameter, 'stringParameter' => $this->stringParameter, 'enumParameter' => $this->enumParameter, 'dateParameter' => $this->dateParameter, 'floatParameter' => $this->floatParameter, 'booleanParameter' => $this->booleanParameter, 'arrayParameter' => $this->arrayParameter, 'objectParameter' => $this->objectParameter, 'mandatoryIntegerParameter' => $this->mandatoryIntegerParameter, 'mandatoryStringParameter' => $this->mandatoryStringParameter, 'mandatoryEnumParameter' => $this->mandatoryEnumParameter, 'mandatoryDateParameter' => $this->mandatoryDateParameter, 'mandatoryFloatParameter' => $this->mandatoryFloatParameter, 'mandatoryBooleanParameter' => $this->mandatoryBooleanParameter, 'mandatoryArrayParameter' => $this->mandatoryArrayParameter, 'mandatoryObjectParameter' => $this->mandatoryObjectParameter], static function ($value) {
             return null !== $value;
         }));
@@ -279,7 +279,7 @@ class PutResourceByIdRequest implements RequestInterface
     public function getCookies(): array
     {
         return \array_map(static function ($value) {
-            return $value instanceof SerializableRequestBody ? $value->toArray() : $value;
+            return $value instanceof SerializableInterface ? $value->toArray() : $value;
         }, \array_filter(['csrf_token' => $this->csrfToken], static function ($value) {
             return null !== $value;
         }));
@@ -291,7 +291,7 @@ class PutResourceByIdRequest implements RequestInterface
     public function getHeaders(): array
     {
         return \array_merge(['Content-Type' => 'application/json'], \array_map(static function ($value) {
-            return $value instanceof SerializableRequestBody ? $value->toArray() : $value;
+            return $value instanceof SerializableInterface ? $value->toArray() : $value;
         }, \array_filter(['X-Request-ID' => $this->xRequestId], static function ($value) {
             return null !== $value;
         })));

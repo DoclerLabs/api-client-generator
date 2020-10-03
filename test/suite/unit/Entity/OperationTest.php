@@ -23,7 +23,7 @@ class OperationTest extends TestCase
     /** @var Response|MockObject */
     private $succesfulResponse;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->request           = $this->createMock(Request::class);
         $this->succesfulResponse = $this->createMock(Response::class);
