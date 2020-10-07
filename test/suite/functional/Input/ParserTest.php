@@ -15,7 +15,7 @@ class ParserTest extends TestCase
 {
     protected Parser $sut;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $container = new Container();
         $container->register(new ServiceProvider());
@@ -212,7 +212,7 @@ class ParserTest extends TestCase
                     ],
                 ],
             ],
-            'OperationId is missing'                          => [
+            'OneOf keyword is not supported'                          => [
                 [
                     'openapi' => '3.0.0',
                     'info'    => [
@@ -228,7 +228,7 @@ class ParserTest extends TestCase
                                         'content'     => [
                                             'application/json' => [
                                                 'schema' => [
-                                                    'type' => 'integer',
+                                                    'oneOf' => [],
                                                 ],
                                             ],
                                         ],

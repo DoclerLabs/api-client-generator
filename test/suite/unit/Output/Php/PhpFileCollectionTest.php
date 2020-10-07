@@ -12,24 +12,12 @@ use PHPUnit\Framework\TestCase;
  */
 class PhpFileCollectionTest extends TestCase
 {
-    private const BASE_DIRECTORY = '/test';
-    private const BASE_NAMESPACE = 'Test\\';
     /** @var PhpFileCollection */
     private $sut;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
-        $this->sut = new PhpFileCollection(self::BASE_DIRECTORY, self::BASE_NAMESPACE);
-    }
-
-    public function testGetBaseNamespace(): void
-    {
-        self::assertEquals(self::BASE_NAMESPACE, $this->sut->getBaseNamespace());
-    }
-
-    public function testGetBaseDirectory(): void
-    {
-        self::assertEquals(self::BASE_DIRECTORY . '/src', $this->sut->getBaseDirectory());
+        $this->sut = new PhpFileCollection();
     }
 
     public function testAddAndGet(): void

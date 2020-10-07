@@ -2,8 +2,9 @@
 
 namespace DoclerLabs\ApiClientGenerator\Test\Functional\Meta;
 
-use DoclerLabs\ApiClientGenerator\Input\Parser;
+use DoclerLabs\ApiClientGenerator\Input\Configuration;
 use DoclerLabs\ApiClientGenerator\Input\FileReader;
+use DoclerLabs\ApiClientGenerator\Input\Parser;
 use DoclerLabs\ApiClientGenerator\Meta\TemplateInterface;
 use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFileCollection;
 use DoclerLabs\ApiClientGenerator\ServiceProvider;
@@ -12,12 +13,11 @@ use Pimple\Container;
 
 abstract class AbstractTemplateTest extends TestCase
 {
-    protected TemplateInterface  $sut;
-    protected FileReader             $specificationReader;
+    protected FileReader         $specificationReader;
     protected Parser             $specificationParser;
     protected MetaFileCollection $fileRegistry;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $container = new Container();
         $container->register(new ServiceProvider());
@@ -28,10 +28,9 @@ abstract class AbstractTemplateTest extends TestCase
             E_USER_WARNING
         );
 
-        $this->sut                 = $this->sutTemplate($container);
         $this->specificationReader = $container[FileReader::class];
         $this->specificationParser = $container[Parser::class];
-        $this->fileRegistry        = new MetaFileCollection('');
+        $this->fileRegistry        = new MetaFileCollection();
     }
 
     /**
@@ -40,17 +39,21 @@ abstract class AbstractTemplateTest extends TestCase
     public function testGenerate(
         string $specificationFilePath,
         string $expectedResultFilePath,
-        string $resultFileName
+        string $resultFileName,
+        Configuration $configuration
     ): void {
+        $sut = $this->sutTemplate($configuration);
+
         $absoluteSpecificationPath  = __DIR__ . $specificationFilePath;
         $absoluteExpectedResultPath = __DIR__ . $expectedResultFilePath;
+
         self::assertFileExists($absoluteSpecificationPath);
         self::assertFileExists($absoluteExpectedResultPath);
 
         $data          = $this->specificationReader->read($absoluteSpecificationPath);
         $specification = $this->specificationParser->parse($data, $absoluteSpecificationPath);
 
-        $this->sut->render($specification, $this->fileRegistry);
+        $sut->render($specification, $this->fileRegistry);
 
         $result = $this->fileRegistry->get($resultFileName)->getContent();
 
@@ -59,5 +62,5 @@ abstract class AbstractTemplateTest extends TestCase
 
     abstract public function exampleProvider(): array;
 
-    abstract protected function sutTemplate(Container $container): TemplateInterface;
+    abstract protected function sutTemplate(Configuration $configuration): TemplateInterface;
 }

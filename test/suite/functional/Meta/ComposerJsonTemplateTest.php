@@ -2,13 +2,16 @@
 
 namespace DoclerLabs\ApiClientGenerator\Test\Functional\Meta;
 
+use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationStrategy;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpClientImplementationStrategy;
+use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\SchemaGenerator;
 use DoclerLabs\ApiClientGenerator\Input\Configuration;
 use DoclerLabs\ApiClientGenerator\Meta\ComposerJsonTemplate;
-use DoclerLabs\ApiClientGenerator\Meta\ReadmeMdTemplate;
 use DoclerLabs\ApiClientGenerator\Meta\Template\TwigExtension;
 use DoclerLabs\ApiClientGenerator\Meta\TemplateInterface;
-use Pimple\Container;
+use DoclerLabs\ApiClientGenerator\Test\Functional\ConfigurationBuilder;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -20,39 +23,65 @@ class ComposerJsonTemplateTest extends AbstractTemplateTest
     public function exampleProvider(): array
     {
         return [
-            'Basic composer.json' => [
+            'Default composer.json'         => [
                 '/ComposerJson/petstore.yaml',
-                '/ComposerJson/composer.json',
+                '/ComposerJson/composer_default.json',
                 'composer.json',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'Guzzle 6 client composer.json' => [
+                '/ComposerJson/petstore.yaml',
+                '/ComposerJson/composer_guzzle6_client.json',
+                'composer.json',
+                ConfigurationBuilder::fake()
+                    ->withHttpClient(HttpClientImplementationStrategy::HTTP_CLIENT_GUZZLE6)
+                    ->build(),
+            ],
+            'Guzzle 7 client composer.json' => [
+                '/ComposerJson/petstore.yaml',
+                '/ComposerJson/composer_guzzle7_client.json',
+                'composer.json',
+                ConfigurationBuilder::fake()
+                    ->withHttpClient(HttpClientImplementationStrategy::HTTP_CLIENT_GUZZLE7)
+                    ->build(),
+            ],
+            'Guzzle message composer.json'  => [
+                '/ComposerJson/petstore.yaml',
+                '/ComposerJson/composer_guzzle_message.json',
+                'composer.json',
+                ConfigurationBuilder::fake()
+                    ->withHttpMessage(HttpMessageImplementationStrategy::HTTP_MESSAGE_GUZZLE)
+                    ->build(),
+            ],
+            'Nyholm message composer.json'  => [
+                '/ComposerJson/petstore.yaml',
+                '/ComposerJson/composer_nyholm_message.json',
+                'composer.json',
+                ConfigurationBuilder::fake()
+                    ->withHttpMessage(HttpMessageImplementationStrategy::HTTP_MESSAGE_NYHOLM)
+                    ->build(),
             ],
         ];
     }
 
-    protected function sutTemplate(Container $container): TemplateInterface
+    protected function sutTemplate(Configuration $configuration): TemplateInterface
     {
-        $configuration = $this->createMock(Configuration::class);
-
-        $configuration
-            ->expects(self::once())
-            ->method('getNamespace')
-            ->willReturn('Test\\PetstoreApi');
-
-        $configuration
-            ->expects(self::once())
-            ->method('getPackageName')
-            ->willReturn('test/petstore-api');
-
-        $configuration
-            ->expects(self::once())
-            ->method('getPhpVersion')
-            ->willReturn('7.2');
-
-        $twig = new Environment(
-            new FilesystemLoader(['template'], getcwd() . DIRECTORY_SEPARATOR)
-        );
+        $twig = new Environment(new FilesystemLoader(['template'], getcwd() . DIRECTORY_SEPARATOR));
 
         $twig->addExtension(new TwigExtension());
 
-        return new ComposerJsonTemplate($twig, $configuration);
+        $codeBuilder = $this->createMock(CodeBuilder::class);
+
+        return new ComposerJsonTemplate(
+            $twig,
+            $configuration,
+            new HttpClientImplementationStrategy($configuration->getHttpClient(), $codeBuilder),
+            new HttpMessageImplementationStrategy($configuration->getHttpMessage(), $codeBuilder),
+            new ContainerImplementationStrategy(
+                $configuration->getContainer(),
+                $configuration->getBaseNamespace(),
+                $codeBuilder
+            )
+        );
     }
 }

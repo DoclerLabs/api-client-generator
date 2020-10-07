@@ -23,12 +23,18 @@ class Request
     private string               $path;
     private string               $method;
     private RequestFieldRegistry $fields;
+    private string               $contentType;
 
-    public function __construct(string $path, string $method, RequestFieldRegistry $fieldCollection)
-    {
-        $this->path   = $this->toRelativePath($path);
-        $this->method = $method;
-        $this->fields = $fieldCollection;
+    public function __construct(
+        string $path,
+        string $method,
+        RequestFieldRegistry $fieldCollection,
+        string $contentType
+    ) {
+        $this->path        = $this->toRelativePath($path);
+        $this->method      = $method;
+        $this->fields      = $fieldCollection;
+        $this->contentType = $contentType;
     }
 
     public function getPath(): string
@@ -44,6 +50,11 @@ class Request
     public function getFields(): RequestFieldRegistry
     {
         return $this->fields;
+    }
+
+    public function getContentType(): string
+    {
+        return $this->contentType;
     }
 
     private function toRelativePath(string $path): string

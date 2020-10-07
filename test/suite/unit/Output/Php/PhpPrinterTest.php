@@ -2,12 +2,10 @@
 
 namespace DoclerLabs\ApiClientGenerator\Test\Unit\Output\Php;
 
-use ArrayIterator;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpCodeStyleFixer;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFile;
-use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
-use DoclerLabs\ApiClientGenerator\Output\Php\PhpFilePrinter;
-use DoclerLabs\ApiClientGenerator\Output\Printer;
+use DoclerLabs\ApiClientGenerator\Output\PhpFilePrinter;
+use DoclerLabs\ApiClientGenerator\Output\TextFilePrinter;
 use PhpParser\PrettyPrinterAbstract;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -21,15 +19,15 @@ class PhpPrinterTest extends TestCase
     private $sut;
     /** @var PrettyPrinterAbstract|MockObject */
     private $marshaler;
-    /** @var Printer|MockObject */
+    /** @var TextFilePrinter|MockObject */
     private $printer;
     /** @var PhpCodeStyleFixer|MockObject */
     private $fixer;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->marshaler = $this->createMock(PrettyPrinterAbstract::class);
-        $this->printer   = $this->createMock(Printer::class);
+        $this->printer   = $this->createMock(TextFilePrinter::class);
         $this->fixer     = $this->createMock(PhpCodeStyleFixer::class);
 
         $this->sut = new PhpFilePrinter($this->marshaler, $this->printer, $this->fixer);
@@ -37,15 +35,9 @@ class PhpPrinterTest extends TestCase
 
     public function testCreateFiles()
     {
-        $fileRegistry = $this->createMock(PhpFileCollection::class);
-        $file         = $this->createMock(PhpFile::class);
+        $file = $this->createMock(PhpFile::class);
         $file->expects(self::once())
             ->method('getNodes');
-
-        $fileRegistry
-            ->expects(self::once())
-            ->method('getIterator')
-            ->willReturn(new ArrayIterator([$file]));
 
         $this->marshaler->expects(self::once())
             ->method('prettyPrintFile');
@@ -54,6 +46,6 @@ class PhpPrinterTest extends TestCase
         $this->fixer->expects(self::once())
             ->method('fix');
 
-        $this->sut->createFiles($fileRegistry);
+        $this->sut->print('nowhere', $file);
     }
 }

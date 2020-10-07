@@ -99,9 +99,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /pets/{id}/pet-food/{food_id}:
     delete:
-      description: deletes a single pet based on the ID supplied
-      operationId: deletePet
+      description: no operation id provided
       parameters:
         - name: id
           in: path
@@ -112,7 +112,7 @@ paths:
             format: int64
       responses:
         '204':
-          description: pet deleted
+          description: pet food deleted
         default:
           description: unexpected error
           content:

@@ -17,31 +17,43 @@ class ConfigurationTest extends TestCase
         string $openapiFilePath,
         string $namespace,
         string $outputDirectory,
+        string $sourceDirectory,
         string $codeStyleConfig,
         string $packageName,
         string $phpVersion,
         string $composerJsonTemplateDir,
-        string $readmeMdTemplateDir
+        string $readmeMdTemplateDir,
+        string $httpClient,
+        string $httpMessage,
+        string $container
     ): void {
         $sut = new Configuration(
             $openapiFilePath,
             $namespace,
             $outputDirectory,
+            $sourceDirectory,
             $codeStyleConfig,
             $packageName,
             $phpVersion,
             $composerJsonTemplateDir,
             $readmeMdTemplateDir,
+            $httpClient,
+            $httpMessage,
+            $container
         );
 
-        self::assertEquals($openapiFilePath, $sut->getFilePath());
-        self::assertEquals($namespace, $sut->getNamespace());
+        self::assertEquals($openapiFilePath, $sut->getSpecificationFilePath());
+        self::assertEquals($namespace, $sut->getBaseNamespace());
         self::assertEquals($outputDirectory, $sut->getOutputDirectory());
+        self::assertEquals($sourceDirectory, $sut->getSourceDirectory());
         self::assertEquals($codeStyleConfig, $sut->getCodeStyleConfig());
         self::assertEquals($packageName, $sut->getPackageName());
         self::assertEquals($phpVersion, $sut->getPhpVersion());
         self::assertEquals($composerJsonTemplateDir, $sut->getComposerJsonTemplateDir());
         self::assertEquals($readmeMdTemplateDir, $sut->getReadmeMdTemplateDir());
+        self::assertEquals($httpClient, $sut->getHttpClient());
+        self::assertEquals($httpMessage, $sut->getHttpMessage());
+        self::assertEquals($container, $sut->getContainer());
     }
 
     public function validConfigurationOptions(): array
@@ -51,11 +63,15 @@ class ConfigurationTest extends TestCase
                 '/dir/path/openapi.yaml',
                 'Test',
                 '/dir/output',
+                'another-dir',
                 '/dir/.php_cs.php',
                 'test/test-api-client',
                 '7.1',
                 __DIR__,
                 __DIR__,
+                Configuration::DEFAULT_HTTP_CLIENT,
+                Configuration::DEFAULT_HTTP_MESSAGE,
+                Configuration::DEFAULT_CONTAINER,
             ],
         ];
     }

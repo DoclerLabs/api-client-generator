@@ -3,21 +3,13 @@
 namespace DoclerLabs\ApiClientGenerator\Output\Php;
 
 use ArrayIterator;
+use Countable;
 use InvalidArgumentException;
 use IteratorAggregate;
 
-class PhpFileCollection implements IteratorAggregate
+class PhpFileCollection implements IteratorAggregate, Countable
 {
-    private array  $files;
-    private string $baseDirectory;
-    private string $baseNamespace;
-
-    public function __construct(string $baseDirectory, string $baseNamespace)
-    {
-        $this->baseDirectory = $baseDirectory;
-        $this->baseNamespace = $baseNamespace;
-        $this->files         = [];
-    }
+    private array $files = [];
 
     public function add(PhpFile $file): void
     {
@@ -38,13 +30,8 @@ class PhpFileCollection implements IteratorAggregate
         return new ArrayIterator($this->files);
     }
 
-    public function getBaseDirectory(): string
+    public function count(): int
     {
-        return $this->baseDirectory . '/src';
-    }
-
-    public function getBaseNamespace(): string
-    {
-        return $this->baseNamespace;
+        return count($this->files);
     }
 }

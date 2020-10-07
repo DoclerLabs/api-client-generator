@@ -3,12 +3,13 @@
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DateTimeInterface;
-use DoclerLabs\ApiClientBase\Exception\RequestValidationException;
-use DoclerLabs\ApiClientBase\Json\Json;
-use DoclerLabs\ApiClientGenerator\Builder\CodeBuilder;
+use DoclerLabs\ApiClientException\RequestValidationException;
+use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
+use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaNaming;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\Json\Json;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -33,7 +34,7 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
         $docType = $field->getPhpDocType($field->isNullable());
         $param   = $this->builder
             ->param($field->getPhpVariableName())
-            ->setType($field->getPhpTypeHint())
+            ->setType($field->getPhpTypeHint(), $field->isNullable())
             ->setDocBlockType($docType)
             ->getNode();
 
@@ -58,7 +59,6 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
 
     protected function generateGet(Field $field): ClassMethod
     {
-        $returnType = $field->isRequired() ? $field->getPhpTypeHint() : '';
         $phpDocType = $field->getPhpDocType();
 
         $return = $this->builder->return($this->builder->localPropertyFetch($field->getPhpVariableName()));
@@ -67,7 +67,7 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
             ->method($this->getGetMethodName($field))
             ->makePublic()
             ->addStmt($return)
-            ->setReturnType($returnType)
+            ->setReturnType($field->getPhpTypeHint(), $field->isNullable() || !$field->isRequired())
             ->composeDocBlock([], $phpDocType)
             ->getNode();
     }
@@ -78,9 +78,11 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
             $this->addImport(DateTimeInterface::class);
         }
 
-        $docType = $field->getPhpDocType();
-
-        return $this->builder->localProperty($field->getPhpVariableName(), $docType);
+        return $this->builder->localProperty(
+            $field->getPhpVariableName(),
+            $field->getPhpTypeHint(),
+            $field->getPhpDocType()
+        );
     }
 
     protected function getSetMethodName(Field $field): string
@@ -100,21 +102,18 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
         if (!empty($enumValues)) {
             $enumConstCalls = [];
             foreach ($enumValues as $enumValue) {
-                $constName = SchemaNaming::getEnumConstName($field, $enumValue);
-                $enumConst = $this->builder->const(
+                $constName    = SchemaNaming::getEnumConstName($field, $enumValue);
+                $statements[] = $this->builder->constant(
                     $constName,
                     $this->builder->val($enumValue)
                 );
 
-                $statements[]     = $this->builder->constants([$enumConst]);
                 $enumConstCalls[] = $this->builder->classConstFetch('self', $constName);
             }
-            $enumConst = $this->builder->const(
+            $statements[] = $this->builder->constant(
                 SchemaNaming::getAllowedEnumConstName($field),
                 $this->builder->array($enumConstCalls)
             );
-
-            $statements[] = $this->builder->constants([$enumConst]);
         }
 
         return $statements;
@@ -128,7 +127,7 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
         }
 
         $this
-            ->addImport(Json::class)
+            ->addImport(CopiedNamespace::getImport($this->baseNamespace, Json::class))
             ->addImport(RequestValidationException::class);
 
         $propertyVar       = $this->builder->var($root->getPhpVariableName());

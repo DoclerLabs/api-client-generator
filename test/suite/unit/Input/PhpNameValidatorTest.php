@@ -13,7 +13,7 @@ class PhpNameValidatorTest extends TestCase
     /** @var PhpNameValidator */
     private $sut;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sut = new PhpNameValidator();
     }

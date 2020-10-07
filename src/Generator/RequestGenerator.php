@@ -2,26 +2,24 @@
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
-use DoclerLabs\ApiClientBase\Request\RequestInterface;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Entity\Request;
-use DoclerLabs\ApiClientGenerator\Entity\RequestFieldRegistry;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
+use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Naming\RequestNaming;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Schema\SerializableInterface;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
-use JsonSerializable;
+use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Stmt\ClassMethod;
 
 class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
 {
     public const NAMESPACE_SUBPATH = '\\Request';
     public const SUBDIRECTORY      = 'Request/';
-    private string $baseNamespace;
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
     {
-        $this->baseNamespace = $fileRegistry->getBaseNamespace();
         foreach ($specification->getOperations() as $operation) {
             $this->generateRequest($fileRegistry, $operation);
         }
@@ -32,8 +30,6 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         $className = RequestNaming::getClassName($operation);
         $request   = $operation->getRequest();
 
-        $this->addImport(RequestInterface::class);
-
         $classBuilder = $this->builder
             ->class($className)
             ->implement('RequestInterface')
@@ -41,9 +37,10 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->addStmts($this->generateProperties($request))
             ->addStmt($this->generateConstructor($request))
             ->addStmts($this->generateSetters($request))
+            ->addStmt($this->generateGetContentType($request))
             ->addStmt($this->generateGetMethod($request))
             ->addStmt($this->generateGetRoute($request))
-            ->addStmts($this->generateGetParametersMethods($request->getFields()));
+            ->addStmts($this->generateGetParametersMethods($request));
 
         $this->registerFile($fileRegistry, $classBuilder, self::SUBDIRECTORY, self::NAMESPACE_SUBPATH);
     }
@@ -97,7 +94,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                     }
                     $params[] = $this->builder
                         ->param($field->getPhpVariableName())
-                        ->setType($field->getPhpTypeHint())
+                        ->setType($field->getPhpTypeHint(), $field->isNullable())
                         ->getNode();
 
                     $paramInits[] = $this->builder->assign(
@@ -132,6 +129,20 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         }
 
         return $statements;
+    }
+
+    protected function generateGetContentType(Request $request): ClassMethod
+    {
+        $return     = $this->builder->return($this->builder->val($request->getContentType()));
+        $returnType = 'string';
+
+        return $this->builder
+            ->method('getContentType')
+            ->makePublic()
+            ->addStmt($return)
+            ->setReturnType($returnType)
+            ->composeDocBlock([], $returnType)
+            ->getNode();
     }
 
     protected function generateGetMethod(Request $request): ClassMethod
@@ -184,9 +195,10 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->getNode();
     }
 
-    protected function generateGetParametersMethods(RequestFieldRegistry $fields): array
+    protected function generateGetParametersMethods(Request $request): array
     {
         $methods   = [];
+        $fields    = $request->getFields();
         $methods[] = $this->generateGetParametersMethod(
             'getQueryParameters',
             $fields->getQueryFields()
@@ -195,10 +207,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             'getCookies',
             $fields->getCookieFields()
         );
-        $methods[] = $this->generateGetParametersMethod(
-            'getHeaders',
-            $fields->getHeaderFields()
-        );
+        $methods[] = $this->generateGetHeadersMethod($request, $fields->getHeaderFields());
         $methods[] = $this->generateGetBody($fields->getBody());
 
         return $methods;
@@ -210,54 +219,11 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         $fieldsArr  = [];
         $returnType = 'array';
         foreach ($fields as $field) {
-            $fieldName             = $field->getName();
-            $fieldsArr[$fieldName] = $this->builder->localPropertyFetch($field->getPhpVariableName());
+            $fieldsArr[$field->getName()] = $this->builder->localPropertyFetch($field->getPhpVariableName());
         }
 
         if (!empty($fieldsArr)) {
-            $filterCallbackBody = $this->builder->return(
-                $this->builder->notEquals($this->builder->val(null), $this->builder->var('value'))
-            );
-            $filterCallback     = $this->builder->closure(
-                [$filterCallbackBody],
-                [$this->builder->param('value')->getNode()]
-            );
-            $filter             = $this->builder->funcCall(
-                'array_filter',
-                [$this->builder->array($fieldsArr), $filterCallback]
-            );
-
-            $this->addImport(JsonSerializable::class);
-            $closureVariable = $this->builder->var('value');
-            $closureBody     = $this->builder->return(
-                $this->builder->ternary(
-                    $this->builder->instanceOf(
-                        $closureVariable,
-                        $this->builder->className(JsonSerializable::class)
-                    ),
-                    $this->builder->funcCall(
-                        'json_decode',
-                        [
-                            $this->builder->funcCall(
-                                'json_encode',
-                                [$closureVariable]
-                            ),
-                            false,
-                        ]
-                    ),
-                    $closureVariable
-                )
-            );
-            $returnVal       = $this->builder->funcCall(
-                'array_map',
-                [
-                    $this->builder->closure(
-                        [$closureBody],
-                        [$this->builder->param('value')->getNode()]
-                    ),
-                    $filter,
-                ]
-            );
+            $returnVal = $this->generateParametersFromFields($fieldsArr);
         }
 
         return $this->builder
@@ -278,7 +244,6 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                 ->method('getBody')
                 ->makePublic()
                 ->addStmt($this->builder->return($this->builder->localPropertyFetch($body->getPhpVariableName())))
-                ->setReturnType($returnType)
                 ->composeDocBlock([], $returnType)
                 ->getNode();
         }
@@ -288,5 +253,78 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->makePublic()
             ->addStmt($this->builder->return($this->builder->val(null)))
             ->getNode();
+    }
+
+    private function generateGetHeadersMethod(Request $request, array $fields): ClassMethod
+    {
+        $headers = [];
+        if ($request->getContentType() !== '') {
+            $headers['Content-Type'] = $this->builder->val($request->getContentType());
+        }
+        $returnVal  = $this->builder->array($headers);
+        $fieldsArr  = [];
+        $returnType = 'array';
+        foreach ($fields as $field) {
+            $fieldsArr[$field->getName()] = $this->builder->localPropertyFetch($field->getPhpVariableName());
+        }
+
+        if (!empty($fieldsArr)) {
+            $returnVal = $this->builder->funcCall(
+                'array_merge',
+                [$returnVal, $this->generateParametersFromFields($fieldsArr)]
+            );
+        }
+
+        return $this->builder
+            ->method('getHeaders')
+            ->makePublic()
+            ->addStmt($this->builder->return($returnVal))
+            ->setReturnType($returnType)
+            ->composeDocBlock([], $returnType)
+            ->getNode();
+    }
+
+    private function generateParametersFromFields(array $fields): FuncCall
+    {
+        $filterCallbackBody = $this->builder->return(
+            $this->builder->notEquals($this->builder->val(null), $this->builder->var('value'))
+        );
+
+        $filterCallback = $this->builder->closure(
+            [$filterCallbackBody],
+            [$this->builder->param('value')->getNode()]
+        );
+
+        $filter = $this->builder->funcCall(
+            'array_filter',
+            [$this->builder->array($fields), $filterCallback]
+        );
+
+        $this->addImport(CopiedNamespace::getImport($this->baseNamespace, SerializableInterface::class));
+        $closureVariable = $this->builder->var('value');
+        $closureBody     = $this->builder->return(
+            $this->builder->ternary(
+                $this->builder->instanceOf(
+                    $closureVariable,
+                    $this->builder->className('SerializableInterface')
+                ),
+                $this->builder->methodCall(
+                    $closureVariable,
+                    'toArray'
+                ),
+                $closureVariable
+            )
+        );
+
+        return $this->builder->funcCall(
+            'array_map',
+            [
+                $this->builder->closure(
+                    [$closureBody],
+                    [$this->builder->param('value')->getNode()]
+                ),
+                $filter,
+            ]
+        );
     }
 }

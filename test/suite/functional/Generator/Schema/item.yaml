@@ -40,7 +40,15 @@ components:
           items:
             type: string
         mandatoryObject:
-          $ref: '#/components/schemas/EmbeddedObject'
+          type: object
+          properties:
+            string:
+              type: string
+            nullableObject:
+              type: object
+              properties:
+                string:
+                  type: string
         nullableObject:
           type: object
           properties:
