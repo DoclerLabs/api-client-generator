@@ -35,8 +35,8 @@ class GuzzleRequestMapper implements RequestMapperInterface
     {
         $body        = $this->bodySerializer->serializeRequest($request);
         $psr7Request = new ServerRequest($request->getMethod(), $request->getRoute(), $request->getHeaders(), $body, '1.1', []);
-        $psr7Request->withQueryParams($request->getQueryParameters());
-        $psr7Request->withCookieParams($request->getCookies());
+        $psr7Request = $psr7Request->withQueryParams($request->getQueryParameters());
+        $psr7Request = $psr7Request->withCookieParams($request->getCookies());
 
         return $psr7Request;
     }

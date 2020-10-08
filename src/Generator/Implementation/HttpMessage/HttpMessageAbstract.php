@@ -49,15 +49,21 @@ abstract class HttpMessageAbstract
                 $arguments
             )
         );
-        $statements[] = $this->builder->methodCall(
+        $statements[] = $this->builder->assign(
             $psr7RequestVariable,
-            'withQueryParams',
-            [$this->builder->methodCall($requestVariable, 'getQueryParameters')]
+            $this->builder->methodCall(
+                $psr7RequestVariable,
+                'withQueryParams',
+                [$this->builder->methodCall($requestVariable, 'getQueryParameters')]
+            )
         );
-        $statements[] = $this->builder->methodCall(
+        $statements[] = $this->builder->assign(
             $psr7RequestVariable,
-            'withCookieParams',
-            [$this->builder->methodCall($requestVariable, 'getCookies')]
+            $this->builder->methodCall(
+                $psr7RequestVariable,
+                'withCookieParams',
+                [$this->builder->methodCall($requestVariable, 'getCookies')]
+            )
         );
 
         $statements[] = $this->builder->return($psr7RequestVariable);
