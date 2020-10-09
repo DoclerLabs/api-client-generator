@@ -8,8 +8,9 @@
 
 namespace Test\Request\Mapper;
 
-use Nyholm\Psr7\ServerRequest;
-use Psr\Http\Message\ServerRequestInterface;
+use GuzzleHttp\Cookie\CookieJar;
+use Nyholm\Psr7\Request;
+use Psr\Http\Message\RequestInterface as PsrRequestInterface;
 use Test\Request\RequestInterface;
 use Test\Serializer\BodySerializer;
 
@@ -29,14 +30,16 @@ class NyholmRequestMapper implements RequestMapperInterface
     /**
      * @param RequestInterface $request
      *
-     * @return ServerRequestInterface
+     * @return PsrRequestInterface
      */
-    public function map(RequestInterface $request): ServerRequestInterface
+    public function map(RequestInterface $request): PsrRequestInterface
     {
         $body        = $this->bodySerializer->serializeRequest($request);
-        $psr7Request = new ServerRequest($request->getMethod(), $request->getRoute(), $request->getHeaders(), $body, '1.1', []);
-        $psr7Request = $psr7Request->withQueryParams($request->getQueryParameters());
-        $psr7Request = $psr7Request->withCookieParams($request->getCookies());
+        $query       = \http_build_query($request->getQueryParameters(), '', '&', PHP_QUERY_RFC3986);
+        $psr7Request = new Request($request->getMethod(), $request->getRoute(), $request->getHeaders(), $body, '1.1');
+        $psr7Request = $psr7Request->withUri($psr7Request->getUri()->withQuery($query));
+        $cookieJar   = new CookieJar(true, $request->getCookies());
+        $psr7Request = $cookieJar->withCookieHeader($psr7Request);
 
         return $psr7Request;
     }

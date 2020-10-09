@@ -9,8 +9,9 @@ use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\RequestInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\BodySerializer;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
+use GuzzleHttp\Cookie\CookieJar;
 use PhpParser\Node\Stmt\ClassMethod;
-use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\RequestInterface as PsrRequestInterface;
 
 class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 {
@@ -30,7 +31,8 @@ class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
     {
         $this
-            ->addImport(CopiedNamespace::getImport($this->baseNamespace, BodySerializer::class));
+            ->addImport(CopiedNamespace::getImport($this->baseNamespace, BodySerializer::class))
+            ->addImport(CookieJar::class);
 
         foreach ($this->messageImplementation->getInitMessageImports() as $import) {
             $this->addImport($import);
@@ -78,7 +80,7 @@ class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
     protected function generateMap(): ClassMethod
     {
         $this
-            ->addImport(ServerRequestInterface::class)
+            ->addImport(PsrRequestInterface::class, 'PsrRequestInterface')
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, RequestInterface::class));
 
         $requestParam = $this->builder
@@ -90,8 +92,8 @@ class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             ->generateRequestMapMethod()
             ->makePublic()
             ->addParam($requestParam)
-            ->setReturnType('ServerRequestInterface')
-            ->composeDocBlock([$requestParam], 'ServerRequestInterface')
+            ->setReturnType('PsrRequestInterface')
+            ->composeDocBlock([$requestParam], 'PsrRequestInterface')
             ->getNode();
     }
 }

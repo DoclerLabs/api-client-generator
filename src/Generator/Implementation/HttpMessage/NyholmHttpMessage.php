@@ -4,7 +4,7 @@ namespace DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessage;
 
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationInterface;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
-use Nyholm\Psr7\ServerRequest;
+use Nyholm\Psr7\Request;
 
 class NyholmHttpMessage extends HttpMessageAbstract implements HttpMessageImplementationInterface
 {
@@ -23,7 +23,7 @@ class NyholmHttpMessage extends HttpMessageAbstract implements HttpMessageImplem
     public function getInitMessageImports(): array
     {
         return [
-            ServerRequest::class,
+            Request::class,
         ];
     }
 }

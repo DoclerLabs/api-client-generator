@@ -2,7 +2,6 @@
 
 namespace DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessage;
 
-use DhJasmin\StoryApiClient\Request\Mapper\RequestMapperInterface;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\MethodBuilder;
 
@@ -22,6 +21,8 @@ abstract class HttpMessageAbstract
 
         $requestVariable     = $this->builder->var('request');
         $psr7RequestVariable = $this->builder->var('psr7Request');
+        $query               = $this->builder->var('query');
+        $cookieJar           = $this->builder->var('cookieJar');
 
         $bodyVariable = $this->builder->var('body');
 
@@ -40,12 +41,23 @@ abstract class HttpMessageAbstract
         $arguments[] = $this->builder->methodCall($requestVariable, 'getHeaders');
         $arguments[] = $bodyVariable;
         $arguments[] = $this->builder->val('1.1');
-        $arguments[] = $this->builder->array([]);
 
+        $statements[] = $this->builder->assign(
+            $query,
+            $this->builder->funcCall(
+                'http_build_query',
+                [
+                    $this->builder->methodCall($requestVariable, 'getQueryParameters'),
+                    '',
+                    '&',
+                    $this->builder->constFetch('PHP_QUERY_RFC3986')
+                ]
+            )
+        );
         $statements[] = $this->builder->assign(
             $psr7RequestVariable,
             $this->builder->new(
-                'ServerRequest',
+                'Request',
                 $arguments
             )
         );
@@ -53,16 +65,29 @@ abstract class HttpMessageAbstract
             $psr7RequestVariable,
             $this->builder->methodCall(
                 $psr7RequestVariable,
-                'withQueryParams',
-                [$this->builder->methodCall($requestVariable, 'getQueryParameters')]
+                'withUri',
+                [
+                    $this->builder->methodCall(
+                        $this->builder->methodCall($psr7RequestVariable, 'getUri'),
+                        'withQuery',
+                        [$query]
+                    )
+                ]
+            )
+        );
+        $statements[] = $this->builder->assign(
+            $cookieJar,
+            $this->builder->new(
+                'CookieJar',
+                [true, $this->builder->methodCall($requestVariable, 'getCookies')]
             )
         );
         $statements[] = $this->builder->assign(
             $psr7RequestVariable,
             $this->builder->methodCall(
-                $psr7RequestVariable,
-                'withCookieParams',
-                [$this->builder->methodCall($requestVariable, 'getCookies')]
+                $cookieJar,
+                'withCookieHeader',
+                [$psr7RequestVariable]
             )
         );
 
