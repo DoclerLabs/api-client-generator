@@ -38,3 +38,10 @@ The following environment variables are available:
 | `CLIENT_PHP_VERSION` | no | 7.0 | 7.0 |
 | `COMPOSER_JSON_TEMPLATE_DIR` | no | {path-to-repository}/template/composer.json.twig | /path/composer.json.twig |
 | `README_MD_TEMPLATE_DIR` | no | {path-to-repository}/template/README.md.twig | /path/README.md.twig |
+
+
+## Running tests
+
+```bash
+docker run  -w /app -v $(pwd):/app  php:7.4-cli-alpine php /app/vendor/bin/phpunit -c /app/phpunit.xml.dist --colors=always
+```

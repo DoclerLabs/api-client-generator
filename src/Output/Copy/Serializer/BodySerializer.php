@@ -14,7 +14,7 @@ use Throwable;
 class BodySerializer
 {
     /** @var ContentTypeSerializerInterface[] */
-    private $contentTypeSerializers = [];
+    private array $contentTypeSerializers = [];
 
     public function add(string $contentType, ContentTypeSerializerInterface $contentTypeSerializer): self
     {
@@ -59,12 +59,14 @@ class BodySerializer
 
     private function getContentTypeSerializer(string $contentType): ContentTypeSerializerInterface
     {
+        $contentType = strtolower(trim(explode(';', $contentType)[0]));
+
         if (!isset($this->contentTypeSerializers[$contentType])) {
             throw new InvalidArgumentException(
-                \sprintf(
+                sprintf(
                     'Serializer for `%s` is not found. Supported: %s',
                     $contentType,
-                    Json::encode(\array_keys($this->contentTypeSerializers))
+                    Json::encode(array_keys($this->contentTypeSerializers))
                 )
             );
         }

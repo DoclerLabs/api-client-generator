@@ -10,6 +10,7 @@ class ResponseHandler
 {
     /** @var BodySerializer */
     private $bodySerializer;
+
     /** @var ResponseExceptionFactory */
     private $responseExceptionFactory;
 
