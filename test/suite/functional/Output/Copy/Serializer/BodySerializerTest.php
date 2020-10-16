@@ -17,7 +17,7 @@ class BodySerializerTest extends TestCase
 {
     private BodySerializer $sut;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sut = new BodySerializer();
         $this->sut

@@ -14,7 +14,7 @@ use Throwable;
 class BodySerializer
 {
     /** @var ContentTypeSerializerInterface[] */
-    private array $contentTypeSerializers = [];
+    private $contentTypeSerializers = [];
 
     public function add(string $contentType, ContentTypeSerializerInterface $contentTypeSerializer): self
     {
