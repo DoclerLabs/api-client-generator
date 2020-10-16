@@ -29,7 +29,12 @@ class ItemCollection implements IteratorAggregate, SerializableInterface, Counta
      */
     public function toArray(): array
     {
-        return $this->items;
+        $return = [];
+        foreach ($this->items as $item) {
+            $return[] = $item->toArray();
+        }
+
+        return $return;
     }
 
     /**

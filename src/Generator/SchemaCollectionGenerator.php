@@ -84,12 +84,28 @@ class SchemaCollectionGenerator extends GeneratorAbstract
 
     protected function generateToArray(Field $field): ClassMethod
     {
-        $return = $this->builder->return($this->builder->localPropertyFetch(self::INTERNAL_ARRAY_NAME));
+        $statements = [];
+
+        $returnVar    = $this->builder->var('return');
+        $statements[] = $this->builder->assign($returnVar, $this->builder->array([]));
+
+        $itemVar         = $this->builder->var('item');
+        $itemToArrayCall = $this->builder->methodCall($itemVar, 'toArray');
+
+        $statements[] = $this->builder->foreach(
+            $this->builder->localPropertyFetch(self::INTERNAL_ARRAY_NAME),
+            $itemVar,
+            [
+                $this->builder->appendToArray($returnVar, $itemToArrayCall),
+            ]
+        );
+
+        $statements[] = $this->builder->return($returnVar);
 
         return $this->builder
             ->method('toArray')
             ->makePublic()
-            ->addStmt($return)
+            ->addStmts($statements)
             ->setReturnType(FieldType::PHP_TYPE_ARRAY)
             ->composeDocBlock([], SchemaCollectionNaming::getArrayDocType($field->getArrayItem()))
             ->getNode();
