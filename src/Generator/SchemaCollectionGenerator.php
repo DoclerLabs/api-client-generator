@@ -113,7 +113,7 @@ class SchemaCollectionGenerator extends GeneratorAbstract
 
     protected function generateGetIterator(Field $field): ClassMethod
     {
-        $arg    = $this->builder->localMethodCall('toArray');
+        $arg    = $this->builder->localPropertyFetch(self::INTERNAL_ARRAY_NAME);
         $return = $this->builder->return($this->builder->new('ArrayIterator', [$arg]));
 
         return $this->builder
@@ -128,7 +128,7 @@ class SchemaCollectionGenerator extends GeneratorAbstract
     protected function generateCount(): ClassMethod
     {
         $return = $this->builder->return(
-            $this->builder->funcCall('count', [$this->builder->localMethodCall('toArray')])
+            $this->builder->funcCall('count', [$this->builder->localPropertyFetch(self::INTERNAL_ARRAY_NAME)])
         );
 
         return $this->builder
@@ -142,12 +142,10 @@ class SchemaCollectionGenerator extends GeneratorAbstract
 
     protected function generateFirst(Field $arrayItem): ClassMethod
     {
-        $itemsVar    = $this->builder->var('items');
         $firstVar    = $this->builder->var('first');
-        $itemsAssign = $this->builder->assign($itemsVar, $this->builder->localMethodCall('toArray'));
         $resetAssign = $this->builder->assign(
             $firstVar,
-            $this->builder->funcCall('reset', [$itemsVar])
+            $this->builder->funcCall('reset', [$this->builder->localPropertyFetch(self::INTERNAL_ARRAY_NAME)])
         );
 
         $ifCondition = $this->builder->equals($firstVar, $this->builder->val(false));
@@ -157,7 +155,6 @@ class SchemaCollectionGenerator extends GeneratorAbstract
         return $this->builder
             ->method('first')
             ->makePublic()
-            ->addStmt($itemsAssign)
             ->addStmt($resetAssign)
             ->addStmt($if)
             ->addStmt($return)
