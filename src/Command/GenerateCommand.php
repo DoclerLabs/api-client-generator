@@ -14,9 +14,10 @@ use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use DoclerLabs\ApiClientGenerator\Output\PhpFilePrinter;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhpFileCopier;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\StyleInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 
@@ -76,24 +77,25 @@ class GenerateCommand extends Command
             $specificationFilePath
         );
 
-        $this->generatePhpFiles($output, $specification);
-        $this->copySpecification($output);
-        $this->generateMetaFiles($output, $specification);
-        $this->copyStaticPhpFiles($output);
+        $ss = new SymfonyStyle($input, $output);
+
+        $this->generatePhpFiles($ss, $specification);
+        $this->copySpecification($ss);
+        $this->generateMetaFiles($ss, $specification);
+        $this->copyStaticPhpFiles($ss);
 
         return Command::SUCCESS;
     }
 
-    private function generatePhpFiles(OutputInterface $output, Specification $specification): void
+    private function generatePhpFiles(StyleInterface $ss, Specification $specification): void
     {
         $phpFiles = new PhpFileCollection();
         $this->codeGenerator->generate($specification, $phpFiles);
 
-        $output->writeln(sprintf('<info>AST generated for %d PHP files.</info>', $phpFiles->count()));
-        $output->writeln(sprintf('Write PHP files to %s:', $this->configuration->getOutputDirectory()));
+        $ss->text(sprintf('<info>AST generated for %d PHP files.</info>', $phpFiles->count()));
+        $ss->text(sprintf('Write PHP files to %s:', $this->configuration->getOutputDirectory()));
 
-        $progressBar = new ProgressBar($output, $phpFiles->count());
-        $progressBar->start();
+        $ss->progressStart($phpFiles->count());
         foreach ($phpFiles as $phpFile) {
             $this->phpPrinter->print(
                 sprintf(
@@ -104,43 +106,41 @@ class GenerateCommand extends Command
                 ),
                 $phpFile
             );
-            $progressBar->advance();
+            $ss->progressAdvance();
         }
-        $progressBar->finish();
+        $ss->progressFinish();
     }
 
-    private function generateMetaFiles(OutputInterface $output, Specification $specification): void
+    private function generateMetaFiles(StyleInterface $ss, Specification $specification): void
     {
         $metaFiles = new MetaFileCollection();
         $this->metaTemplate->render($specification, $metaFiles);
 
-        $output->writeln(sprintf('<info>Templates rendered for %d meta files.</info>', $metaFiles->count()));
-        $output->writeln(sprintf('Write meta files to %s:', $this->configuration->getOutputDirectory()));
+        $ss->text(sprintf('<info>Templates rendered for %d meta files.</info>', $metaFiles->count()));
+        $ss->text(sprintf('Write meta files to %s:', $this->configuration->getOutputDirectory()));
 
-        $progressBar = new ProgressBar($output, $metaFiles->count());
-        $progressBar->start();
+        $ss->progressStart($metaFiles->count());
         foreach ($metaFiles as $metaFile) {
             $this->templatePrinter->print(
                 sprintf('%s/%s', $this->configuration->getOutputDirectory(), $metaFile->getFilePath()),
                 $metaFile
             );
-            $progressBar->advance();
+            $ss->progressAdvance();
         }
-        $progressBar->finish();
+        $ss->progressFinish();
     }
 
-    private function copyStaticPhpFiles(OutputInterface $output): void
+    private function copyStaticPhpFiles(StyleInterface $ss): void
     {
         $originalFiles = $this->fileFinder
             ->files()
             ->name('*.php')
             ->in(Configuration::STATIC_PHP_FILE_DIRECTORY);
 
-        $output->writeln(sprintf('<info>Collected %d static PHP files.</info>', $originalFiles->count()));
-        $output->writeln(sprintf('Copy static PHP files to %s:', $this->configuration->getOutputDirectory()));
+        $ss->text(sprintf('<info>Collected %d static PHP files.</info>', $originalFiles->count()));
+        $ss->text(sprintf('Copy static PHP files to %s:', $this->configuration->getOutputDirectory()));
 
-        $progressBar = new ProgressBar($output, $originalFiles->count());
-        $progressBar->start();
+        $ss->progressStart($originalFiles->count());
         foreach ($originalFiles as $originalFile) {
             $destinationPath = sprintf(
                 '%s/%s/%s',
@@ -154,14 +154,14 @@ class GenerateCommand extends Command
                 $originalFile
             );
 
-            $progressBar->advance();
+            $ss->progressAdvance();
         }
-        $progressBar->finish();
+        $ss->progressFinish();
     }
 
-    private function copySpecification(OutputInterface $output): void
+    private function copySpecification(StyleInterface $ss): void
     {
-        $output->writeln(sprintf('Copy specification file to %s.', $this->configuration->getOutputDirectory()));
+        $ss->text(sprintf('Copy specification file to %s.', $this->configuration->getOutputDirectory()));
 
         $destinationPath = sprintf(
             '%s/doc/%s',
