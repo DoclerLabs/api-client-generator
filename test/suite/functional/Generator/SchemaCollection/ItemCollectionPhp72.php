@@ -26,7 +26,7 @@ class ItemCollection implements IteratorAggregate, SerializableInterface, Counta
     }
 
     /**
-     * @return Item[]
+     * @return array
      */
     public function toArray(): array
     {

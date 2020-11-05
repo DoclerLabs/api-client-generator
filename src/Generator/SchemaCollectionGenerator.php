@@ -107,7 +107,7 @@ class SchemaCollectionGenerator extends GeneratorAbstract
             ->makePublic()
             ->addStmts($statements)
             ->setReturnType(FieldType::PHP_TYPE_ARRAY)
-            ->composeDocBlock([], SchemaCollectionNaming::getArrayDocType($field->getArrayItem()))
+            ->composeDocBlock([], FieldType::PHP_TYPE_ARRAY)
             ->getNode();
     }
 
