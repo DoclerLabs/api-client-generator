@@ -8,7 +8,9 @@
 
 namespace Test\Schema;
 
-class ItemMandatoryObject implements SerializableInterface
+use JsonSerializable;
+
+class ItemMandatoryObject implements SerializableInterface, JsonSerializable
 {
     /** @var string|null */
     private $string;
@@ -70,5 +72,13 @@ class ItemMandatoryObject implements SerializableInterface
         }
 
         return $fields;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 }
