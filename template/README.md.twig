@@ -22,8 +22,8 @@ dhlabs/api-client-generator
 ```php
 <?php declare(strict_types=1);
 
-use \{{ namespace }}\{{ static('\\DoclerLabs\\ApiClientGenerator\\Naming\\ClientNaming', 'getFactoryClassName', specification) }};
-use \{{ namespace }}\Request\{{ requestClass }};
+use {{ namespace }}\{{ static('\\DoclerLabs\\ApiClientGenerator\\Naming\\ClientNaming', 'getFactoryClassName', specification) }};
+use {{ namespace }}\Request\{{ requestClass }};
 
 $factory = new {{ static('\\DoclerLabs\\ApiClientGenerator\\Naming\\ClientNaming', 'getFactoryClassName', specification) }}();
 $client  = $factory->create('{{ serverUrl }}', ['timeout' => 2]);
