@@ -6,6 +6,7 @@ use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\FieldType;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
+use JsonSerializable;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\ClassMethod;
 
@@ -26,17 +27,20 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
 
     protected function generateSchema(Field $field, PhpFileCollection $fileRegistry): void
     {
+        $this->addImport(JsonSerializable::class);
+
         $className = $field->getPhpClassName();
 
         $classBuilder = $this->builder
             ->class($className)
-            ->implement('SerializableInterface')
+            ->implement('SerializableInterface', 'JsonSerializable')
             ->addStmts($this->generateEnumConsts($field))
             ->addStmts($this->generateProperties($field))
             ->addStmt($this->generateConstructor($field))
             ->addStmts($this->generateSetMethods($field))
             ->addStmts($this->generateGetMethods($field))
-            ->addStmt($this->generateToArray($field));
+            ->addStmt($this->generateToArray($field))
+            ->addStmt($this->generateJsonSerialize());
 
         $this->registerFile($fileRegistry, $classBuilder, self::SUBDIRECTORY, self::NAMESPACE_SUBPATH);
     }
@@ -126,6 +130,17 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
         }
 
         return $statements;
+    }
+
+    protected function generateJsonSerialize(): ClassMethod
+    {
+        return $this->builder
+            ->method('jsonSerialize')
+            ->makePublic()
+            ->addStmts([$this->builder->return($this->builder->localMethodCall('toArray'))])
+            ->setReturnType(FieldType::PHP_TYPE_ARRAY)
+            ->composeDocBlock([], FieldType::PHP_TYPE_ARRAY)
+            ->getNode();
     }
 
     protected function generateToArray(Field $root): ClassMethod

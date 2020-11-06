@@ -10,6 +10,7 @@ use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaCollectionNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use IteratorAggregate;
+use JsonSerializable;
 use PhpParser\Node\Stmt\ClassMethod;
 
 class SchemaCollectionGenerator extends GeneratorAbstract
@@ -33,12 +34,13 @@ class SchemaCollectionGenerator extends GeneratorAbstract
         $this
             ->addImport(Countable::class)
             ->addImport(IteratorAggregate::class)
+            ->addImport(JsonSerializable::class)
             ->addImport(ArrayIterator::class);
 
         $className    = $field->getPhpClassName();
         $classBuilder = $this->builder
             ->class($className)
-            ->implement('IteratorAggregate', 'SerializableInterface', 'Countable')
+            ->implement('IteratorAggregate', 'SerializableInterface', 'Countable', 'JsonSerializable')
             ->addStmt(
                 $this->builder->localProperty(
                     self::INTERNAL_ARRAY_NAME,
@@ -48,6 +50,7 @@ class SchemaCollectionGenerator extends GeneratorAbstract
             )
             ->addStmt($this->generateConstructor($field->getArrayItem()))
             ->addStmt($this->generateToArray($field))
+            ->addStmt($this->generateJsonSerialize())
             ->addStmt($this->generateGetIterator($field))
             ->addStmt($this->generateCount())
             ->addStmt($this->generateFirst($field->getArrayItem()));
@@ -82,6 +85,17 @@ class SchemaCollectionGenerator extends GeneratorAbstract
             ->getNode();
     }
 
+    protected function generateJsonSerialize(): ClassMethod
+    {
+        return $this->builder
+            ->method('jsonSerialize')
+            ->makePublic()
+            ->addStmts([$this->builder->return($this->builder->localMethodCall('toArray'))])
+            ->setReturnType(FieldType::PHP_TYPE_ARRAY)
+            ->composeDocBlock([], FieldType::PHP_TYPE_ARRAY)
+            ->getNode();
+    }
+
     protected function generateToArray(Field $field): ClassMethod
     {
         $statements = [];
@@ -107,7 +121,7 @@ class SchemaCollectionGenerator extends GeneratorAbstract
             ->makePublic()
             ->addStmts($statements)
             ->setReturnType(FieldType::PHP_TYPE_ARRAY)
-            ->composeDocBlock([], SchemaCollectionNaming::getArrayDocType($field->getArrayItem()))
+            ->composeDocBlock([], FieldType::PHP_TYPE_ARRAY)
             ->getNode();
     }
 

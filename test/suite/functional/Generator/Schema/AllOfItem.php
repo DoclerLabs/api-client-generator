@@ -8,7 +8,9 @@
 
 namespace Test\Schema;
 
-class ExtendedItem implements SerializableInterface
+use JsonSerializable;
+
+class ExtendedItem implements SerializableInterface, JsonSerializable
 {
     /** @var string */
     private $madatoryParentString;
@@ -104,5 +106,13 @@ class ExtendedItem implements SerializableInterface
         }
 
         return $fields;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 }

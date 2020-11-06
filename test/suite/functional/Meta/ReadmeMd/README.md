@@ -20,8 +20,8 @@ dhlabs/api-client-generator
 ```php
 <?php declare(strict_types=1);
 
-use \Test\SwaggerPetstoreClientFactory;
-use \Test\Request\FindPetsRequest;
+use Test\SwaggerPetstoreClientFactory;
+use Test\Request\FindPetsRequest;
 
 $factory = new SwaggerPetstoreClientFactory();
 $client  = $factory->create('http://petstore.swagger.io/api', ['timeout' => 2]);

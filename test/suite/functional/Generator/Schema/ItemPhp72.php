@@ -10,9 +10,10 @@ namespace Test\Schema;
 
 use DateTimeInterface;
 use DoclerLabs\ApiClientException\RequestValidationException;
+use JsonSerializable;
 use Test\Serializer\ContentType\Json\Json;
 
-class Item implements SerializableInterface
+class Item implements SerializableInterface, JsonSerializable
 {
     public const MANDATORY_ENUM_ONE_OPTION = 'one option';
 
@@ -418,5 +419,13 @@ class Item implements SerializableInterface
         }
 
         return $fields;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 }
