@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.2.0] - 2020-11-10
+### Added
+ - Query parameters which implement `JsonSerializable` will be converted accordingly.
+
 ## [3.1.0] - 2020-11-05
 ### Fixed
  - Fix collections `toArray` docblock
