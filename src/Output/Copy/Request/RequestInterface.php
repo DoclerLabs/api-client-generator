@@ -18,6 +18,8 @@ interface RequestInterface
 
     public function getQueryParameters(): array;
 
+    public function getRawQueryParameters(): array;
+
     /**
      * @return SerializableInterface|null
      */

@@ -13,18 +13,24 @@ use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\RequestInterface as PsrRequestInterface;
 use Test\Request\RequestInterface;
 use Test\Serializer\BodySerializer;
+use Test\Serializer\QuerySerializer;
 
 class GuzzleRequestMapper implements RequestMapperInterface
 {
     /** @var BodySerializer */
     private $bodySerializer;
 
+    /** @var QuerySerializer */
+    private $querySerializer;
+
     /**
-     * @param BodySerializer $bodySerializer
+     * @param BodySerializer  $bodySerializer
+     * @param QuerySerializer $querySerializer
      */
-    public function __construct(BodySerializer $bodySerializer)
+    public function __construct(BodySerializer $bodySerializer, QuerySerializer $querySerializer)
     {
-        $this->bodySerializer = $bodySerializer;
+        $this->bodySerializer  = $bodySerializer;
+        $this->querySerializer = $querySerializer;
     }
 
     /**
@@ -35,7 +41,7 @@ class GuzzleRequestMapper implements RequestMapperInterface
     public function map(RequestInterface $request): PsrRequestInterface
     {
         $body        = $this->bodySerializer->serializeRequest($request);
-        $query       = \http_build_query($request->getQueryParameters(), '', '&', PHP_QUERY_RFC3986);
+        $query       = $this->querySerializer->serializeRequest($request);
         $psr7Request = new Request($request->getMethod(), $request->getRoute(), $request->getHeaders(), $body, '1.1');
         $psr7Request = $psr7Request->withUri($psr7Request->getUri()->withQuery($query));
         $cookieJar   = new CookieJar(true, $request->getCookies());

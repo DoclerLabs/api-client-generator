@@ -58,6 +58,14 @@ class PatchResourceRequest implements RequestInterface
     /**
      * @return array
      */
+    public function getRawQueryParameters(): array
+    {
+        return [];
+    }
+
+    /**
+     * @return array
+     */
     public function getCookies(): array
     {
         return [];

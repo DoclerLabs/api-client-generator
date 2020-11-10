@@ -26,15 +26,23 @@ abstract class HttpMessageAbstract
 
         $bodyVariable = $this->builder->var('body');
 
-        $encodeMethodCall = $this->builder->methodCall(
+        $bodyEncodeMethodCall  = $this->builder->methodCall(
             $this->builder->localPropertyFetch('bodySerializer'),
             'serializeRequest',
             [
                 $requestVariable,
             ]
         );
+        $queryEncodeMethodCall = $this->builder->methodCall(
+            $this->builder->localPropertyFetch('querySerializer'),
+            'serializeRequest',
+            [
+                $requestVariable,
+            ]
+        );
 
-        $statements[] = $this->builder->assign($bodyVariable, $encodeMethodCall);
+        $statements[] = $this->builder->assign($bodyVariable, $bodyEncodeMethodCall);
+        $statements[] = $this->builder->assign($query, $queryEncodeMethodCall);
 
         $arguments[] = $this->builder->methodCall($requestVariable, 'getMethod');
         $arguments[] = $this->builder->methodCall($requestVariable, 'getRoute');
@@ -42,18 +50,6 @@ abstract class HttpMessageAbstract
         $arguments[] = $bodyVariable;
         $arguments[] = $this->builder->val('1.1');
 
-        $statements[] = $this->builder->assign(
-            $query,
-            $this->builder->funcCall(
-                'http_build_query',
-                [
-                    $this->builder->methodCall($requestVariable, 'getQueryParameters'),
-                    '',
-                    '&',
-                    $this->builder->constFetch('PHP_QUERY_RFC3986')
-                ]
-            )
-        );
         $statements[] = $this->builder->assign(
             $psr7RequestVariable,
             $this->builder->new(

@@ -8,6 +8,7 @@ use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\RequestInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\BodySerializer;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\QuerySerializer;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use GuzzleHttp\Cookie\CookieJar;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -32,30 +33,45 @@ class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
     {
         $this
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, BodySerializer::class))
+            ->addImport(CopiedNamespace::getImport($this->baseNamespace, QuerySerializer::class))
             ->addImport(CookieJar::class);
 
         foreach ($this->messageImplementation->getInitMessageImports() as $import) {
             $this->addImport($import);
         }
 
-        $serializerPropertyName = 'bodySerializer';
+        $bodySerializerPropertyName  = 'bodySerializer';
+        $querySerializerPropertyName = 'querySerializer';
 
         $properties   = [];
         $properties[] = $this->builder->localProperty(
-            $serializerPropertyName,
+            $bodySerializerPropertyName,
             'BodySerializer',
             'BodySerializer'
+        );
+        $properties[] = $this->builder->localProperty(
+            $querySerializerPropertyName,
+            'QuerySerializer',
+            'QuerySerializer'
         );
 
         $parameters   = [];
         $parameters[] = $this->builder
-            ->param($serializerPropertyName)
+            ->param($bodySerializerPropertyName)
             ->setType('BodySerializer')
+            ->getNode();
+        $parameters[] = $this->builder
+            ->param($querySerializerPropertyName)
+            ->setType('QuerySerializer')
             ->getNode();
 
         $paramInits[] = $this->builder->assign(
-            $this->builder->localPropertyFetch($serializerPropertyName),
-            $this->builder->var($serializerPropertyName)
+            $this->builder->localPropertyFetch($bodySerializerPropertyName),
+            $this->builder->var($bodySerializerPropertyName)
+        );
+        $paramInits[] = $this->builder->assign(
+            $this->builder->localPropertyFetch($querySerializerPropertyName),
+            $this->builder->var($querySerializerPropertyName)
         );
 
         $constructor = $this->builder

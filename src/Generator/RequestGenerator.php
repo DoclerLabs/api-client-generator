@@ -48,7 +48,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
     protected function generateEnums(Request $request): array
     {
         $statements = [];
-        foreach ($request->getFields() as $origin => $fields) {
+        foreach ($request->getFields() as $fields) {
             foreach ($fields as $field) {
                 foreach ($this->generateEnumStatements($field) as $statement) {
                     $statements[] = $statement;
@@ -62,7 +62,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
     protected function generateProperties(Request $request): array
     {
         $statements = [];
-        foreach ($request->getFields() as $origin => $fields) {
+        foreach ($request->getFields() as $fields) {
             foreach ($fields as $field) {
                 if ($field->isComposite()) {
                     $this->addImport(
@@ -85,7 +85,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
     {
         $params     = [];
         $paramInits = [];
-        foreach ($request->getFields() as $origin => $fields) {
+        foreach ($request->getFields() as $fields) {
             foreach ($fields as $field) {
                 if ($field->isRequired()) {
                     $enumStmt = $this->generateEnumValidation($field, $this->baseNamespace);
@@ -120,7 +120,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
     protected function generateSetters(Request $request): array
     {
         $statements = [];
-        foreach ($request->getFields() as $origin => $fields) {
+        foreach ($request->getFields() as $fields) {
             foreach ($fields as $field) {
                 if (!$field->isRequired()) {
                     $statements[] = $this->generateSet($field, $this->baseNamespace);
@@ -203,6 +203,10 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             'getQueryParameters',
             $fields->getQueryFields()
         );
+        $methods[] = $this->generateGetRawParametersMethod(
+            'getRawQueryParameters',
+            $fields->getQueryFields()
+        );
         $methods[] = $this->generateGetParametersMethod(
             'getCookies',
             $fields->getCookieFields()
@@ -230,6 +234,23 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->method($methodName)
             ->makePublic()
             ->addStmt($this->builder->return($returnVal))
+            ->setReturnType($returnType)
+            ->composeDocBlock([], $returnType)
+            ->getNode();
+    }
+
+    protected function generateGetRawParametersMethod(string $methodName, array $fields): ClassMethod
+    {
+        $fieldsArr  = [];
+        $returnType = 'array';
+        foreach ($fields as $field) {
+            $fieldsArr[$field->getName()] = $this->builder->localPropertyFetch($field->getPhpVariableName());
+        }
+
+        return $this->builder
+            ->method($methodName)
+            ->makePublic()
+            ->addStmt($this->builder->return($this->builder->array($fieldsArr)))
             ->setReturnType($returnType)
             ->composeDocBlock([], $returnType)
             ->getNode();

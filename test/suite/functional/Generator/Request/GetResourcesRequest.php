@@ -96,6 +96,14 @@ class GetResourcesRequest implements RequestInterface
     /**
      * @return array
      */
+    public function getRawQueryParameters(): array
+    {
+        return ['filterById' => $this->filterById, 'filterByName' => $this->filterByName, 'filterByIds' => $this->filterByIds];
+    }
+
+    /**
+     * @return array
+     */
     public function getCookies(): array
     {
         return [];
