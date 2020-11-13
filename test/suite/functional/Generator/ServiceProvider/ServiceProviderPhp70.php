@@ -19,6 +19,7 @@ use Test\Schema\Mapper\PetMapper;
 use Test\Serializer\BodySerializer;
 use Test\Serializer\ContentType\FormUrlencodedContentTypeSerializer;
 use Test\Serializer\ContentType\JsonContentTypeSerializer;
+use Test\Serializer\QuerySerializer;
 
 class ServiceProvider
 {
@@ -30,11 +31,14 @@ class ServiceProvider
         $container[BodySerializer::class] = static function (): BodySerializer {
             return (new BodySerializer())->add('application/json', new JsonContentTypeSerializer())->add('application/x-www-form-urlencoded', new FormUrlencodedContentTypeSerializer());
         };
+        $container[QuerySerializer::class] = static function (): QuerySerializer {
+            return new QuerySerializer();
+        };
         $container[ResponseHandler::class] = static function () use ($container): ResponseHandler {
             return new ResponseHandler($container[BodySerializer::class], new ResponseExceptionFactory());
         };
         $container[RequestMapperInterface::class] = static function () use ($container): RequestMapperInterface {
-            return new GuzzleRequestMapper($container[BodySerializer::class]);
+            return new GuzzleRequestMapper($container[BodySerializer::class], $container[QuerySerializer::class]);
         };
         $container[PetCollectionMapper::class] = static function () use ($container): PetCollectionMapper {
             return new PetCollectionMapper($container[PetMapper::class]);

@@ -15,6 +15,7 @@ use DoclerLabs\ApiClientGenerator\Output\Copy\Response\ResponseHandler;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\BodySerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\FormUrlencodedContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\JsonContentTypeSerializer;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\QuerySerializer;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\New_;
@@ -44,6 +45,7 @@ class ServiceProviderGenerator extends GeneratorAbstract
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, RequestMapperInterface::class))
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, ResponseHandler::class))
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, BodySerializer::class))
+            ->addImport(CopiedNamespace::getImport($this->baseNamespace, QuerySerializer::class))
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, JsonContentTypeSerializer::class))
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, FormUrlencodedContentTypeSerializer::class))
             ->addImport(
@@ -92,6 +94,13 @@ class ServiceProviderGenerator extends GeneratorAbstract
                                     'class'
                                 )
                             ),
+                            $this->containerImplementation->getClosure(
+                                $containerVariable,
+                                $this->builder->classConstFetch(
+                                    'QuerySerializer',
+                                    'class'
+                                )
+                            ),
                         ]
                     )
                 ),
@@ -105,6 +114,11 @@ class ServiceProviderGenerator extends GeneratorAbstract
             $containerVariable,
             $this->builder->classConstFetch('BodySerializer', 'class'),
             $this->generateBodySerializerClosure()
+        );
+        $statements[] = $this->containerImplementation->registerClosure(
+            $containerVariable,
+            $this->builder->classConstFetch('QuerySerializer', 'class'),
+            $this->generateQuerySerializerClosure()
         );
         $statements[] = $this->containerImplementation->registerClosure(
             $containerVariable,
@@ -150,6 +164,18 @@ class ServiceProviderGenerator extends GeneratorAbstract
             ->composeDocBlock([$param], '', [])
             ->setReturnType(null)
             ->getNode();
+    }
+
+    private function generateQuerySerializerClosure(): Closure
+    {
+        return $this->builder->closure(
+            [
+                $this->builder->return($this->builder->new('QuerySerializer'))
+            ],
+            [],
+            [],
+            'QuerySerializer'
+        );
     }
 
     private function generateBodySerializerClosure(): Closure
