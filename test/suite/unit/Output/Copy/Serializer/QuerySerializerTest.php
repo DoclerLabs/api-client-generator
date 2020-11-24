@@ -106,7 +106,6 @@ class QuerySerializerTest extends TestCase
             'Serializable interface'     => [
                 [
                     'serializable' => $serializable,
-
                 ],
                 [
                     'serializable' => $serialized,
