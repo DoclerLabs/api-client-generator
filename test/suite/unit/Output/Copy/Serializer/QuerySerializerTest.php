@@ -16,7 +16,7 @@ class QuerySerializerTest extends TestCase
 {
     private QuerySerializer $sut;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sut = new QuerySerializer();
     }
