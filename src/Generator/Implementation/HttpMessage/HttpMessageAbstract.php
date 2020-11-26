@@ -75,7 +75,7 @@ abstract class HttpMessageAbstract
             $cookieJar,
             $this->builder->new(
                 'CookieJar',
-                [true, $this->builder->methodCall($requestVariable, 'getCookies')]
+                [$this->builder->methodCall($requestVariable, 'getCookies')]
             )
         );
         $statements[] = $this->builder->assign(

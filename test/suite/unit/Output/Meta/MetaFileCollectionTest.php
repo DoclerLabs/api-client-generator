@@ -8,7 +8,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass MetaFileCollection
+ * @covers \DoclerLabs\ApiClientGenerator\Output\Meta\MetaFileCollection
  */
 class MetaFileCollectionTest extends TestCase
 {

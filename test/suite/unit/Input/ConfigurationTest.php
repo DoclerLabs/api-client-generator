@@ -6,7 +6,7 @@ use DoclerLabs\ApiClientGenerator\Input\Configuration;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass Configuration
+ * @covers \DoclerLabs\ApiClientGenerator\Input\Configuration
  */
 class ConfigurationTest extends TestCase
 {
@@ -23,7 +23,6 @@ class ConfigurationTest extends TestCase
         string $phpVersion,
         string $composerJsonTemplateDir,
         string $readmeMdTemplateDir,
-        string $httpClient,
         string $httpMessage,
         string $container
     ): void {
@@ -37,7 +36,6 @@ class ConfigurationTest extends TestCase
             $phpVersion,
             $composerJsonTemplateDir,
             $readmeMdTemplateDir,
-            $httpClient,
             $httpMessage,
             $container
         );
@@ -51,7 +49,6 @@ class ConfigurationTest extends TestCase
         self::assertEquals($phpVersion, $sut->getPhpVersion());
         self::assertEquals($composerJsonTemplateDir, $sut->getComposerJsonTemplateDir());
         self::assertEquals($readmeMdTemplateDir, $sut->getReadmeMdTemplateDir());
-        self::assertEquals($httpClient, $sut->getHttpClient());
         self::assertEquals($httpMessage, $sut->getHttpMessage());
         self::assertEquals($container, $sut->getContainer());
     }
@@ -69,7 +66,6 @@ class ConfigurationTest extends TestCase
                 '7.1',
                 __DIR__,
                 __DIR__,
-                Configuration::DEFAULT_HTTP_CLIENT,
                 Configuration::DEFAULT_HTTP_MESSAGE,
                 Configuration::DEFAULT_CONTAINER,
             ],

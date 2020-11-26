@@ -10,12 +10,12 @@ class JsonTest extends TestCase
 {
     public function testGetLastErrorCodeIsZeroAfterInit()
     {
-        $this->assertEquals(0, Json::getLastErrorCode());
+        self::assertEquals(0, Json::getLastErrorCode());
     }
 
     public function testGetLastErrorMessageIsNoErrorsAfterInit()
     {
-        $this->assertEquals('No errors', Json::getLastErrorMessage());
+        self::assertEquals('No errors', Json::getLastErrorMessage());
     }
 
     /**
@@ -28,12 +28,12 @@ class JsonTest extends TestCase
         int $errorCode,
         string $expectedMessage
     ) {
-        $this->assertEquals($expectedMessage, Json::getErrorMessage($errorCode));
+        self::assertEquals($expectedMessage, Json::getErrorMessage($errorCode));
     }
 
     public function testGetMessageReturnsUnknownErrorForUnknownErrorCode()
     {
-        $this->assertEquals('Unknown error', Json::getErrorMessage(-1));
+        self::assertEquals('Unknown error', Json::getErrorMessage(-1));
     }
 
     /**
@@ -46,8 +46,8 @@ class JsonTest extends TestCase
      */
     public function testEncodeSuccessfullyWorksForValidInput($decoded, string $encoded)
     {
-        $this->assertEquals($encoded, Json::encode($decoded));
-        $this->assertEquals(0, Json::getLastErrorCode());
+        self::assertEquals($encoded, Json::encode($decoded));
+        self::assertEquals(0, Json::getLastErrorCode());
     }
 
     /**
@@ -74,8 +74,8 @@ class JsonTest extends TestCase
      */
     public function testDecodeSuccessfullyWorksForValidInput($decoded, string $encoded)
     {
-        $this->assertEquals($decoded, Json::decode($encoded, true));
-        $this->assertEquals(0, Json::getLastErrorCode());
+        self::assertEquals($decoded, Json::decode($encoded, true));
+        self::assertEquals(0, Json::getLastErrorCode());
     }
 
     /**
@@ -97,7 +97,7 @@ class JsonTest extends TestCase
     {
         $decoded = Json::decode('{"bigint": 2057556871673413376}', true, 512, JSON_BIGINT_AS_STRING);
 
-        $this->assertSame('2057556871673413376', (string)$decoded['bigint']);
+        self::assertSame('2057556871673413376', (string)$decoded['bigint']);
     }
 
     public function provideValidData(): array

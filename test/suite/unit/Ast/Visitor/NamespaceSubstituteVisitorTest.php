@@ -10,7 +10,7 @@ use PhpParser\Node\Stmt\UseUse;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass NamespaceSubstituteVisitor
+ * @covers \DoclerLabs\ApiClientGenerator\Ast\Visitor\NamespaceSubstituteVisitor
  */
 class NamespaceSubstituteVisitorTest extends TestCase
 {

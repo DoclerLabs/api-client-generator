@@ -8,8 +8,6 @@
 
 namespace Test;
 
-use GuzzleHttp\Client;
-use InvalidArgumentException;
 use Pimple\Container;
 use Pimple\Psr11\Container as Psr11Container;
 use Psr\Container\ContainerInterface;
@@ -18,25 +16,17 @@ use Psr\Http\Client\ClientInterface;
 class SwaggerPetstoreClientFactory
 {
     /**
-     * @param string $baseUri
-     * @param array  $options
+     * If using Guzzle 6, make sure to configure Guzzle to not throw exceptions
+     * on HTTP error status codes, or this client will violate PSR-18.
+     * e.g. new Client(['base_uri' => $baseUri, 'http_errors' => false, ...])
+     *
+     * @param ClientInterface $client
      *
      * @return SwaggerPetstoreClient
      */
-    public function create(string $baseUri, array $options = []): SwaggerPetstoreClient
+    public function create(ClientInterface $client): SwaggerPetstoreClient
     {
-        return new SwaggerPetstoreClient($this->initBaseClient($baseUri, $options), $this->initContainer());
-    }
-
-    private function initBaseClient(string $baseUri, array $options): ClientInterface
-    {
-        if (\substr($baseUri, -1) !== '/') {
-            throw new InvalidArgumentException('Base URI should end with the `/` symbol.');
-        }
-        $default = ['base_uri' => $baseUri, 'timeout' => 3, 'http_errors' => false];
-        $config  = \array_replace_recursive($default, $options);
-
-        return new Client($config);
+        return new SwaggerPetstoreClient($client, $this->initContainer());
     }
 
     private function initContainer(): ContainerInterface

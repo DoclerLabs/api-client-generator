@@ -14,7 +14,7 @@ use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
 /**
- * @coversDefaultClass SchemaGenerator
+ * @covers \DoclerLabs\ApiClientGenerator\Generator\SchemaGenerator
  */
 class ReadmeMdTemplateTest extends AbstractTemplateTest
 {

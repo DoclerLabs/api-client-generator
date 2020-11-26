@@ -8,7 +8,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass PhpFileCollection
+ * @covers \DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection
  */
 class PhpFileCollectionTest extends TestCase
 {

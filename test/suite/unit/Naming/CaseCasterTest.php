@@ -6,7 +6,7 @@ use DoclerLabs\ApiClientGenerator\Naming\CaseCaster;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass CaseCaster
+ * @covers \DoclerLabs\ApiClientGenerator\Naming\CaseCaster
  */
 class CaseCasterTest extends TestCase
 {

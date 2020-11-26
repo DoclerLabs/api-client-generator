@@ -9,7 +9,6 @@ use DoclerLabs\ApiClientGenerator\Command\GenerateCommand;
 use DoclerLabs\ApiClientGenerator\Generator\ClientFactoryGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\ClientGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationStrategy;
-use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpClientImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\RequestGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\RequestMapperGenerator;
@@ -81,7 +80,6 @@ class ServiceProvider implements ServiceProviderInterface
             getenv('CLIENT_PHP_VERSION') ?: Configuration::DEFAULT_PHP_VERSION,
             getenv('COMPOSER_JSON_TEMPLATE_DIR') ?: Configuration::DEFAULT_TEMPLATE_DIRECTORY,
             getenv('README_MD_TEMPLATE_DIR') ?: Configuration::DEFAULT_TEMPLATE_DIRECTORY,
-            getenv('HTTP_CLIENT') ?: Configuration::DEFAULT_HTTP_CLIENT,
             getenv('HTTP_MESSAGE') ?: Configuration::DEFAULT_HTTP_MESSAGE,
             getenv('CONTAINER') ?: Configuration::DEFAULT_CONTAINER,
         );
@@ -99,9 +97,9 @@ class ServiceProvider implements ServiceProviderInterface
             $container[Filesystem::class]
         );
 
-        $pimple[Finder::class] = static fn(Container $container) => new Finder();
+        $pimple[Finder::class] = static fn() => new Finder();
 
-        $pimple[Filesystem::class] = static fn(Container $container) => new Filesystem();
+        $pimple[Filesystem::class] = static fn() => new Filesystem();
 
         $pimple[CodeGeneratorFacade::class] = static fn(Container $container) => (new CodeGeneratorFacade())
             ->add($container[ClientFactoryGenerator::class])
@@ -117,7 +115,7 @@ class ServiceProvider implements ServiceProviderInterface
             ->add($container[ComposerJsonTemplate::class])
             ->add($container[ReadmeMdTemplate::class]);
 
-        $pimple[FileReader::class] = static fn(Container $container) => new FileReader();
+        $pimple[FileReader::class] = static fn() => new FileReader();
 
         $pimple[OpenApiParser::class] = static fn(Container $container) => new OpenApiParser(
             $container[OperationCollectionFactory::class]
@@ -165,8 +163,6 @@ class ServiceProvider implements ServiceProviderInterface
         $pimple[ClientFactoryGenerator::class] = static fn(Container $container) => new ClientFactoryGenerator(
             $container[Configuration::class]->getBaseNamespace(),
             $container[CodeBuilder::class],
-            $container[HttpClientImplementationStrategy::class],
-            $container[HttpMessageImplementationStrategy::class],
             $container[ContainerImplementationStrategy::class]
         );
 
@@ -176,12 +172,6 @@ class ServiceProvider implements ServiceProviderInterface
             $container[ContainerImplementationStrategy::class],
             $container[HttpMessageImplementationStrategy::class],
         );
-
-        $pimple[HttpClientImplementationStrategy::class] =
-            static fn(Container $container) => new HttpClientImplementationStrategy(
-                $container[Configuration::class]->getHttpClient(),
-                $container[CodeBuilder::class]
-            );
 
         $pimple[HttpMessageImplementationStrategy::class] =
             static fn(Container $container) => new HttpMessageImplementationStrategy(
@@ -226,12 +216,11 @@ class ServiceProvider implements ServiceProviderInterface
 
         $pimple[FieldFactory::class] = static fn() => new FieldFactory(new PhpNameValidator());
 
-        $pimple[TwigExtension::class] = static fn(Container $container) => new TwigExtension();
+        $pimple[TwigExtension::class] = static fn() => new TwigExtension();
 
         $pimple[ComposerJsonTemplate::class] = static fn(Container $container) => new ComposerJsonTemplate(
             $container[Environment::class],
             $container[Configuration::class],
-            $container[HttpClientImplementationStrategy::class],
             $container[HttpMessageImplementationStrategy::class],
             $container[ContainerImplementationStrategy::class]
         );

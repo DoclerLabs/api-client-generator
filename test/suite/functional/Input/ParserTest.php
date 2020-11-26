@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Pimple\Container;
 
 /**
- * @coversDefaultClass Parser
+ * @covers \DoclerLabs\ApiClientGenerator\Input\Parser
  */
 class ParserTest extends TestCase
 {

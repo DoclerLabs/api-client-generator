@@ -8,9 +8,9 @@
 
 namespace Test\Request\Mapper;
 
-use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\RequestInterface as PsrRequestInterface;
+use Test\Request\CookieJar;
 use Test\Request\RequestInterface;
 use Test\Serializer\BodySerializer;
 use Test\Serializer\QuerySerializer;
@@ -44,7 +44,7 @@ class GuzzleRequestMapper implements RequestMapperInterface
         $query       = $this->querySerializer->serializeRequest($request);
         $psr7Request = new Request($request->getMethod(), $request->getRoute(), $request->getHeaders(), $body, '1.1');
         $psr7Request = $psr7Request->withUri($psr7Request->getUri()->withQuery($query));
-        $cookieJar   = new CookieJar(true, $request->getCookies());
+        $cookieJar   = new CookieJar($request->getCookies());
         $psr7Request = $cookieJar->withCookieHeader($psr7Request);
 
         return $psr7Request;

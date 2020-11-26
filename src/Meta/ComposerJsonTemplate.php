@@ -3,7 +3,6 @@
 namespace DoclerLabs\ApiClientGenerator\Meta;
 
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationStrategy;
-use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpClientImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Input\Configuration;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
@@ -15,20 +14,17 @@ class ComposerJsonTemplate implements TemplateInterface
 {
     private Environment                       $renderer;
     private Configuration                     $configuration;
-    private HttpClientImplementationStrategy  $clientImplementation;
     private HttpMessageImplementationStrategy $messageImplementation;
     private ContainerImplementationStrategy   $containerImplementation;
 
     public function __construct(
         Environment $renderer,
         Configuration $configuration,
-        HttpClientImplementationStrategy $clientImplementation,
         HttpMessageImplementationStrategy $messageImplementation,
         ContainerImplementationStrategy $containerImplementation
     ) {
         $this->renderer                = $renderer;
         $this->configuration           = $configuration;
-        $this->clientImplementation    = $clientImplementation;
         $this->messageImplementation   = $messageImplementation;
         $this->containerImplementation = $containerImplementation;
     }
@@ -42,7 +38,6 @@ class ComposerJsonTemplate implements TemplateInterface
     {
         $packages = array_merge(
             $this->getCommonPackages(),
-            $this->clientImplementation->getPackages(),
             $this->messageImplementation->getPackages(),
             $this->containerImplementation->getPackages()
         );
@@ -67,9 +62,7 @@ class ComposerJsonTemplate implements TemplateInterface
         return [
             'docler-labs/api-client-exception' => '^1.0',
             'psr/container'                    => '^1.0',
-            'psr/http-client-implementation'   => '^1.0',
             'psr/http-client'                  => '^1.0',
-            'psr/http-factory'                 => '^1.0',
         ];
     }
 }

@@ -9,7 +9,7 @@ use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFileCollection;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass MetaTemplateFacade
+ * @covers \DoclerLabs\ApiClientGenerator\MetaTemplateFacade
  */
 class MetaTemplateFacadeTest extends TestCase
 {
