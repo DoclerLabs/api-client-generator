@@ -2,6 +2,7 @@
 
 namespace DoclerLabs\ApiClientGenerator\Output\Copy\Serializer;
 
+use DateTimeInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\RequestInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Schema\SerializableInterface;
 use JsonSerializable;
@@ -15,6 +16,8 @@ class QuerySerializer
         foreach ($request->getRawQueryParameters() as $name => $value) {
             if ($value === null) {
                 continue;
+            } elseif ($value instanceof DateTimeInterface) {
+                $value = $value->format(DateTimeInterface::RFC3339);
             } elseif ($value instanceof SerializableInterface) {
                 $value = $value->toArray();
             } elseif ($value instanceof JsonSerializable) {
