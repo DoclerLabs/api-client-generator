@@ -23,8 +23,15 @@ dhlabs/api-client-generator
 use Test\SwaggerPetstoreClientFactory;
 use Test\Request\FindPetsRequest;
 
+/**
+ * If using Guzzle 6, make sure to configure Guzzle to not throw exceptions
+ * on HTTP error status codes, or this client will violate PSR-18.
+ * e.g. new Client(['base_uri' => $baseUri, 'http_errors' => false, ...])
+ */
+$client = ...; // any PSR-18 HTTP CLIENT
+
 $factory = new SwaggerPetstoreClientFactory();
-$client  = $factory->create('http://petstore.swagger.io/api', ['timeout' => 2]);
+$client  = $factory->create($client);
 
 $request = new FindPetsRequest();
 $result  = $client->findPets($request);

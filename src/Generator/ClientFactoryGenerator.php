@@ -13,12 +13,6 @@ use Psr\Http\Client\ClientInterface;
 
 class ClientFactoryGenerator extends GeneratorAbstract
 {
-    private const PSR18_EXCEPTION_WARNING = [
-        'If using Guzzle 6, make sure to configure Guzzle to not throw exceptions',
-        'on HTTP error status codes, or this client will violate PSR-18.',
-        'e.g. new Client([\'base_uri\' => $baseUri, \'http_errors\' => false, ...])',
-    ];
-
     private ContainerImplementationStrategy $containerImplementation;
 
     public function __construct(
@@ -83,7 +77,7 @@ class ClientFactoryGenerator extends GeneratorAbstract
             ->addParams($params)
             ->addStmts($statements)
             ->setReturnType($clientClassName)
-            ->composeDocBlock($params, $clientClassName, [], self::PSR18_EXCEPTION_WARNING)
+            ->composeDocBlock($params, $clientClassName, [])
             ->getNode();
     }
 }

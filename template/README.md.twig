@@ -16,7 +16,6 @@ dhlabs/api-client-generator
 ```
 
 ## Usage
-{% set serverUrl = specification.serverUrls() is not empty ? specification.serverUrls()|first : '<server-base-url>' %}
 {% set requestClass = static('\\DoclerLabs\\ApiClientGenerator\\Naming\\RequestNaming', 'getClassName', exampleOperation) %}
 
 ```php
@@ -25,8 +24,15 @@ dhlabs/api-client-generator
 use {{ namespace }}\{{ static('\\DoclerLabs\\ApiClientGenerator\\Naming\\ClientNaming', 'getFactoryClassName', specification) }};
 use {{ namespace }}\Request\{{ requestClass }};
 
+/**
+ * If using Guzzle 6, make sure to configure Guzzle to not throw exceptions
+ * on HTTP error status codes, or this client will violate PSR-18.
+ * e.g. new Client(['base_uri' => $baseUri, 'http_errors' => false, ...])
+ */
+$client = ...; // any PSR-18 HTTP CLIENT
+
 $factory = new {{ static('\\DoclerLabs\\ApiClientGenerator\\Naming\\ClientNaming', 'getFactoryClassName', specification) }}();
-$client  = $factory->create('{{ serverUrl }}', ['timeout' => 2]);
+$client  = $factory->create($client);
 
 $request = new {{ requestClass }}();
 $result  = $client->{{ exampleOperation.getName() }}($request);

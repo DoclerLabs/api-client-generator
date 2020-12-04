@@ -16,10 +16,6 @@ use Psr\Http\Client\ClientInterface;
 class SwaggerPetstoreClientFactory
 {
     /**
-     * If using Guzzle 6, make sure to configure Guzzle to not throw exceptions
-     * on HTTP error status codes, or this client will violate PSR-18.
-     * e.g. new Client(['base_uri' => $baseUri, 'http_errors' => false, ...])
-     *
      * @param ClientInterface $client
      *
      * @return SwaggerPetstoreClient
