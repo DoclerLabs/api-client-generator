@@ -6,7 +6,7 @@ use DoclerLabs\ApiClientGenerator\Generator\SchemaMapperGenerator;
 use DoclerLabs\ApiClientGenerator\Test\Functional\ConfigurationBuilder;
 
 /**
- * @coversDefaultClass SchemaMapperGenerator
+ * @covers \DoclerLabs\ApiClientGenerator\Generator\SchemaMapperGenerator
  */
 class SchemaMapperGeneratorTest extends AbstractGeneratorTest
 {

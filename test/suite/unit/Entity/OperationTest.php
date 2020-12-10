@@ -9,7 +9,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass Operation
+ * @covers \DoclerLabs\ApiClientGenerator\Entity\Operation
  */
 class OperationTest extends TestCase
 {

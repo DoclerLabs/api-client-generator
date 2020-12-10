@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.0.0] - 2020-11-26
+### Changed
+ - Guzzle 6/7 dependency removed altogether in favor of PSR-18 interfaces for Http Client
+ - Breaking change! `*ClientFactory` does not accept URI and Guzzle configuration anymore, but rather PSR-18 implementation
+ - Guzzle 6/7 CookieJar dependency removed in favor of simplified CookieJar class
+
 ## [3.2.1] - 2020-11-24
 ### Fixed
 - `DateTimeInterface` serialization in `QuerySerializer`

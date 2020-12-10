@@ -12,7 +12,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass CodeBuilder
+ * @covers \DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder
  */
 class CodeBuilderTest extends TestCase
 {

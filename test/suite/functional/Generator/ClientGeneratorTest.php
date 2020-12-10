@@ -6,7 +6,7 @@ use DoclerLabs\ApiClientGenerator\Generator\ClientGenerator;
 use DoclerLabs\ApiClientGenerator\Test\Functional\ConfigurationBuilder;
 
 /**
- * @coversDefaultClass ClientGenerator
+ * @covers \DoclerLabs\ApiClientGenerator\Generator\ClientGenerator
  */
 class ClientGeneratorTest extends AbstractGeneratorTest
 {

@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 use UnexpectedValueException;
 
 /**
- * @coversDefaultClass PhpVersion
+ * @covers \DoclerLabs\ApiClientGenerator\Ast\PhpVersion
  */
 class PhpVersionTest extends TestCase
 {

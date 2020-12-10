@@ -6,7 +6,7 @@ use DoclerLabs\ApiClientGenerator\Generator\ServiceProviderGenerator;
 use DoclerLabs\ApiClientGenerator\Test\Functional\ConfigurationBuilder;
 
 /**
- * @coversDefaultClass ServiceProviderGenerator
+ * @covers \DoclerLabs\ApiClientGenerator\Generator\ServiceProviderGenerator
  */
 class ServiceProviderGeneratorTest extends AbstractGeneratorTest
 {

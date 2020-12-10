@@ -15,7 +15,6 @@ class ConfigurationBuilder
     private string $phpVersion;
     private string $composerJsonTemplateDir;
     private string $readmeMdTemplateDir;
-    private string $httpClient;
     private string $httpMessage;
     private string $container;
 
@@ -30,7 +29,6 @@ class ConfigurationBuilder
         $this->phpVersion              = Configuration::DEFAULT_PHP_VERSION;
         $this->composerJsonTemplateDir = Configuration::DEFAULT_TEMPLATE_DIRECTORY;
         $this->readmeMdTemplateDir     = Configuration::DEFAULT_TEMPLATE_DIRECTORY;
-        $this->httpClient              = Configuration::DEFAULT_HTTP_CLIENT;
         $this->httpMessage             = Configuration::DEFAULT_HTTP_MESSAGE;
         $this->container               = Configuration::DEFAULT_CONTAINER;
     }
@@ -103,13 +101,6 @@ class ConfigurationBuilder
         return $this;
     }
 
-    public function withHttpClient(string $httpClient): self
-    {
-        $this->httpClient = $httpClient;
-
-        return $this;
-    }
-
     public function withHttpMessage(string $httpMessage): self
     {
         $this->httpMessage = $httpMessage;
@@ -136,7 +127,6 @@ class ConfigurationBuilder
             $this->phpVersion,
             $this->composerJsonTemplateDir,
             $this->readmeMdTemplateDir,
-            $this->httpClient,
             $this->httpMessage,
             $this->container
         );

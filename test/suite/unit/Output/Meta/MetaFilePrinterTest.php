@@ -9,7 +9,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass MetaFilePrinter
+ * @covers \DoclerLabs\ApiClientGenerator\Output\MetaFilePrinter
  */
 class MetaFilePrinterTest extends TestCase
 {

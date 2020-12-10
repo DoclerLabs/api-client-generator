@@ -6,11 +6,11 @@ use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Request\CookieJar;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\RequestInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\BodySerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\QuerySerializer;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
-use GuzzleHttp\Cookie\CookieJar;
 use PhpParser\Node\Stmt\ClassMethod;
 use Psr\Http\Message\RequestInterface as PsrRequestInterface;
 
@@ -34,7 +34,7 @@ class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         $this
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, BodySerializer::class))
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, QuerySerializer::class))
-            ->addImport(CookieJar::class);
+            ->addImport(CopiedNamespace::getImport($this->baseNamespace, CookieJar::class));
 
         foreach ($this->messageImplementation->getInitMessageImports() as $import) {
             $this->addImport($import);

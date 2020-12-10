@@ -6,7 +6,7 @@ use DoclerLabs\ApiClientGenerator\Input\PhpNameValidator;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass PhpNameValidator
+ * @covers \DoclerLabs\ApiClientGenerator\Input\PhpNameValidator
  */
 class PhpNameValidatorTest extends TestCase
 {

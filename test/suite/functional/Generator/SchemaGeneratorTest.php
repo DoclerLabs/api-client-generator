@@ -7,7 +7,7 @@ use DoclerLabs\ApiClientGenerator\Generator\SchemaGenerator;
 use DoclerLabs\ApiClientGenerator\Test\Functional\ConfigurationBuilder;
 
 /**
- * @coversDefaultClass SchemaGenerator
+ * @covers \DoclerLabs\ApiClientGenerator\Generator\SchemaGenerator
  */
 class SchemaGeneratorTest extends AbstractGeneratorTest
 {

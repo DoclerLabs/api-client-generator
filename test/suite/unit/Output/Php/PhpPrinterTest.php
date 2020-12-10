@@ -11,7 +11,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass PhpFilePrinter
+ * @covers \DoclerLabs\ApiClientGenerator\Output\PhpFilePrinter
  */
 class PhpPrinterTest extends TestCase
 {

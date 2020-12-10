@@ -6,7 +6,7 @@ use DoclerLabs\ApiClientGenerator\Output\Php\PhpFile;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass PhpFile
+ * @covers \DoclerLabs\ApiClientGenerator\Output\Php\PhpFile
  */
 class PhpFileTest extends TestCase
 {

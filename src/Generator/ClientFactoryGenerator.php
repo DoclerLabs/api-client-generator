@@ -4,8 +4,6 @@ namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationStrategy;
-use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpClientImplementationStrategy;
-use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\ClientNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
@@ -15,20 +13,15 @@ use Psr\Http\Client\ClientInterface;
 
 class ClientFactoryGenerator extends GeneratorAbstract
 {
-    private HttpClientImplementationStrategy  $clientImplementation;
-    private HttpMessageImplementationStrategy $messageImplementation;
-    private ContainerImplementationStrategy   $containerImplementation;
+    private ContainerImplementationStrategy $containerImplementation;
 
     public function __construct(
         string $baseNamespace,
         CodeBuilder $builder,
-        HttpClientImplementationStrategy $clientImplementation,
-        HttpMessageImplementationStrategy $messageImplementation,
         ContainerImplementationStrategy $containerImplementation
     ) {
         parent::__construct($baseNamespace, $builder);
-        $this->clientImplementation    = $clientImplementation;
-        $this->messageImplementation   = $messageImplementation;
+
         $this->containerImplementation = $containerImplementation;
     }
 
@@ -40,30 +33,9 @@ class ClientFactoryGenerator extends GeneratorAbstract
             ->addImport(ClientInterface::class)
             ->addImport(ContainerInterface::class);
 
-        foreach ($this->clientImplementation->getInitBaseClientImports() as $import) {
-            $this->addImport($import);
-        }
-
         foreach ($this->containerImplementation->getContainerInitImports() as $import) {
             $this->addImport($import);
         }
-
-        $initBaseClientMethodParams   = [];
-        $initBaseClientMethodParams[] = $this->builder
-            ->param('baseUri')
-            ->setType('string')
-            ->getNode();
-        $initBaseClientMethodParams[] = $this->builder
-            ->param('options')
-            ->setType('array')
-            ->getNode();
-
-        $initBaseClientMethod = $this->clientImplementation
-            ->generateInitBaseClientMethod()
-            ->makePrivate()
-            ->addParams($initBaseClientMethodParams)
-            ->setReturnType('ClientInterface')
-            ->getNode();
 
         $initContainerMethod = $this->containerImplementation
             ->generateInitContainerMethod()
@@ -74,7 +46,6 @@ class ClientFactoryGenerator extends GeneratorAbstract
         $classBuilder = $this->builder
             ->class($className)
             ->addStmt($this->generateCreate($specification))
-            ->addStmt($initBaseClientMethod)
             ->addStmt($initContainerMethod);
 
         $this->registerFile($fileRegistry, $classBuilder);
@@ -84,13 +55,8 @@ class ClientFactoryGenerator extends GeneratorAbstract
     {
         $params   = [];
         $params[] = $this->builder
-            ->param('baseUri')
-            ->setType('string')
-            ->getNode();
-        $params[] = $this->builder
-            ->param('options')
-            ->setType('array')
-            ->setDefault($this->builder->val([]))
+            ->param('client')
+            ->setType('ClientInterface')
             ->getNode();
 
         $clientClassName = ClientNaming::getClassName($specification);
@@ -99,10 +65,7 @@ class ClientFactoryGenerator extends GeneratorAbstract
                 $clientClassName,
                 $this->builder->args(
                     [
-                        $this->builder->localMethodCall(
-                            'initBaseClient',
-                            [$this->builder->var('baseUri'), $this->builder->var('options')]
-                        ),
+                        $this->builder->var('client'),
                         $this->builder->localMethodCall('initContainer'),
                     ]
                 )
@@ -114,7 +77,7 @@ class ClientFactoryGenerator extends GeneratorAbstract
             ->addParams($params)
             ->addStmts($statements)
             ->setReturnType($clientClassName)
-            ->composeDocBlock($params, $clientClassName)
+            ->composeDocBlock($params, $clientClassName, [])
             ->getNode();
     }
 }

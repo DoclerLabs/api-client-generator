@@ -7,7 +7,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass FieldType
+ * @covers \DoclerLabs\ApiClientGenerator\Entity\FieldType
  */
 class FieldTypeTest extends TestCase
 {

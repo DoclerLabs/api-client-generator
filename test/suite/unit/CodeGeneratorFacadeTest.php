@@ -9,7 +9,7 @@ use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass CodeGeneratorFacade
+ * @covers \DoclerLabs\ApiClientGenerator\CodeGeneratorFacade
  */
 class CodeGeneratorFacadeTest extends TestCase
 {

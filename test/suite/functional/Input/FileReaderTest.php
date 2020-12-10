@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Pimple\Container;
 
 /**
- * @coversDefaultClass FileReader
+ * @covers \DoclerLabs\ApiClientGenerator\Input\FileReader
  */
 class FileReaderTest extends TestCase
 {

@@ -23,13 +23,17 @@ class MethodBuilder extends Method
     public function composeDocBlock(
         array $parameters = [],
         string $returnType = '',
-        array $exceptions = []
+        array $exceptions = [],
+        array $description = []
     ): self {
-        if (empty($parameters) && $returnType === '' && empty($exceptions)) {
+        if (empty($parameters) && $returnType === '' && empty($exceptions) && empty($description)) {
             return $this;
         }
 
         $docLines[] = '/**';
+        foreach ($description as $line) {
+            $docLines[] = sprintf(' *%s%s', $line ? ' ' : '', $line);
+        }
         foreach ($parameters as $parameter) {
             $dockBlock  = $parameter->getDocBlockType() !== '' ? $parameter->getDocBlockType() : $parameter->type;
             $docLines[] = sprintf(' * @param %s $%s', $dockBlock, $parameter->var->name);
