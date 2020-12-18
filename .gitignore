@@ -7,3 +7,4 @@ vendor
 phpstan.neon
 phpunit.xml
 build
+.php_cs.cache
