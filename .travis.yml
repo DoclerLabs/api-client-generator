@@ -8,6 +8,7 @@ install:
   - composer install --no-interaction --prefer-dist
 
 script:
+  - vendor/bin/php-cs-fixer fix . --dry-run --diff
   - vendor/bin/phpunit
   - vendor/bin/phpstan analyse
 
