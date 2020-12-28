@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.1.0] - 2020-12-28
+### Fixed
+ - Nullable mandatory DateTime properties in schema now work correctly without doing `new DateTimeImmutable(null)`
+
+### Changed
+ - Changed default php-cs-fixer configuration to remove superfluous docblocks, to improve generated code readability
+
+### Added
+ - Makefile with standard routines to easy development / contribution (run tests, analyse code, fix code style)
+
 ## [4.0.0] - 2020-11-26
 ### Changed
  - Guzzle 6/7 dependency removed altogether in favor of PSR-18 interfaces for Http Client
