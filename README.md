@@ -1,6 +1,6 @@
 # OpenAPI SDK generator - API client generator
 
-API client generator is a console application capable of auto-generating an API client based on OpenAPI specification according to PHP best practices, and your code style standards.
+API client generator is a console application capable of auto-generating a PSR18/PSR7 compliant API client based on OpenAPI v3 specification according to PHP best practices and your code style standards.
 
 [![Build Status](https://travis-ci.org/DoclerLabs/api-client-generator.svg?branch=master)](https://travis-ci.org/DoclerLabs/api-client-generator)
 [![Coverage Status](https://coveralls.io/repos/github/DoclerLabs/api-client-generator/badge.svg?branch=master)](https://coveralls.io/github/DoclerLabs/api-client-generator?branch=master)
@@ -9,7 +9,7 @@ API client generator is a console application capable of auto-generating an API 
 ## Usage
 ### With Docker
 ```
-docker run -it \
+$ docker run -it \
 -v {path-to-specification}/openapi.yaml:/openapi.yaml:ro \
 -v {path-to-client}/some-api-client:/client \
 -e NAMESPACE=Group\\SomeApiClient \
@@ -45,5 +45,7 @@ The following environment variables are available:
 ## Running tests
 
 ```bash
-docker run  -w /app -v $(pwd):/app  php:7.4-cli-alpine php /app/vendor/bin/phpunit -c /app/phpunit.xml.dist --colors=always
+$ make test
 ```
+
+(check `make` for all available routines).
