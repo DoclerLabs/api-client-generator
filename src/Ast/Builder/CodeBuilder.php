@@ -129,13 +129,23 @@ class CodeBuilder extends BuilderFactory
         return new Expression($this->assign($this->getArrayItem($arrayVar, $key), $value));
     }
 
-    public function localProperty(string $name, string $type, string $docType, Expr $default = null): Property
-    {
+    public function localProperty(
+        string $name,
+        string $type,
+        string $docType,
+        bool $nullable = false,
+        Expr $default = null
+    ): Property {
         $property = $this
             ->property($name)
             ->makePrivate();
 
         if ($this->phpVersion->isPropertyTypeHintSupported()) {
+            if ($nullable) {
+                $property->setDefault(null);
+                $type = '?' . $type;
+            }
+
             $property->setType($type);
         } else {
             $docComment = sprintf('/** @var %s */', $docType);

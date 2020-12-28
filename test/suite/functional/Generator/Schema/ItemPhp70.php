@@ -39,6 +39,9 @@ class Item implements SerializableInterface, JsonSerializable
     /** @var DateTimeInterface */
     private $mandatoryDate;
 
+    /** @var DateTimeInterface|null */
+    private $mandatoryNullableDate;
+
     /** @var float */
     private $mandatoryFloat;
 
@@ -82,30 +85,32 @@ class Item implements SerializableInterface, JsonSerializable
     private $optionalObject;
 
     /**
-     * @param int                 $mandatoryInteger
-     * @param string              $mandatoryString
-     * @param string              $mandatoryEnum
-     * @param DateTimeInterface   $mandatoryDate
-     * @param float               $mandatoryFloat
-     * @param bool                $mandatoryBoolean
-     * @param array               $mandatoryArray
-     * @param ItemMandatoryObject $mandatoryObject
+     * @param int                    $mandatoryInteger
+     * @param string                 $mandatoryString
+     * @param string                 $mandatoryEnum
+     * @param DateTimeInterface      $mandatoryDate
+     * @param DateTimeInterface|null $mandatoryNullableDate
+     * @param float                  $mandatoryFloat
+     * @param bool                   $mandatoryBoolean
+     * @param string[]               $mandatoryArray
+     * @param ItemMandatoryObject    $mandatoryObject
      *
      * @throws RequestValidationException
      */
-    public function __construct(int $mandatoryInteger, string $mandatoryString, string $mandatoryEnum, DateTimeInterface $mandatoryDate, float $mandatoryFloat, bool $mandatoryBoolean, array $mandatoryArray, ItemMandatoryObject $mandatoryObject)
+    public function __construct(int $mandatoryInteger, string $mandatoryString, string $mandatoryEnum, DateTimeInterface $mandatoryDate, $mandatoryNullableDate, float $mandatoryFloat, bool $mandatoryBoolean, array $mandatoryArray, ItemMandatoryObject $mandatoryObject)
     {
         $this->mandatoryInteger = $mandatoryInteger;
         $this->mandatoryString  = $mandatoryString;
         if (! \in_array($mandatoryEnum, self::ALLOWED_MANDATORY_ENUM_LIST, true)) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s` Allowed: %s', 'mandatoryEnum', $mandatoryEnum, Json::encode(self::ALLOWED_MANDATORY_ENUM_LIST)));
         }
-        $this->mandatoryEnum    = $mandatoryEnum;
-        $this->mandatoryDate    = $mandatoryDate;
-        $this->mandatoryFloat   = $mandatoryFloat;
-        $this->mandatoryBoolean = $mandatoryBoolean;
-        $this->mandatoryArray   = $mandatoryArray;
-        $this->mandatoryObject  = $mandatoryObject;
+        $this->mandatoryEnum         = $mandatoryEnum;
+        $this->mandatoryDate         = $mandatoryDate;
+        $this->mandatoryNullableDate = $mandatoryNullableDate;
+        $this->mandatoryFloat        = $mandatoryFloat;
+        $this->mandatoryBoolean      = $mandatoryBoolean;
+        $this->mandatoryArray        = $mandatoryArray;
+        $this->mandatoryObject       = $mandatoryObject;
     }
 
     /**
@@ -266,6 +271,14 @@ class Item implements SerializableInterface, JsonSerializable
     }
 
     /**
+     * @return DateTimeInterface|null
+     */
+    public function getMandatoryNullableDate()
+    {
+        return $this->mandatoryNullableDate;
+    }
+
+    /**
      * @return float
      */
     public function getMandatoryFloat(): float
@@ -382,17 +395,18 @@ class Item implements SerializableInterface, JsonSerializable
      */
     public function toArray(): array
     {
-        $fields                     = [];
-        $fields['mandatoryInteger'] = $this->mandatoryInteger;
-        $fields['mandatoryString']  = $this->mandatoryString;
-        $fields['mandatoryEnum']    = $this->mandatoryEnum;
-        $fields['mandatoryDate']    = $this->mandatoryDate->format(DATE_RFC3339);
-        $fields['mandatoryFloat']   = $this->mandatoryFloat;
-        $fields['mandatoryBoolean'] = $this->mandatoryBoolean;
-        $fields['mandatoryArray']   = $this->mandatoryArray;
-        $fields['mandatoryObject']  = $this->mandatoryObject->toArray();
-        $fields['nullableObject']   = $this->nullableObject !== null ? $this->nullableObject->toArray() : null;
-        $fields['nullableDate']     = $this->nullableDate   !== null ? $this->nullableDate->format(DATE_RFC3339) : null;
+        $fields                          = [];
+        $fields['mandatoryInteger']      = $this->mandatoryInteger;
+        $fields['mandatoryString']       = $this->mandatoryString;
+        $fields['mandatoryEnum']         = $this->mandatoryEnum;
+        $fields['mandatoryDate']         = $this->mandatoryDate->format(DATE_RFC3339);
+        $fields['mandatoryNullableDate'] = $this->mandatoryNullableDate !== null ? $this->mandatoryNullableDate->format(DATE_RFC3339) : null;
+        $fields['mandatoryFloat']        = $this->mandatoryFloat;
+        $fields['mandatoryBoolean']      = $this->mandatoryBoolean;
+        $fields['mandatoryArray']        = $this->mandatoryArray;
+        $fields['mandatoryObject']       = $this->mandatoryObject->toArray();
+        $fields['nullableObject']        = $this->nullableObject !== null ? $this->nullableObject->toArray() : null;
+        $fields['nullableDate']          = $this->nullableDate   !== null ? $this->nullableDate->format(DATE_RFC3339) : null;
         if ($this->optionalInteger !== null) {
             $fields['optionalInteger'] = $this->optionalInteger;
         }

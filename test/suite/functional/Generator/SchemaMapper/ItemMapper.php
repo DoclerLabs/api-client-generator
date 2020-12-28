@@ -34,11 +34,11 @@ class ItemMapper implements SchemaMapperInterface
      */
     public function toSchema(array $payload): Item
     {
-        $missingFields = \implode(', ', \array_diff(['mandatoryInteger', 'mandatoryString', 'mandatoryEnum', 'mandatoryDate', 'mandatoryFloat', 'mandatoryBoolean', 'mandatoryArray', 'mandatoryObject'], \array_keys($payload)));
+        $missingFields = \implode(', ', \array_diff(['mandatoryInteger', 'mandatoryString', 'mandatoryEnum', 'mandatoryDate', 'mandatoryNullableDate', 'mandatoryFloat', 'mandatoryBoolean', 'mandatoryArray', 'mandatoryObject'], \array_keys($payload)));
         if (! empty($missingFields)) {
             throw new UnexpectedResponseBodyException('Required attributes for `Item` missing in the response body: ' . $missingFields);
         }
-        $schema = new Item($payload['mandatoryInteger'], $payload['mandatoryString'], $payload['mandatoryEnum'], new DateTimeImmutable($payload['mandatoryDate']), $payload['mandatoryFloat'], $payload['mandatoryBoolean'], $payload['mandatoryArray'], $this->embeddedObjectMapper->toSchema($payload['mandatoryObject']));
+        $schema = new Item($payload['mandatoryInteger'], $payload['mandatoryString'], $payload['mandatoryEnum'], new DateTimeImmutable($payload['mandatoryDate']), $payload['mandatoryNullableDate'] !== null ? new DateTimeImmutable($payload['mandatoryNullableDate']) : null, $payload['mandatoryFloat'], $payload['mandatoryBoolean'], $payload['mandatoryArray'], $this->embeddedObjectMapper->toSchema($payload['mandatoryObject']));
         if (isset($payload['optionalInteger'])) {
             $schema->setOptionalInteger($payload['optionalInteger']);
         }
