@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [4.1.0] - 2020-12-28
 ### Fixed
  - Nullable mandatory DateTime properties in schema now work correctly without doing `new DateTimeImmutable(null)`
+ - Proper nullable typehint and default value in properties for 7.4 schemas to avoid non initialized errors
 
 ### Changed
  - Changed default php-cs-fixer configuration to remove superfluous docblocks, to improve generated code readability
