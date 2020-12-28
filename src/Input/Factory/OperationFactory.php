@@ -18,8 +18,7 @@ class OperationFactory
     public function __construct(
         RequestFactory $requestMapper,
         ResponseFactory $responseMapper
-    )
-    {
+    ) {
         $this->requestMapper = $requestMapper;
         $this->responseMapper = $responseMapper;
     }
@@ -29,8 +28,7 @@ class OperationFactory
         string $path,
         string $method,
         array $commonParameters
-    ): Operation
-    {
+    ): Operation {
         $operationId = $operation->operationId;
         if ($operationId === null) {
             $underscorePath = preg_replace(['/[{}]/', '@[/-]@'], ['', '_'], $path);
