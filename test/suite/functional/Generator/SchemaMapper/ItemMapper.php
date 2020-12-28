@@ -17,20 +17,13 @@ class ItemMapper implements SchemaMapperInterface
     /** @var EmbeddedObjectMapper */
     private $embeddedObjectMapper;
 
-    /**
-     * @param EmbeddedObjectMapper $embeddedObjectMapper
-     */
     public function __construct(EmbeddedObjectMapper $embeddedObjectMapper)
     {
         $this->embeddedObjectMapper = $embeddedObjectMapper;
     }
 
     /**
-     * @param array $payload
-     *
      * @throws UnexpectedResponseBodyException
-     *
-     * @return Item
      */
     public function toSchema(array $payload): Item
     {

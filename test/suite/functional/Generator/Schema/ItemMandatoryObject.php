@@ -18,11 +18,6 @@ class ItemMandatoryObject implements SerializableInterface, JsonSerializable
     /** @var ItemMandatoryObjectNullableObject|null */
     private $nullableObject;
 
-    /**
-     * @param string $string
-     *
-     * @return self
-     */
     public function setString(string $string): self
     {
         $this->string = $string;
@@ -30,11 +25,6 @@ class ItemMandatoryObject implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param ItemMandatoryObjectNullableObject $nullableObject
-     *
-     * @return self
-     */
     public function setNullableObject(ItemMandatoryObjectNullableObject $nullableObject): self
     {
         $this->nullableObject = $nullableObject;
@@ -42,25 +32,16 @@ class ItemMandatoryObject implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getString(): ?string
     {
         return $this->string;
     }
 
-    /**
-     * @return ItemMandatoryObjectNullableObject|null
-     */
     public function getNullableObject(): ?ItemMandatoryObjectNullableObject
     {
         return $this->nullableObject;
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         $fields = [];
@@ -74,9 +55,6 @@ class ItemMandatoryObject implements SerializableInterface, JsonSerializable
         return $fields;
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize(): array
     {
         return $this->toArray();

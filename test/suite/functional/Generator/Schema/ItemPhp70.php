@@ -85,15 +85,8 @@ class Item implements SerializableInterface, JsonSerializable
     private $optionalObject;
 
     /**
-     * @param int                    $mandatoryInteger
-     * @param string                 $mandatoryString
-     * @param string                 $mandatoryEnum
-     * @param DateTimeInterface      $mandatoryDate
      * @param DateTimeInterface|null $mandatoryNullableDate
-     * @param float                  $mandatoryFloat
-     * @param bool                   $mandatoryBoolean
      * @param string[]               $mandatoryArray
-     * @param ItemMandatoryObject    $mandatoryObject
      *
      * @throws RequestValidationException
      */
@@ -115,8 +108,6 @@ class Item implements SerializableInterface, JsonSerializable
 
     /**
      * @param ItemNullableObject|null $nullableObject
-     *
-     * @return self
      */
     public function setNullableObject($nullableObject): self
     {
@@ -127,8 +118,6 @@ class Item implements SerializableInterface, JsonSerializable
 
     /**
      * @param DateTimeInterface|null $nullableDate
-     *
-     * @return self
      */
     public function setNullableDate($nullableDate): self
     {
@@ -137,11 +126,6 @@ class Item implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param int $optionalInteger
-     *
-     * @return self
-     */
     public function setOptionalInteger(int $optionalInteger): self
     {
         $this->optionalInteger = $optionalInteger;
@@ -149,11 +133,6 @@ class Item implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param string $optionalString
-     *
-     * @return self
-     */
     public function setOptionalString(string $optionalString): self
     {
         $this->optionalString = $optionalString;
@@ -162,11 +141,7 @@ class Item implements SerializableInterface, JsonSerializable
     }
 
     /**
-     * @param string $optionalEnum
-     *
      * @throws RequestValidationException
-     *
-     * @return self
      */
     public function setOptionalEnum(string $optionalEnum): self
     {
@@ -178,11 +153,6 @@ class Item implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param DateTimeInterface $optionalDate
-     *
-     * @return self
-     */
     public function setOptionalDate(DateTimeInterface $optionalDate): self
     {
         $this->optionalDate = $optionalDate;
@@ -190,11 +160,6 @@ class Item implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param float $optionalFloat
-     *
-     * @return self
-     */
     public function setOptionalFloat(float $optionalFloat): self
     {
         $this->optionalFloat = $optionalFloat;
@@ -202,11 +167,6 @@ class Item implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param bool $optionalBoolean
-     *
-     * @return self
-     */
     public function setOptionalBoolean(bool $optionalBoolean): self
     {
         $this->optionalBoolean = $optionalBoolean;
@@ -216,8 +176,6 @@ class Item implements SerializableInterface, JsonSerializable
 
     /**
      * @param string[] $optionalArray
-     *
-     * @return self
      */
     public function setOptionalArray(array $optionalArray): self
     {
@@ -226,11 +184,6 @@ class Item implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param EmbeddedObject $optionalObject
-     *
-     * @return self
-     */
     public function setOptionalObject(EmbeddedObject $optionalObject): self
     {
         $this->optionalObject = $optionalObject;
@@ -238,33 +191,21 @@ class Item implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getMandatoryInteger(): int
     {
         return $this->mandatoryInteger;
     }
 
-    /**
-     * @return string
-     */
     public function getMandatoryString(): string
     {
         return $this->mandatoryString;
     }
 
-    /**
-     * @return string
-     */
     public function getMandatoryEnum(): string
     {
         return $this->mandatoryEnum;
     }
 
-    /**
-     * @return DateTimeInterface
-     */
     public function getMandatoryDate(): DateTimeInterface
     {
         return $this->mandatoryDate;
@@ -278,17 +219,11 @@ class Item implements SerializableInterface, JsonSerializable
         return $this->mandatoryNullableDate;
     }
 
-    /**
-     * @return float
-     */
     public function getMandatoryFloat(): float
     {
         return $this->mandatoryFloat;
     }
 
-    /**
-     * @return bool
-     */
     public function getMandatoryBoolean(): bool
     {
         return $this->mandatoryBoolean;
@@ -302,9 +237,6 @@ class Item implements SerializableInterface, JsonSerializable
         return $this->mandatoryArray;
     }
 
-    /**
-     * @return ItemMandatoryObject
-     */
     public function getMandatoryObject(): ItemMandatoryObject
     {
         return $this->mandatoryObject;
@@ -390,9 +322,6 @@ class Item implements SerializableInterface, JsonSerializable
         return $this->optionalObject;
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         $fields                          = [];
@@ -435,9 +364,6 @@ class Item implements SerializableInterface, JsonSerializable
         return $fields;
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize(): array
     {
         return $this->toArray();

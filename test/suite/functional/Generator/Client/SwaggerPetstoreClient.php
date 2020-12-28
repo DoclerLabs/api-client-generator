@@ -32,75 +32,42 @@ class SwaggerPetstoreClient
     /** @var ContainerInterface */
     private $container;
 
-    /**
-     * @param ClientInterface    $client
-     * @param ContainerInterface $container
-     */
     public function __construct(ClientInterface $client, ContainerInterface $container)
     {
         $this->client    = $client;
         $this->container = $container;
     }
 
-    /**
-     * @param RequestInterface $request
-     *
-     * @return ResponseInterface
-     */
     public function sendRequest(RequestInterface $request): ResponseInterface
     {
         return $this->client->sendRequest($this->container->get(RequestMapperInterface::class)->map($request));
     }
 
-    /**
-     * @param FindPetsRequest $request
-     *
-     * @return PetCollection
-     */
     public function findPets(FindPetsRequest $request): PetCollection
     {
         return $this->container->get(PetCollectionMapper::class)->toSchema($this->handleResponse($this->sendRequest($request)));
     }
 
-    /**
-     * @param AddPetRequest $request
-     *
-     * @return Pet
-     */
     public function addPet(AddPetRequest $request): Pet
     {
         return $this->container->get(PetMapper::class)->toSchema($this->handleResponse($this->sendRequest($request)));
     }
 
-    /**
-     * @param CountPetsRequest $request
-     */
     public function countPets(CountPetsRequest $request): void
     {
         $this->handleResponse($this->sendRequest($request));
     }
 
-    /**
-     * @param FindPetByIdRequest $request
-     *
-     * @return Pet
-     */
     public function findPetById(FindPetByIdRequest $request): Pet
     {
         return $this->container->get(PetMapper::class)->toSchema($this->handleResponse($this->sendRequest($request)));
     }
 
-    /**
-     * @param DeletePetsIdPetFoodFoodIdRequest $request
-     */
     public function deletePetsIdPetFoodFoodId(DeletePetsIdPetFoodFoodIdRequest $request): void
     {
         $this->handleResponse($this->sendRequest($request));
     }
 
-    /**
-     * @param ResponseInterface $response
-     */
     protected function handleResponse(ResponseInterface $response)
     {
         return $this->container->get(ResponseHandler::class)->handle($response);
