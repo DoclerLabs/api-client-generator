@@ -17,7 +17,7 @@
     "php": ">=7.4",
     "ext-dom": "*",
     "ext-json": "*",
-    "ext-simplexml": "*",
+    "ext-xml": "*",
     "cebe/php-openapi": "^1.4",
     "docler-labs/api-client-exception": "^1.0.1",
     "friendsofphp/php-cs-fixer": "^2.16",
@@ -37,6 +37,7 @@
     "php-coveralls/php-coveralls": "^2.2",
     "phpstan/phpstan": "^0.12.32",
     "phpunit/phpunit": "^9.2",
+    "roave/security-advisories": "dev-latest",
     "symfony/filesystem": "^5.1"
   },
   "autoload": {

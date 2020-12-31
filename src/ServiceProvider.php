@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator;
 
@@ -61,7 +62,8 @@ class ServiceProvider implements ServiceProviderInterface
                     [
                         $container[Configuration::class]->getComposerJsonTemplateDir(),
                         $container[Configuration::class]->getReadmeMdTemplateDir(),
-                    ], '/'
+                    ],
+                    '/'
                 )
             );
 
@@ -228,6 +230,13 @@ class ServiceProvider implements ServiceProviderInterface
         $pimple[ReadmeMdTemplate::class] = static fn(Container $container) => new ReadmeMdTemplate(
             $container[Environment::class],
             $container[Configuration::class]
+        );
+
+        $pimple[WarningFormatter::class] = static fn() => new WarningFormatter(
+            new SymfonyStyle(
+                new ArgvInput(),
+                new ConsoleOutput()
+            )
         );
 
         $pimple[Emulative::class] = static fn() => new Emulative(

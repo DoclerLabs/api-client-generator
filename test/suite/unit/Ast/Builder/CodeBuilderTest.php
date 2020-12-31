@@ -18,7 +18,7 @@ class CodeBuilderTest extends TestCase
 {
     private CodeBuilder $sut;
     /** @var PhpVersion|MockObject */
-    private          $phpVersionResolver;
+    private $phpVersionResolver;
     private Standard $printer;
 
     protected function setUp(): void

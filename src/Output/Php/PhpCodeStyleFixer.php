@@ -28,7 +28,8 @@ class PhpCodeStyleFixer
                     [
                         'path'     => [$file],
                         '--config' => $this->codeStyleConfig,
-                    ], $this->command->getDefinition()
+                    ],
+                    $this->command->getDefinition()
                 ),
                 $output
             );
