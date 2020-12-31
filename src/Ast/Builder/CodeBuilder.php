@@ -220,6 +220,11 @@ class CodeBuilder extends BuilderFactory
         return new Ternary($condition, $if, $else);
     }
 
+    public function nullCoalesce(Expr $left, Expr $right): Coalesce
+    {
+        return new Coalesce($left, $right);
+    }
+
     public function coalesce(Expr $left, Expr $right): Coalesce
     {
         return new Coalesce($left, $right);

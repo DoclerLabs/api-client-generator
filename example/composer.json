@@ -1,0 +1,20 @@
+{
+  "name": "example/petstore3",
+  "repositories": [
+    {
+      "type": "path",
+      "url": "./gen"
+    }
+  ],
+  "require": {
+    "php": ">=7.4",
+    "ext-json": "*",
+    "openapi/pet-store-client": "@dev",
+    "guzzlehttp/guzzle": "^7.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "OpenApi\\PetStoreClient\\": "gen/src"
+    }
+  }
+}

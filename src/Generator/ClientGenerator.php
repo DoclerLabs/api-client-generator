@@ -11,8 +11,8 @@ use DoclerLabs\ApiClientGenerator\Naming\SchemaMapperNaming;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\Mapper\RequestMapperInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\RequestInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Response\ResponseHandler;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\ContentTypeSerializerInterface;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
-use phpDocumentor\Reflection\Types\This;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
 use Psr\Container\ContainerInterface;
@@ -107,38 +107,49 @@ class ClientGenerator extends GeneratorAbstract
                 ->getNode();
         }
 
-        $mapperClassName = SchemaMapperNaming::getClassName($responseBody);
-        $this->addImport(
-            sprintf(
-                '%s%s\\%s',
-                $this->baseNamespace,
-                SchemaMapperGenerator::NAMESPACE_SUBPATH,
-                $mapperClassName
-            )
-        );
+        $responseVariable = $this->builder->var('response');
+        $stmts[] = $this->builder->assign($responseVariable, $handleResponseStmt);
+        if ($responseBody->isComposite()) {
+            $mapperClassName = SchemaMapperNaming::getClassName($responseBody);
+            $this->addImport(
+                sprintf(
+                    '%s%s\\%s',
+                    $this->baseNamespace,
+                    SchemaMapperGenerator::NAMESPACE_SUBPATH,
+                    $mapperClassName
+                )
+            );
 
-        $getMethod = $this->builder->methodCall(
-            $this->builder->localPropertyFetch('container'),
-            'get',
-            [$this->builder->classConstFetch($mapperClassName, 'class')]
-        );
+            $getMethod = $this->builder->methodCall(
+                $this->builder->localPropertyFetch('container'),
+                'get',
+                [$this->builder->classConstFetch($mapperClassName, 'class')]
+            );
 
-        $mapMethod = $this->builder->methodCall($getMethod, 'toSchema', [$handleResponseStmt]);
-        $returnStmt = $this->builder->return($mapMethod);
+            $mapMethod  = $this->builder->methodCall($getMethod, 'toSchema', [$responseVariable]);
+            $stmts[] = $this->builder->return($mapMethod);
 
-        $this->addImport(
-            sprintf(
-                '%s%s\\%s',
-                $this->baseNamespace,
-                SchemaGenerator::NAMESPACE_SUBPATH,
-                $responseBody->getPhpClassName()
-            )
-        );
+            $this->addImport(
+                sprintf(
+                    '%s%s\\%s',
+                    $this->baseNamespace,
+                    SchemaGenerator::NAMESPACE_SUBPATH,
+                    $responseBody->getPhpClassName()
+                )
+            );
+        } else {
+            $this->addImport(CopiedNamespace::getImport($this->baseNamespace, ContentTypeSerializerInterface::class));
+            $literalValue = $this->builder->getArrayItem(
+                $responseVariable,
+                $this->builder->classConstFetch('ContentTypeSerializerInterface', 'LITERAL_VALUE_KEY')
+            );
+            $stmts[] = $this->builder->return($literalValue);
+        }
 
         return $this->builder->method($operation->getName())
             ->makePublic()
             ->addParam($methodParam)
-            ->addStmt($returnStmt)
+            ->addStmts($stmts)
             ->setReturnType($responseBody->getPhpTypeHint(), $responseBody->isNullable())
             ->composeDocBlock([$methodParam], $responseBody->getPhpDocType(false))
             ->getNode();

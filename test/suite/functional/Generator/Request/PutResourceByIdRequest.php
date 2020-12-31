@@ -93,6 +93,9 @@ class PutResourceByIdRequest implements RequestInterface
     /** @var PutResourceByIdRequestBody */
     private $putResourceByIdRequestBody;
 
+    /** @var string */
+    private $contentType = 'application/json';
+
     /**
      * @param int                        $resourceId
      * @param int                        $mandatoryIntegerParameter
@@ -122,6 +125,14 @@ class PutResourceByIdRequest implements RequestInterface
         $this->mandatoryObjectParameter   = $mandatoryObjectParameter;
         $this->xRequestId                 = $xRequestId;
         $this->putResourceByIdRequestBody = $putResourceByIdRequestBody;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContentType(): string
+    {
+        return $this->contentType;
     }
 
     /**
@@ -240,14 +251,6 @@ class PutResourceByIdRequest implements RequestInterface
     /**
      * @return string
      */
-    public function getContentType(): string
-    {
-        return 'application/json';
-    }
-
-    /**
-     * @return string
-     */
     public function getMethod(): string
     {
         return 'PUT';
@@ -298,7 +301,7 @@ class PutResourceByIdRequest implements RequestInterface
      */
     public function getHeaders(): array
     {
-        return \array_merge(['Content-Type' => 'application/json'], \array_map(static function ($value) {
+        return \array_merge(['Content-Type' => $this->contentType], \array_map(static function ($value) {
             return $value instanceof SerializableInterface ? $value->toArray() : $value;
         }, \array_filter(['X-Request-ID' => $this->xRequestId], static function ($value) {
             return null !== $value;

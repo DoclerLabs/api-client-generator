@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.1.0] - 2020-12-14
+### Added
+- Acceptance test to generate example from canonical pet store OpenApi specification
+- Content-type argument if multiple specified for request
+### Fixed
+- Literal type JSON response body
+### Changed
+- Multiple content-type per request and response with the same schema allowed
+- Changed non-existing successful response error to a warning
+
 ## [4.0.0] - 2020-11-26
 ### Changed
  - Guzzle 6/7 dependency removed altogether in favor of PSR-18 interfaces for Http Client

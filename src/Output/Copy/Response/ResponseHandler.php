@@ -3,6 +3,7 @@
 namespace DoclerLabs\ApiClientGenerator\Output\Copy\Response;
 
 use DoclerLabs\ApiClientException\Factory\ResponseExceptionFactory;
+use DoclerLabs\ApiClientException\UnexpectedResponseException;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\BodySerializer;
 use Psr\Http\Message\ResponseInterface;
 
@@ -21,9 +22,7 @@ class ResponseHandler
     }
 
     /**
-     * @param ResponseInterface $response
-     *
-     * @return array
+     * @throws UnexpectedResponseException
      */
     public function handle(ResponseInterface $response): array
     {
@@ -31,7 +30,7 @@ class ResponseHandler
         if ($statusCode >= 200 && $statusCode < 300) {
             return $this->bodySerializer->unserializeResponse($response);
         }
-
+var_dump($response);
         throw $this->responseExceptionFactory->create(
             sprintf('Server replied with a non-200 status code: %s', $response->getStatusCode()),
             $response

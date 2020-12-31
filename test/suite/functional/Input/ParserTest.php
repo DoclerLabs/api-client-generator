@@ -89,42 +89,6 @@ class ParserTest extends TestCase
                     'paths'   => [],
                 ],
             ],
-            'No responses'                                    => [
-                [
-                    'openapi' => '3.0.0',
-                    'info'    => [
-                        'title'   => 'Sample API',
-                        'version' => '1.0.0',
-                    ],
-                    'paths'   => [
-                        '/users' => [
-                            'get' => [
-                                'operationId' => 'getUsers',
-                                'responses'   => [],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-            'No successful responses'                         => [
-                [
-                    'openapi' => '3.0.0',
-                    'info'    => [
-                        'title'   => 'Sample API',
-                        'version' => '1.0.0',
-                    ],
-                    'paths'   => [
-                        '/users' => [
-                            'get' => [
-                                'operationId' => 'getUsers',
-                                'responses'   => [
-                                    '404' => [],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
             'Swagger specification version is lower than 3.0' => [
                 [
                     'swagger'  => '2.0',

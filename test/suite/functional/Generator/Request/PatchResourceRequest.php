@@ -15,6 +15,9 @@ class PatchResourceRequest implements RequestInterface
     /** @var PatchResourceRequestBody */
     private $patchResourceRequestBody;
 
+    /** @var string */
+    private $contentType = 'application/json';
+
     /**
      * @param PatchResourceRequestBody $patchResourceRequestBody
      */
@@ -28,7 +31,7 @@ class PatchResourceRequest implements RequestInterface
      */
     public function getContentType(): string
     {
-        return 'application/json';
+        return $this->contentType;
     }
 
     /**
@@ -76,7 +79,7 @@ class PatchResourceRequest implements RequestInterface
      */
     public function getHeaders(): array
     {
-        return ['Content-Type' => 'application/json'];
+        return ['Content-Type' => $this->contentType];
     }
 
     /**

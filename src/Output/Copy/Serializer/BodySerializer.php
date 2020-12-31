@@ -16,9 +16,9 @@ class BodySerializer
     /** @var ContentTypeSerializerInterface[] */
     private $contentTypeSerializers = [];
 
-    public function add(string $contentType, ContentTypeSerializerInterface $contentTypeSerializer): self
+    public function add(ContentTypeSerializerInterface $contentTypeSerializer): self
     {
-        $this->contentTypeSerializers[$contentType] = $contentTypeSerializer;
+        $this->contentTypeSerializers[$contentTypeSerializer->getMimeType()] = $contentTypeSerializer;
 
         return $this;
     }

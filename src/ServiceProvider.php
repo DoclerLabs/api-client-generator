@@ -230,13 +230,6 @@ class ServiceProvider implements ServiceProviderInterface
             $container[Configuration::class]
         );
 
-        $pimple[WarningFormatter::class] = static fn() => new WarningFormatter(
-            new SymfonyStyle(
-                new ArgvInput(),
-                new ConsoleOutput()
-            )
-        );
-
         $pimple[Emulative::class] = static fn() => new Emulative(
             [
                 'usedAttributes' => [

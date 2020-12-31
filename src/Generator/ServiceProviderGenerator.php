@@ -15,6 +15,7 @@ use DoclerLabs\ApiClientGenerator\Output\Copy\Response\ResponseHandler;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\BodySerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\FormUrlencodedContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\JsonContentTypeSerializer;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\XmlContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\QuerySerializer;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use PhpParser\Node\Expr\Closure;
@@ -48,6 +49,7 @@ class ServiceProviderGenerator extends GeneratorAbstract
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, QuerySerializer::class))
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, JsonContentTypeSerializer::class))
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, FormUrlencodedContentTypeSerializer::class))
+            ->addImport(CopiedNamespace::getImport($this->baseNamespace, XmlContentTypeSerializer::class))
             ->addImport(
                 sprintf(
                     '%s%s\\%s',
@@ -180,25 +182,31 @@ class ServiceProviderGenerator extends GeneratorAbstract
 
     private function generateBodySerializerClosure(): Closure
     {
-        $registerBodySerializerClosureSubCall = $this->builder->methodCall(
+        $jsonSerializerInit = $this->builder->methodCall(
             $this->builder->new('BodySerializer'),
             'add',
             [
-                $this->builder->val('application/json'),
                 $this->builder->new('JsonContentTypeSerializer'),
             ]
         );
 
-        $registerBodySerializerClosure = $this->builder->methodCall(
-            $registerBodySerializerClosureSubCall,
+        $formEncodedSerializerInit = $this->builder->methodCall(
+            $jsonSerializerInit,
             'add',
             [
-                $this->builder->val('application/x-www-form-urlencoded'),
                 $this->builder->new('FormUrlencodedContentTypeSerializer'),
             ]
         );
 
-        $registerBodySerializerClosureStatements[] = $this->builder->return($registerBodySerializerClosure);
+        $xmlSerializerInit = $this->builder->methodCall(
+            $formEncodedSerializerInit,
+            'add',
+            [
+                $this->builder->new('XmlContentTypeSerializer'),
+            ]
+        );
+
+        $registerBodySerializerClosureStatements[] = $this->builder->return($xmlSerializerInit);
 
         return $this->builder->closure(
             $registerBodySerializerClosureStatements,
