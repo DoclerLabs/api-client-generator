@@ -1,6 +1,6 @@
 # OpenAPI SDK generator - API client generator
 
-API client generator is a console application capable of auto-generating a PSR18/PSR7 compliant API client based on OpenAPI v3 specification according to PHP best practices and your code style standards.
+API client generator is a console application capable of auto-generating a [PSR18](https://www.php-fig.org/psr/psr-18/)/[PSR7](https://www.php-fig.org/psr/psr-7/) compliant API client based on [OpenAPI v3](https://swagger.io/specification/) specification according to PHP best practices and your code style standards.
 
 [![Build Status](https://travis-ci.org/DoclerLabs/api-client-generator.svg?branch=master)](https://travis-ci.org/DoclerLabs/api-client-generator)
 [![Coverage Status](https://coveralls.io/repos/github/DoclerLabs/api-client-generator/badge.svg?branch=master)](https://coveralls.io/github/DoclerLabs/api-client-generator?branch=master)
@@ -45,6 +45,7 @@ The following environment variables are available:
 ## Running tests
 
 ```bash
+$ composer install
 $ make test
 ```
 

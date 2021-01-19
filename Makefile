@@ -8,10 +8,10 @@ help:
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[32m%-10s\033[0m %s\n", $$1, $$2}'
 
 test: ## run test suites
-	$(DOCKER_RUN) /app/vendor/bin/phpunit -c /app/phpunit.xml.dist --colors=always
+	$(DOCKER_RUN) vendor/bin/phpunit -c phpunit.xml.dist --colors=always
 
 cs: ## fix code style
-	$(DOCKER_RUN) /app/vendor/bin/php-cs-fixer fix .
+	$(DOCKER_RUN) vendor/bin/php-cs-fixer fix .
 
 stan: ## statically analyse code
-	$(DOCKER_RUN) /app/vendor/bin/phpstan analyse src
+	$(DOCKER_RUN) vendor/bin/phpstan analyse src
