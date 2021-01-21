@@ -81,7 +81,8 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
         return $this->builder->localProperty(
             $field->getPhpVariableName(),
             $field->getPhpTypeHint(),
-            $field->getPhpDocType()
+            $field->getPhpDocType(),
+            $field->isOptional() || $field->isNullable()
         );
     }
 

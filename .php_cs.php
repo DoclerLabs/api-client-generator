@@ -65,6 +65,9 @@ $rules = [
     'binary_operator_spaces'                    => [
         'default' => 'align_single_space_minimal',
     ],
+    'no_superfluous_phpdoc_tags'                => true,
+    'no_empty_phpdoc'                           => true,
+    'no_extra_blank_lines'                      => true,
 ];
 
 return Config::create()

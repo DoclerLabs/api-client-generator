@@ -11,8 +11,6 @@ class Json
      * @param mixed $data    Any data to encode.
      * @param int   $options Optional settings to pass to json_encode (@see json_encode).
      *
-     * @return string
-     *
      * @throws JsonException
      */
     public static function encode($data, int $options = 0): string
@@ -56,8 +54,6 @@ class Json
 
     /**
      * @param int $errorCode Error code to check for (@uses JSON_ERROR_*).
-     *
-     * @return string
      */
     public static function getErrorMessage(int $errorCode): string
     {

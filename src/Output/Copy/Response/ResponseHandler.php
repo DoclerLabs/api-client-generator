@@ -20,11 +20,6 @@ class ResponseHandler
         $this->responseExceptionFactory = $exceptionFactory;
     }
 
-    /**
-     * @param ResponseInterface $response
-     *
-     * @return array
-     */
     public function handle(ResponseInterface $response): array
     {
         $statusCode = $response->getStatusCode();

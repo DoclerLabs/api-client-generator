@@ -23,9 +23,6 @@ use Test\Serializer\QuerySerializer;
 
 class ServiceProvider
 {
-    /**
-     * @param Container $container
-     */
     public function register(Container $container): void
     {
         $container[BodySerializer::class] = static function (): BodySerializer {

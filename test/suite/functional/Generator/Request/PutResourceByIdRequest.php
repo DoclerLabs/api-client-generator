@@ -93,19 +93,6 @@ class PutResourceByIdRequest implements RequestInterface
     /** @var PutResourceByIdRequestBody */
     private $putResourceByIdRequestBody;
 
-    /**
-     * @param int                        $resourceId
-     * @param int                        $mandatoryIntegerParameter
-     * @param string                     $mandatoryStringParameter
-     * @param string                     $mandatoryEnumParameter
-     * @param DateTimeInterface          $mandatoryDateParameter
-     * @param float                      $mandatoryFloatParameter
-     * @param bool                       $mandatoryBooleanParameter
-     * @param array                      $mandatoryArrayParameter
-     * @param EmbeddedObject             $mandatoryObjectParameter
-     * @param string                     $xRequestId
-     * @param PutResourceByIdRequestBody $putResourceByIdRequestBody
-     */
     public function __construct(int $resourceId, int $mandatoryIntegerParameter, string $mandatoryStringParameter, string $mandatoryEnumParameter, DateTimeInterface $mandatoryDateParameter, float $mandatoryFloatParameter, bool $mandatoryBooleanParameter, array $mandatoryArrayParameter, EmbeddedObject $mandatoryObjectParameter, string $xRequestId, PutResourceByIdRequestBody $putResourceByIdRequestBody)
     {
         $this->resourceId                = $resourceId;
@@ -124,11 +111,6 @@ class PutResourceByIdRequest implements RequestInterface
         $this->putResourceByIdRequestBody = $putResourceByIdRequestBody;
     }
 
-    /**
-     * @param int $integerParameter
-     *
-     * @return self
-     */
     public function setIntegerParameter(int $integerParameter): self
     {
         $this->integerParameter = $integerParameter;
@@ -136,11 +118,6 @@ class PutResourceByIdRequest implements RequestInterface
         return $this;
     }
 
-    /**
-     * @param string $stringParameter
-     *
-     * @return self
-     */
     public function setStringParameter(string $stringParameter): self
     {
         $this->stringParameter = $stringParameter;
@@ -149,11 +126,7 @@ class PutResourceByIdRequest implements RequestInterface
     }
 
     /**
-     * @param string $enumParameter
-     *
      * @throws RequestValidationException
-     *
-     * @return self
      */
     public function setEnumParameter(string $enumParameter): self
     {
@@ -165,11 +138,6 @@ class PutResourceByIdRequest implements RequestInterface
         return $this;
     }
 
-    /**
-     * @param DateTimeInterface $dateParameter
-     *
-     * @return self
-     */
     public function setDateParameter(DateTimeInterface $dateParameter): self
     {
         $this->dateParameter = $dateParameter;
@@ -177,11 +145,6 @@ class PutResourceByIdRequest implements RequestInterface
         return $this;
     }
 
-    /**
-     * @param float $floatParameter
-     *
-     * @return self
-     */
     public function setFloatParameter(float $floatParameter): self
     {
         $this->floatParameter = $floatParameter;
@@ -189,11 +152,6 @@ class PutResourceByIdRequest implements RequestInterface
         return $this;
     }
 
-    /**
-     * @param bool $booleanParameter
-     *
-     * @return self
-     */
     public function setBooleanParameter(bool $booleanParameter): self
     {
         $this->booleanParameter = $booleanParameter;
@@ -203,8 +161,6 @@ class PutResourceByIdRequest implements RequestInterface
 
     /**
      * @param int[] $arrayParameter
-     *
-     * @return self
      */
     public function setArrayParameter(array $arrayParameter): self
     {
@@ -213,11 +169,6 @@ class PutResourceByIdRequest implements RequestInterface
         return $this;
     }
 
-    /**
-     * @param EmbeddedObject $objectParameter
-     *
-     * @return self
-     */
     public function setObjectParameter(EmbeddedObject $objectParameter): self
     {
         $this->objectParameter = $objectParameter;
@@ -225,11 +176,6 @@ class PutResourceByIdRequest implements RequestInterface
         return $this;
     }
 
-    /**
-     * @param string $csrfToken
-     *
-     * @return self
-     */
     public function setCsrfToken(string $csrfToken): self
     {
         $this->csrfToken = $csrfToken;
@@ -237,33 +183,21 @@ class PutResourceByIdRequest implements RequestInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getContentType(): string
     {
         return 'application/json';
     }
 
-    /**
-     * @return string
-     */
     public function getMethod(): string
     {
         return 'PUT';
     }
 
-    /**
-     * @return string
-     */
     public function getRoute(): string
     {
         return \strtr('v1/resources/{resourceId}', ['{resourceId}' => $this->resourceId]);
     }
 
-    /**
-     * @return array
-     */
     public function getQueryParameters(): array
     {
         return \array_map(static function ($value) {
@@ -273,17 +207,11 @@ class PutResourceByIdRequest implements RequestInterface
         }));
     }
 
-    /**
-     * @return array
-     */
     public function getRawQueryParameters(): array
     {
         return ['integerParameter' => $this->integerParameter, 'stringParameter' => $this->stringParameter, 'enumParameter' => $this->enumParameter, 'dateParameter' => $this->dateParameter, 'floatParameter' => $this->floatParameter, 'booleanParameter' => $this->booleanParameter, 'arrayParameter' => $this->arrayParameter, 'objectParameter' => $this->objectParameter, 'mandatoryIntegerParameter' => $this->mandatoryIntegerParameter, 'mandatoryStringParameter' => $this->mandatoryStringParameter, 'mandatoryEnumParameter' => $this->mandatoryEnumParameter, 'mandatoryDateParameter' => $this->mandatoryDateParameter, 'mandatoryFloatParameter' => $this->mandatoryFloatParameter, 'mandatoryBooleanParameter' => $this->mandatoryBooleanParameter, 'mandatoryArrayParameter' => $this->mandatoryArrayParameter, 'mandatoryObjectParameter' => $this->mandatoryObjectParameter];
     }
 
-    /**
-     * @return array
-     */
     public function getCookies(): array
     {
         return \array_map(static function ($value) {
@@ -293,9 +221,6 @@ class PutResourceByIdRequest implements RequestInterface
         }));
     }
 
-    /**
-     * @return array
-     */
     public function getHeaders(): array
     {
         return \array_merge(['Content-Type' => 'application/json'], \array_map(static function ($value) {

@@ -23,21 +23,12 @@ class NyholmRequestMapper implements RequestMapperInterface
     /** @var QuerySerializer */
     private $querySerializer;
 
-    /**
-     * @param BodySerializer  $bodySerializer
-     * @param QuerySerializer $querySerializer
-     */
     public function __construct(BodySerializer $bodySerializer, QuerySerializer $querySerializer)
     {
         $this->bodySerializer  = $bodySerializer;
         $this->querySerializer = $querySerializer;
     }
 
-    /**
-     * @param RequestInterface $request
-     *
-     * @return PsrRequestInterface
-     */
     public function map(RequestInterface $request): PsrRequestInterface
     {
         $body        = $this->bodySerializer->serializeRequest($request);
