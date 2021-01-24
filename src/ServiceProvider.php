@@ -72,7 +72,7 @@ class ServiceProvider implements ServiceProviderInterface
             return $twig;
         };
 
-        $pimple[Configuration::class] = static fn() => new Configuration(
+        $pimple[Configuration::class] = static fn () => new Configuration(
             getenv('OPENAPI') ?: '',
             getenv('NAMESPACE') ?: '',
             getenv('OUTPUT_DIR') ?: '',
@@ -86,7 +86,7 @@ class ServiceProvider implements ServiceProviderInterface
             getenv('CONTAINER') ?: Configuration::DEFAULT_CONTAINER,
         );
 
-        $pimple[GenerateCommand::class] = static fn(Container $container) => new GenerateCommand(
+        $pimple[GenerateCommand::class] = static fn (Container $container) => new GenerateCommand(
             $container[Configuration::class],
             $container[FileReader::class],
             $container[OpenApiParser::class],
@@ -99,11 +99,11 @@ class ServiceProvider implements ServiceProviderInterface
             $container[Filesystem::class]
         );
 
-        $pimple[Finder::class] = static fn() => new Finder();
+        $pimple[Finder::class] = static fn () => new Finder();
 
-        $pimple[Filesystem::class] = static fn() => new Filesystem();
+        $pimple[Filesystem::class] = static fn () => new Filesystem();
 
-        $pimple[CodeGeneratorFacade::class] = static fn(Container $container) => (new CodeGeneratorFacade())
+        $pimple[CodeGeneratorFacade::class] = static fn (Container $container) => (new CodeGeneratorFacade())
             ->add($container[ClientFactoryGenerator::class])
             ->add($container[ClientGenerator::class])
             ->add($container[RequestGenerator::class])
@@ -113,62 +113,62 @@ class ServiceProvider implements ServiceProviderInterface
             ->add($container[SchemaGenerator::class])
             ->add($container[ServiceProviderGenerator::class]);
 
-        $pimple[MetaTemplateFacade::class] = static fn(Container $container) => (new MetaTemplateFacade())
+        $pimple[MetaTemplateFacade::class] = static fn (Container $container) => (new MetaTemplateFacade())
             ->add($container[ComposerJsonTemplate::class])
             ->add($container[ReadmeMdTemplate::class]);
 
-        $pimple[FileReader::class] = static fn() => new FileReader();
+        $pimple[FileReader::class] = static fn () => new FileReader();
 
-        $pimple[OpenApiParser::class] = static fn(Container $container) => new OpenApiParser(
+        $pimple[OpenApiParser::class] = static fn (Container $container) => new OpenApiParser(
             $container[OperationCollectionFactory::class]
         );
 
-        $pimple[CodeBuilder::class] = static fn(Container $container) => new CodeBuilder(
+        $pimple[CodeBuilder::class] = static fn (Container $container) => new CodeBuilder(
             $container[PhpVersion::class]
         );
 
-        $pimple[PhpVersion::class] = static fn(Container $container) => new PhpVersion(
+        $pimple[PhpVersion::class] = static fn (Container $container) => new PhpVersion(
             $container[Configuration::class]->getPhpVersion()
         );
 
-        $pimple[RequestGenerator::class] = static fn(Container $container) => new RequestGenerator(
+        $pimple[RequestGenerator::class] = static fn (Container $container) => new RequestGenerator(
             $container[Configuration::class]->getBaseNamespace(),
             $container[CodeBuilder::class]
         );
 
-        $pimple[RequestMapperGenerator::class] = static fn(Container $container) => new RequestMapperGenerator(
+        $pimple[RequestMapperGenerator::class] = static fn (Container $container) => new RequestMapperGenerator(
             $container[Configuration::class]->getBaseNamespace(),
             $container[CodeBuilder::class],
             $container[HttpMessageImplementationStrategy::class]
         );
 
-        $pimple[SchemaMapperGenerator::class] = static fn(Container $container) => new SchemaMapperGenerator(
+        $pimple[SchemaMapperGenerator::class] = static fn (Container $container) => new SchemaMapperGenerator(
             $container[Configuration::class]->getBaseNamespace(),
             $container[CodeBuilder::class]
         );
 
-        $pimple[SchemaCollectionGenerator::class] = static fn(Container $container) => new SchemaCollectionGenerator(
+        $pimple[SchemaCollectionGenerator::class] = static fn (Container $container) => new SchemaCollectionGenerator(
             $container[Configuration::class]->getBaseNamespace(),
             $container[CodeBuilder::class]
         );
 
-        $pimple[ClientGenerator::class] = static fn(Container $container) => new ClientGenerator(
+        $pimple[ClientGenerator::class] = static fn (Container $container) => new ClientGenerator(
             $container[Configuration::class]->getBaseNamespace(),
             $container[CodeBuilder::class]
         );
 
-        $pimple[SchemaGenerator::class] = static fn(Container $container) => new SchemaGenerator(
+        $pimple[SchemaGenerator::class] = static fn (Container $container) => new SchemaGenerator(
             $container[Configuration::class]->getBaseNamespace(),
             $container[CodeBuilder::class]
         );
 
-        $pimple[ClientFactoryGenerator::class] = static fn(Container $container) => new ClientFactoryGenerator(
+        $pimple[ClientFactoryGenerator::class] = static fn (Container $container) => new ClientFactoryGenerator(
             $container[Configuration::class]->getBaseNamespace(),
             $container[CodeBuilder::class],
             $container[ContainerImplementationStrategy::class]
         );
 
-        $pimple[ServiceProviderGenerator::class] = static fn(Container $container) => new ServiceProviderGenerator(
+        $pimple[ServiceProviderGenerator::class] = static fn (Container $container) => new ServiceProviderGenerator(
             $container[Configuration::class]->getBaseNamespace(),
             $container[CodeBuilder::class],
             $container[ContainerImplementationStrategy::class],
@@ -176,70 +176,70 @@ class ServiceProvider implements ServiceProviderInterface
         );
 
         $pimple[HttpMessageImplementationStrategy::class] =
-            static fn(Container $container) => new HttpMessageImplementationStrategy(
+            static fn (Container $container) => new HttpMessageImplementationStrategy(
                 $container[Configuration::class]->getHttpMessage(),
                 $container[CodeBuilder::class]
             );
 
         $pimple[ContainerImplementationStrategy::class] =
-            static fn(Container $container) => new ContainerImplementationStrategy(
+            static fn (Container $container) => new ContainerImplementationStrategy(
                 $container[Configuration::class]->getContainer(),
                 $container[Configuration::class]->getBaseNamespace(),
                 $container[CodeBuilder::class]
             );
 
-        $pimple[PhpFilePrinter::class] = static fn(Container $container) => new PhpFilePrinter(
+        $pimple[PhpFilePrinter::class] = static fn (Container $container) => new PhpFilePrinter(
             new Standard(),
             $container[TextFilePrinter::class],
             $container[PhpCodeStyleFixer::class]
         );
 
-        $pimple[PhpCodeStyleFixer::class] = static fn(Container $container) => new PhpCodeStyleFixer(
+        $pimple[PhpCodeStyleFixer::class] = static fn (Container $container) => new PhpCodeStyleFixer(
             new FixCommand(new ToolInfo()),
             $container[Configuration::class]->getCodeStyleConfig()
         );
 
-        $pimple[OperationCollectionFactory::class] = static fn(Container $container) => new OperationCollectionFactory(
+        $pimple[OperationCollectionFactory::class] = static fn (Container $container) => new OperationCollectionFactory(
             $container[OperationFactory::class]
         );
 
-        $pimple[OperationFactory::class] = static fn(Container $container) => new OperationFactory(
+        $pimple[OperationFactory::class] = static fn (Container $container) => new OperationFactory(
             $container[RequestFactory::class],
             $container[ResponseFactory::class]
         );
 
-        $pimple[RequestFactory::class] = static fn(Container $container) => new RequestFactory(
+        $pimple[RequestFactory::class] = static fn (Container $container) => new RequestFactory(
             $container[FieldFactory::class]
         );
 
-        $pimple[ResponseFactory::class] = static fn(Container $container) => new ResponseFactory(
+        $pimple[ResponseFactory::class] = static fn (Container $container) => new ResponseFactory(
             $container[FieldFactory::class]
         );
 
-        $pimple[FieldFactory::class] = static fn() => new FieldFactory(new PhpNameValidator());
+        $pimple[FieldFactory::class] = static fn () => new FieldFactory(new PhpNameValidator());
 
-        $pimple[TwigExtension::class] = static fn() => new TwigExtension();
+        $pimple[TwigExtension::class] = static fn () => new TwigExtension();
 
-        $pimple[ComposerJsonTemplate::class] = static fn(Container $container) => new ComposerJsonTemplate(
+        $pimple[ComposerJsonTemplate::class] = static fn (Container $container) => new ComposerJsonTemplate(
             $container[Environment::class],
             $container[Configuration::class],
             $container[HttpMessageImplementationStrategy::class],
             $container[ContainerImplementationStrategy::class]
         );
 
-        $pimple[ReadmeMdTemplate::class] = static fn(Container $container) => new ReadmeMdTemplate(
+        $pimple[ReadmeMdTemplate::class] = static fn (Container $container) => new ReadmeMdTemplate(
             $container[Environment::class],
             $container[Configuration::class]
         );
 
-        $pimple[WarningFormatter::class] = static fn() => new WarningFormatter(
+        $pimple[WarningFormatter::class] = static fn () => new WarningFormatter(
             new SymfonyStyle(
                 new ArgvInput(),
                 new ConsoleOutput()
             )
         );
 
-        $pimple[Emulative::class] = static fn() => new Emulative(
+        $pimple[Emulative::class] = static fn () => new Emulative(
             [
                 'usedAttributes' => [
                     'comments',
@@ -251,7 +251,7 @@ class ServiceProvider implements ServiceProviderInterface
             ]
         );
 
-        $pimple[PhpParser::class] = static fn(Container $container) => new PhpParser(
+        $pimple[PhpParser::class] = static fn (Container $container) => new PhpParser(
             $container[Emulative::class],
             [
                 'useIdentifierNodes'         => true,
@@ -261,7 +261,7 @@ class ServiceProvider implements ServiceProviderInterface
             ]
         );
 
-        $pimple[DirectoryPrinter::class] = static fn() => new DirectoryPrinter();
+        $pimple[DirectoryPrinter::class] = static fn () => new DirectoryPrinter();
 
         $pimple[StaticPhpFileCopier::class] = static function (Container $container) {
             $traverser = new NodeTraverser();
@@ -279,11 +279,11 @@ class ServiceProvider implements ServiceProviderInterface
             );
         };
 
-        $pimple[TextFilePrinter::class] = static fn(Container $container) => new TextFilePrinter(
+        $pimple[TextFilePrinter::class] = static fn (Container $container) => new TextFilePrinter(
             $container[DirectoryPrinter::class]
         );
 
-        $pimple[MetaFilePrinter::class] = static fn(Container $container) => new MetaFilePrinter(
+        $pimple[MetaFilePrinter::class] = static fn (Container $container) => new MetaFilePrinter(
             $container[TextFilePrinter::class]
         );
     }

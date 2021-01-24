@@ -49,8 +49,7 @@ class GenerateCommand extends Command
         Finder $fileFinder,
         StaticPhpFileCopier $staticPhpCopier,
         Filesystem $filesystem
-    )
-    {
+    ) {
         parent::__construct();
         $this->configuration    = $configuration;
         $this->fileReader       = $fileReader;
@@ -183,7 +182,8 @@ class GenerateCommand extends Command
 
     private function initWarningPrinting(InputInterface $input): void
     {
-        $formatter = static function (int $id, string $error, string $file, int $line, array $context) {};
+        $formatter = static function (int $id, string $error, string $file, int $line, array $context) {
+        };
         if (!$input->getOption('quiet')) {
             $formatter = new WarningFormatter(
                 new SymfonyStyle(
