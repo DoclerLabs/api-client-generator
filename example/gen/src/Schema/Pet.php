@@ -41,8 +41,7 @@ class Pet implements SerializableInterface, JsonSerializable
     private $status;
 
     /**
-     * @param string $name
-     * @param array  $photoUrls
+     * @param string[] $photoUrls
      */
     public function __construct(string $name, array $photoUrls)
     {
@@ -50,11 +49,6 @@ class Pet implements SerializableInterface, JsonSerializable
         $this->photoUrls = $photoUrls;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return self
-     */
     public function setId(int $id): self
     {
         $this->id = $id;
@@ -62,11 +56,6 @@ class Pet implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param Category $category
-     *
-     * @return self
-     */
     public function setCategory(Category $category): self
     {
         $this->category = $category;
@@ -74,11 +63,6 @@ class Pet implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param TagCollection $tags
-     *
-     * @return self
-     */
     public function setTags(TagCollection $tags): self
     {
         $this->tags = $tags;
@@ -87,11 +71,7 @@ class Pet implements SerializableInterface, JsonSerializable
     }
 
     /**
-     * @param string $status
-     *
      * @throws RequestValidationException
-     *
-     * @return self
      */
     public function setStatus(string $status): self
     {
@@ -103,25 +83,16 @@ class Pet implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return Category|null
-     */
     public function getCategory(): ?Category
     {
         return $this->category;
@@ -135,25 +106,16 @@ class Pet implements SerializableInterface, JsonSerializable
         return $this->photoUrls;
     }
 
-    /**
-     * @return TagCollection|null
-     */
     public function getTags(): ?TagCollection
     {
         return $this->tags;
     }
 
-    /**
-     * @return string|null
-     */
     public function getStatus(): ?string
     {
         return $this->status;
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         $fields = [];
@@ -175,9 +137,6 @@ class Pet implements SerializableInterface, JsonSerializable
         return $fields;
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize(): array
     {
         return $this->toArray();

@@ -24,27 +24,16 @@ class UpdatePetWithFormRequest implements RequestInterface
     /** @var string */
     private $contentType = '';
 
-    /**
-     * @param int $petId
-     */
     public function __construct(int $petId)
     {
         $this->petId = $petId;
     }
 
-    /**
-     * @return string
-     */
     public function getContentType(): string
     {
         return $this->contentType;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return self
-     */
     public function setName(string $name): self
     {
         $this->name = $name;
@@ -52,11 +41,6 @@ class UpdatePetWithFormRequest implements RequestInterface
         return $this;
     }
 
-    /**
-     * @param string $status
-     *
-     * @return self
-     */
     public function setStatus(string $status): self
     {
         $this->status = $status;
@@ -64,25 +48,16 @@ class UpdatePetWithFormRequest implements RequestInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getMethod(): string
     {
         return 'POST';
     }
 
-    /**
-     * @return string
-     */
     public function getRoute(): string
     {
         return \strtr('pet/{petId}', ['{petId}' => $this->petId]);
     }
 
-    /**
-     * @return array
-     */
     public function getQueryParameters(): array
     {
         return \array_map(static function ($value) {
@@ -92,25 +67,16 @@ class UpdatePetWithFormRequest implements RequestInterface
         }));
     }
 
-    /**
-     * @return array
-     */
     public function getRawQueryParameters(): array
     {
         return ['name' => $this->name, 'status' => $this->status];
     }
 
-    /**
-     * @return array
-     */
     public function getCookies(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getHeaders(): array
     {
         return [];

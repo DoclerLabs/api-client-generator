@@ -84,7 +84,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         if (count($request->getBodyContentTypes()) < 2) {
             $default = $this->builder->val($request->getBodyContentTypes()[0] ?? '');
         }
-        $statements[] = $this->builder->localProperty('contentType', 'string', 'string', $default);
+        $statements[] = $this->builder->localProperty('contentType', 'string', 'string', false, $default);
 
         return $statements;
     }

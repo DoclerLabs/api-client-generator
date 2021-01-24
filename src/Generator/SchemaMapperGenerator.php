@@ -275,7 +275,15 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 );
             } elseif ($field->isDate()) {
                 $this->addImport(DateTimeImmutable::class);
-                $requiredVars[] = $this->builder->new('DateTimeImmutable', [$requiredResponseItems[$i]]);
+                if ($field->isNullable()) {
+                    $requiredVars[] = $this->builder->ternary(
+                        $this->builder->notEquals($requiredResponseItems[$i], $this->builder->val(null)),
+                        $this->builder->new('DateTimeImmutable', [$requiredResponseItems[$i]]),
+                        $this->builder->val(null)
+                    );
+                } else {
+                    $requiredVars[] = $this->builder->new('DateTimeImmutable', [$requiredResponseItems[$i]]);
+                }
             } else {
                 $requiredVars[] = $requiredResponseItems[$i];
             }

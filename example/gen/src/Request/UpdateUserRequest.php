@@ -21,11 +21,6 @@ class UpdateUserRequest implements RequestInterface
     /** @var string */
     private $contentType;
 
-    /**
-     * @param string $username
-     * @param User   $user
-     * @param string $contentType
-     */
     public function __construct(string $username, User $user, string $contentType)
     {
         $this->username    = $username;
@@ -33,57 +28,36 @@ class UpdateUserRequest implements RequestInterface
         $this->contentType = $contentType;
     }
 
-    /**
-     * @return string
-     */
     public function getContentType(): string
     {
         return $this->contentType;
     }
 
-    /**
-     * @return string
-     */
     public function getMethod(): string
     {
         return 'PUT';
     }
 
-    /**
-     * @return string
-     */
     public function getRoute(): string
     {
         return \strtr('user/{username}', ['{username}' => $this->username]);
     }
 
-    /**
-     * @return array
-     */
     public function getQueryParameters(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getRawQueryParameters(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getCookies(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getHeaders(): array
     {
         return ['Content-Type' => $this->contentType];

@@ -52,31 +52,17 @@ class SwaggerPetstoreOpenAPI3Client
     /** @var ContainerInterface */
     private $container;
 
-    /**
-     * @param ClientInterface    $client
-     * @param ContainerInterface $container
-     */
     public function __construct(ClientInterface $client, ContainerInterface $container)
     {
         $this->client    = $client;
         $this->container = $container;
     }
 
-    /**
-     * @param RequestInterface $request
-     *
-     * @return ResponseInterface
-     */
     public function sendRequest(RequestInterface $request): ResponseInterface
     {
         return $this->client->sendRequest($this->container->get(RequestMapperInterface::class)->map($request));
     }
 
-    /**
-     * @param UpdatePetRequest $request
-     *
-     * @return Pet
-     */
     public function updatePet(UpdatePetRequest $request): Pet
     {
         $response = $this->handleResponse($this->sendRequest($request));
@@ -84,11 +70,6 @@ class SwaggerPetstoreOpenAPI3Client
         return $this->container->get(PetMapper::class)->toSchema($response);
     }
 
-    /**
-     * @param AddPetRequest $request
-     *
-     * @return Pet
-     */
     public function addPet(AddPetRequest $request): Pet
     {
         $response = $this->handleResponse($this->sendRequest($request));
@@ -96,11 +77,6 @@ class SwaggerPetstoreOpenAPI3Client
         return $this->container->get(PetMapper::class)->toSchema($response);
     }
 
-    /**
-     * @param FindPetsByStatusRequest $request
-     *
-     * @return PetCollection
-     */
     public function findPetsByStatus(FindPetsByStatusRequest $request): PetCollection
     {
         $response = $this->handleResponse($this->sendRequest($request));
@@ -108,11 +84,6 @@ class SwaggerPetstoreOpenAPI3Client
         return $this->container->get(PetCollectionMapper::class)->toSchema($response);
     }
 
-    /**
-     * @param FindPetsByTagsRequest $request
-     *
-     * @return PetCollection
-     */
     public function findPetsByTags(FindPetsByTagsRequest $request): PetCollection
     {
         $response = $this->handleResponse($this->sendRequest($request));
@@ -120,11 +91,6 @@ class SwaggerPetstoreOpenAPI3Client
         return $this->container->get(PetCollectionMapper::class)->toSchema($response);
     }
 
-    /**
-     * @param GetPetByIdRequest $request
-     *
-     * @return Pet
-     */
     public function getPetById(GetPetByIdRequest $request): Pet
     {
         $response = $this->handleResponse($this->sendRequest($request));
@@ -132,27 +98,16 @@ class SwaggerPetstoreOpenAPI3Client
         return $this->container->get(PetMapper::class)->toSchema($response);
     }
 
-    /**
-     * @param UpdatePetWithFormRequest $request
-     */
     public function updatePetWithForm(UpdatePetWithFormRequest $request): void
     {
         $this->handleResponse($this->sendRequest($request));
     }
 
-    /**
-     * @param DeletePetRequest $request
-     */
     public function deletePet(DeletePetRequest $request): void
     {
         $this->handleResponse($this->sendRequest($request));
     }
 
-    /**
-     * @param GetInventoryRequest $request
-     *
-     * @return GetInventoryResponseBody
-     */
     public function getInventory(GetInventoryRequest $request): GetInventoryResponseBody
     {
         $response = $this->handleResponse($this->sendRequest($request));
@@ -160,11 +115,6 @@ class SwaggerPetstoreOpenAPI3Client
         return $this->container->get(GetInventoryResponseBodyMapper::class)->toSchema($response);
     }
 
-    /**
-     * @param PlaceOrderRequest $request
-     *
-     * @return Order
-     */
     public function placeOrder(PlaceOrderRequest $request): Order
     {
         $response = $this->handleResponse($this->sendRequest($request));
@@ -172,11 +122,6 @@ class SwaggerPetstoreOpenAPI3Client
         return $this->container->get(OrderMapper::class)->toSchema($response);
     }
 
-    /**
-     * @param GetOrderByIdRequest $request
-     *
-     * @return Order
-     */
     public function getOrderById(GetOrderByIdRequest $request): Order
     {
         $response = $this->handleResponse($this->sendRequest($request));
@@ -184,27 +129,16 @@ class SwaggerPetstoreOpenAPI3Client
         return $this->container->get(OrderMapper::class)->toSchema($response);
     }
 
-    /**
-     * @param DeleteOrderRequest $request
-     */
     public function deleteOrder(DeleteOrderRequest $request): void
     {
         $this->handleResponse($this->sendRequest($request));
     }
 
-    /**
-     * @param CreateUserRequest $request
-     */
     public function createUser(CreateUserRequest $request): void
     {
         $this->handleResponse($this->sendRequest($request));
     }
 
-    /**
-     * @param CreateUsersWithListInputRequest $request
-     *
-     * @return User
-     */
     public function createUsersWithListInput(CreateUsersWithListInputRequest $request): User
     {
         $response = $this->handleResponse($this->sendRequest($request));
@@ -212,11 +146,6 @@ class SwaggerPetstoreOpenAPI3Client
         return $this->container->get(UserMapper::class)->toSchema($response);
     }
 
-    /**
-     * @param LoginUserRequest $request
-     *
-     * @return string
-     */
     public function loginUser(LoginUserRequest $request): string
     {
         $response = $this->handleResponse($this->sendRequest($request));
@@ -224,19 +153,11 @@ class SwaggerPetstoreOpenAPI3Client
         return $response[ContentTypeSerializerInterface::LITERAL_VALUE_KEY];
     }
 
-    /**
-     * @param LogoutUserRequest $request
-     */
     public function logoutUser(LogoutUserRequest $request): void
     {
         $this->handleResponse($this->sendRequest($request));
     }
 
-    /**
-     * @param GetUserByNameRequest $request
-     *
-     * @return User
-     */
     public function getUserByName(GetUserByNameRequest $request): User
     {
         $response = $this->handleResponse($this->sendRequest($request));
@@ -244,25 +165,16 @@ class SwaggerPetstoreOpenAPI3Client
         return $this->container->get(UserMapper::class)->toSchema($response);
     }
 
-    /**
-     * @param UpdateUserRequest $request
-     */
     public function updateUser(UpdateUserRequest $request): void
     {
         $this->handleResponse($this->sendRequest($request));
     }
 
-    /**
-     * @param DeleteUserRequest $request
-     */
     public function deleteUser(DeleteUserRequest $request): void
     {
         $this->handleResponse($this->sendRequest($request));
     }
 
-    /**
-     * @param ResponseInterface $response
-     */
     protected function handleResponse(ResponseInterface $response)
     {
         return $this->container->get(ResponseHandler::class)->handle($response);

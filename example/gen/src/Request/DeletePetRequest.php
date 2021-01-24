@@ -21,27 +21,16 @@ class DeletePetRequest implements RequestInterface
     /** @var string */
     private $contentType = '';
 
-    /**
-     * @param int $petId
-     */
     public function __construct(int $petId)
     {
         $this->petId = $petId;
     }
 
-    /**
-     * @return string
-     */
     public function getContentType(): string
     {
         return $this->contentType;
     }
 
-    /**
-     * @param string $apiKey
-     *
-     * @return self
-     */
     public function setApiKey(string $apiKey): self
     {
         $this->apiKey = $apiKey;
@@ -49,49 +38,31 @@ class DeletePetRequest implements RequestInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getMethod(): string
     {
         return 'DELETE';
     }
 
-    /**
-     * @return string
-     */
     public function getRoute(): string
     {
         return \strtr('pet/{petId}', ['{petId}' => $this->petId]);
     }
 
-    /**
-     * @return array
-     */
     public function getQueryParameters(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getRawQueryParameters(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getCookies(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getHeaders(): array
     {
         return \array_merge([], \array_map(static function ($value) {

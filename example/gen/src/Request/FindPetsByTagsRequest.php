@@ -18,9 +18,6 @@ class FindPetsByTagsRequest implements RequestInterface
     /** @var string */
     private $contentType = '';
 
-    /**
-     * @return string
-     */
     public function getContentType(): string
     {
         return $this->contentType;
@@ -28,8 +25,6 @@ class FindPetsByTagsRequest implements RequestInterface
 
     /**
      * @param string[] $tags
-     *
-     * @return self
      */
     public function setTags(array $tags): self
     {
@@ -38,25 +33,16 @@ class FindPetsByTagsRequest implements RequestInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getMethod(): string
     {
         return 'GET';
     }
 
-    /**
-     * @return string
-     */
     public function getRoute(): string
     {
         return 'pet/findByTags';
     }
 
-    /**
-     * @return array
-     */
     public function getQueryParameters(): array
     {
         return \array_map(static function ($value) {
@@ -66,25 +52,16 @@ class FindPetsByTagsRequest implements RequestInterface
         }));
     }
 
-    /**
-     * @return array
-     */
     public function getRawQueryParameters(): array
     {
         return ['tags' => $this->tags];
     }
 
-    /**
-     * @return array
-     */
     public function getCookies(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getHeaders(): array
     {
         return [];

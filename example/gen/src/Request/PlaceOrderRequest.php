@@ -18,67 +18,42 @@ class PlaceOrderRequest implements RequestInterface
     /** @var string */
     private $contentType;
 
-    /**
-     * @param Order  $order
-     * @param string $contentType
-     */
     public function __construct(Order $order, string $contentType)
     {
         $this->order       = $order;
         $this->contentType = $contentType;
     }
 
-    /**
-     * @return string
-     */
     public function getContentType(): string
     {
         return $this->contentType;
     }
 
-    /**
-     * @return string
-     */
     public function getMethod(): string
     {
         return 'POST';
     }
 
-    /**
-     * @return string
-     */
     public function getRoute(): string
     {
         return 'store/order';
     }
 
-    /**
-     * @return array
-     */
     public function getQueryParameters(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getRawQueryParameters(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getCookies(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getHeaders(): array
     {
         return ['Content-Type' => $this->contentType];

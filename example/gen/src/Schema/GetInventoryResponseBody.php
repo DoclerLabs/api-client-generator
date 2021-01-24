@@ -12,9 +12,6 @@ use JsonSerializable;
 
 class GetInventoryResponseBody implements SerializableInterface, JsonSerializable
 {
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         $fields = [];
@@ -22,9 +19,6 @@ class GetInventoryResponseBody implements SerializableInterface, JsonSerializabl
         return $fields;
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize(): array
     {
         return $this->toArray();

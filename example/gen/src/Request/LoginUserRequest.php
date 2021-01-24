@@ -21,19 +21,11 @@ class LoginUserRequest implements RequestInterface
     /** @var string */
     private $contentType = '';
 
-    /**
-     * @return string
-     */
     public function getContentType(): string
     {
         return $this->contentType;
     }
 
-    /**
-     * @param string $username
-     *
-     * @return self
-     */
     public function setUsername(string $username): self
     {
         $this->username = $username;
@@ -41,11 +33,6 @@ class LoginUserRequest implements RequestInterface
         return $this;
     }
 
-    /**
-     * @param string $password
-     *
-     * @return self
-     */
     public function setPassword(string $password): self
     {
         $this->password = $password;
@@ -53,25 +40,16 @@ class LoginUserRequest implements RequestInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getMethod(): string
     {
         return 'GET';
     }
 
-    /**
-     * @return string
-     */
     public function getRoute(): string
     {
         return 'user/login';
     }
 
-    /**
-     * @return array
-     */
     public function getQueryParameters(): array
     {
         return \array_map(static function ($value) {
@@ -81,25 +59,16 @@ class LoginUserRequest implements RequestInterface
         }));
     }
 
-    /**
-     * @return array
-     */
     public function getRawQueryParameters(): array
     {
         return ['username' => $this->username, 'password' => $this->password];
     }
 
-    /**
-     * @return array
-     */
     public function getCookies(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getHeaders(): array
     {
         return [];

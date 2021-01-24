@@ -30,6 +30,10 @@ components:
         mandatoryDate:
           type: string
           format: 'date-time'
+        mandatoryNullableDate:
+          type: string
+          format: 'date-time'
+          nullable: true
         mandatoryFloat:
           type: number
           format: float
@@ -87,6 +91,7 @@ components:
         - mandatoryString
         - mandatoryEnum
         - mandatoryDate
+        - mandatoryNullableDate
         - mandatoryFloat
         - mandatoryBoolean
         - mandatoryArray

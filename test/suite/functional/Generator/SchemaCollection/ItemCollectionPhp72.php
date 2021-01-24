@@ -26,9 +26,6 @@ class ItemCollection implements IteratorAggregate, SerializableInterface, Counta
         $this->items = $items;
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         $return = [];
@@ -39,9 +36,6 @@ class ItemCollection implements IteratorAggregate, SerializableInterface, Counta
         return $return;
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize(): array
     {
         return $this->toArray();
@@ -55,17 +49,11 @@ class ItemCollection implements IteratorAggregate, SerializableInterface, Counta
         return new ArrayIterator($this->items);
     }
 
-    /**
-     * @return int
-     */
     public function count(): int
     {
         return \count($this->items);
     }
 
-    /**
-     * @return Item|null
-     */
     public function first(): ?Item
     {
         $first = \reset($this->items);

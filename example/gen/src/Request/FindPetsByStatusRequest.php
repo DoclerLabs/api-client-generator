@@ -28,20 +28,13 @@ class FindPetsByStatusRequest implements RequestInterface
     /** @var string */
     private $contentType = '';
 
-    /**
-     * @return string
-     */
     public function getContentType(): string
     {
         return $this->contentType;
     }
 
     /**
-     * @param string $status
-     *
      * @throws RequestValidationException
-     *
-     * @return self
      */
     public function setStatus(string $status): self
     {
@@ -53,25 +46,16 @@ class FindPetsByStatusRequest implements RequestInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getMethod(): string
     {
         return 'GET';
     }
 
-    /**
-     * @return string
-     */
     public function getRoute(): string
     {
         return 'pet/findByStatus';
     }
 
-    /**
-     * @return array
-     */
     public function getQueryParameters(): array
     {
         return \array_map(static function ($value) {
@@ -81,25 +65,16 @@ class FindPetsByStatusRequest implements RequestInterface
         }));
     }
 
-    /**
-     * @return array
-     */
     public function getRawQueryParameters(): array
     {
         return ['status' => $this->status];
     }
 
-    /**
-     * @return array
-     */
     public function getCookies(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getHeaders(): array
     {
         return [];

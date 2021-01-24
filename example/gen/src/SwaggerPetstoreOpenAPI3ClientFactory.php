@@ -15,11 +15,6 @@ use Psr\Http\Client\ClientInterface;
 
 class SwaggerPetstoreOpenAPI3ClientFactory
 {
-    /**
-     * @param ClientInterface $client
-     *
-     * @return SwaggerPetstoreOpenAPI3Client
-     */
     public function create(ClientInterface $client): SwaggerPetstoreOpenAPI3Client
     {
         return new SwaggerPetstoreOpenAPI3Client($client, $this->initContainer());

@@ -15,11 +15,7 @@ use Test\Schema\Resource;
 class ResourceMapper implements SchemaMapperInterface
 {
     /**
-     * @param array $payload
-     *
      * @throws UnexpectedResponseBodyException
-     *
-     * @return Resource
      */
     public function toSchema(array $payload): Resource
     {

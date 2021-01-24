@@ -15,19 +15,11 @@ class ItemCollectionMapper implements SchemaMapperInterface
     /** @var ItemMapper */
     private $itemMapper;
 
-    /**
-     * @param ItemMapper $itemMapper
-     */
     public function __construct(ItemMapper $itemMapper)
     {
         $this->itemMapper = $itemMapper;
     }
 
-    /**
-     * @param array $payload
-     *
-     * @return ItemCollection
-     */
     public function toSchema(array $payload): ItemCollection
     {
         $items = [];

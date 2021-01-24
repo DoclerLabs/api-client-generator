@@ -26,9 +26,6 @@ class PetCollection implements IteratorAggregate, SerializableInterface, Countab
         $this->items = $items;
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         $return = [];
@@ -39,9 +36,6 @@ class PetCollection implements IteratorAggregate, SerializableInterface, Countab
         return $return;
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize(): array
     {
         return $this->toArray();
@@ -55,17 +49,11 @@ class PetCollection implements IteratorAggregate, SerializableInterface, Countab
         return new ArrayIterator($this->items);
     }
 
-    /**
-     * @return int
-     */
     public function count(): int
     {
         return \count($this->items);
     }
 
-    /**
-     * @return Pet|null
-     */
     public function first(): ?Pet
     {
         $first = \reset($this->items);

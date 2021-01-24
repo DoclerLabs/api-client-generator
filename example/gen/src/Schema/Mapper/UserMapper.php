@@ -12,11 +12,6 @@ use OpenApi\PetStoreClient\Schema\User;
 
 class UserMapper implements SchemaMapperInterface
 {
-    /**
-     * @param array $payload
-     *
-     * @return User
-     */
     public function toSchema(array $payload): User
     {
         $schema = new User();

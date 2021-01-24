@@ -12,11 +12,6 @@ use OpenApi\PetStoreClient\Schema\GetInventoryResponseBody;
 
 class GetInventoryResponseBodyMapper implements SchemaMapperInterface
 {
-    /**
-     * @param array $payload
-     *
-     * @return GetInventoryResponseBody
-     */
     public function toSchema(array $payload): GetInventoryResponseBody
     {
         return new GetInventoryResponseBody();

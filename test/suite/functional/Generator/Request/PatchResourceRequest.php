@@ -18,65 +18,41 @@ class PatchResourceRequest implements RequestInterface
     /** @var string */
     private $contentType = 'application/json';
 
-    /**
-     * @param PatchResourceRequestBody $patchResourceRequestBody
-     */
     public function __construct(PatchResourceRequestBody $patchResourceRequestBody)
     {
         $this->patchResourceRequestBody = $patchResourceRequestBody;
     }
 
-    /**
-     * @return string
-     */
     public function getContentType(): string
     {
         return $this->contentType;
     }
 
-    /**
-     * @return string
-     */
     public function getMethod(): string
     {
         return 'PATCH';
     }
 
-    /**
-     * @return string
-     */
     public function getRoute(): string
     {
         return 'v1/resources/{resourceId}';
     }
 
-    /**
-     * @return array
-     */
     public function getQueryParameters(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getRawQueryParameters(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getCookies(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getHeaders(): array
     {
         return ['Content-Type' => $this->contentType];

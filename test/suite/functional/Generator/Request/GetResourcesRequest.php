@@ -24,19 +24,11 @@ class GetResourcesRequest implements RequestInterface
     /** @var string */
     private $contentType = '';
 
-    /**
-     * @return string
-     */
     public function getContentType(): string
     {
         return $this->contentType;
     }
 
-    /**
-     * @param int $filterById
-     *
-     * @return self
-     */
     public function setFilterById(int $filterById): self
     {
         $this->filterById = $filterById;
@@ -44,11 +36,6 @@ class GetResourcesRequest implements RequestInterface
         return $this;
     }
 
-    /**
-     * @param string $filterByName
-     *
-     * @return self
-     */
     public function setFilterByName(string $filterByName): self
     {
         $this->filterByName = $filterByName;
@@ -58,8 +45,6 @@ class GetResourcesRequest implements RequestInterface
 
     /**
      * @param int[] $filterByIds
-     *
-     * @return self
      */
     public function setFilterByIds(array $filterByIds): self
     {
@@ -68,25 +53,16 @@ class GetResourcesRequest implements RequestInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getMethod(): string
     {
         return 'GET';
     }
 
-    /**
-     * @return string
-     */
     public function getRoute(): string
     {
         return 'v1/resources';
     }
 
-    /**
-     * @return array
-     */
     public function getQueryParameters(): array
     {
         return \array_map(static function ($value) {
@@ -96,25 +72,16 @@ class GetResourcesRequest implements RequestInterface
         }));
     }
 
-    /**
-     * @return array
-     */
     public function getRawQueryParameters(): array
     {
         return ['filterById' => $this->filterById, 'filterByName' => $this->filterByName, 'filterByIds' => $this->filterByIds];
     }
 
-    /**
-     * @return array
-     */
     public function getCookies(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getHeaders(): array
     {
         return [];

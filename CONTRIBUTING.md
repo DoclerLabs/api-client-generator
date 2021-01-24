@@ -28,10 +28,10 @@ If you're opening a PR, keep in mind Github will validate code style (PSR1/PSR2)
 
 This generator works with PHP 7.4 so either you need to have it locally installed or you can use any php 7.4 docker image to run phpunit, phpstan, php-cs-fixer etc.
 
-To make sure your code is following the correct style, run:
+To make sure your code is following the correct style, run (or check `make` to run these tasks through php 7.4 docker image):
 
 ```
-$ ./vendor/bin/php-cs-fixer fix src
+$ ./vendor/bin/php-cs-fixer fix .
 ```
 
 To statically analyse your code, run:
@@ -44,6 +44,24 @@ To run tests:
 
 ```
 $ ./vendor/bin/phpunit
+```
+
+After doing your changes, you can validate it by using your modified generator with an actual Open API specification file. To do that, you must generate your own local Docker image of this generator and use it with any spec you may have:
+
+```
+$ docker build -t my-api-client-generator .
+```
+
+Then run the same command to build your API client but replacing `dhlabs/api-client-generator` with `my-api-client-generator`. For example:
+```
+docker run -it \
+-v {path-to-specification}/openapi.yaml:/openapi.yaml:ro \
+-v {path-to-client}/some-api-client:/client \
+-e NAMESPACE=Group\\SomeApiClient \
+-e OPENAPI=/openapi.yaml \
+-e OUTPUT_DIR=/client \
+-e PACKAGE=group/some-api-client \
+my-api-client-generator
 ```
 
 ## Community

@@ -36,11 +36,6 @@ class User implements SerializableInterface, JsonSerializable
     /** @var int|null */
     private $userStatus;
 
-    /**
-     * @param int $id
-     *
-     * @return self
-     */
     public function setId(int $id): self
     {
         $this->id = $id;
@@ -48,11 +43,6 @@ class User implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param string $username
-     *
-     * @return self
-     */
     public function setUsername(string $username): self
     {
         $this->username = $username;
@@ -60,11 +50,6 @@ class User implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param string $firstName
-     *
-     * @return self
-     */
     public function setFirstName(string $firstName): self
     {
         $this->firstName = $firstName;
@@ -72,11 +57,6 @@ class User implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param string $lastName
-     *
-     * @return self
-     */
     public function setLastName(string $lastName): self
     {
         $this->lastName = $lastName;
@@ -84,11 +64,6 @@ class User implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param string $email
-     *
-     * @return self
-     */
     public function setEmail(string $email): self
     {
         $this->email = $email;
@@ -96,11 +71,6 @@ class User implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param string $password
-     *
-     * @return self
-     */
     public function setPassword(string $password): self
     {
         $this->password = $password;
@@ -108,11 +78,6 @@ class User implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param string $phone
-     *
-     * @return self
-     */
     public function setPhone(string $phone): self
     {
         $this->phone = $phone;
@@ -120,11 +85,6 @@ class User implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param int $userStatus
-     *
-     * @return self
-     */
     public function setUserStatus(int $userStatus): self
     {
         $this->userStatus = $userStatus;
@@ -132,73 +92,46 @@ class User implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @return string|null
-     */
     public function getUsername(): ?string
     {
         return $this->username;
     }
 
-    /**
-     * @return string|null
-     */
     public function getFirstName(): ?string
     {
         return $this->firstName;
     }
 
-    /**
-     * @return string|null
-     */
     public function getLastName(): ?string
     {
         return $this->lastName;
     }
 
-    /**
-     * @return string|null
-     */
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPassword(): ?string
     {
         return $this->password;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPhone(): ?string
     {
         return $this->phone;
     }
 
-    /**
-     * @return int|null
-     */
     public function getUserStatus(): ?int
     {
         return $this->userStatus;
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         $fields = [];
@@ -230,9 +163,6 @@ class User implements SerializableInterface, JsonSerializable
         return $fields;
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize(): array
     {
         return $this->toArray();

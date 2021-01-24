@@ -18,11 +18,6 @@ class Tag implements SerializableInterface, JsonSerializable
     /** @var string|null */
     private $name;
 
-    /**
-     * @param int $id
-     *
-     * @return self
-     */
     public function setId(int $id): self
     {
         $this->id = $id;
@@ -30,11 +25,6 @@ class Tag implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return self
-     */
     public function setName(string $name): self
     {
         $this->name = $name;
@@ -42,25 +32,16 @@ class Tag implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @return string|null
-     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         $fields = [];
@@ -74,9 +55,6 @@ class Tag implements SerializableInterface, JsonSerializable
         return $fields;
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize(): array
     {
         return $this->toArray();

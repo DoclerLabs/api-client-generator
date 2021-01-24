@@ -15,19 +15,11 @@ class PetCollectionMapper implements SchemaMapperInterface
     /** @var PetMapper */
     private $petMapper;
 
-    /**
-     * @param PetMapper $petMapper
-     */
     public function __construct(PetMapper $petMapper)
     {
         $this->petMapper = $petMapper;
     }
 
-    /**
-     * @param array $payload
-     *
-     * @return PetCollection
-     */
     public function toSchema(array $payload): PetCollection
     {
         $items = [];

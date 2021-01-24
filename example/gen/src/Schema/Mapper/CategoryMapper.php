@@ -12,11 +12,6 @@ use OpenApi\PetStoreClient\Schema\Category;
 
 class CategoryMapper implements SchemaMapperInterface
 {
-    /**
-     * @param array $payload
-     *
-     * @return Category
-     */
     public function toSchema(array $payload): Category
     {
         $schema = new Category();

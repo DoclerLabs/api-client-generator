@@ -13,57 +13,36 @@ class GetInventoryRequest implements RequestInterface
     /** @var string */
     private $contentType = '';
 
-    /**
-     * @return string
-     */
     public function getContentType(): string
     {
         return $this->contentType;
     }
 
-    /**
-     * @return string
-     */
     public function getMethod(): string
     {
         return 'GET';
     }
 
-    /**
-     * @return string
-     */
     public function getRoute(): string
     {
         return 'store/inventory';
     }
 
-    /**
-     * @return array
-     */
     public function getQueryParameters(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getRawQueryParameters(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getCookies(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getHeaders(): array
     {
         return [];

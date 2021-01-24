@@ -13,11 +13,6 @@ use OpenApi\PetStoreClient\Schema\Order;
 
 class OrderMapper implements SchemaMapperInterface
 {
-    /**
-     * @param array $payload
-     *
-     * @return Order
-     */
     public function toSchema(array $payload): Order
     {
         $schema = new Order();

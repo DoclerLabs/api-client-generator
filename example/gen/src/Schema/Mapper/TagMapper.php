@@ -12,11 +12,6 @@ use OpenApi\PetStoreClient\Schema\Tag;
 
 class TagMapper implements SchemaMapperInterface
 {
-    /**
-     * @param array $payload
-     *
-     * @return Tag
-     */
     public function toSchema(array $payload): Tag
     {
         $schema = new Tag();

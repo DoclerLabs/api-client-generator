@@ -41,11 +41,6 @@ class Order implements SerializableInterface, JsonSerializable
     /** @var bool|null */
     private $complete;
 
-    /**
-     * @param int $id
-     *
-     * @return self
-     */
     public function setId(int $id): self
     {
         $this->id = $id;
@@ -53,11 +48,6 @@ class Order implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param int $petId
-     *
-     * @return self
-     */
     public function setPetId(int $petId): self
     {
         $this->petId = $petId;
@@ -65,11 +55,6 @@ class Order implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param int $quantity
-     *
-     * @return self
-     */
     public function setQuantity(int $quantity): self
     {
         $this->quantity = $quantity;
@@ -77,11 +62,6 @@ class Order implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param DateTimeInterface $shipDate
-     *
-     * @return self
-     */
     public function setShipDate(DateTimeInterface $shipDate): self
     {
         $this->shipDate = $shipDate;
@@ -90,11 +70,7 @@ class Order implements SerializableInterface, JsonSerializable
     }
 
     /**
-     * @param string $status
-     *
      * @throws RequestValidationException
-     *
-     * @return self
      */
     public function setStatus(string $status): self
     {
@@ -106,11 +82,6 @@ class Order implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param bool $complete
-     *
-     * @return self
-     */
     public function setComplete(bool $complete): self
     {
         $this->complete = $complete;
@@ -118,57 +89,36 @@ class Order implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @return int|null
-     */
     public function getPetId(): ?int
     {
         return $this->petId;
     }
 
-    /**
-     * @return int|null
-     */
     public function getQuantity(): ?int
     {
         return $this->quantity;
     }
 
-    /**
-     * @return DateTimeInterface|null
-     */
     public function getShipDate(): ?DateTimeInterface
     {
         return $this->shipDate;
     }
 
-    /**
-     * @return string|null
-     */
     public function getStatus(): ?string
     {
         return $this->status;
     }
 
-    /**
-     * @return bool|null
-     */
     public function getComplete(): ?bool
     {
         return $this->complete;
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         $fields = [];
@@ -194,9 +144,6 @@ class Order implements SerializableInterface, JsonSerializable
         return $fields;
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize(): array
     {
         return $this->toArray();

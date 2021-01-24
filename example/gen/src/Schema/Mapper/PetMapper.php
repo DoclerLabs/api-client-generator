@@ -19,10 +19,6 @@ class PetMapper implements SchemaMapperInterface
     /** @var TagCollectionMapper */
     private $tagCollectionMapper;
 
-    /**
-     * @param CategoryMapper      $categoryMapper
-     * @param TagCollectionMapper $tagCollectionMapper
-     */
     public function __construct(CategoryMapper $categoryMapper, TagCollectionMapper $tagCollectionMapper)
     {
         $this->categoryMapper      = $categoryMapper;
@@ -30,11 +26,7 @@ class PetMapper implements SchemaMapperInterface
     }
 
     /**
-     * @param array $payload
-     *
      * @throws UnexpectedResponseBodyException
-     *
-     * @return Pet
      */
     public function toSchema(array $payload): Pet
     {

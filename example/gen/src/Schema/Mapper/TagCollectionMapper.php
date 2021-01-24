@@ -15,19 +15,11 @@ class TagCollectionMapper implements SchemaMapperInterface
     /** @var TagMapper */
     private $tagMapper;
 
-    /**
-     * @param TagMapper $tagMapper
-     */
     public function __construct(TagMapper $tagMapper)
     {
         $this->tagMapper = $tagMapper;
     }
 
-    /**
-     * @param array $payload
-     *
-     * @return TagCollection
-     */
     public function toSchema(array $payload): TagCollection
     {
         $items = [];
