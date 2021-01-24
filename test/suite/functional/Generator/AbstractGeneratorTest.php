@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Test\Functional\Generator;
 
@@ -54,7 +55,8 @@ abstract class AbstractGeneratorTest extends TestCase
         $container = new Container();
         $container->register(new ServiceProvider());
         set_error_handler(
-            static function (int $code, string $message) {
+            static function (): bool {
+                return true;
             },
             E_USER_WARNING
         );

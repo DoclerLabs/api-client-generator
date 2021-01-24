@@ -13,7 +13,6 @@ use DoclerLabs\ApiClientException\RequestValidationException;
 use Test\Schema\EmbeddedObject;
 use Test\Schema\PutResourceByIdRequestBody;
 use Test\Schema\SerializableInterface;
-use Test\Serializer\ContentType\Json\Json;
 
 class PutResourceByIdRequest implements RequestInterface
 {
@@ -102,7 +101,7 @@ class PutResourceByIdRequest implements RequestInterface
         $this->mandatoryIntegerParameter = $mandatoryIntegerParameter;
         $this->mandatoryStringParameter  = $mandatoryStringParameter;
         if (! \in_array($mandatoryEnumParameter, self::ALLOWED_MANDATORY_ENUM_PARAMETER_LIST, true)) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s` Allowed: %s', 'mandatoryEnumParameter', $mandatoryEnumParameter, Json::encode(self::ALLOWED_MANDATORY_ENUM_PARAMETER_LIST)));
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s` Allowed: %s', 'mandatoryEnumParameter', $mandatoryEnumParameter, \json_encode(self::ALLOWED_MANDATORY_ENUM_PARAMETER_LIST)));
         }
         $this->mandatoryEnumParameter     = $mandatoryEnumParameter;
         $this->mandatoryDateParameter     = $mandatoryDateParameter;
@@ -139,7 +138,7 @@ class PutResourceByIdRequest implements RequestInterface
     public function setEnumParameter(string $enumParameter): self
     {
         if (! \in_array($enumParameter, self::ALLOWED_ENUM_PARAMETER_LIST, true)) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s` Allowed: %s', 'enumParameter', $enumParameter, Json::encode(self::ALLOWED_ENUM_PARAMETER_LIST)));
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s` Allowed: %s', 'enumParameter', $enumParameter, \json_encode(self::ALLOWED_ENUM_PARAMETER_LIST)));
         }
         $this->enumParameter = $enumParameter;
 

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Command;
 
@@ -15,10 +17,7 @@ use DoclerLabs\ApiClientGenerator\Output\PhpFilePrinter;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhpFileCopier;
 use DoclerLabs\ApiClientGenerator\Output\WarningFormatter;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\StyleInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -37,6 +36,7 @@ class GenerateCommand extends Command
     private Finder              $fileFinder;
     private StaticPhpFileCopier $staticPhpPrinter;
     private Filesystem          $filesystem;
+    private WarningFormatter    $warningFormatter;
 
     public function __construct(
         Configuration $configuration,
@@ -48,7 +48,8 @@ class GenerateCommand extends Command
         MetaFilePrinter $templatePrinter,
         Finder $fileFinder,
         StaticPhpFileCopier $staticPhpCopier,
-        Filesystem $filesystem
+        Filesystem $filesystem,
+        WarningFormatter $warningFormatter
     ) {
         parent::__construct();
         $this->configuration    = $configuration;
@@ -61,6 +62,7 @@ class GenerateCommand extends Command
         $this->fileFinder       = $fileFinder;
         $this->staticPhpPrinter = $staticPhpCopier;
         $this->filesystem       = $filesystem;
+        $this->warningFormatter = $warningFormatter;
     }
 
     public function configure(): void
@@ -182,17 +184,15 @@ class GenerateCommand extends Command
 
     private function initWarningPrinting(InputInterface $input): void
     {
-        $formatter = static function (int $id, string $error, string $file, int $line, array $context) {
-        };
-        if (!$input->getOption('quiet')) {
-            $formatter = new WarningFormatter(
-                new SymfonyStyle(
-                    new ArgvInput(),
-                    new ConsoleOutput()
-                )
+        if ($input->getOption('quiet')) {
+            set_error_handler(
+                static function (): bool {
+                    return true;
+                },
+                E_USER_WARNING
             );
+        } else {
+            set_error_handler($this->warningFormatter);
         }
-
-        set_error_handler($formatter, E_USER_WARNING);
     }
 }

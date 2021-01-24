@@ -66,7 +66,7 @@ class BodySerializer
                 sprintf(
                     'Serializer for `%s` is not found. Supported: %s',
                     $contentType,
-                    Json::encode(array_keys($this->contentTypeSerializers))
+                    json_encode(array_keys($this->contentTypeSerializers))
                 )
             );
         }

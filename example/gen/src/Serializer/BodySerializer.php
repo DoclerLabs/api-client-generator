@@ -69,7 +69,7 @@ class BodySerializer
     {
         $contentType = \strtolower(\trim(\explode(';', $contentType)[0]));
         if (! isset($this->contentTypeSerializers[$contentType])) {
-            throw new InvalidArgumentException(\sprintf('Serializer for `%s` is not found. Supported: %s', $contentType, Json::encode(\array_keys($this->contentTypeSerializers))));
+            throw new InvalidArgumentException(\sprintf('Serializer for `%s` is not found. Supported: %s', $contentType, \json_encode(\array_keys($this->contentTypeSerializers))));
         }
 
         return $this->contentTypeSerializers[$contentType];

@@ -10,7 +10,6 @@ namespace OpenApi\PetStoreClient\Request;
 
 use DoclerLabs\ApiClientException\RequestValidationException;
 use OpenApi\PetStoreClient\Schema\SerializableInterface;
-use OpenApi\PetStoreClient\Serializer\ContentType\Json\Json;
 
 class FindPetsByStatusRequest implements RequestInterface
 {
@@ -39,7 +38,7 @@ class FindPetsByStatusRequest implements RequestInterface
     public function setStatus(string $status): self
     {
         if (! \in_array($status, self::ALLOWED_STATUS_LIST, true)) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s` Allowed: %s', 'status', $status, Json::encode(self::ALLOWED_STATUS_LIST)));
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s` Allowed: %s', 'status', $status, \json_encode(self::ALLOWED_STATUS_LIST)));
         }
         $this->status = $status;
 

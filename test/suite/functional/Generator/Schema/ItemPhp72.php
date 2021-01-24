@@ -11,7 +11,6 @@ namespace Test\Schema;
 use DateTimeInterface;
 use DoclerLabs\ApiClientException\RequestValidationException;
 use JsonSerializable;
-use Test\Serializer\ContentType\Json\Json;
 
 class Item implements SerializableInterface, JsonSerializable
 {
@@ -94,7 +93,7 @@ class Item implements SerializableInterface, JsonSerializable
         $this->mandatoryInteger = $mandatoryInteger;
         $this->mandatoryString  = $mandatoryString;
         if (! \in_array($mandatoryEnum, self::ALLOWED_MANDATORY_ENUM_LIST, true)) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s` Allowed: %s', 'mandatoryEnum', $mandatoryEnum, Json::encode(self::ALLOWED_MANDATORY_ENUM_LIST)));
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s` Allowed: %s', 'mandatoryEnum', $mandatoryEnum, \json_encode(self::ALLOWED_MANDATORY_ENUM_LIST)));
         }
         $this->mandatoryEnum         = $mandatoryEnum;
         $this->mandatoryDate         = $mandatoryDate;
@@ -139,7 +138,7 @@ class Item implements SerializableInterface, JsonSerializable
     public function setOptionalEnum(string $optionalEnum): self
     {
         if (! \in_array($optionalEnum, self::ALLOWED_OPTIONAL_ENUM_LIST, true)) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s` Allowed: %s', 'optionalEnum', $optionalEnum, Json::encode(self::ALLOWED_OPTIONAL_ENUM_LIST)));
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s` Allowed: %s', 'optionalEnum', $optionalEnum, \json_encode(self::ALLOWED_OPTIONAL_ENUM_LIST)));
         }
         $this->optionalEnum = $optionalEnum;
 
