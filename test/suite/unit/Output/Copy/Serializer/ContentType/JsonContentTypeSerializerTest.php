@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * @covers JsonContentTypeSerializer
+ * @covers \DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\JsonContentTypeSerializer
  */
 class JsonContentTypeSerializerTest extends TestCase
 {
@@ -16,8 +16,6 @@ class JsonContentTypeSerializerTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
-
         $this->sut = new JsonContentTypeSerializer();
     }
 

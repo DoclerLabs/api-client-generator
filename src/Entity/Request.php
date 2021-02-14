@@ -43,20 +43,22 @@ class Request
         RequestFieldRegistry $fieldCollection,
         array $bodyContentTypes
     ) {
-        $this->path = $this->toRelativePath($path);
         if (!in_array($method, self::ALLOWED_METHODS, true)) {
             throw new InvalidSpecificationException(
                 sprintf('Unsupported request method `%s` in `%s`.', $method, $path)
             );
         }
-        $this->method            = $method;
-        $this->fields            = $fieldCollection;
+
         $unsupportedContentTypes = array_diff($bodyContentTypes, Request::ALLOWED_CONTENT_TYPES);
         if (!empty($unsupportedContentTypes)) {
             throw new InvalidSpecificationException(
                 sprintf('Request content-type %s is not currently supported.', json_encode($unsupportedContentTypes))
             );
         }
+
+        $this->path             = $this->toRelativePath($path);
+        $this->method           = $method;
+        $this->fields           = $fieldCollection;
         $this->bodyContentTypes = $bodyContentTypes;
     }
 

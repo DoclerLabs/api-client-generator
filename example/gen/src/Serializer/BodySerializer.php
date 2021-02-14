@@ -15,7 +15,6 @@ use DoclerLabs\ApiClientException\UnexpectedResponseException;
 use InvalidArgumentException;
 use OpenApi\PetStoreClient\Request\RequestInterface;
 use OpenApi\PetStoreClient\Serializer\ContentType\ContentTypeSerializerInterface;
-use OpenApi\PetStoreClient\Serializer\ContentType\Json\Json;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 

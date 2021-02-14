@@ -15,7 +15,7 @@ use Psr\Http\Message\StreamInterface;
 
 interface ContentTypeSerializerInterface
 {
-    public const LITERAL_VALUE_KEY = '__literalResponseValue';
+    const LITERAL_VALUE_KEY = '__literalResponseValue';
 
     public function encode(SerializableInterface $body): string;
 

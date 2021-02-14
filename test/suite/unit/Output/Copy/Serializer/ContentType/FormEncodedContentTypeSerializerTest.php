@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * @covers FormUrlencodedContentTypeSerializer
+ * @covers \DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\FormUrlencodedContentTypeSerializer
  */
 class FormEncodedContentTypeSerializerTest extends TestCase
 {
@@ -16,8 +16,6 @@ class FormEncodedContentTypeSerializerTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
-
         $this->sut = new FormUrlencodedContentTypeSerializer();
     }
 

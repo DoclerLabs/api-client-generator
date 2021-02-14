@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType;
 
@@ -8,7 +7,7 @@ use Psr\Http\Message\StreamInterface;
 
 interface ContentTypeSerializerInterface
 {
-    public const LITERAL_VALUE_KEY = '__literalResponseValue';
+    const LITERAL_VALUE_KEY = '__literalResponseValue';
 
     public function encode(SerializableInterface $body): string;
 

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
@@ -55,13 +57,15 @@ class ClientGenerator extends GeneratorAbstract
             'map',
             $this->builder->args([$requestVariable])
         );
+
         $clientCall = $this->builder->methodCall(
             $this->builder->localPropertyFetch('client'),
             'sendRequest',
             [$mapMethodCall]
         );
 
-        return $this->builder->method('sendRequest')
+        return $this->builder
+            ->method('sendRequest')
             ->makePublic()
             ->addParam($methodParameter)
             ->addStmt($this->builder->return($clientCall))
@@ -83,7 +87,7 @@ class ClientGenerator extends GeneratorAbstract
             )
         );
 
-        $requestVar = $this->builder->var('request');
+        $requestVar  = $this->builder->var('request');
         $methodParam = $this->builder
             ->param('request')
             ->setType($requestClassName)
@@ -98,7 +102,8 @@ class ClientGenerator extends GeneratorAbstract
 
         $responseBody = $operation->getSuccessfulResponse()->getBody();
         if ($responseBody === null) {
-            return $this->builder->method($operation->getName())
+            return $this->builder
+                ->method($operation->getName())
                 ->makePublic()
                 ->addParam($methodParam)
                 ->addStmt($handleResponseStmt)
@@ -108,7 +113,7 @@ class ClientGenerator extends GeneratorAbstract
         }
 
         $responseVariable = $this->builder->var('response');
-        $stmts[] = $this->builder->assign($responseVariable, $handleResponseStmt);
+        $stmts[]          = $this->builder->assign($responseVariable, $handleResponseStmt);
         if ($responseBody->isComposite()) {
             $mapperClassName = SchemaMapperNaming::getClassName($responseBody);
             $this->addImport(
@@ -126,8 +131,8 @@ class ClientGenerator extends GeneratorAbstract
                 [$this->builder->classConstFetch($mapperClassName, 'class')]
             );
 
-            $mapMethod  = $this->builder->methodCall($getMethod, 'toSchema', [$responseVariable]);
-            $stmts[] = $this->builder->return($mapMethod);
+            $mapMethod = $this->builder->methodCall($getMethod, 'toSchema', [$responseVariable]);
+            $stmts[]   = $this->builder->return($mapMethod);
 
             $this->addImport(
                 sprintf(
@@ -143,10 +148,12 @@ class ClientGenerator extends GeneratorAbstract
                 $responseVariable,
                 $this->builder->classConstFetch('ContentTypeSerializerInterface', 'LITERAL_VALUE_KEY')
             );
+
             $stmts[] = $this->builder->return($literalValue);
         }
 
-        return $this->builder->method($operation->getName())
+        return $this->builder
+            ->method($operation->getName())
             ->makePublic()
             ->addParam($methodParam)
             ->addStmts($stmts)
@@ -209,7 +216,7 @@ class ClientGenerator extends GeneratorAbstract
             ->param('response')
             ->setType('ResponseInterface')
             ->getNode();
-        $response = $this->builder->var('response');
+        $response     = $this->builder->var('response');
 
         $handleResponseStatement = $this->builder->return(
             $this->builder->methodCall(

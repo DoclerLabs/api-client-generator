@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * @covers XmlContentTypeSerializer
+ * @covers \DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\XmlContentTypeSerializer
  */
 class XmlContentTypeSerializerTest extends TestCase
 {
@@ -16,8 +16,6 @@ class XmlContentTypeSerializerTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
-
         $this->sut = new XmlContentTypeSerializer();
     }
 

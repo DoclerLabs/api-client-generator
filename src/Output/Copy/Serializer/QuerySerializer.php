@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Output\Copy\Serializer;
 
@@ -16,7 +17,9 @@ class QuerySerializer
         foreach ($request->getRawQueryParameters() as $name => $value) {
             if ($value === null) {
                 continue;
-            } elseif ($value instanceof DateTimeInterface) {
+            }
+
+            if ($value instanceof DateTimeInterface) {
                 $value = $value->format(DateTimeInterface::RFC3339);
             } elseif ($value instanceof SerializableInterface) {
                 $value = $value->toArray();

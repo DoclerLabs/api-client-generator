@@ -6,7 +6,6 @@ use DoclerLabs\ApiClientException\RequestValidationException;
 use DoclerLabs\ApiClientException\UnexpectedResponseException;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\RequestInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\ContentTypeSerializerInterface;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\Json\Json;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;

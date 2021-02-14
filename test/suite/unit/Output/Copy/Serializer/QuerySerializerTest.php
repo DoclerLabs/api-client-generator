@@ -14,7 +14,7 @@ use JsonSerializable;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers QuerySerializer
+ * @covers \DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\QuerySerializer
  */
 class QuerySerializerTest extends TestCase
 {
