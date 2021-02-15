@@ -11,7 +11,7 @@ class Configuration
 {
     public const DEFAULT_CODE_STYLE_CONFIG      = __DIR__ . '/../../.php_cs.php';
     public const DEFAULT_TEMPLATE_DIRECTORY     = __DIR__ . '/../../template';
-    public const DEFAULT_PHP_VERSION            = PhpVersion::VERSION_PHP72;
+    public const DEFAULT_PHP_VERSION            = PhpVersion::VERSION_PHP74;
     public const DEFAULT_SOURCE_DIRECTORY       = 'src';
     public const DEFAULT_HTTP_MESSAGE           = HttpMessageImplementationStrategy::HTTP_MESSAGE_GUZZLE;
     public const DEFAULT_CONTAINER              = ContainerImplementationStrategy::CONTAINER_PIMPLE;

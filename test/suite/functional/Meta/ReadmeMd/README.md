@@ -11,7 +11,7 @@ docker run -it \
 -e OPENAPI=/openapi.yaml \
 -e OUTPUT_DIR=/client \
 -e PACKAGE=test/test-api-client \
--e CLIENT_PHP_VERSION=7.2 \
+-e CLIENT_PHP_VERSION=7.4 \
 dhlabs/api-client-generator
 ```
 

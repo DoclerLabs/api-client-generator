@@ -36,7 +36,7 @@ The following environment variables are available:
 | `OUTPUT_DIR` | yes | | | /client |
 | `CODE_STYLE` | no | {path-to-repository}/.php_cs.php | | /client/myCodeStyle.php |
 | `SOURCE_DIR` | no | src | | src |
-| `CLIENT_PHP_VERSION` | no | 7.2 | 7.0, 7.1, 7.2, 7.3, 7.4 | 7.4 |
+| `CLIENT_PHP_VERSION` | no | 7.4 | 7.0, 7.1, 7.2, 7.3, 7.4 | 7.4 |
 | `COMPOSER_JSON_TEMPLATE_DIR` | no | {path-to-repository}/template/composer.json.twig | | /path/composer.json.twig |
 | `README_MD_TEMPLATE_DIR` | no | {path-to-repository}/template/README.md.twig | | /path/README.md.twig |
 | `HTTP_MESSAGE` | no | guzzle | guzzle, nyholm | nyholm |
