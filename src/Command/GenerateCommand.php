@@ -192,7 +192,7 @@ class GenerateCommand extends Command
                 E_USER_WARNING
             );
         } else {
-            set_error_handler($this->warningFormatter);
+            set_error_handler($this->warningFormatter, E_USER_WARNING);
         }
     }
 }
