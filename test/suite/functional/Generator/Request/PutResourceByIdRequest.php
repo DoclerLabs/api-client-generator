@@ -33,65 +33,45 @@ class PutResourceByIdRequest implements RequestInterface
 
     public const ALLOWED_MANDATORY_ENUM_PARAMETER_LIST = [self::MANDATORY_ENUM_PARAMETER_ONE_VALUE, self::MANDATORY_ENUM_PARAMETER_ANOTHER_VALUE, self::MANDATORY_ENUM_PARAMETER_THIRD_VALUE];
 
-    /** @var int */
-    private $resourceId;
+    private int $resourceId;
 
-    /** @var int|null */
-    private $integerParameter;
+    private ?int $integerParameter = null;
 
-    /** @var string|null */
-    private $stringParameter;
+    private ?string $stringParameter = null;
 
-    /** @var string|null */
-    private $enumParameter;
+    private ?string $enumParameter = null;
 
-    /** @var DateTimeInterface|null */
-    private $dateParameter;
+    private ?DateTimeInterface $dateParameter = null;
 
-    /** @var float|null */
-    private $floatParameter;
+    private ?float $floatParameter = null;
 
-    /** @var bool|null */
-    private $booleanParameter;
+    private ?bool $booleanParameter = null;
 
-    /** @var int[]|null */
-    private $arrayParameter;
+    private ?array $arrayParameter = null;
 
-    /** @var EmbeddedObject|null */
-    private $objectParameter;
+    private ?EmbeddedObject $objectParameter = null;
 
-    /** @var int */
-    private $mandatoryIntegerParameter;
+    private int $mandatoryIntegerParameter;
 
-    /** @var string */
-    private $mandatoryStringParameter;
+    private string $mandatoryStringParameter;
 
-    /** @var string */
-    private $mandatoryEnumParameter;
+    private string $mandatoryEnumParameter;
 
-    /** @var DateTimeInterface */
-    private $mandatoryDateParameter;
+    private DateTimeInterface $mandatoryDateParameter;
 
-    /** @var float */
-    private $mandatoryFloatParameter;
+    private float $mandatoryFloatParameter;
 
-    /** @var bool */
-    private $mandatoryBooleanParameter;
+    private bool $mandatoryBooleanParameter;
 
-    /** @var int[] */
-    private $mandatoryArrayParameter;
+    private array $mandatoryArrayParameter;
 
-    /** @var EmbeddedObject */
-    private $mandatoryObjectParameter;
+    private EmbeddedObject $mandatoryObjectParameter;
 
-    /** @var string */
-    private $xRequestId;
+    private string $xRequestId;
 
-    /** @var string|null */
-    private $csrfToken;
+    private ?string $csrfToken = null;
 
-    /** @var PutResourceByIdRequestBody */
-    private $putResourceByIdRequestBody;
+    private PutResourceByIdRequestBody $putResourceByIdRequestBody;
 
     public function __construct(int $resourceId, int $mandatoryIntegerParameter, string $mandatoryStringParameter, string $mandatoryEnumParameter, DateTimeInterface $mandatoryDateParameter, float $mandatoryFloatParameter, bool $mandatoryBooleanParameter, array $mandatoryArrayParameter, EmbeddedObject $mandatoryObjectParameter, string $xRequestId, PutResourceByIdRequestBody $putResourceByIdRequestBody)
     {

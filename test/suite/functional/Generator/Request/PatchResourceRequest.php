@@ -12,8 +12,7 @@ use Test\Schema\PatchResourceRequestBody;
 
 class PatchResourceRequest implements RequestInterface
 {
-    /** @var PatchResourceRequestBody */
-    private $patchResourceRequestBody;
+    private PatchResourceRequestBody $patchResourceRequestBody;
 
     public function __construct(PatchResourceRequestBody $patchResourceRequestBody)
     {

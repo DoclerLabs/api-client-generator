@@ -14,8 +14,7 @@ use Test\Schema\Item;
 
 class ItemMapper implements SchemaMapperInterface
 {
-    /** @var EmbeddedObjectMapper */
-    private $embeddedObjectMapper;
+    private EmbeddedObjectMapper $embeddedObjectMapper;
 
     public function __construct(EmbeddedObjectMapper $embeddedObjectMapper)
     {
