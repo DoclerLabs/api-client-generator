@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator;
 
@@ -95,7 +96,15 @@ class ServiceProvider implements ServiceProviderInterface
             $container[MetaFilePrinter::class],
             $container[Finder::class],
             $container[StaticPhpFileCopier::class],
-            $container[Filesystem::class]
+            $container[Filesystem::class],
+            $container[WarningFormatter::class]
+        );
+
+        $pimple[WarningFormatter::class] = static fn () => new WarningFormatter(
+            new SymfonyStyle(
+                new ArgvInput(),
+                new ConsoleOutput()
+            )
         );
 
         $pimple[Finder::class] = static fn () => new Finder();

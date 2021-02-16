@@ -7,6 +7,8 @@ use Psr\Http\Message\StreamInterface;
 
 class FormUrlencodedContentTypeSerializer implements ContentTypeSerializerInterface
 {
+    const MIME_TYPE = 'application/x-www-form-urlencoded';
+
     public function encode(SerializableInterface $body): string
     {
         return http_build_query($body->toArray());
@@ -18,5 +20,10 @@ class FormUrlencodedContentTypeSerializer implements ContentTypeSerializerInterf
         parse_str($body->getContents(), $decoded);
 
         return $decoded;
+    }
+
+    public function getMimeType(): string
+    {
+        return self::MIME_TYPE;
     }
 }

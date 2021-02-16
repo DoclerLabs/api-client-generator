@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
@@ -16,7 +18,7 @@ use PhpParser\Node\Stmt\ClassMethod;
 class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
 {
     public const NAMESPACE_SUBPATH = '\\Request';
-    public const SUBDIRECTORY      = 'Request/';
+    public const SUBDIRECTORY = 'Request/';
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
     {
@@ -36,8 +38,8 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->addStmts($this->generateEnums($request))
             ->addStmts($this->generateProperties($request))
             ->addStmt($this->generateConstructor($request))
+            ->addStmt($this->generateGetContentType())
             ->addStmts($this->generateSetters($request))
-            ->addStmt($this->generateGetContentType($request))
             ->addStmt($this->generateGetMethod($request))
             ->addStmt($this->generateGetRoute($request))
             ->addStmts($this->generateGetParametersMethods($request));
@@ -78,6 +80,12 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             }
         }
 
+        $default = null;
+        if (count($request->getBodyContentTypes()) < 2) {
+            $default = $this->builder->val($request->getBodyContentTypes()[0] ?? '');
+        }
+        $statements[] = $this->builder->localProperty('contentType', 'string', 'string', false, $default);
+
         return $statements;
     }
 
@@ -104,6 +112,21 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                 }
             }
         }
+
+        if (count($request->getBodyContentTypes()) > 1) {
+            $contentTypeVariableName = 'contentType';
+
+            $params[] = $this->builder
+                ->param($contentTypeVariableName)
+                ->setType('string')
+                ->getNode();
+
+            $paramInits[] = $this->builder->assign(
+                $this->builder->localPropertyFetch($contentTypeVariableName),
+                $this->builder->var($contentTypeVariableName)
+            );
+        }
+
         if (empty($params)) {
             return null;
         }
@@ -131,9 +154,9 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         return $statements;
     }
 
-    protected function generateGetContentType(Request $request): ClassMethod
+    protected function generateGetContentType(): ClassMethod
     {
-        $return     = $this->builder->return($this->builder->val($request->getContentType()));
+        $return     = $this->builder->return($this->builder->localPropertyFetch('contentType'));
         $returnType = 'string';
 
         return $this->builder
@@ -279,8 +302,8 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
     private function generateGetHeadersMethod(Request $request, array $fields): ClassMethod
     {
         $headers = [];
-        if ($request->getContentType() !== '') {
-            $headers['Content-Type'] = $this->builder->val($request->getContentType());
+        if (!empty($request->getBodyContentTypes())) {
+            $headers['Content-Type'] = $this->builder->localPropertyFetch('contentType');
         }
         $returnVal  = $this->builder->array($headers);
         $fieldsArr  = [];

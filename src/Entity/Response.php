@@ -13,6 +13,11 @@ class Response
         $this->body       = $body;
     }
 
+    public function getStatusCode(): int
+    {
+        return $this->statusCode;
+    }
+
     public function getBody(): ?Field
     {
         return $this->body;

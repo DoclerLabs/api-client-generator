@@ -21,6 +21,14 @@ class GetResourcesRequest implements RequestInterface
     /** @var int[]|null */
     private $filterByIds;
 
+    /** @var string */
+    private $contentType = '';
+
+    public function getContentType(): string
+    {
+        return $this->contentType;
+    }
+
     public function setFilterById(int $filterById): self
     {
         $this->filterById = $filterById;
@@ -43,11 +51,6 @@ class GetResourcesRequest implements RequestInterface
         $this->filterByIds = $filterByIds;
 
         return $this;
-    }
-
-    public function getContentType(): string
-    {
-        return '';
     }
 
     public function getMethod(): string

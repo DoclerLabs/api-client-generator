@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Input\Factory;
 
@@ -8,6 +10,7 @@ use DoclerLabs\ApiClientGenerator\Entity\Request;
 use DoclerLabs\ApiClientGenerator\Entity\RequestFieldRegistry;
 use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaNaming;
+use Icecave\Parity\Parity;
 
 class RequestFactory
 {
@@ -25,8 +28,8 @@ class RequestFactory
         array $parameters,
         RequestBody $body = null
     ): Request {
-        $requestBodyContentType = '';
-        $collection             = new RequestFieldRegistry();
+        $contentTypes = [];
+        $collection   = new RequestFieldRegistry();
         foreach ($parameters as $parameter) {
             if ($parameter instanceof Reference) {
                 $parameter = $parameter->resolve();
@@ -44,30 +47,29 @@ class RequestFactory
         }
 
         if ($body !== null) {
-            if (count($body->content) > 1) {
-                throw new InvalidSpecificationException('Only one content-type per request is currently supported.');
-            }
+            $schema = null;
             foreach ($body->content as $contentType => $content) {
-                if ($content->schema !== null) {
-                    $schema     = $content->schema;
-                    $schemaName = SchemaNaming::getClassName($schema, ucfirst($operationName) . 'RequestBody');
-
-                    $collection->add(
-                        RequestFieldRegistry::ORIGIN_BODY,
-                        $this->fieldFactory->create(
-                            $operationName,
-                            lcfirst($schemaName),
-                            $schema,
-                            true,
-                            $schemaName
-                        )
-                    );
-
-                    $requestBodyContentType = $contentType;
+                if ($schema !== null && !Parity::isEqualTo($content->schema, $schema)) {
+                    throw new InvalidSpecificationException('Multiple schemas per request is not currently supported.');
                 }
+                $schema         = $content->schema;
+                $contentTypes[] = $contentType;
             }
+
+            $schemaName = SchemaNaming::getClassName($schema, ucfirst($operationName) . 'RequestBody');
+
+            $collection->add(
+                RequestFieldRegistry::ORIGIN_BODY,
+                $this->fieldFactory->create(
+                    $operationName,
+                    lcfirst($schemaName),
+                    $schema,
+                    true,
+                    $schemaName
+                )
+            );
         }
 
-        return new Request($path, $method, $collection, $requestBodyContentType);
+        return new Request($path, $method, $collection, $contentTypes);
     }
 }

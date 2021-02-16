@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 
 /**
- * @covers DoclerLabs\ApiClientGenerator\Output\Copy\Request\CookieJar
+ * @covers \DoclerLabs\ApiClientGenerator\Output\Copy\Request\CookieJar
  */
 class CookieJarTest extends TestCase
 {

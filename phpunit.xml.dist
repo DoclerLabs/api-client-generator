@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="./vendor/autoload.php" colors="true"
-		 convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true"
-		 stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
-	<coverage processUncoveredFiles="true">
-		<include>
-			<directory suffix=".php">./src</directory>
-		</include>
-		<report>
-			<clover outputFile="build/logs/clover.xml"/>
-			<html outputDirectory="./test-reports"/>
-			<text outputFile="php://stdout" showOnlySummary="false"/>
-		</report>
-	</coverage>
-	<testsuites>
-		<testsuite name="unit">
-			<directory>./test/suite/unit</directory>
-		</testsuite>
-		<testsuite name="functional">
-			<directory>./test/suite/functional</directory>
-		</testsuite>
-	</testsuites>
-	<logging/>
+         convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true"
+         stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+    <coverage processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">./src</directory>
+        </include>
+        <report>
+            <clover outputFile="build/logs/clover.xml"/>
+            <html outputDirectory="./test-reports"/>
+            <text outputFile="php://stdout" showOnlySummary="false"/>
+        </report>
+    </coverage>
+    <testsuites>
+        <testsuite name="unit">
+            <directory>./test/suite/unit</directory>
+        </testsuite>
+        <testsuite name="functional">
+            <directory>./test/suite/functional</directory>
+        </testsuite>
+        <testsuite name="acceptance">
+            <directory>./test/suite/acceptance</directory>
+        </testsuite>
+    </testsuites>
+    <logging/>
 </phpunit>
