@@ -13,6 +13,9 @@ use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\QuerySerializer;
 use JsonSerializable;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\QuerySerializer
+ */
 class QuerySerializerTest extends TestCase
 {
     private QuerySerializer $sut;
@@ -29,8 +32,8 @@ class QuerySerializerTest extends TestCase
     {
         $request = $this->createMock(RequestInterface::class);
         $request->expects(self::once())
-            ->method('getRawQueryParameters')
-            ->willReturn($rawQueryParameters);
+                ->method('getRawQueryParameters')
+                ->willReturn($rawQueryParameters);
 
         parse_str($this->sut->serializeRequest($request), $actual);
         self::assertSame(
@@ -43,13 +46,13 @@ class QuerySerializerTest extends TestCase
     {
         $serializable = $this->createMock(SerializableInterface::class);
         $serializable->expects(self::once())
-            ->method('toArray')
-            ->willReturn($serialized = ['foo' => 'bar']);
+                     ->method('toArray')
+                     ->willReturn($serialized = ['foo' => 'bar']);
 
         $jsonSerializable = $this->createMock(JsonSerializable::class);
         $jsonSerializable->expects(self::once())
-            ->method('jsonSerialize')
-            ->willReturn($jsonSerialized = ['bar' => 'foo']);
+                         ->method('jsonSerialize')
+                         ->willReturn($jsonSerialized = ['bar' => 'foo']);
 
         return [
             'DateTime'                   => [

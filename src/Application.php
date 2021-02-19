@@ -19,8 +19,6 @@ class Application extends BaseApplication
         $container = new Container();
         $container->register(new ServiceProvider());
 
-        set_error_handler($container[WarningFormatter::class], E_USER_WARNING);
-
         $this->add($container[GenerateCommand::class]);
     }
 }

@@ -6,7 +6,6 @@ use DoclerLabs\ApiClientException\RequestValidationException;
 use DoclerLabs\ApiClientException\UnexpectedResponseException;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\RequestInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\ContentTypeSerializerInterface;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\Json\Json;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
@@ -16,9 +15,9 @@ class BodySerializer
     /** @var ContentTypeSerializerInterface[] */
     private $contentTypeSerializers = [];
 
-    public function add(string $contentType, ContentTypeSerializerInterface $contentTypeSerializer): self
+    public function add(ContentTypeSerializerInterface $contentTypeSerializer): self
     {
-        $this->contentTypeSerializers[$contentType] = $contentTypeSerializer;
+        $this->contentTypeSerializers[$contentTypeSerializer->getMimeType()] = $contentTypeSerializer;
 
         return $this;
     }
@@ -66,7 +65,7 @@ class BodySerializer
                 sprintf(
                     'Serializer for `%s` is not found. Supported: %s',
                     $contentType,
-                    Json::encode(array_keys($this->contentTypeSerializers))
+                    json_encode(array_keys($this->contentTypeSerializers))
                 )
             );
         }

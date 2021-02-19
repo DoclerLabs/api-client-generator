@@ -21,8 +21,8 @@ class BodySerializerTest extends TestCase
     {
         $this->sut = new BodySerializer();
         $this->sut
-            ->add('application/json', new JsonContentTypeSerializer())
-            ->add('application/x-www-form-urlencoded', new FormUrlencodedContentTypeSerializer());
+            ->add(new JsonContentTypeSerializer())
+            ->add(new FormUrlencodedContentTypeSerializer());
     }
 
     public function testUnserializeJsonResponseForEmptyBody(): void
@@ -53,7 +53,7 @@ class BodySerializerTest extends TestCase
     public function testUnserializeJsonResponse(string $contentType): void
     {
         $body        = ['key' => 'value'];
-        $encodedBody = Json::encode($body);
+        $encodedBody = json_encode($body, JSON_THROW_ON_ERROR);
 
         $response = $this->getResponse($contentType, $encodedBody);
 

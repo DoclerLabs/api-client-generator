@@ -6,6 +6,7 @@ use cebe\openapi\spec\Reference;
 use DoclerLabs\ApiClientGenerator\Entity\Response;
 use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaNaming;
+use Icecave\Parity\Parity;
 
 class ResponseFactory
 {
@@ -29,17 +30,18 @@ class ResponseFactory
             }
 
             if (200 <= $code && $code < 300) {
-                if (count($response->content) > 1) {
-                    throw new InvalidSpecificationException(
-                        'Only one content-type per response is currently supported.'
-                    );
-                }
-                $content = current($response->content);
-                if ($content === false) {
+                if (empty($response->content) || current($response->content) === false) {
                     return new Response((int)$code, null);
                 }
 
-                $schema = $content->schema;
+                $schema = null;
+                foreach ($response->content as $content) {
+                    if ($schema !== null && !Parity::isEqualTo($content->schema, $schema)) {
+                        throw new InvalidSpecificationException('Multiple schemas per response is not currently supported.');
+                    }
+                    $schema = $content->schema;
+                }
+
                 $schemaName = SchemaNaming::getClassName($schema, ucfirst($operationName) . 'ResponseBody');
 
                 $body = $this->fieldMapper->create(
@@ -54,9 +56,13 @@ class ResponseFactory
             }
         }
 
-        throw new InvalidSpecificationException(
-            sprintf('Successful response is not found for %s operation.', $operationName)
+        $warningMessage = sprintf(
+            'Successful response is not found for %s operation, 200 response assumed.',
+            $operationName
         );
+        trigger_error($warningMessage, E_USER_WARNING);
+
+        return new Response(200, null);
     }
 
     public function createPossibleErrors(array $openApiResponses): array

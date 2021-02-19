@@ -1,50 +1,55 @@
 {
-    "name": "docler-labs/api-client-generator",
-    "version": "3.0.0",
-    "description": "SDK Generator - API Client Generator",
-    "type": "library",
-    "license": "MIT",
-    "keywords": [
-        "rest",
-        "api",
-        "api-client",
-        "openapi",
-        "sdk",
-        "generator",
-        "api-client-generator"
-    ],
-    "require": {
-        "php": ">=7.4",
-        "ext-json": "*",
-        "ext-dom": "*",
-        "cebe/php-openapi": "^1.4",
-        "docler-labs/api-client-exception": "^1.0.1",
-        "friendsofphp/php-cs-fixer": "^2.16",
-        "guzzlehttp/psr7": "^1.6",
-        "nikic/php-parser": "^4.10",
-        "nyholm/psr7": "^1.3",
-        "pimple/pimple": "^3.3",
-        "psr/http-client": "^1.0",
-        "psr/http-message": "^1.0",
-        "psr/container": "^1.0",
-        "symfony/console": "^5.1",
-        "symfony/yaml": "^5.1",
-        "twig/twig": "^3.0"
-    },
-    "require-dev": {
-        "php-coveralls/php-coveralls": "^2.2",
-        "phpstan/phpstan": "^0.12.32",
-        "phpunit/phpunit": "^9.2",
-        "roave/security-advisories": "dev-latest"
-    },
-    "autoload": {
-        "psr-4": {
-            "DoclerLabs\\ApiClientGenerator\\Test\\Unit\\": "test/suite/unit",
-            "DoclerLabs\\ApiClientGenerator\\Test\\Functional\\": "test/suite/functional",
-            "DoclerLabs\\ApiClientGenerator\\": "src/"
-        }
-    },
-    "config": {
-        "sort-packages": true
+  "name": "docler-labs/api-client-generator",
+  "version": "3.0.0",
+  "description": "SDK Generator - API Client Generator",
+  "type": "library",
+  "license": "MIT",
+  "keywords": [
+    "rest",
+    "api",
+    "api-client",
+    "openapi",
+    "sdk",
+    "generator",
+    "api-client-generator"
+  ],
+  "require": {
+    "php": ">=7.4",
+    "ext-dom": "*",
+    "ext-json": "*",
+    "ext-xml": "*",
+    "cebe/php-openapi": "^1.4",
+    "docler-labs/api-client-exception": "^1.0.1",
+    "friendsofphp/php-cs-fixer": "^2.16",
+    "guzzlehttp/psr7": "^1.6",
+    "icecave/parity": "^3.0",
+    "nikic/php-parser": "^4.10",
+    "nyholm/psr7": "^1.3",
+    "pimple/pimple": "^3.3",
+    "psr/container": "^1.0",
+    "psr/http-client": "^1.0",
+    "psr/http-message": "^1.0",
+    "symfony/console": "^5.1",
+    "symfony/yaml": "^5.1",
+    "twig/twig": "^3.0"
+  },
+  "require-dev": {
+    "composer/composer": "^2.0",
+    "php-coveralls/php-coveralls": "^2.2",
+    "phpstan/phpstan": "^0.12.32",
+    "phpunit/phpunit": "^9.2",
+    "roave/security-advisories": "dev-latest",
+    "symfony/filesystem": "^5.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "DoclerLabs\\ApiClientGenerator\\Test\\Unit\\": "test/suite/unit",
+      "DoclerLabs\\ApiClientGenerator\\Test\\Functional\\": "test/suite/functional",
+      "DoclerLabs\\ApiClientGenerator\\Test\\Acceptance\\": "test/suite/acceptance",
+      "DoclerLabs\\ApiClientGenerator\\": "src/"
     }
+  },
+  "config": {
+    "sort-packages": true
+  }
 }

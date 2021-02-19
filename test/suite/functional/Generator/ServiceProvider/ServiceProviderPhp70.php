@@ -19,6 +19,7 @@ use Test\Schema\Mapper\PetMapper;
 use Test\Serializer\BodySerializer;
 use Test\Serializer\ContentType\FormUrlencodedContentTypeSerializer;
 use Test\Serializer\ContentType\JsonContentTypeSerializer;
+use Test\Serializer\ContentType\XmlContentTypeSerializer;
 use Test\Serializer\QuerySerializer;
 
 class ServiceProvider
@@ -26,7 +27,7 @@ class ServiceProvider
     public function register(Container $container): void
     {
         $container[BodySerializer::class] = static function (): BodySerializer {
-            return (new BodySerializer())->add('application/json', new JsonContentTypeSerializer())->add('application/x-www-form-urlencoded', new FormUrlencodedContentTypeSerializer());
+            return (new BodySerializer())->add(new JsonContentTypeSerializer())->add(new FormUrlencodedContentTypeSerializer())->add(new XmlContentTypeSerializer());
         };
         $container[QuerySerializer::class] = static function (): QuerySerializer {
             return new QuerySerializer();

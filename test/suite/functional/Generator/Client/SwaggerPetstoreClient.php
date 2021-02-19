@@ -43,12 +43,16 @@ class SwaggerPetstoreClient
 
     public function findPets(FindPetsRequest $request): PetCollection
     {
-        return $this->container->get(PetCollectionMapper::class)->toSchema($this->handleResponse($this->sendRequest($request)));
+        $response = $this->handleResponse($this->sendRequest($request));
+
+        return $this->container->get(PetCollectionMapper::class)->toSchema($response);
     }
 
     public function addPet(AddPetRequest $request): Pet
     {
-        return $this->container->get(PetMapper::class)->toSchema($this->handleResponse($this->sendRequest($request)));
+        $response = $this->handleResponse($this->sendRequest($request));
+
+        return $this->container->get(PetMapper::class)->toSchema($response);
     }
 
     public function countPets(CountPetsRequest $request): void
@@ -58,7 +62,9 @@ class SwaggerPetstoreClient
 
     public function findPetById(FindPetByIdRequest $request): Pet
     {
-        return $this->container->get(PetMapper::class)->toSchema($this->handleResponse($this->sendRequest($request)));
+        $response = $this->handleResponse($this->sendRequest($request));
+
+        return $this->container->get(PetMapper::class)->toSchema($response);
     }
 
     public function deletePetsIdPetFoodFoodId(DeletePetsIdPetFoodFoodIdRequest $request): void
