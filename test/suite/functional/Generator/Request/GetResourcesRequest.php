@@ -18,8 +18,7 @@ class GetResourcesRequest implements RequestInterface
 
     private ?array $filterByIds = null;
 
-    /** @var string */
-    private $contentType = '';
+    private string $contentType = '';
 
     public function getContentType(): string
     {

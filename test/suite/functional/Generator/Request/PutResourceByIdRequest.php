@@ -72,8 +72,7 @@ class PutResourceByIdRequest implements RequestInterface
 
     private PutResourceByIdRequestBody $putResourceByIdRequestBody;
 
-    /** @var string */
-    private $contentType = 'application/json';
+    private string $contentType = 'application/json';
 
     public function __construct(int $resourceId, int $mandatoryIntegerParameter, string $mandatoryStringParameter, string $mandatoryEnumParameter, DateTimeInterface $mandatoryDateParameter, float $mandatoryFloatParameter, bool $mandatoryBooleanParameter, array $mandatoryArrayParameter, EmbeddedObject $mandatoryObjectParameter, string $xRequestId, PutResourceByIdRequestBody $putResourceByIdRequestBody)
     {

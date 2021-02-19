@@ -14,8 +14,7 @@ class PatchResourceRequest implements RequestInterface
 {
     private PatchResourceRequestBody $patchResourceRequestBody;
 
-    /** @var string */
-    private $contentType = 'application/json';
+    private string $contentType = 'application/json';
 
     public function __construct(PatchResourceRequestBody $patchResourceRequestBody)
     {
