@@ -12,8 +12,7 @@ use Test\Schema\ItemCollection;
 
 class ItemCollectionMapper implements SchemaMapperInterface
 {
-    /** @var ItemMapper */
-    private $itemMapper;
+    private ItemMapper $itemMapper;
 
     public function __construct(ItemMapper $itemMapper)
     {

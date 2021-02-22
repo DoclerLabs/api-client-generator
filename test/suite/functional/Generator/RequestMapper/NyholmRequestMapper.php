@@ -17,11 +17,9 @@ use Test\Serializer\QuerySerializer;
 
 class NyholmRequestMapper implements RequestMapperInterface
 {
-    /** @var BodySerializer */
-    private $bodySerializer;
+    private BodySerializer $bodySerializer;
 
-    /** @var QuerySerializer */
-    private $querySerializer;
+    private QuerySerializer $querySerializer;
 
     public function __construct(BodySerializer $bodySerializer, QuerySerializer $querySerializer)
     {

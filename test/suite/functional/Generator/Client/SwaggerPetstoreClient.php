@@ -26,11 +26,9 @@ use Test\Schema\PetCollection;
 
 class SwaggerPetstoreClient
 {
-    /** @var ClientInterface */
-    private $client;
+    private ClientInterface $client;
 
-    /** @var ContainerInterface */
-    private $container;
+    private ContainerInterface $container;
 
     public function __construct(ClientInterface $client, ContainerInterface $container)
     {

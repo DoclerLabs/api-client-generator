@@ -12,17 +12,13 @@ use Test\Schema\SerializableInterface;
 
 class GetResourcesRequest implements RequestInterface
 {
-    /** @var int|null */
-    private $filterById;
+    private ?int $filterById = null;
 
-    /** @var string|null */
-    private $filterByName;
+    private ?string $filterByName = null;
 
-    /** @var int[]|null */
-    private $filterByIds;
+    private ?array $filterByIds = null;
 
-    /** @var string */
-    private $contentType = '';
+    private string $contentType = '';
 
     public function getContentType(): string
     {

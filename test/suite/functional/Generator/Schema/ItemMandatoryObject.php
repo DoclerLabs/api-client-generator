@@ -12,11 +12,9 @@ use JsonSerializable;
 
 class ItemMandatoryObject implements SerializableInterface, JsonSerializable
 {
-    /** @var string|null */
-    private $string;
+    private ?string $string = null;
 
-    /** @var ItemMandatoryObjectNullableObject|null */
-    private $nullableObject;
+    private ?ItemMandatoryObjectNullableObject $nullableObject = null;
 
     public function setString(string $string): self
     {

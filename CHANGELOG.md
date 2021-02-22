@@ -4,8 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+
+## [5.0.0] - 2021-02-15
+### Changed
+ - By default, the PHP version used in the generated client is 7.4.
+
 ## [4.2.0] - 2021-01-24
-### Added
 - Acceptance test to generate example from canonical pet store OpenApi specification
 - Content-type argument if multiple specified for request
 ### Fixed
@@ -13,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Multiple content-type per request and response with the same schema allowed
 - Changed non-existing successful response error to a warning
+
 
 ## [4.1.0] - 2020-12-28
 ### Fixed
