@@ -1,7 +1,8 @@
-FROM composer as dependencies
+FROM php:7.4-cli-alpine as dependencies
 
 WORKDIR /dependencies
 
+COPY --from=composer /usr/bin/composer /usr/bin/composer
 COPY composer.json /dependencies
 COPY composer.lock /dependencies
 
