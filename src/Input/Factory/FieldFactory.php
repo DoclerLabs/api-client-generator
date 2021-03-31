@@ -91,7 +91,16 @@ class FieldFactory
                 new FieldType($type),
                 $referenceName,
                 $required,
-                $schema->nullable
+                $schema->nullable,
+                $schema->minimum,
+                $schema->exclusiveMinimum,
+                $schema->maximum,
+                $schema->exclusiveMaximum,
+                $schema->minLength,
+                $schema->maxLength,
+                $schema->pattern,
+                $schema->minItems,
+                $schema->maxItems
             );
 
             if ($arrayItem !== null) {

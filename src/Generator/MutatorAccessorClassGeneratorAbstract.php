@@ -7,7 +7,6 @@ use DoclerLabs\ApiClientException\RequestValidationException;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
-use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use PhpParser\Node\Stmt;
@@ -20,18 +19,26 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
 
     abstract public function generate(Specification $specification, PhpFileCollection $fileRegistry): void;
 
-    protected function generateSet(Field $field, string $baseNamespace): ClassMethod
+    protected function generateValidationStmts(Field $field): array
     {
-        $statements         = [];
-        $thrownExceptionMap = [];
-        $enumStmt           = $this->generateEnumValidation($field, $baseNamespace);
-        if ($enumStmt !== null) {
-            $statements[]                                     = $enumStmt;
-            $thrownExceptionMap['RequestValidationException'] = true;
-        }
+        return array_filter([
+            $this->generateEnumValidation($field),
+            $this->generateMinimumValidation($field),
+            $this->generateMaximumValidation($field),
+            $this->generateMinLengthValidation($field),
+            $this->generateMaxLengthValidation($field),
+            $this->generatePatternValidation($field),
+            $this->generateMinItemsValidation($field),
+            $this->generateMaxItemsValidation($field),
+        ]);
+    }
 
-        $docType = $field->getPhpDocType($field->isNullable());
-        $param   = $this->builder
+    protected function generateSet(Field $field): ClassMethod
+    {
+        $statements         = $this->generateValidationStmts($field);
+        $thrownExceptionMap = empty($statements) ? [] : ['RequestValidationException' => true];
+        $docType            = $field->getPhpDocType($field->isNullable());
+        $param              = $this->builder
             ->param($field->getPhpVariableName())
             ->setType($field->getPhpTypeHint(), $field->isNullable())
             ->setDocBlockType($docType)
@@ -119,7 +126,7 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
         return $statements;
     }
 
-    protected function generateEnumValidation(Field $root, string $baseNamespace): ?Stmt
+    protected function generateEnumValidation(Field $root): ?Stmt
     {
         $enumValues = $root->getEnumValues();
         if (empty($enumValues)) {
@@ -149,6 +156,226 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
                 $root->getName(),
                 $propertyVar,
                 $this->builder->funcCall('json_encode', [$allowedConstFetch]),
+            ]
+        );
+
+        $ifStmt = $this->builder->throw('RequestValidationException', $exceptionMessage);
+
+        return $this->builder->if($ifCondition, [$ifStmt]);
+    }
+
+    protected function generateMinimumValidation(Field $root): ?Stmt
+    {
+        $minimum = $root->getMinimum();
+        if ($minimum === null) {
+            return null;
+        }
+
+        $this->addImport(RequestValidationException::class);
+
+        $propertyVar = $this->builder->var($root->getPhpVariableName());
+        $operator    = $root->isExclusiveMinimum() === true ? '<=' : '<';
+
+        $ifCondition = $this->builder->compare(
+            $propertyVar,
+            $operator,
+            $this->builder->val($minimum)
+        );
+
+        $exceptionMessage = $this->builder->funcCall(
+            'sprintf',
+            [
+                'Invalid %s value. Given: `%s`, cannot be %s than %s',
+                $root->getName(),
+                $propertyVar,
+                $operator,
+                $minimum,
+            ]
+        );
+
+        $ifStmt = $this->builder->throw('RequestValidationException', $exceptionMessage);
+
+        return $this->builder->if($ifCondition, [$ifStmt]);
+    }
+
+    protected function generateMaximumValidation(Field $root): ?Stmt
+    {
+        $maximum = $root->getMaximum();
+        if ($maximum === null) {
+            return null;
+        }
+
+        $this->addImport(RequestValidationException::class);
+
+        $propertyVar = $this->builder->var($root->getPhpVariableName());
+        $operator    = $root->isExclusiveMaximum() === true ? '>=' : '>';
+
+        $ifCondition = $this->builder->compare(
+            $propertyVar,
+            $operator,
+            $this->builder->val($maximum)
+        );
+
+        $exceptionMessage = $this->builder->funcCall(
+            'sprintf',
+            [
+                'Invalid %s value. Given: `%s`, cannot be %s than %s',
+                $root->getName(),
+                $propertyVar,
+                $operator,
+                $maximum,
+            ]
+        );
+
+        $ifStmt = $this->builder->throw('RequestValidationException', $exceptionMessage);
+
+        return $this->builder->if($ifCondition, [$ifStmt]);
+    }
+
+    protected function generateMinLengthValidation(Field $root): ?Stmt
+    {
+        $minLength = $root->getMinLength();
+        if ($minLength === null) {
+            return null;
+        }
+
+        $this->addImport(RequestValidationException::class);
+
+        $propertyVar = $this->builder->var($root->getPhpVariableName());
+        $ifCondition = $this->builder->compare(
+            $this->builder->funcCall('strlen', [$propertyVar]),
+            '<',
+            $this->builder->val($minLength)
+        );
+
+        $exceptionMessage = $this->builder->funcCall(
+            'sprintf',
+            [
+                'Invalid %s value. Given: `%s`, length should be greather than %s',
+                $root->getName(),
+                $propertyVar,
+                $minLength,
+            ]
+        );
+
+        $ifStmt = $this->builder->throw('RequestValidationException', $exceptionMessage);
+
+        return $this->builder->if($ifCondition, [$ifStmt]);
+    }
+
+    protected function generateMaxLengthValidation(Field $root): ?Stmt
+    {
+        $maxLength = $root->getMaxLength();
+        if ($maxLength === null) {
+            return null;
+        }
+
+        $this->addImport(RequestValidationException::class);
+
+        $propertyVar = $this->builder->var($root->getPhpVariableName());
+        $ifCondition = $this->builder->compare(
+            $this->builder->funcCall('strlen', [$propertyVar]),
+            '>',
+            $this->builder->val($maxLength)
+        );
+
+        $exceptionMessage = $this->builder->funcCall(
+            'sprintf',
+            [
+                'Invalid %s value. Given: `%s`, length should be less than %s',
+                $root->getName(),
+                $propertyVar,
+                $maxLength,
+            ]
+        );
+
+        $ifStmt = $this->builder->throw('RequestValidationException', $exceptionMessage);
+
+        return $this->builder->if($ifCondition, [$ifStmt]);
+    }
+
+    protected function generatePatternValidation(Field $root): ?Stmt
+    {
+        $pattern = $root->getPattern();
+        if ($pattern === null) {
+            return null;
+        }
+
+        $this->addImport(RequestValidationException::class);
+
+        $propertyVar = $this->builder->var($root->getPhpVariableName());
+        $ifCondition = $this->builder->notEquals(
+            $this->builder->funcCall('preg_match', [$this->builder->val($pattern), $propertyVar]),
+            $this->builder->val(1)
+        );
+
+        $exceptionMessage = $this->builder->funcCall(
+            'sprintf',
+            [
+                'Invalid %s value. Given: `%s`, pattern is %s',
+                $root->getName(),
+                $propertyVar,
+                $pattern,
+            ]
+        );
+
+        $ifStmt = $this->builder->throw('RequestValidationException', $exceptionMessage);
+
+        return $this->builder->if($ifCondition, [$ifStmt]);
+    }
+
+    protected function generateMinItemsValidation(Field $root): ?Stmt
+    {
+        $minItems = $root->getMinItems();
+        if ($minItems === null) {
+            return null;
+        }
+
+        $this->addImport(RequestValidationException::class);
+
+        $propertyVar = $this->builder->var($root->getPhpVariableName());
+        $ifCondition = $this->builder->compare(
+            $this->builder->funcCall('count', [$propertyVar]),
+            '<',
+            $this->builder->val($minItems)
+        );
+
+        $exceptionMessage = $this->builder->funcCall(
+            'sprintf',
+            [
+                'Invalid %s value. Expected min items: `%s`',
+                $root->getName(),
+                $minItems,
+            ]
+        );
+
+        $ifStmt = $this->builder->throw('RequestValidationException', $exceptionMessage);
+
+        return $this->builder->if($ifCondition, [$ifStmt]);
+    }
+
+    protected function generateMaxItemsValidation(Field $root): ?Stmt
+    {
+        $maxItems = $root->getMaxItems();
+        if ($maxItems === null) {
+            return null;
+        }
+
+        $this->addImport(RequestValidationException::class);
+
+        $propertyVar = $this->builder->var($root->getPhpVariableName());
+        $ifCondition = $this->builder->compare(
+            $this->builder->funcCall('count', [$propertyVar]),
+            '>',
+            $this->builder->val($maxItems)
+        );
+
+        $exceptionMessage = $this->builder->funcCall(
+            'sprintf',
+            [
+                'Invalid %s value. Expected max items: `%s`',
+                $root->getName(),
+                $maxItems,
             ]
         );
 

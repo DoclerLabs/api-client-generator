@@ -10,11 +10,9 @@ namespace OpenApi\PetStoreClient\Request;
 
 class GetOrderByIdRequest implements RequestInterface
 {
-    /** @var int */
-    private $orderId;
+    private int $orderId;
 
-    /** @var string */
-    private $contentType = '';
+    private string $contentType = '';
 
     public function __construct(int $orderId)
     {

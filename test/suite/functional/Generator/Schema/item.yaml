@@ -43,6 +43,11 @@ components:
           type: array
           items:
             type: string
+        mandatoryArrayWithMinItems:
+          type: array
+          minItems: 1
+          items:
+            type: string
         mandatoryObject:
           type: object
           properties:
@@ -84,6 +89,40 @@ components:
           type: array
           items:
             type: string
+        optionalArrayWithMinMaxItems:
+          type: array
+          minItems: 1
+          maxItems: 5
+          items:
+            type: string
+        optionalStringWithMinMaxLength:
+          type: string
+          minLength: 1
+          maxLength: 5
+        optionalStringWithPattern:
+          type: string
+          pattern: ^\d{3}-\d{2}-\d{4}$
+          example: 123-45-6789
+        optionalIntegerBetweenIncluded:
+          type: integer
+          minimum: 0
+          maximum: 5
+        optionalIntegerBetweenExcluded:
+          type: integer
+          minimum: 0
+          maximum: 5
+          exclusiveMinimum: true
+          exclusiveMaximum: true
+        optionalNumberBetweenIncluded:
+          type: number
+          minimum: 0
+          maximum: 5
+        optionalNumberBetweenExcluded:
+          type: number
+          minimum: 0
+          maximum: 5
+          exclusiveMinimum: true
+          exclusiveMaximum: true
         optionalObject:
           $ref: '#/components/schemas/EmbeddedObject'
       required:
@@ -95,6 +134,7 @@ components:
         - mandatoryFloat
         - mandatoryBoolean
         - mandatoryArray
+        - mandatoryArrayWithMinItems
         - mandatoryObject
     EmbeddedObject:
       type: object

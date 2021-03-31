@@ -17,11 +17,9 @@ use Psr\Http\Message\RequestInterface as PsrRequestInterface;
 
 class GuzzleRequestMapper implements RequestMapperInterface
 {
-    /** @var BodySerializer */
-    private $bodySerializer;
+    private BodySerializer $bodySerializer;
 
-    /** @var QuerySerializer */
-    private $querySerializer;
+    private QuerySerializer $querySerializer;
 
     public function __construct(BodySerializer $bodySerializer, QuerySerializer $querySerializer)
     {

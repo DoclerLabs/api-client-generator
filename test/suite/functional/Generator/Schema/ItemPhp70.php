@@ -50,6 +50,9 @@ class Item implements SerializableInterface, JsonSerializable
     /** @var string[] */
     private $mandatoryArray;
 
+    /** @var string[] */
+    private $mandatoryArrayWithMinItems;
+
     /** @var ItemMandatoryObject */
     private $mandatoryObject;
 
@@ -80,16 +83,38 @@ class Item implements SerializableInterface, JsonSerializable
     /** @var string[]|null */
     private $optionalArray;
 
+    /** @var string[]|null */
+    private $optionalArrayWithMinMaxItems;
+
+    /** @var string|null */
+    private $optionalStringWithMinMaxLength;
+
+    /** @var string|null */
+    private $optionalStringWithPattern;
+
+    /** @var int|null */
+    private $optionalIntegerBetweenIncluded;
+
+    /** @var int|null */
+    private $optionalIntegerBetweenExcluded;
+
+    /** @var float|null */
+    private $optionalNumberBetweenIncluded;
+
+    /** @var float|null */
+    private $optionalNumberBetweenExcluded;
+
     /** @var EmbeddedObject|null */
     private $optionalObject;
 
     /**
      * @param DateTimeInterface|null $mandatoryNullableDate
      * @param string[]               $mandatoryArray
+     * @param string[]               $mandatoryArrayWithMinItems
      *
      * @throws RequestValidationException
      */
-    public function __construct(int $mandatoryInteger, string $mandatoryString, string $mandatoryEnum, DateTimeInterface $mandatoryDate, $mandatoryNullableDate, float $mandatoryFloat, bool $mandatoryBoolean, array $mandatoryArray, ItemMandatoryObject $mandatoryObject)
+    public function __construct(int $mandatoryInteger, string $mandatoryString, string $mandatoryEnum, DateTimeInterface $mandatoryDate, $mandatoryNullableDate, float $mandatoryFloat, bool $mandatoryBoolean, array $mandatoryArray, array $mandatoryArrayWithMinItems, ItemMandatoryObject $mandatoryObject)
     {
         $this->mandatoryInteger = $mandatoryInteger;
         $this->mandatoryString  = $mandatoryString;
@@ -102,7 +127,11 @@ class Item implements SerializableInterface, JsonSerializable
         $this->mandatoryFloat        = $mandatoryFloat;
         $this->mandatoryBoolean      = $mandatoryBoolean;
         $this->mandatoryArray        = $mandatoryArray;
-        $this->mandatoryObject       = $mandatoryObject;
+        if (\count($mandatoryArrayWithMinItems) < 1) {
+            throw new RequestValidationException(\sprintf('Invalid %s value. Expected min items: `%s`', 'mandatoryArrayWithMinItems', 1));
+        }
+        $this->mandatoryArrayWithMinItems = $mandatoryArrayWithMinItems;
+        $this->mandatoryObject            = $mandatoryObject;
     }
 
     /**
@@ -183,6 +212,117 @@ class Item implements SerializableInterface, JsonSerializable
         return $this;
     }
 
+    /**
+     * @param string[] $optionalArrayWithMinMaxItems
+     *
+     * @throws RequestValidationException
+     */
+    public function setOptionalArrayWithMinMaxItems(array $optionalArrayWithMinMaxItems): self
+    {
+        if (\count($optionalArrayWithMinMaxItems) < 1) {
+            throw new RequestValidationException(\sprintf('Invalid %s value. Expected min items: `%s`', 'optionalArrayWithMinMaxItems', 1));
+        }
+        if (\count($optionalArrayWithMinMaxItems) > 5) {
+            throw new RequestValidationException(\sprintf('Invalid %s value. Expected max items: `%s`', 'optionalArrayWithMinMaxItems', 5));
+        }
+        $this->optionalArrayWithMinMaxItems = $optionalArrayWithMinMaxItems;
+
+        return $this;
+    }
+
+    /**
+     * @throws RequestValidationException
+     */
+    public function setOptionalStringWithMinMaxLength(string $optionalStringWithMinMaxLength): self
+    {
+        if (\strlen($optionalStringWithMinMaxLength) < 1) {
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, length should be greather than %s', 'optionalStringWithMinMaxLength', $optionalStringWithMinMaxLength, 1));
+        }
+        if (\strlen($optionalStringWithMinMaxLength) > 5) {
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, length should be less than %s', 'optionalStringWithMinMaxLength', $optionalStringWithMinMaxLength, 5));
+        }
+        $this->optionalStringWithMinMaxLength = $optionalStringWithMinMaxLength;
+
+        return $this;
+    }
+
+    /**
+     * @throws RequestValidationException
+     */
+    public function setOptionalStringWithPattern(string $optionalStringWithPattern): self
+    {
+        if (\preg_match('^\\d{3}-\\d{2}-\\d{4}$', $optionalStringWithPattern) !== 1) {
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, pattern is %s', 'optionalStringWithPattern', $optionalStringWithPattern, '^\\d{3}-\\d{2}-\\d{4}$'));
+        }
+        $this->optionalStringWithPattern = $optionalStringWithPattern;
+
+        return $this;
+    }
+
+    /**
+     * @throws RequestValidationException
+     */
+    public function setOptionalIntegerBetweenIncluded(int $optionalIntegerBetweenIncluded): self
+    {
+        if ($optionalIntegerBetweenIncluded < 0) {
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, cannot be %s than %s', 'optionalIntegerBetweenIncluded', $optionalIntegerBetweenIncluded, '<', 0));
+        }
+        if ($optionalIntegerBetweenIncluded > 5) {
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, cannot be %s than %s', 'optionalIntegerBetweenIncluded', $optionalIntegerBetweenIncluded, '>', 5));
+        }
+        $this->optionalIntegerBetweenIncluded = $optionalIntegerBetweenIncluded;
+
+        return $this;
+    }
+
+    /**
+     * @throws RequestValidationException
+     */
+    public function setOptionalIntegerBetweenExcluded(int $optionalIntegerBetweenExcluded): self
+    {
+        if ($optionalIntegerBetweenExcluded <= 0) {
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, cannot be %s than %s', 'optionalIntegerBetweenExcluded', $optionalIntegerBetweenExcluded, '<=', 0));
+        }
+        if ($optionalIntegerBetweenExcluded >= 5) {
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, cannot be %s than %s', 'optionalIntegerBetweenExcluded', $optionalIntegerBetweenExcluded, '>=', 5));
+        }
+        $this->optionalIntegerBetweenExcluded = $optionalIntegerBetweenExcluded;
+
+        return $this;
+    }
+
+    /**
+     * @throws RequestValidationException
+     */
+    public function setOptionalNumberBetweenIncluded(float $optionalNumberBetweenIncluded): self
+    {
+        if ($optionalNumberBetweenIncluded < 0) {
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, cannot be %s than %s', 'optionalNumberBetweenIncluded', $optionalNumberBetweenIncluded, '<', 0));
+        }
+        if ($optionalNumberBetweenIncluded > 5) {
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, cannot be %s than %s', 'optionalNumberBetweenIncluded', $optionalNumberBetweenIncluded, '>', 5));
+        }
+        $this->optionalNumberBetweenIncluded = $optionalNumberBetweenIncluded;
+
+        return $this;
+    }
+
+    /**
+     * @throws RequestValidationException
+     */
+    public function setOptionalNumberBetweenExcluded(float $optionalNumberBetweenExcluded): self
+    {
+        if ($optionalNumberBetweenExcluded <= 0) {
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, cannot be %s than %s', 'optionalNumberBetweenExcluded', $optionalNumberBetweenExcluded, '<=', 0));
+        }
+        if ($optionalNumberBetweenExcluded >= 5) {
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, cannot be %s than %s', 'optionalNumberBetweenExcluded', $optionalNumberBetweenExcluded, '>=', 5));
+        }
+        $this->optionalNumberBetweenExcluded = $optionalNumberBetweenExcluded;
+
+        return $this;
+    }
+
     public function setOptionalObject(EmbeddedObject $optionalObject): self
     {
         $this->optionalObject = $optionalObject;
@@ -234,6 +374,14 @@ class Item implements SerializableInterface, JsonSerializable
     public function getMandatoryArray(): array
     {
         return $this->mandatoryArray;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getMandatoryArrayWithMinItems(): array
+    {
+        return $this->mandatoryArrayWithMinItems;
     }
 
     public function getMandatoryObject(): ItemMandatoryObject
@@ -314,6 +462,62 @@ class Item implements SerializableInterface, JsonSerializable
     }
 
     /**
+     * @return string[]|null
+     */
+    public function getOptionalArrayWithMinMaxItems()
+    {
+        return $this->optionalArrayWithMinMaxItems;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getOptionalStringWithMinMaxLength()
+    {
+        return $this->optionalStringWithMinMaxLength;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getOptionalStringWithPattern()
+    {
+        return $this->optionalStringWithPattern;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getOptionalIntegerBetweenIncluded()
+    {
+        return $this->optionalIntegerBetweenIncluded;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getOptionalIntegerBetweenExcluded()
+    {
+        return $this->optionalIntegerBetweenExcluded;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getOptionalNumberBetweenIncluded()
+    {
+        return $this->optionalNumberBetweenIncluded;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getOptionalNumberBetweenExcluded()
+    {
+        return $this->optionalNumberBetweenExcluded;
+    }
+
+    /**
      * @return EmbeddedObject|null
      */
     public function getOptionalObject()
@@ -323,18 +527,19 @@ class Item implements SerializableInterface, JsonSerializable
 
     public function toArray(): array
     {
-        $fields                          = [];
-        $fields['mandatoryInteger']      = $this->mandatoryInteger;
-        $fields['mandatoryString']       = $this->mandatoryString;
-        $fields['mandatoryEnum']         = $this->mandatoryEnum;
-        $fields['mandatoryDate']         = $this->mandatoryDate->format(DATE_RFC3339);
-        $fields['mandatoryNullableDate'] = $this->mandatoryNullableDate !== null ? $this->mandatoryNullableDate->format(DATE_RFC3339) : null;
-        $fields['mandatoryFloat']        = $this->mandatoryFloat;
-        $fields['mandatoryBoolean']      = $this->mandatoryBoolean;
-        $fields['mandatoryArray']        = $this->mandatoryArray;
-        $fields['mandatoryObject']       = $this->mandatoryObject->toArray();
-        $fields['nullableObject']        = $this->nullableObject !== null ? $this->nullableObject->toArray() : null;
-        $fields['nullableDate']          = $this->nullableDate   !== null ? $this->nullableDate->format(DATE_RFC3339) : null;
+        $fields                               = [];
+        $fields['mandatoryInteger']           = $this->mandatoryInteger;
+        $fields['mandatoryString']            = $this->mandatoryString;
+        $fields['mandatoryEnum']              = $this->mandatoryEnum;
+        $fields['mandatoryDate']              = $this->mandatoryDate->format(DATE_RFC3339);
+        $fields['mandatoryNullableDate']      = $this->mandatoryNullableDate !== null ? $this->mandatoryNullableDate->format(DATE_RFC3339) : null;
+        $fields['mandatoryFloat']             = $this->mandatoryFloat;
+        $fields['mandatoryBoolean']           = $this->mandatoryBoolean;
+        $fields['mandatoryArray']             = $this->mandatoryArray;
+        $fields['mandatoryArrayWithMinItems'] = $this->mandatoryArrayWithMinItems;
+        $fields['mandatoryObject']            = $this->mandatoryObject->toArray();
+        $fields['nullableObject']             = $this->nullableObject !== null ? $this->nullableObject->toArray() : null;
+        $fields['nullableDate']               = $this->nullableDate   !== null ? $this->nullableDate->format(DATE_RFC3339) : null;
         if ($this->optionalInteger !== null) {
             $fields['optionalInteger'] = $this->optionalInteger;
         }
@@ -355,6 +560,27 @@ class Item implements SerializableInterface, JsonSerializable
         }
         if ($this->optionalArray !== null) {
             $fields['optionalArray'] = $this->optionalArray;
+        }
+        if ($this->optionalArrayWithMinMaxItems !== null) {
+            $fields['optionalArrayWithMinMaxItems'] = $this->optionalArrayWithMinMaxItems;
+        }
+        if ($this->optionalStringWithMinMaxLength !== null) {
+            $fields['optionalStringWithMinMaxLength'] = $this->optionalStringWithMinMaxLength;
+        }
+        if ($this->optionalStringWithPattern !== null) {
+            $fields['optionalStringWithPattern'] = $this->optionalStringWithPattern;
+        }
+        if ($this->optionalIntegerBetweenIncluded !== null) {
+            $fields['optionalIntegerBetweenIncluded'] = $this->optionalIntegerBetweenIncluded;
+        }
+        if ($this->optionalIntegerBetweenExcluded !== null) {
+            $fields['optionalIntegerBetweenExcluded'] = $this->optionalIntegerBetweenExcluded;
+        }
+        if ($this->optionalNumberBetweenIncluded !== null) {
+            $fields['optionalNumberBetweenIncluded'] = $this->optionalNumberBetweenIncluded;
+        }
+        if ($this->optionalNumberBetweenExcluded !== null) {
+            $fields['optionalNumberBetweenExcluded'] = $this->optionalNumberBetweenExcluded;
         }
         if ($this->optionalObject !== null) {
             $fields['optionalObject'] = $this->optionalObject->toArray();

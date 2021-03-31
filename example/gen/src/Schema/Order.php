@@ -22,23 +22,17 @@ class Order implements SerializableInterface, JsonSerializable
 
     public const ALLOWED_STATUS_LIST = [self::STATUS_PLACED, self::STATUS_APPROVED, self::STATUS_DELIVERED];
 
-    /** @var int|null */
-    private $id;
+    private ?int $id = null;
 
-    /** @var int|null */
-    private $petId;
+    private ?int $petId = null;
 
-    /** @var int|null */
-    private $quantity;
+    private ?int $quantity = null;
 
-    /** @var DateTimeInterface|null */
-    private $shipDate;
+    private ?DateTimeInterface $shipDate = null;
 
-    /** @var string|null */
-    private $status;
+    private ?string $status = null;
 
-    /** @var bool|null */
-    private $complete;
+    private ?bool $complete = null;
 
     public function setId(int $id): self
     {

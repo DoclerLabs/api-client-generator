@@ -12,11 +12,9 @@ use JsonSerializable;
 
 class Tag implements SerializableInterface, JsonSerializable
 {
-    /** @var int|null */
-    private $id;
+    private ?int $id = null;
 
-    /** @var string|null */
-    private $name;
+    private ?string $name = null;
 
     public function setId(int $id): self
     {

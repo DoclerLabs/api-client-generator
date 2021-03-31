@@ -12,17 +12,13 @@ use OpenApi\PetStoreClient\Schema\SerializableInterface;
 
 class UpdatePetWithFormRequest implements RequestInterface
 {
-    /** @var int */
-    private $petId;
+    private int $petId;
 
-    /** @var string|null */
-    private $name;
+    private ?string $name = null;
 
-    /** @var string|null */
-    private $status;
+    private ?string $status = null;
 
-    /** @var string */
-    private $contentType = '';
+    private string $contentType = '';
 
     public function __construct(int $petId)
     {

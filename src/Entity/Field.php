@@ -20,19 +20,46 @@ class Field
     private array     $objectProperties = [];
     private array     $enumValues       = [];
     private string    $format           = '';
+    private ?int      $minimum          = null;
+    private ?bool     $exclusiveMinimum = null;
+    private ?int      $maximum          = null;
+    private ?bool     $exclusiveMaximum = null;
+    private ?int      $minLength        = null;
+    private ?int      $maxLength        = null;
+    private ?string   $pattern          = null;
+    private ?int      $minItems         = null;
+    private ?int      $maxItems         = null;
 
     public function __construct(
         string $name,
         FieldType $type,
         string $referenceName,
         bool $required,
-        bool $nullable
+        bool $nullable,
+        ?int $minimum,
+        ?bool $exclusiveMinimum,
+        ?int $maximum,
+        ?bool $exclusiveMaximum,
+        ?int $minLength,
+        ?int $maxLength,
+        ?string $pattern,
+        ?int $minItems,
+        ?int $maxItems
     ) {
-        $this->name          = $name;
-        $this->type          = $type;
-        $this->referenceName = $referenceName;
-        $this->required      = $required;
-        $this->nullable      = $nullable;
+        $this->name             = $name;
+        $this->type             = $type;
+        $this->referenceName    = $referenceName;
+        $this->required         = $required;
+        $this->nullable         = $nullable;
+        $this->minimum          = $minimum;
+        $this->exclusiveMinimum = $exclusiveMinimum;
+        $this->maximum          = $maximum;
+        $this->exclusiveMaximum = $exclusiveMaximum;
+        $this->minLength        = $minLength;
+        $this->maxLength        = $maxLength;
+        $this->pattern          = $pattern;
+        $this->minItems         = $minItems;
+        $this->maxItems         = $maxItems;
     }
 
     public function getArrayItem(): Field
@@ -118,6 +145,51 @@ class Field
     public function isNullable(): bool
     {
         return $this->nullable;
+    }
+
+    public function getMinimum(): ?int
+    {
+        return $this->minimum;
+    }
+
+    public function isExclusiveMinimum(): ?bool
+    {
+        return $this->exclusiveMinimum;
+    }
+
+    public function getMaximum(): ?int
+    {
+        return $this->maximum;
+    }
+
+    public function isExclusiveMaximum(): ?bool
+    {
+        return $this->exclusiveMaximum;
+    }
+
+    public function getMinLength(): ?int
+    {
+        return $this->minLength;
+    }
+
+    public function getMaxLength(): ?int
+    {
+        return $this->maxLength;
+    }
+
+    public function getPattern(): ?string
+    {
+        return $this->pattern;
+    }
+
+    public function getMinItems(): ?int
+    {
+        return $this->minItems;
+    }
+
+    public function getMaxItems(): ?int
+    {
+        return $this->maxItems;
     }
 
     public function isDate(): bool

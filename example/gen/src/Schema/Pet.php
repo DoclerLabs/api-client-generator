@@ -21,23 +21,17 @@ class Pet implements SerializableInterface, JsonSerializable
 
     public const ALLOWED_STATUS_LIST = [self::STATUS_AVAILABLE, self::STATUS_PENDING, self::STATUS_SOLD];
 
-    /** @var int|null */
-    private $id;
+    private ?int $id = null;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var Category|null */
-    private $category;
+    private ?Category $category = null;
 
-    /** @var string[] */
-    private $photoUrls;
+    private array $photoUrls;
 
-    /** @var TagCollection|null */
-    private $tags;
+    private ?TagCollection $tags = null;
 
-    /** @var string|null */
-    private $status;
+    private ?string $status = null;
 
     /**
      * @param string[] $photoUrls

@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+## [5.1.0] - 2021-04-01
+### Added
+ - Support for `minimum`, `maximum`, `exclusiveMinimum`, `exclusiveMaximum`, `minItems`, `maxItems`, `pattern`, `maxLength`, `minLength` validations
+
+### Changed
+ - Example generated with 7.4
+
 ## [5.0.0] - 2021-02-15
 ### Changed
  - By default, the PHP version used in the generated client is 7.4.

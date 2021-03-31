@@ -12,14 +12,11 @@ use OpenApi\PetStoreClient\Schema\User;
 
 class UpdateUserRequest implements RequestInterface
 {
-    /** @var string */
-    private $username;
+    private string $username;
 
-    /** @var User */
-    private $user;
+    private User $user;
 
-    /** @var string */
-    private $contentType;
+    private string $contentType;
 
     public function __construct(string $username, User $user, string $contentType)
     {

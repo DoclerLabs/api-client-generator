@@ -12,14 +12,11 @@ use OpenApi\PetStoreClient\Schema\SerializableInterface;
 
 class DeletePetRequest implements RequestInterface
 {
-    /** @var string|null */
-    private $apiKey;
+    private ?string $apiKey = null;
 
-    /** @var int */
-    private $petId;
+    private int $petId;
 
-    /** @var string */
-    private $contentType = '';
+    private string $contentType = '';
 
     public function __construct(int $petId)
     {

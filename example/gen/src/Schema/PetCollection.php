@@ -15,8 +15,7 @@ use JsonSerializable;
 
 class PetCollection implements IteratorAggregate, SerializableInterface, Countable, JsonSerializable
 {
-    /** @var Pet[] */
-    private $items;
+    private array $items;
 
     /**
      * @param Pet[] $items

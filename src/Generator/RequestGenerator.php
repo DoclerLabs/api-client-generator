@@ -96,10 +96,8 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         foreach ($request->getFields() as $fields) {
             foreach ($fields as $field) {
                 if ($field->isRequired()) {
-                    $enumStmt = $this->generateEnumValidation($field, $this->baseNamespace);
-                    if ($enumStmt !== null) {
-                        $paramInits[] = $enumStmt;
-                    }
+                    array_push($paramInits, ...$this->generateValidationStmts($field));
+
                     $params[] = $this->builder
                         ->param($field->getPhpVariableName())
                         ->setType($field->getPhpTypeHint(), $field->isNullable())
@@ -146,7 +144,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         foreach ($request->getFields() as $fields) {
             foreach ($fields as $field) {
                 if (!$field->isRequired()) {
-                    $statements[] = $this->generateSet($field, $this->baseNamespace);
+                    $statements[] = $this->generateSet($field);
                 }
             }
         }

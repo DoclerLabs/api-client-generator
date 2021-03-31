@@ -12,11 +12,9 @@ use OpenApi\PetStoreClient\Schema\User;
 
 class CreateUserRequest implements RequestInterface
 {
-    /** @var User */
-    private $user;
+    private User $user;
 
-    /** @var string */
-    private $contentType;
+    private string $contentType;
 
     public function __construct(User $user, string $contentType)
     {

@@ -12,29 +12,21 @@ use JsonSerializable;
 
 class User implements SerializableInterface, JsonSerializable
 {
-    /** @var int|null */
-    private $id;
+    private ?int $id = null;
 
-    /** @var string|null */
-    private $username;
+    private ?string $username = null;
 
-    /** @var string|null */
-    private $firstName;
+    private ?string $firstName = null;
 
-    /** @var string|null */
-    private $lastName;
+    private ?string $lastName = null;
 
-    /** @var string|null */
-    private $email;
+    private ?string $email = null;
 
-    /** @var string|null */
-    private $password;
+    private ?string $password = null;
 
-    /** @var string|null */
-    private $phone;
+    private ?string $phone = null;
 
-    /** @var int|null */
-    private $userStatus;
+    private ?int $userStatus = null;
 
     public function setId(int $id): self
     {

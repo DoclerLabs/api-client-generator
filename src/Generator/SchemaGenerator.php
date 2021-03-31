@@ -76,9 +76,9 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
 
         foreach ($root->getObjectProperties() as $propertyField) {
             if ($propertyField->isRequired()) {
-                $enumStmt = $this->generateEnumValidation($propertyField, $this->baseNamespace);
-                if ($enumStmt !== null) {
-                    $paramsInit[]                                     = $enumStmt;
+                $validationStmts = $this->generateValidationStmts($propertyField);
+                array_push($paramsInit, ...$validationStmts);
+                if (!empty($validationStmts)) {
                     $thrownExceptionMap['RequestValidationException'] = true;
                 }
                 $params[] = $this->builder
@@ -116,7 +116,7 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
         $statements = [];
         foreach ($root->getObjectProperties() as $propertyField) {
             if ($propertyField->isOptional()) {
-                $statements[] = $this->generateSet($propertyField, $this->baseNamespace);
+                $statements[] = $this->generateSet($propertyField);
             }
         }
 
