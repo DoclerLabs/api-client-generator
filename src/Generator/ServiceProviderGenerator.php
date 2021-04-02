@@ -220,7 +220,7 @@ class ServiceProviderGenerator extends GeneratorAbstract
 
         $registerBodySerializerClosureStatements[] = $this
             ->builder
-            ->return($xmlSerializerInit ?? $formEncodedSerializerInit ?? $jsonSerializerInit);
+            ->return($xmlSerializerInit ?? $formEncodedSerializerInit ?? $jsonSerializerInit ?? $initialStatement);
 
         return $this->builder->closure(
             $registerBodySerializerClosureStatements,

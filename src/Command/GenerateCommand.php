@@ -214,7 +214,7 @@ class GenerateCommand extends Command
         $allContentTypes = $specification->getAllContentTypes();
 
         return array_flip(array_map(
-            fn ($class) => basename((new ReflectionClass($class))->getFileName()),
+            fn ($class) => basename((string)(new ReflectionClass($class))->getFileName()),
             array_filter(
                 $contentTypeMapping,
                 fn ($key) => !in_array($key, $allContentTypes),

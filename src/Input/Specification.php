@@ -4,6 +4,7 @@ namespace DoclerLabs\ApiClientGenerator\Input;
 
 use cebe\openapi\spec\OpenApi;
 use DoclerLabs\ApiClientGenerator\Entity\FieldCollection;
+use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Entity\OperationCollection;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\FormUrlencodedContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\JsonContentTypeSerializer;
