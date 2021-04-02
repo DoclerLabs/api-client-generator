@@ -3,7 +3,6 @@
 namespace DoclerLabs\ApiClientGenerator;
 
 use DoclerLabs\ApiClientGenerator\Command\GenerateCommand;
-use DoclerLabs\ApiClientGenerator\Output\WarningFormatter;
 use Pimple\Container;
 use Symfony\Component\Console\Application as BaseApplication;
 

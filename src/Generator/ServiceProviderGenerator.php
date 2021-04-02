@@ -5,6 +5,7 @@ namespace DoclerLabs\ApiClientGenerator\Generator;
 use DoclerLabs\ApiClientException\Factory\ResponseExceptionFactory;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
+use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
@@ -63,7 +64,7 @@ class ServiceProviderGenerator extends GeneratorAbstract
 
         $classBuilder = $this->builder
             ->class('ServiceProvider')
-            ->addStmt($this->generateRegisterMethod($compositeFields));
+            ->addStmt($this->generateRegisterMethod($specification, $compositeFields));
 
         foreach ($this->containerImplementation->getContainerRegisterImports() as $import) {
             $this->addImport($import);
@@ -72,8 +73,10 @@ class ServiceProviderGenerator extends GeneratorAbstract
         $this->registerFile($fileRegistry, $classBuilder);
     }
 
-    public function generateRegisterMethod(array $compositeFields): ClassMethod
-    {
+    private function generateRegisterMethod(
+        Specification $specification,
+        array $compositeFields
+    ): ClassMethod {
         $statements = [];
 
         $param = $this->builder
@@ -115,7 +118,7 @@ class ServiceProviderGenerator extends GeneratorAbstract
         $statements[] = $this->containerImplementation->registerClosure(
             $containerVariable,
             $this->builder->classConstFetch('BodySerializer', 'class'),
-            $this->generateBodySerializerClosure()
+            $this->generateBodySerializerClosure($specification)
         );
         $statements[] = $this->containerImplementation->registerClosure(
             $containerVariable,
@@ -180,33 +183,44 @@ class ServiceProviderGenerator extends GeneratorAbstract
         );
     }
 
-    private function generateBodySerializerClosure(): Closure
+    private function generateBodySerializerClosure(Specification $specification): Closure
     {
-        $jsonSerializerInit = $this->builder->methodCall(
-            $this->builder->new('BodySerializer'),
-            'add',
-            [
-                $this->builder->new('JsonContentTypeSerializer'),
-            ]
-        );
+        $initialStatement = $this->builder->new('BodySerializer');
+        $allContentTypes  = $specification->getAllContentTypes();
 
-        $formEncodedSerializerInit = $this->builder->methodCall(
-            $jsonSerializerInit,
-            'add',
-            [
-                $this->builder->new('FormUrlencodedContentTypeSerializer'),
-            ]
-        );
+        if (in_array(JsonContentTypeSerializer::MIME_TYPE, $allContentTypes, true)) {
+            $jsonSerializerInit = $this->builder->methodCall(
+                $initialStatement,
+                'add',
+                [
+                    $this->builder->new('JsonContentTypeSerializer'),
+                ]
+            );
+        }
 
-        $xmlSerializerInit = $this->builder->methodCall(
-            $formEncodedSerializerInit,
-            'add',
-            [
-                $this->builder->new('XmlContentTypeSerializer'),
-            ]
-        );
+        if (in_array(FormUrlencodedContentTypeSerializer::MIME_TYPE, $allContentTypes, true)) {
+            $formEncodedSerializerInit = $this->builder->methodCall(
+                $jsonSerializerInit ?? $initialStatement,
+                'add',
+                [
+                    $this->builder->new('FormUrlencodedContentTypeSerializer'),
+                ]
+            );
+        }
 
-        $registerBodySerializerClosureStatements[] = $this->builder->return($xmlSerializerInit);
+        if (in_array(XmlContentTypeSerializer::MIME_TYPE, $allContentTypes, true)) {
+            $xmlSerializerInit = $this->builder->methodCall(
+                $formEncodedSerializerInit ?? $jsonSerializerInit ?? $initialStatement,
+                'add',
+                [
+                    $this->builder->new('XmlContentTypeSerializer'),
+                ]
+            );
+        }
+
+        $registerBodySerializerClosureStatements[] = $this
+            ->builder
+            ->return($xmlSerializerInit ?? $formEncodedSerializerInit ?? $jsonSerializerInit);
 
         return $this->builder->closure(
             $registerBodySerializerClosureStatements,

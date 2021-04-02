@@ -5,6 +5,9 @@ namespace DoclerLabs\ApiClientGenerator\Input;
 use cebe\openapi\spec\OpenApi;
 use DoclerLabs\ApiClientGenerator\Entity\FieldCollection;
 use DoclerLabs\ApiClientGenerator\Entity\OperationCollection;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\FormUrlencodedContentTypeSerializer;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\JsonContentTypeSerializer;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\XmlContentTypeSerializer;
 
 class Specification
 {
@@ -58,5 +61,23 @@ class Specification
     public function getCompositeResponseFields(): FieldCollection
     {
         return $this->compositeResponseFields;
+    }
+
+    public function getAllContentTypes(): array
+    {
+        $allContentTypes = [
+            XmlContentTypeSerializer::MIME_TYPE            => false,
+            FormUrlencodedContentTypeSerializer::MIME_TYPE => false,
+            JsonContentTypeSerializer::MIME_TYPE           => false,
+        ];
+
+        foreach ($this->getOperations() as $operation) {
+            /** @var Operation $operation */
+            foreach ($operation->getRequest()->getBodyContentTypes() as $contentType) {
+                $allContentTypes[$contentType] = true;
+            }
+        }
+
+        return array_keys(array_filter($allContentTypes));
     }
 }

@@ -10,12 +10,16 @@ use DoclerLabs\ApiClientGenerator\Input\FileReader;
 use DoclerLabs\ApiClientGenerator\Input\Parser;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\MetaTemplateFacade;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\FormUrlencodedContentTypeSerializer;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\JsonContentTypeSerializer;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\XmlContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFileCollection;
 use DoclerLabs\ApiClientGenerator\Output\MetaFilePrinter;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use DoclerLabs\ApiClientGenerator\Output\PhpFilePrinter;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhpFileCopier;
 use DoclerLabs\ApiClientGenerator\Output\WarningFormatter;
+use ReflectionClass;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -89,7 +93,7 @@ class GenerateCommand extends Command
         $this->generatePhpFiles($ss, $specification);
         $this->copySpecification($ss);
         $this->generateMetaFiles($ss, $specification);
-        $this->copyStaticPhpFiles($ss);
+        $this->copyStaticPhpFiles($ss, $specification);
 
         return Command::SUCCESS;
     }
@@ -137,9 +141,10 @@ class GenerateCommand extends Command
         $ss->progressFinish();
     }
 
-    private function copyStaticPhpFiles(StyleInterface $ss): void
+    private function copyStaticPhpFiles(StyleInterface $ss, Specification $specification): void
     {
-        $originalFiles = $this->fileFinder
+        $blacklistedFiles = $this->getBlacklistedFiles($specification);
+        $originalFiles    = $this->fileFinder
             ->files()
             ->name('*.php')
             ->in(Configuration::STATIC_PHP_FILE_DIRECTORY);
@@ -149,17 +154,19 @@ class GenerateCommand extends Command
 
         $ss->progressStart($originalFiles->count());
         foreach ($originalFiles as $originalFile) {
-            $destinationPath = sprintf(
-                '%s/%s/%s',
-                $this->configuration->getOutputDirectory(),
-                $this->configuration->getSourceDirectory(),
-                $originalFile->getRelativePathname()
-            );
+            if (empty($blacklistedFiles[$originalFile->getBasename()])) {
+                $destinationPath = sprintf(
+                    '%s/%s/%s',
+                    $this->configuration->getOutputDirectory(),
+                    $this->configuration->getSourceDirectory(),
+                    $originalFile->getRelativePathname()
+                );
 
-            $this->staticPhpPrinter->copy(
-                $destinationPath,
-                $originalFile
-            );
+                $this->staticPhpPrinter->copy(
+                    $destinationPath,
+                    $originalFile
+                );
+            }
 
             $ss->progressAdvance();
         }
@@ -194,5 +201,25 @@ class GenerateCommand extends Command
         } else {
             set_error_handler($this->warningFormatter, E_USER_WARNING);
         }
+    }
+
+    private function getBlacklistedFiles(Specification $specification): array
+    {
+        $contentTypeMapping = [
+            XmlContentTypeSerializer::MIME_TYPE            => XmlContentTypeSerializer::class,
+            FormUrlencodedContentTypeSerializer::MIME_TYPE => FormUrlencodedContentTypeSerializer::class,
+            JsonContentTypeSerializer::MIME_TYPE           => JsonContentTypeSerializer::class,
+        ];
+
+        $allContentTypes = $specification->getAllContentTypes();
+
+        return array_flip(array_map(
+            fn ($class) => basename((new ReflectionClass($class))->getFileName()),
+            array_filter(
+                $contentTypeMapping,
+                fn ($key) => !in_array($key, $allContentTypes),
+                ARRAY_FILTER_USE_KEY
+            )
+        ));
     }
 }

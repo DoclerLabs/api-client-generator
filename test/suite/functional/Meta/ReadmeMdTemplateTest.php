@@ -2,14 +2,11 @@
 
 namespace DoclerLabs\ApiClientGenerator\Test\Functional\Meta;
 
-use DoclerLabs\ApiClientGenerator\Generator\SchemaGenerator;
 use DoclerLabs\ApiClientGenerator\Input\Configuration;
-use DoclerLabs\ApiClientGenerator\Meta\ComposerJsonTemplate;
 use DoclerLabs\ApiClientGenerator\Meta\ReadmeMdTemplate;
 use DoclerLabs\ApiClientGenerator\Meta\Template\TwigExtension;
 use DoclerLabs\ApiClientGenerator\Meta\TemplateInterface;
 use DoclerLabs\ApiClientGenerator\Test\Functional\ConfigurationBuilder;
-use Pimple\Container;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
