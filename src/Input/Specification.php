@@ -72,8 +72,8 @@ class Specification
             JsonContentTypeSerializer::MIME_TYPE           => false,
         ];
 
+        /** @var Operation $operation */
         foreach ($this->getOperations() as $operation) {
-            /** @var Operation $operation */
             foreach ($operation->getRequest()->getBodyContentTypes() as $contentType) {
                 $allContentTypes[$contentType] = true;
             }
