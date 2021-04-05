@@ -10,11 +10,9 @@ namespace OpenApi\PetStoreClient\Request;
 
 class GetUserByNameRequest implements RequestInterface
 {
-    /** @var string */
-    private $username;
+    private string $username;
 
-    /** @var string */
-    private $contentType = '';
+    private string $contentType = '';
 
     public function __construct(string $username)
     {

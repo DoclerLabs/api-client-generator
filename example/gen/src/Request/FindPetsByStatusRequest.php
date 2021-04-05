@@ -21,11 +21,9 @@ class FindPetsByStatusRequest implements RequestInterface
 
     public const ALLOWED_STATUS_LIST = [self::STATUS_AVAILABLE, self::STATUS_PENDING, self::STATUS_SOLD];
 
-    /** @var string|null */
-    private $status;
+    private ?string $status = null;
 
-    /** @var string */
-    private $contentType = '';
+    private string $contentType = '';
 
     public function getContentType(): string
     {

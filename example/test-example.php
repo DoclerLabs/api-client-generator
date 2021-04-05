@@ -20,7 +20,7 @@ $factory = new SwaggerPetstoreOpenAPI3ClientFactory();
 $client  = $factory->create($client);
 
 $request = new FindPetsByStatusRequest();
-$request->setStatus(FindPetsByStatusRequest::STATUS_AVAILABLE);
+$request->setStatus(FindPetsByStatusRequest::STATUS_SOLD);
 $result = $client->findPetsByStatus($request);
 if ($result === null || $result->count() === 0) {
     sprintf('findPetsByStatus failed, result: %s', json_encode($result, JSON_THROW_ON_ERROR)) || exit(1);

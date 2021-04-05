@@ -13,11 +13,9 @@ use OpenApi\PetStoreClient\Schema\Pet;
 
 class PetMapper implements SchemaMapperInterface
 {
-    /** @var CategoryMapper */
-    private $categoryMapper;
+    private CategoryMapper $categoryMapper;
 
-    /** @var TagCollectionMapper */
-    private $tagCollectionMapper;
+    private TagCollectionMapper $tagCollectionMapper;
 
     public function __construct(CategoryMapper $categoryMapper, TagCollectionMapper $tagCollectionMapper)
     {

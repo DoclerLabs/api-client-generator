@@ -10,8 +10,7 @@ namespace OpenApi\PetStoreClient\Request;
 
 class GetInventoryRequest implements RequestInterface
 {
-    /** @var string */
-    private $contentType = '';
+    private string $contentType = '';
 
     public function getContentType(): string
     {
