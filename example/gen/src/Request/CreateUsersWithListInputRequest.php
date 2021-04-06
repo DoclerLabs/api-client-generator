@@ -12,11 +12,9 @@ use OpenApi\PetStoreClient\Schema\UserCollection;
 
 class CreateUsersWithListInputRequest implements RequestInterface
 {
-    /** @var UserCollection */
-    private $createUsersWithListInputRequestBody;
+    private UserCollection $createUsersWithListInputRequestBody;
 
-    /** @var string */
-    private $contentType = 'application/json';
+    private string $contentType = 'application/json';
 
     public function __construct(UserCollection $createUsersWithListInputRequestBody)
     {

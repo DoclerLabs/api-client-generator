@@ -12,11 +12,9 @@ use OpenApi\PetStoreClient\Schema\SerializableInterface;
 
 class FindPetsByTagsRequest implements RequestInterface
 {
-    /** @var string[]|null */
-    private $tags;
+    private ?array $tags = null;
 
-    /** @var string */
-    private $contentType = '';
+    private string $contentType = '';
 
     public function getContentType(): string
     {

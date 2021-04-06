@@ -12,11 +12,9 @@ use OpenApi\PetStoreClient\Schema\Order;
 
 class PlaceOrderRequest implements RequestInterface
 {
-    /** @var Order */
-    private $order;
+    private Order $order;
 
-    /** @var string */
-    private $contentType;
+    private string $contentType;
 
     public function __construct(Order $order, string $contentType)
     {

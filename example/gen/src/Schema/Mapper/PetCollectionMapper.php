@@ -12,8 +12,7 @@ use OpenApi\PetStoreClient\Schema\PetCollection;
 
 class PetCollectionMapper implements SchemaMapperInterface
 {
-    /** @var PetMapper */
-    private $petMapper;
+    private PetMapper $petMapper;
 
     public function __construct(PetMapper $petMapper)
     {

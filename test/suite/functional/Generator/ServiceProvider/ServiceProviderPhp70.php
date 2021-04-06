@@ -17,9 +17,7 @@ use Test\Schema\Mapper\FoodMapper;
 use Test\Schema\Mapper\PetCollectionMapper;
 use Test\Schema\Mapper\PetMapper;
 use Test\Serializer\BodySerializer;
-use Test\Serializer\ContentType\FormUrlencodedContentTypeSerializer;
 use Test\Serializer\ContentType\JsonContentTypeSerializer;
-use Test\Serializer\ContentType\XmlContentTypeSerializer;
 use Test\Serializer\QuerySerializer;
 
 class ServiceProvider
@@ -27,7 +25,7 @@ class ServiceProvider
     public function register(Container $container): void
     {
         $container[BodySerializer::class] = static function (): BodySerializer {
-            return (new BodySerializer())->add(new JsonContentTypeSerializer())->add(new FormUrlencodedContentTypeSerializer())->add(new XmlContentTypeSerializer());
+            return (new BodySerializer())->add(new JsonContentTypeSerializer());
         };
         $container[QuerySerializer::class] = static function (): QuerySerializer {
             return new QuerySerializer();

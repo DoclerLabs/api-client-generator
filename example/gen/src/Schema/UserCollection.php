@@ -15,8 +15,7 @@ use JsonSerializable;
 
 class UserCollection implements IteratorAggregate, SerializableInterface, Countable, JsonSerializable
 {
-    /** @var User[] */
-    private $items;
+    private array $items;
 
     /**
      * @param User[] $items

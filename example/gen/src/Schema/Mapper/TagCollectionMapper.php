@@ -12,8 +12,7 @@ use OpenApi\PetStoreClient\Schema\TagCollection;
 
 class TagCollectionMapper implements SchemaMapperInterface
 {
-    /** @var TagMapper */
-    private $tagMapper;
+    private TagMapper $tagMapper;
 
     public function __construct(TagMapper $tagMapper)
     {

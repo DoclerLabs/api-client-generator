@@ -15,8 +15,7 @@ use JsonSerializable;
 
 class TagCollection implements IteratorAggregate, SerializableInterface, Countable, JsonSerializable
 {
-    /** @var Tag[] */
-    private $items;
+    private array $items;
 
     /**
      * @param Tag|null[] $items

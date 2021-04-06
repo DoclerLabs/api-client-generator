@@ -12,14 +12,11 @@ use OpenApi\PetStoreClient\Schema\SerializableInterface;
 
 class LoginUserRequest implements RequestInterface
 {
-    /** @var string|null */
-    private $username;
+    private ?string $username = null;
 
-    /** @var string|null */
-    private $password;
+    private ?string $password = null;
 
-    /** @var string */
-    private $contentType = '';
+    private string $contentType = '';
 
     public function getContentType(): string
     {

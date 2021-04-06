@@ -12,11 +12,9 @@ use OpenApi\PetStoreClient\Schema\Pet;
 
 class AddPetRequest implements RequestInterface
 {
-    /** @var Pet */
-    private $pet;
+    private Pet $pet;
 
-    /** @var string */
-    private $contentType;
+    private string $contentType;
 
     public function __construct(Pet $pet, string $contentType)
     {
