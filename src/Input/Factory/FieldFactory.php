@@ -5,6 +5,14 @@ namespace DoclerLabs\ApiClientGenerator\Input\Factory;
 use cebe\openapi\spec\Parameter;
 use cebe\openapi\spec\Reference;
 use cebe\openapi\SpecObjectInterface;
+use DoclerLabs\ApiClientGenerator\Entity\Constraint\ConstraintCollection;
+use DoclerLabs\ApiClientGenerator\Entity\Constraint\MaximumConstraint;
+use DoclerLabs\ApiClientGenerator\Entity\Constraint\MaxItemsConstraint;
+use DoclerLabs\ApiClientGenerator\Entity\Constraint\MaxLengthConstraint;
+use DoclerLabs\ApiClientGenerator\Entity\Constraint\MinimumConstraint;
+use DoclerLabs\ApiClientGenerator\Entity\Constraint\MinItemsConstraint;
+use DoclerLabs\ApiClientGenerator\Entity\Constraint\MinLengthConstraint;
+use DoclerLabs\ApiClientGenerator\Entity\Constraint\PatternConstraint;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\FieldType;
 use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
@@ -89,18 +97,18 @@ class FieldFactory
             $field = new Field(
                 $fieldName,
                 new FieldType($type),
+                new ConstraintCollection(
+                    new MinimumConstraint($schema->minimum, $schema->exclusiveMinimum),
+                    new MaximumConstraint($schema->maximum, $schema->exclusiveMaximum),
+                    new MinLengthConstraint($schema->minLength),
+                    new MaxLengthConstraint($schema->maxLength),
+                    new PatternConstraint($schema->pattern),
+                    new MinItemsConstraint($schema->minItems),
+                    new MaxItemsConstraint($schema->maxItems)
+                ),
                 $referenceName,
                 $required,
-                $schema->nullable,
-                $schema->minimum,
-                $schema->exclusiveMinimum,
-                $schema->maximum,
-                $schema->exclusiveMaximum,
-                $schema->minLength,
-                $schema->maxLength,
-                $schema->pattern,
-                $schema->minItems,
-                $schema->maxItems
+                $schema->nullable
             );
 
             if ($arrayItem !== null) {

@@ -2,6 +2,7 @@
 
 namespace DoclerLabs\ApiClientGenerator\Entity;
 
+use DoclerLabs\ApiClientGenerator\Entity\Constraint\ConstraintCollection;
 use DoclerLabs\ApiClientGenerator\Naming\CaseCaster;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaCollectionNaming;
 use RuntimeException;
@@ -11,55 +12,32 @@ class Field
     public const FORMAT_DATE      = 'date';
     public const FORMAT_DATE_TIME = 'date-time';
     public const TYPE_MIXED       = 'mixed';
-    private string    $name;
-    private FieldType $type;
-    private string    $referenceName;
-    private bool      $required;
-    private bool      $nullable;
-    private ?Field    $arrayItem        = null;
-    private array     $objectProperties = [];
-    private array     $enumValues       = [];
-    private string    $format           = '';
-    private ?int      $minimum          = null;
-    private ?bool     $exclusiveMinimum = null;
-    private ?int      $maximum          = null;
-    private ?bool     $exclusiveMaximum = null;
-    private ?int      $minLength        = null;
-    private ?int      $maxLength        = null;
-    private ?string   $pattern          = null;
-    private ?int      $minItems         = null;
-    private ?int      $maxItems         = null;
+
+    private string               $name;
+    private FieldType            $type;
+    private ConstraintCollection $constraints;
+    private string               $referenceName;
+    private bool                 $required;
+    private bool                 $nullable;
+    private ?Field               $arrayItem        = null;
+    private array                $objectProperties = [];
+    private array                $enumValues       = [];
+    private string               $format           = '';
 
     public function __construct(
         string $name,
         FieldType $type,
+        ConstraintCollection $constraints,
         string $referenceName,
         bool $required,
-        bool $nullable,
-        ?int $minimum,
-        ?bool $exclusiveMinimum,
-        ?int $maximum,
-        ?bool $exclusiveMaximum,
-        ?int $minLength,
-        ?int $maxLength,
-        ?string $pattern,
-        ?int $minItems,
-        ?int $maxItems
+        bool $nullable
     ) {
-        $this->name             = $name;
-        $this->type             = $type;
-        $this->referenceName    = $referenceName;
-        $this->required         = $required;
-        $this->nullable         = $nullable;
-        $this->minimum          = $minimum;
-        $this->exclusiveMinimum = $exclusiveMinimum;
-        $this->maximum          = $maximum;
-        $this->exclusiveMaximum = $exclusiveMaximum;
-        $this->minLength        = $minLength;
-        $this->maxLength        = $maxLength;
-        $this->pattern          = $pattern;
-        $this->minItems         = $minItems;
-        $this->maxItems         = $maxItems;
+        $this->name          = $name;
+        $this->type          = $type;
+        $this->constraints   = $constraints;
+        $this->referenceName = $referenceName;
+        $this->required      = $required;
+        $this->nullable      = $nullable;
     }
 
     public function getArrayItem(): Field
@@ -127,6 +105,11 @@ class Field
         return $this->type;
     }
 
+    public function getConstraints(): ConstraintCollection
+    {
+        return $this->constraints;
+    }
+
     public function getReferenceName(): string
     {
         return $this->referenceName;
@@ -145,51 +128,6 @@ class Field
     public function isNullable(): bool
     {
         return $this->nullable;
-    }
-
-    public function getMinimum(): ?int
-    {
-        return $this->minimum;
-    }
-
-    public function isExclusiveMinimum(): ?bool
-    {
-        return $this->exclusiveMinimum;
-    }
-
-    public function getMaximum(): ?int
-    {
-        return $this->maximum;
-    }
-
-    public function isExclusiveMaximum(): ?bool
-    {
-        return $this->exclusiveMaximum;
-    }
-
-    public function getMinLength(): ?int
-    {
-        return $this->minLength;
-    }
-
-    public function getMaxLength(): ?int
-    {
-        return $this->maxLength;
-    }
-
-    public function getPattern(): ?string
-    {
-        return $this->pattern;
-    }
-
-    public function getMinItems(): ?int
-    {
-        return $this->minItems;
-    }
-
-    public function getMaxItems(): ?int
-    {
-        return $this->maxItems;
     }
 
     public function isDate(): bool

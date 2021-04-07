@@ -77,7 +77,7 @@ class PutResourceByIdRequest implements RequestInterface
     public function __construct(int $resourceId, int $mandatoryIntegerParameter, string $mandatoryStringParameter, string $mandatoryEnumParameter, DateTimeInterface $mandatoryDateParameter, float $mandatoryFloatParameter, bool $mandatoryBooleanParameter, array $mandatoryArrayParameter, EmbeddedObject $mandatoryObjectParameter, string $xRequestId, PutResourceByIdRequestBody $putResourceByIdRequestBody)
     {
         if ($resourceId < 0) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, cannot be %s than %s', 'resourceId', $resourceId, '<', 0));
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be less than 0.', 'resourceId', $resourceId));
         }
         $this->resourceId                = $resourceId;
         $this->mandatoryIntegerParameter = $mandatoryIntegerParameter;

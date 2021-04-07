@@ -128,7 +128,7 @@ class Item implements SerializableInterface, JsonSerializable
         $this->mandatoryBoolean      = $mandatoryBoolean;
         $this->mandatoryArray        = $mandatoryArray;
         if (\count($mandatoryArrayWithMinItems) < 1) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Expected min items: `%s`', 'mandatoryArrayWithMinItems', 1));
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Expected min items: `1`.', 'mandatoryArrayWithMinItems', $mandatoryArrayWithMinItems));
         }
         $this->mandatoryArrayWithMinItems = $mandatoryArrayWithMinItems;
         $this->mandatoryObject            = $mandatoryObject;
@@ -220,10 +220,10 @@ class Item implements SerializableInterface, JsonSerializable
     public function setOptionalArrayWithMinMaxItems(array $optionalArrayWithMinMaxItems): self
     {
         if (\count($optionalArrayWithMinMaxItems) < 1) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Expected min items: `%s`', 'optionalArrayWithMinMaxItems', 1));
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Expected min items: `1`.', 'optionalArrayWithMinMaxItems', $optionalArrayWithMinMaxItems));
         }
         if (\count($optionalArrayWithMinMaxItems) > 5) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Expected max items: `%s`', 'optionalArrayWithMinMaxItems', 5));
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Expected max items: `5`.', 'optionalArrayWithMinMaxItems', $optionalArrayWithMinMaxItems));
         }
         $this->optionalArrayWithMinMaxItems = $optionalArrayWithMinMaxItems;
 
@@ -236,10 +236,10 @@ class Item implements SerializableInterface, JsonSerializable
     public function setOptionalStringWithMinMaxLength(string $optionalStringWithMinMaxLength): self
     {
         if (\strlen($optionalStringWithMinMaxLength) < 1) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, length should be greather than %s', 'optionalStringWithMinMaxLength', $optionalStringWithMinMaxLength, 1));
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Length should be greater than 1.', 'optionalStringWithMinMaxLength', $optionalStringWithMinMaxLength));
         }
         if (\strlen($optionalStringWithMinMaxLength) > 5) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, length should be less than %s', 'optionalStringWithMinMaxLength', $optionalStringWithMinMaxLength, 5));
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Length should be less than 5.', 'optionalStringWithMinMaxLength', $optionalStringWithMinMaxLength));
         }
         $this->optionalStringWithMinMaxLength = $optionalStringWithMinMaxLength;
 
@@ -252,7 +252,7 @@ class Item implements SerializableInterface, JsonSerializable
     public function setOptionalStringWithPattern(string $optionalStringWithPattern): self
     {
         if (\preg_match('^\\d{3}-\\d{2}-\\d{4}$', $optionalStringWithPattern) !== 1) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, pattern is %s', 'optionalStringWithPattern', $optionalStringWithPattern, '^\\d{3}-\\d{2}-\\d{4}$'));
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Pattern is ^\\d{3}-\\d{2}-\\d{4}$.', 'optionalStringWithPattern', $optionalStringWithPattern));
         }
         $this->optionalStringWithPattern = $optionalStringWithPattern;
 
@@ -265,10 +265,10 @@ class Item implements SerializableInterface, JsonSerializable
     public function setOptionalIntegerBetweenIncluded(int $optionalIntegerBetweenIncluded): self
     {
         if ($optionalIntegerBetweenIncluded < 0) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, cannot be %s than %s', 'optionalIntegerBetweenIncluded', $optionalIntegerBetweenIncluded, '<', 0));
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be less than 0.', 'optionalIntegerBetweenIncluded', $optionalIntegerBetweenIncluded));
         }
         if ($optionalIntegerBetweenIncluded > 5) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, cannot be %s than %s', 'optionalIntegerBetweenIncluded', $optionalIntegerBetweenIncluded, '>', 5));
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be greater than 5.', 'optionalIntegerBetweenIncluded', $optionalIntegerBetweenIncluded));
         }
         $this->optionalIntegerBetweenIncluded = $optionalIntegerBetweenIncluded;
 
@@ -281,10 +281,10 @@ class Item implements SerializableInterface, JsonSerializable
     public function setOptionalIntegerBetweenExcluded(int $optionalIntegerBetweenExcluded): self
     {
         if ($optionalIntegerBetweenExcluded <= 0) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, cannot be %s than %s', 'optionalIntegerBetweenExcluded', $optionalIntegerBetweenExcluded, '<=', 0));
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be less than or equal to 0.', 'optionalIntegerBetweenExcluded', $optionalIntegerBetweenExcluded));
         }
         if ($optionalIntegerBetweenExcluded >= 5) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, cannot be %s than %s', 'optionalIntegerBetweenExcluded', $optionalIntegerBetweenExcluded, '>=', 5));
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be greater than or equal to 5.', 'optionalIntegerBetweenExcluded', $optionalIntegerBetweenExcluded));
         }
         $this->optionalIntegerBetweenExcluded = $optionalIntegerBetweenExcluded;
 
@@ -297,10 +297,10 @@ class Item implements SerializableInterface, JsonSerializable
     public function setOptionalNumberBetweenIncluded(float $optionalNumberBetweenIncluded): self
     {
         if ($optionalNumberBetweenIncluded < 0) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, cannot be %s than %s', 'optionalNumberBetweenIncluded', $optionalNumberBetweenIncluded, '<', 0));
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be less than 0.', 'optionalNumberBetweenIncluded', $optionalNumberBetweenIncluded));
         }
         if ($optionalNumberBetweenIncluded > 5) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, cannot be %s than %s', 'optionalNumberBetweenIncluded', $optionalNumberBetweenIncluded, '>', 5));
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be greater than 5.', 'optionalNumberBetweenIncluded', $optionalNumberBetweenIncluded));
         }
         $this->optionalNumberBetweenIncluded = $optionalNumberBetweenIncluded;
 
@@ -313,10 +313,10 @@ class Item implements SerializableInterface, JsonSerializable
     public function setOptionalNumberBetweenExcluded(float $optionalNumberBetweenExcluded): self
     {
         if ($optionalNumberBetweenExcluded <= 0) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, cannot be %s than %s', 'optionalNumberBetweenExcluded', $optionalNumberBetweenExcluded, '<=', 0));
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be less than or equal to 0.', 'optionalNumberBetweenExcluded', $optionalNumberBetweenExcluded));
         }
         if ($optionalNumberBetweenExcluded >= 5) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`, cannot be %s than %s', 'optionalNumberBetweenExcluded', $optionalNumberBetweenExcluded, '>=', 5));
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be greater than or equal to 5.', 'optionalNumberBetweenExcluded', $optionalNumberBetweenExcluded));
         }
         $this->optionalNumberBetweenExcluded = $optionalNumberBetweenExcluded;
 
