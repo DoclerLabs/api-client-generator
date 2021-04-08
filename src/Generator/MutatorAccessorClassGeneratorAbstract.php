@@ -5,9 +5,9 @@ namespace DoclerLabs\ApiClientGenerator\Generator;
 use DateTimeInterface;
 use DoclerLabs\ApiClientException\RequestValidationException;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
+use DoclerLabs\ApiClientGenerator\Entity\Constraint\ConstraintInterface;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
-use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use PhpParser\Node\Stmt;
@@ -20,18 +20,20 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
 
     abstract public function generate(Specification $specification, PhpFileCollection $fileRegistry): void;
 
-    protected function generateSet(Field $field, string $baseNamespace): ClassMethod
+    protected function generateValidationStmts(Field $field): array
     {
-        $statements         = [];
-        $thrownExceptionMap = [];
-        $enumStmt           = $this->generateEnumValidation($field, $baseNamespace);
-        if ($enumStmt !== null) {
-            $statements[]                                     = $enumStmt;
-            $thrownExceptionMap['RequestValidationException'] = true;
-        }
+        return array_filter([
+            $this->generateEnumValidation($field),
+            ...$this->generateConstraints($field)
+        ]);
+    }
 
-        $docType = $field->getPhpDocType($field->isNullable());
-        $param   = $this->builder
+    protected function generateSet(Field $field): ClassMethod
+    {
+        $statements         = $this->generateValidationStmts($field);
+        $thrownExceptionMap = empty($statements) ? [] : ['RequestValidationException' => true];
+        $docType            = $field->getPhpDocType($field->isNullable());
+        $param              = $this->builder
             ->param($field->getPhpVariableName())
             ->setType($field->getPhpTypeHint(), $field->isNullable())
             ->setDocBlockType($docType)
@@ -119,7 +121,7 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
         return $statements;
     }
 
-    protected function generateEnumValidation(Field $root, string $baseNamespace): ?Stmt
+    protected function generateEnumValidation(Field $root): ?Stmt
     {
         $enumValues = $root->getEnumValues();
         if (empty($enumValues)) {
@@ -155,5 +157,40 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
         $ifStmt = $this->builder->throw('RequestValidationException', $exceptionMessage);
 
         return $this->builder->if($ifCondition, [$ifStmt]);
+    }
+
+    protected function generateConstraints(Field $root): array
+    {
+        $stmts = [];
+
+        /** @var ConstraintInterface $constraint */
+        foreach ($root->getConstraints() as $constraint) {
+            if (!$constraint->exists()) {
+                continue;
+            }
+
+            $propertyVar      = $this->builder->var($root->getPhpVariableName());
+            $exceptionMessage = $this->builder->funcCall(
+                'sprintf',
+                [
+                    'Invalid %s value. Given: `%s`. ' . $constraint->getExceptionMessage(),
+                    $root->getName(),
+                    $propertyVar,
+                ]
+            );
+
+            $stmts[] = $this->builder->if(
+                $constraint->getIfCondition($propertyVar, $this->builder),
+                [
+                    $this->builder->throw('RequestValidationException', $exceptionMessage)
+                ]
+            );
+        }
+
+        if (!empty($stmts)) {
+            $this->addImport(RequestValidationException::class);
+        }
+
+        return $stmts;
     }
 }

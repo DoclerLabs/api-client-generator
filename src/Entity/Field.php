@@ -2,6 +2,7 @@
 
 namespace DoclerLabs\ApiClientGenerator\Entity;
 
+use DoclerLabs\ApiClientGenerator\Entity\Constraint\ConstraintCollection;
 use DoclerLabs\ApiClientGenerator\Naming\CaseCaster;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaCollectionNaming;
 use RuntimeException;
@@ -11,25 +12,29 @@ class Field
     public const FORMAT_DATE      = 'date';
     public const FORMAT_DATE_TIME = 'date-time';
     public const TYPE_MIXED       = 'mixed';
-    private string    $name;
-    private FieldType $type;
-    private string    $referenceName;
-    private bool      $required;
-    private bool      $nullable;
-    private ?Field    $arrayItem        = null;
-    private array     $objectProperties = [];
-    private array     $enumValues       = [];
-    private string    $format           = '';
+
+    private string               $name;
+    private FieldType            $type;
+    private ConstraintCollection $constraints;
+    private string               $referenceName;
+    private bool                 $required;
+    private bool                 $nullable;
+    private ?Field               $arrayItem        = null;
+    private array                $objectProperties = [];
+    private array                $enumValues       = [];
+    private string               $format           = '';
 
     public function __construct(
         string $name,
         FieldType $type,
+        ConstraintCollection $constraints,
         string $referenceName,
         bool $required,
         bool $nullable
     ) {
         $this->name          = $name;
         $this->type          = $type;
+        $this->constraints   = $constraints;
         $this->referenceName = $referenceName;
         $this->required      = $required;
         $this->nullable      = $nullable;
@@ -98,6 +103,11 @@ class Field
     public function getType(): FieldType
     {
         return $this->type;
+    }
+
+    public function getConstraints(): ConstraintCollection
+    {
+        return $this->constraints;
     }
 
     public function getReferenceName(): string
