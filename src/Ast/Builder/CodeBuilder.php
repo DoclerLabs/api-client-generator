@@ -140,7 +140,7 @@ class CodeBuilder extends BuilderFactory
             ->property($name)
             ->makePrivate();
 
-        if ($this->phpVersion->isPropertyTypeHintSupported()) {
+        if (!empty($type) && $this->phpVersion->isPropertyTypeHintSupported()) {
             if ($nullable) {
                 $property->setDefault(null);
                 $type = '?' . $type;

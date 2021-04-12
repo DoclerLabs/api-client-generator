@@ -185,10 +185,6 @@ class Field
             return $this->getPhpClassName();
         }
 
-        if ($this->type->isMixed()) {
-            return self::TYPE_MIXED;
-        }
-
         return $this->type->toPhpType();
     }
 

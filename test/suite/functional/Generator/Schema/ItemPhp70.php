@@ -56,6 +56,10 @@ class Item implements SerializableInterface, JsonSerializable
     /** @var ItemMandatoryObject */
     private $mandatoryObject;
 
+    private $mandatoryMixed;
+
+    private $mandatoryAnyOf;
+
     /** @var ItemNullableObject|null */
     private $nullableObject;
 
@@ -114,7 +118,7 @@ class Item implements SerializableInterface, JsonSerializable
      *
      * @throws RequestValidationException
      */
-    public function __construct(int $mandatoryInteger, string $mandatoryString, string $mandatoryEnum, DateTimeInterface $mandatoryDate, $mandatoryNullableDate, float $mandatoryFloat, bool $mandatoryBoolean, array $mandatoryArray, array $mandatoryArrayWithMinItems, ItemMandatoryObject $mandatoryObject)
+    public function __construct(int $mandatoryInteger, string $mandatoryString, string $mandatoryEnum, DateTimeInterface $mandatoryDate, $mandatoryNullableDate, float $mandatoryFloat, bool $mandatoryBoolean, array $mandatoryArray, array $mandatoryArrayWithMinItems, ItemMandatoryObject $mandatoryObject, $mandatoryMixed, $mandatoryAnyOf)
     {
         $this->mandatoryInteger = $mandatoryInteger;
         $this->mandatoryString  = $mandatoryString;
@@ -132,6 +136,8 @@ class Item implements SerializableInterface, JsonSerializable
         }
         $this->mandatoryArrayWithMinItems = $mandatoryArrayWithMinItems;
         $this->mandatoryObject            = $mandatoryObject;
+        $this->mandatoryMixed             = $mandatoryMixed;
+        $this->mandatoryAnyOf             = $mandatoryAnyOf;
     }
 
     /**
@@ -389,6 +395,16 @@ class Item implements SerializableInterface, JsonSerializable
         return $this->mandatoryObject;
     }
 
+    public function getMandatoryMixed()
+    {
+        return $this->mandatoryMixed;
+    }
+
+    public function getMandatoryAnyOf()
+    {
+        return $this->mandatoryAnyOf;
+    }
+
     /**
      * @return ItemNullableObject|null
      */
@@ -538,6 +554,8 @@ class Item implements SerializableInterface, JsonSerializable
         $fields['mandatoryArray']             = $this->mandatoryArray;
         $fields['mandatoryArrayWithMinItems'] = $this->mandatoryArrayWithMinItems;
         $fields['mandatoryObject']            = $this->mandatoryObject->toArray();
+        $fields['mandatoryMixed']             = $this->mandatoryMixed;
+        $fields['mandatoryAnyOf']             = $this->mandatoryAnyOf;
         $fields['nullableObject']             = $this->nullableObject !== null ? $this->nullableObject->toArray() : null;
         $fields['nullableDate']               = $this->nullableDate   !== null ? $this->nullableDate->format(DATE_RFC3339) : null;
         if ($this->optionalInteger !== null) {

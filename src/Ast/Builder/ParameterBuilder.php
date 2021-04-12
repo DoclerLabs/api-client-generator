@@ -20,7 +20,7 @@ class ParameterBuilder extends Param
 
     public function setType($type, bool $isNullable = false): self
     {
-        if ($type === 'mixed') {
+        if (empty($type)) {
             return $this;
         }
 

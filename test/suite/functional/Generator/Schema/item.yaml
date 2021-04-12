@@ -58,6 +58,11 @@ components:
               properties:
                 string:
                   type: string
+        mandatoryMixed: {}
+        mandatoryAnyOf:
+          anyOf:
+            - type: number
+            - type: string
         nullableObject:
           type: object
           properties:
@@ -136,6 +141,8 @@ components:
         - mandatoryArray
         - mandatoryArrayWithMinItems
         - mandatoryObject
+        - mandatoryMixed
+        - mandatoryAnyOf
     EmbeddedObject:
       type: object
       properties:
