@@ -20,6 +20,10 @@ class ParameterBuilder extends Param
 
     public function setType($type, bool $isNullable = false): self
     {
+        if (empty($type)) {
+            return $this;
+        }
+
         if ($isNullable) {
             if ($this->phpVersion->isNullableTypeHintSupported() && is_string($type)) {
                 return parent::setType(sprintf('?%s', $type));

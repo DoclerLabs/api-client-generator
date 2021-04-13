@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
+use DoclerLabs\ApiClientGenerator\Ast\Builder\MethodBuilder;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\ClientNaming;
@@ -107,7 +108,7 @@ class ClientGenerator extends GeneratorAbstract
                 ->makePublic()
                 ->addParam($methodParam)
                 ->addStmt($handleResponseStmt)
-                ->setReturnType(null)
+                ->setReturnType(MethodBuilder::RETURN_TYPE_VOID)
                 ->composeDocBlock([$methodParam])
                 ->getNode();
         }

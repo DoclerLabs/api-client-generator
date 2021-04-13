@@ -46,6 +46,10 @@ class Item implements SerializableInterface, JsonSerializable
 
     private ItemMandatoryObject $mandatoryObject;
 
+    private $mandatoryMixed;
+
+    private $mandatoryAnyOf;
+
     private ?ItemNullableObject $nullableObject = null;
 
     private ?DateTimeInterface $nullableDate = null;
@@ -63,6 +67,8 @@ class Item implements SerializableInterface, JsonSerializable
     private ?bool $optionalBoolean = null;
 
     private ?array $optionalArray = null;
+
+    private ?array $optionalMixedArray = null;
 
     private ?array $optionalArrayWithMinMaxItems = null;
 
@@ -86,7 +92,7 @@ class Item implements SerializableInterface, JsonSerializable
      *
      * @throws RequestValidationException
      */
-    public function __construct(int $mandatoryInteger, string $mandatoryString, string $mandatoryEnum, DateTimeInterface $mandatoryDate, ?DateTimeInterface $mandatoryNullableDate, float $mandatoryFloat, bool $mandatoryBoolean, array $mandatoryArray, array $mandatoryArrayWithMinItems, ItemMandatoryObject $mandatoryObject)
+    public function __construct(int $mandatoryInteger, string $mandatoryString, string $mandatoryEnum, DateTimeInterface $mandatoryDate, ?DateTimeInterface $mandatoryNullableDate, float $mandatoryFloat, bool $mandatoryBoolean, array $mandatoryArray, array $mandatoryArrayWithMinItems, ItemMandatoryObject $mandatoryObject, $mandatoryMixed, $mandatoryAnyOf)
     {
         $this->mandatoryInteger = $mandatoryInteger;
         $this->mandatoryString  = $mandatoryString;
@@ -104,6 +110,8 @@ class Item implements SerializableInterface, JsonSerializable
         }
         $this->mandatoryArrayWithMinItems = $mandatoryArrayWithMinItems;
         $this->mandatoryObject            = $mandatoryObject;
+        $this->mandatoryMixed             = $mandatoryMixed;
+        $this->mandatoryAnyOf             = $mandatoryAnyOf;
     }
 
     public function setNullableObject(?ItemNullableObject $nullableObject): self
@@ -174,6 +182,16 @@ class Item implements SerializableInterface, JsonSerializable
     public function setOptionalArray(array $optionalArray): self
     {
         $this->optionalArray = $optionalArray;
+
+        return $this;
+    }
+
+    /**
+     * @param mixed[] $optionalMixedArray
+     */
+    public function setOptionalMixedArray(array $optionalMixedArray): self
+    {
+        $this->optionalMixedArray = $optionalMixedArray;
 
         return $this;
     }
@@ -352,6 +370,16 @@ class Item implements SerializableInterface, JsonSerializable
         return $this->mandatoryObject;
     }
 
+    public function getMandatoryMixed()
+    {
+        return $this->mandatoryMixed;
+    }
+
+    public function getMandatoryAnyOf()
+    {
+        return $this->mandatoryAnyOf;
+    }
+
     public function getNullableObject(): ?ItemNullableObject
     {
         return $this->nullableObject;
@@ -398,6 +426,14 @@ class Item implements SerializableInterface, JsonSerializable
     public function getOptionalArray(): ?array
     {
         return $this->optionalArray;
+    }
+
+    /**
+     * @return mixed[]|null
+     */
+    public function getOptionalMixedArray(): ?array
+    {
+        return $this->optionalMixedArray;
     }
 
     /**
@@ -456,6 +492,8 @@ class Item implements SerializableInterface, JsonSerializable
         $fields['mandatoryArray']             = $this->mandatoryArray;
         $fields['mandatoryArrayWithMinItems'] = $this->mandatoryArrayWithMinItems;
         $fields['mandatoryObject']            = $this->mandatoryObject->toArray();
+        $fields['mandatoryMixed']             = $this->mandatoryMixed;
+        $fields['mandatoryAnyOf']             = $this->mandatoryAnyOf;
         $fields['nullableObject']             = $this->nullableObject !== null ? $this->nullableObject->toArray() : null;
         $fields['nullableDate']               = $this->nullableDate   !== null ? $this->nullableDate->format(DATE_RFC3339) : null;
         if ($this->optionalInteger !== null) {
@@ -478,6 +516,9 @@ class Item implements SerializableInterface, JsonSerializable
         }
         if ($this->optionalArray !== null) {
             $fields['optionalArray'] = $this->optionalArray;
+        }
+        if ($this->optionalMixedArray !== null) {
+            $fields['optionalMixedArray'] = $this->optionalMixedArray;
         }
         if ($this->optionalArrayWithMinMaxItems !== null) {
             $fields['optionalArrayWithMinMaxItems'] = $this->optionalArrayWithMinMaxItems;

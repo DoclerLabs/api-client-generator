@@ -208,7 +208,7 @@ class Field
 
         if ($this->isArray() && !$this->isArrayOfObjects()) {
             $arraySuffix = '[]';
-            $typeHint    = $this->getArrayItem()->getPhpTypeHint();
+            $typeHint = $this->getArrayItem()->getPhpDocType();
         }
 
         return sprintf('%s%s%s', $typeHint, $arraySuffix, $nullableSuffix);

@@ -12,6 +12,8 @@ use PhpParser\Node\NullableType;
 
 class MethodBuilder extends Method
 {
+    public const RETURN_TYPE_VOID = 'void';
+
     private PhpVersion $phpVersion;
 
     public function __construct(string $name, PhpVersion $phpVersion)
@@ -59,13 +61,13 @@ class MethodBuilder extends Method
      */
     public function setReturnType($type, $isNullable = false): self
     {
-        if ($type === 'mixed') {
+        if (empty($type)) {
             return $this;
         }
 
-        if ($type === null) {
+        if ($type === self::RETURN_TYPE_VOID) {
             if ($this->phpVersion->isVoidReturnTypeSupported()) {
-                return parent::setReturnType('void');
+                return parent::setReturnType($type);
             }
 
             return $this;

@@ -4,6 +4,7 @@ namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DoclerLabs\ApiClientException\Factory\ResponseExceptionFactory;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
+use DoclerLabs\ApiClientGenerator\Ast\Builder\MethodBuilder;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationStrategy;
@@ -167,7 +168,7 @@ class ServiceProviderGenerator extends GeneratorAbstract
             ->addParam($param)
             ->addStmts($statements)
             ->composeDocBlock([$param], '', [])
-            ->setReturnType(null)
+            ->setReturnType(MethodBuilder::RETURN_TYPE_VOID)
             ->getNode();
     }
 
