@@ -18,7 +18,7 @@ class TagCollection implements IteratorAggregate, SerializableInterface, Countab
     private array $items;
 
     /**
-     * @param Tag|null[] $items
+     * @param Tag[] $items
      */
     public function __construct(Tag ...$items)
     {
