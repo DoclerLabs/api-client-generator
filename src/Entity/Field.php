@@ -208,11 +208,7 @@ class Field
 
         if ($this->isArray() && !$this->isArrayOfObjects()) {
             $arraySuffix = '[]';
-            $arrayItem = $this->getArrayItem();
-
-            $typeHint = $arrayItem->getType()->isMixed()
-                ? self::TYPE_MIXED
-                : $arrayItem->getPhpTypeHint();
+            $typeHint = $this->getArrayItem()->getPhpDocType();
         }
 
         return sprintf('%s%s%s', $typeHint, $arraySuffix, $nullableSuffix);

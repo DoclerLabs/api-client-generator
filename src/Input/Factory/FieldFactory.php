@@ -80,7 +80,7 @@ class FieldFactory
                     $operationName,
                     lcfirst($itemReferenceName),
                     $sibling,
-                    $required,
+                    true,
                     $itemReferenceName
                 );
             } elseif (FieldType::isSpecificationTypeObject($type)) {
