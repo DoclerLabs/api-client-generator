@@ -68,6 +68,8 @@ class Item implements SerializableInterface, JsonSerializable
 
     private ?array $optionalArray = null;
 
+    private ?array $optionalMixedArray = null;
+
     private ?array $optionalArrayWithMinMaxItems = null;
 
     private ?string $optionalStringWithMinMaxLength = null;
@@ -180,6 +182,16 @@ class Item implements SerializableInterface, JsonSerializable
     public function setOptionalArray(array $optionalArray): self
     {
         $this->optionalArray = $optionalArray;
+
+        return $this;
+    }
+
+    /**
+     * @param mixed[] $optionalMixedArray
+     */
+    public function setOptionalMixedArray(array $optionalMixedArray): self
+    {
+        $this->optionalMixedArray = $optionalMixedArray;
 
         return $this;
     }
@@ -417,6 +429,14 @@ class Item implements SerializableInterface, JsonSerializable
     }
 
     /**
+     * @return mixed[]|null
+     */
+    public function getOptionalMixedArray(): ?array
+    {
+        return $this->optionalMixedArray;
+    }
+
+    /**
      * @return string[]|null
      */
     public function getOptionalArrayWithMinMaxItems(): ?array
@@ -496,6 +516,9 @@ class Item implements SerializableInterface, JsonSerializable
         }
         if ($this->optionalArray !== null) {
             $fields['optionalArray'] = $this->optionalArray;
+        }
+        if ($this->optionalMixedArray !== null) {
+            $fields['optionalMixedArray'] = $this->optionalMixedArray;
         }
         if ($this->optionalArrayWithMinMaxItems !== null) {
             $fields['optionalArrayWithMinMaxItems'] = $this->optionalArrayWithMinMaxItems;

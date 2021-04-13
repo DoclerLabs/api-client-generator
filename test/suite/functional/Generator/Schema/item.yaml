@@ -94,6 +94,9 @@ components:
           type: array
           items:
             type: string
+        optionalMixedArray:
+          type: array
+          items: {}
         optionalArrayWithMinMaxItems:
           type: array
           minItems: 1
