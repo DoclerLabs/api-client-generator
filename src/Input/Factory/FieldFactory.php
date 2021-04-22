@@ -126,6 +126,10 @@ class FieldFactory
                 $field->setFormat($schema->format);
             }
 
+            if (isset($schema->default)) {
+                $field->setDefault($schema->default);
+            }
+
             return $field;
         } catch (Throwable $exception) {
             throw new InvalidSpecificationException(

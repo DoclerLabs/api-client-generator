@@ -7,6 +7,16 @@ paths:
     patch:
       description: Update resource
       operationId: patchResource
+      parameters:
+        - in: header
+          name: Accept
+          required: true
+          schema:
+            type: string
+            default: application/json
+            enum:
+              - application/json
+              - application/xml
       requestBody:
         $ref: '#/components/requestBodies/UpdateResourceBody'
       responses:
