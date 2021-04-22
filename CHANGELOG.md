@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+## [5.4.0] - 2021-04-22
+### Added
+ - Support for `default` property on required request parameters.
+
 ## [5.3.0] - 2021-04-13
 ### Added
  - Support for `mixed` parameter type
