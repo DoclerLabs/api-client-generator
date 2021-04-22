@@ -23,6 +23,7 @@ class Field
     private array                $objectProperties = [];
     private array                $enumValues       = [];
     private string               $format           = '';
+    /** @phpstan-ignore-next-line cannot use strict type before PHP8 with "mixed" pseudo type */
     private $default;
 
     public function __construct(
