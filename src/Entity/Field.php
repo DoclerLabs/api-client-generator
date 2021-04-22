@@ -23,7 +23,7 @@ class Field
     private array                $objectProperties = [];
     private array                $enumValues       = [];
     private string               $format           = '';
-    private                      $default;
+    private $default;
 
     public function __construct(
         string $name,
