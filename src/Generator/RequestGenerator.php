@@ -383,11 +383,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         usort(
             $parameterNodes,
             static function (ParameterNode $paramA, ParameterNode $paramB) {
-                if ($paramA->default === $paramB->default) {
-                    return 0;
-                }
-
-                return null !== $paramA->default ? 1 : -1;
+                return $paramA->default <=> $paramB->default;
             }
         );
 
