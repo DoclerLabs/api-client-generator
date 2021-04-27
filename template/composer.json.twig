@@ -1,7 +1,10 @@
 {
     "name": "{{ packageName }}",
     "description": "Client library for {{ specification.getTitle() }}",
-    "keywords": [
+    {% if specification.hasLicense %}
+"license": "{{ specification.getLicenseName }}",
+    {% endif %}
+"keywords": [
         "api-client"
     ],
     "config": {

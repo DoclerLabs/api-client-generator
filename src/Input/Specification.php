@@ -34,6 +34,18 @@ class Specification
         return $this->openApi->info->title;
     }
 
+    public function hasLicense(): bool
+    {
+        $license = $this->openApi->info->license;
+
+        return $license && $license->name;
+    }
+
+    public function getLicenseName(): string
+    {
+        return $this->openApi->info->license->name;
+    }
+
     public function getServerUrls(): array
     {
         $serverUrls = [];
