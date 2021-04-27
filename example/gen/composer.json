@@ -1,6 +1,7 @@
 {
     "name": "openapi/pet-store-client",
     "description": "Client library for Swagger Petstore - OpenAPI 3.0",
+    "license": "Apache 2.0",
     "keywords": [
         "api-client"
     ],
