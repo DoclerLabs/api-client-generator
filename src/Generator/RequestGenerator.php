@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
+use DoclerLabs\ApiClientGenerator\Ast\ParameterNode;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Entity\Request;
@@ -98,10 +99,15 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                 if ($field->isRequired()) {
                     array_push($paramInits, ...$this->generateValidationStmts($field));
 
-                    $params[] = $this->builder
+                    $param = $this->builder
                         ->param($field->getPhpVariableName())
-                        ->setType($field->getPhpTypeHint(), $field->isNullable())
-                        ->getNode();
+                        ->setType($field->getPhpTypeHint(), $field->isNullable());
+
+                    if (null !== $field->getDefault()) {
+                        $param->setDefault($field->getDefault());
+                    }
+
+                    $params[] = $param->getNode();
 
                     $paramInits[] = $this->builder->assign(
                         $this->builder->localPropertyFetch($field->getPhpVariableName()),
@@ -129,6 +135,8 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             return null;
         }
 
+        $params = $this->sortParameters(...$params);
+
         return $this->builder
             ->method('__construct')
             ->makePublic()
@@ -138,7 +146,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->getNode();
     }
 
-    protected function generateSetters(Request $request): array
+    private function generateSetters(Request $request): array
     {
         $statements = [];
         foreach ($request->getFields() as $fields) {
@@ -152,7 +160,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         return $statements;
     }
 
-    protected function generateGetContentType(): ClassMethod
+    private function generateGetContentType(): ClassMethod
     {
         $return     = $this->builder->return($this->builder->localPropertyFetch('contentType'));
         $returnType = 'string';
@@ -166,7 +174,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->getNode();
     }
 
-    protected function generateGetMethod(Request $request): ClassMethod
+    private function generateGetMethod(Request $request): ClassMethod
     {
         $return     = $this->builder->return($this->builder->val($request->getMethod()));
         $returnType = 'string';
@@ -180,7 +188,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->getNode();
     }
 
-    protected function generateGetRoute(Request $request): ClassMethod
+    private function generateGetRoute(Request $request): ClassMethod
     {
         $values     = [];
         $returnType = 'string';
@@ -216,7 +224,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->getNode();
     }
 
-    protected function generateGetParametersMethods(Request $request): array
+    private function generateGetParametersMethods(Request $request): array
     {
         $methods   = [];
         $fields    = $request->getFields();
@@ -238,7 +246,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         return $methods;
     }
 
-    protected function generateGetParametersMethod(string $methodName, array $fields): ClassMethod
+    private function generateGetParametersMethod(string $methodName, array $fields): ClassMethod
     {
         $returnVal  = $this->builder->array([]);
         $fieldsArr  = [];
@@ -260,7 +268,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->getNode();
     }
 
-    protected function generateGetRawParametersMethod(string $methodName, array $fields): ClassMethod
+    private function generateGetRawParametersMethod(string $methodName, array $fields): ClassMethod
     {
         $fieldsArr  = [];
         $returnType = 'array';
@@ -277,7 +285,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->getNode();
     }
 
-    protected function generateGetBody(?Field $body): ClassMethod
+    private function generateGetBody(?Field $body): ClassMethod
     {
         if ($body !== null) {
             $returnType = $body->getPhpTypeHint();
@@ -368,5 +376,17 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                 $filter,
             ]
         );
+    }
+
+    private function sortParameters(ParameterNode ...$parameterNodes): array
+    {
+        usort(
+            $parameterNodes,
+            static function (ParameterNode $paramA, ParameterNode $paramB) {
+                return $paramA->default <=> $paramB->default;
+            }
+        );
+
+        return $parameterNodes;
     }
 }

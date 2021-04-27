@@ -23,6 +23,8 @@ class Field
     private array                $objectProperties = [];
     private array                $enumValues       = [];
     private string               $format           = '';
+    /** @phpstan-ignore-next-line cannot use strict type before PHP8 with "mixed" pseudo type */
+    private $default;
 
     public function __construct(
         string $name,
@@ -154,6 +156,24 @@ class Field
                && $this->getArrayItem()->isObject();
     }
 
+    /**
+     * @return mixed
+     */
+    public function getDefault()
+    {
+        return $this->default;
+    }
+
+    /**
+     * @param mixed $default
+     */
+    public function setDefault($default): self
+    {
+        $this->default = $default;
+
+        return $this;
+    }
+
     public function getPhpVariableName(): string
     {
         return CaseCaster::toCamel($this->name);
@@ -208,7 +228,7 @@ class Field
 
         if ($this->isArray() && !$this->isArrayOfObjects()) {
             $arraySuffix = '[]';
-            $typeHint = $this->getArrayItem()->getPhpDocType();
+            $typeHint    = $this->getArrayItem()->getPhpDocType();
         }
 
         return sprintf('%s%s%s', $typeHint, $arraySuffix, $nullableSuffix);
