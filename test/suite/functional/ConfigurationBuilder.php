@@ -13,6 +13,7 @@ class ConfigurationBuilder
     private string $codeStyleConfig;
     private string $packageName;
     private string $phpVersion;
+    private string $generatorVersion;
     private string $composerJsonTemplateDir;
     private string $readmeMdTemplateDir;
     private string $httpMessage;
@@ -27,6 +28,7 @@ class ConfigurationBuilder
         $this->codeStyleConfig         = __DIR__ . '/../../../.php_cs.php';
         $this->packageName             = 'test/test-api-client';
         $this->phpVersion              = Configuration::DEFAULT_PHP_VERSION;
+        $this->generatorVersion        = '5.6.0';
         $this->composerJsonTemplateDir = Configuration::DEFAULT_TEMPLATE_DIRECTORY;
         $this->readmeMdTemplateDir     = Configuration::DEFAULT_TEMPLATE_DIRECTORY;
         $this->httpMessage             = Configuration::DEFAULT_HTTP_MESSAGE;
@@ -125,6 +127,7 @@ class ConfigurationBuilder
             $this->codeStyleConfig,
             $this->packageName,
             $this->phpVersion,
+            $this->generatorVersion,
             $this->composerJsonTemplateDir,
             $this->readmeMdTemplateDir,
             $this->httpMessage,

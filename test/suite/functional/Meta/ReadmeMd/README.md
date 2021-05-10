@@ -12,7 +12,7 @@ docker run -it \
 -e OUTPUT_DIR=/client \
 -e PACKAGE=test/test-api-client \
 -e CLIENT_PHP_VERSION=7.4 \
-dhlabs/api-client-generator
+dhlabs/api-client-generator:5.6.0
 ```
 
 ## Usage
