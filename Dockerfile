@@ -10,6 +10,9 @@ RUN composer install
 
 FROM php:7.4-cli-alpine
 
+ARG API_CLIENT_GENERATOR_VERSION
+ENV API_CLIENT_GENERATOR_VERSION=$API_CLIENT_GENERATOR_VERSION
+
 COPY . /generator
 COPY --from=dependencies /dependencies/vendor /generator/vendor
 
