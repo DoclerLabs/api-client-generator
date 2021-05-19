@@ -21,6 +21,7 @@ class ConfigurationTest extends TestCase
         string $codeStyleConfig,
         string $packageName,
         string $phpVersion,
+        string $generatorVersion,
         string $composerJsonTemplateDir,
         string $readmeMdTemplateDir,
         string $httpMessage,
@@ -34,6 +35,7 @@ class ConfigurationTest extends TestCase
             $codeStyleConfig,
             $packageName,
             $phpVersion,
+            $generatorVersion,
             $composerJsonTemplateDir,
             $readmeMdTemplateDir,
             $httpMessage,
@@ -47,6 +49,7 @@ class ConfigurationTest extends TestCase
         self::assertEquals($codeStyleConfig, $sut->getCodeStyleConfig());
         self::assertEquals($packageName, $sut->getPackageName());
         self::assertEquals($phpVersion, $sut->getPhpVersion());
+        self::assertEquals($generatorVersion, $sut->getGeneratorVersion());
         self::assertEquals($composerJsonTemplateDir, $sut->getComposerJsonTemplateDir());
         self::assertEquals($readmeMdTemplateDir, $sut->getReadmeMdTemplateDir());
         self::assertEquals($httpMessage, $sut->getHttpMessage());
@@ -64,6 +67,7 @@ class ConfigurationTest extends TestCase
                 '/dir/.php_cs.php',
                 'test/test-api-client',
                 '7.1',
+                '5.6.0',
                 __DIR__,
                 __DIR__,
                 Configuration::DEFAULT_HTTP_MESSAGE,

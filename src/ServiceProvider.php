@@ -80,6 +80,7 @@ class ServiceProvider implements ServiceProviderInterface
             getenv('CODE_STYLE') ?: Configuration::DEFAULT_CODE_STYLE_CONFIG,
             getenv('PACKAGE') ?: '',
             getenv('CLIENT_PHP_VERSION') ?: Configuration::DEFAULT_PHP_VERSION,
+            getenv('API_CLIENT_GENERATOR_VERSION') ?: null,
             getenv('COMPOSER_JSON_TEMPLATE_DIR') ?: Configuration::DEFAULT_TEMPLATE_DIRECTORY,
             getenv('README_MD_TEMPLATE_DIR') ?: Configuration::DEFAULT_TEMPLATE_DIRECTORY,
             getenv('HTTP_MESSAGE') ?: Configuration::DEFAULT_HTTP_MESSAGE,

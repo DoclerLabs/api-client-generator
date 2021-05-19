@@ -24,6 +24,7 @@ class Configuration
     private string $codeStyleConfig;
     private string $packageName;
     private string $phpVersion;
+    private ?string $generatorVersion;
     private string $composerJsonTemplateDir;
     private string $readmeMdTemplateDir;
     private string $httpMessage;
@@ -37,6 +38,7 @@ class Configuration
         string $codeStyleConfig,
         string $packageName,
         string $phpVersion,
+        ?string $generatorVersion,
         string $composerJsonTemplateDir,
         string $readmeMdTemplateDir,
         string $httpMessage,
@@ -61,6 +63,7 @@ class Configuration
         $this->codeStyleConfig         = $codeStyleConfig;
         $this->packageName             = $packageName;
         $this->phpVersion              = $phpVersion;
+        $this->generatorVersion        = $generatorVersion;
         $this->composerJsonTemplateDir = $composerJsonTemplateDir;
         $this->readmeMdTemplateDir     = $readmeMdTemplateDir;
         $this->httpMessage             = $httpMessage;
@@ -100,6 +103,11 @@ class Configuration
     public function getPhpVersion(): string
     {
         return $this->phpVersion;
+    }
+
+    public function getGeneratorVersion(): ?string
+    {
+        return $this->generatorVersion;
     }
 
     public function getComposerJsonTemplateDir(): string

@@ -12,7 +12,7 @@ docker run -it \
 -e OUTPUT_DIR=/client \
 -e PACKAGE={{ packageName }} \
 -e CLIENT_PHP_VERSION={{ phpVersion }} \
-dhlabs/api-client-generator
+dhlabs/api-client-generator{{ generatorVersion is not empty ? ":#{generatorVersion}" }}
 ```
 
 ## Usage
