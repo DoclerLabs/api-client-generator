@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+docker build --build-arg API_CLIENT_GENERATOR_VERSION=`git describe --tags` -t $IMAGE_NAME .

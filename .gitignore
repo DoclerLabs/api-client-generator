@@ -6,5 +6,4 @@ vendor
 .phpunit.result.cache
 phpstan.neon
 phpunit.xml
-build
 .php_cs.cache
