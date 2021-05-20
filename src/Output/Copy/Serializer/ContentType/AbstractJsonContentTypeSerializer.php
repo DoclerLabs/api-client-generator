@@ -50,11 +50,6 @@ abstract class AbstractJsonContentTypeSerializer implements ContentTypeSerialize
         throw new SerializeException('JSON decode error: ' . $this->getErrorMessage($lastErrorCode));
     }
 
-    public function getMimeType(): string
-    {
-        return static::MIME_TYPE;
-    }
-
     private function getErrorMessage(int $errorCode): string
     {
         $errorMessages = [
