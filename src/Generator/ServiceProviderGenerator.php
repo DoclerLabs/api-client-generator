@@ -200,16 +200,6 @@ class ServiceProviderGenerator extends GeneratorAbstract
             );
         }
 
-        if (in_array(VdnApiJsonContentTypeSerializer::MIME_TYPE, $allContentTypes, true)) {
-            $vdnApiJsonContentTypeSerializer = $this->builder->methodCall(
-                $initialStatement,
-                'add',
-                [
-                    $this->builder->new('VdnApiJsonContentTypeSerializer'),
-                ]
-            );
-        }
-
         if (in_array(FormUrlencodedContentTypeSerializer::MIME_TYPE, $allContentTypes, true)) {
             $formEncodedSerializerInit = $this->builder->methodCall(
                 $jsonSerializerInit ?? $initialStatement,
@@ -230,9 +220,19 @@ class ServiceProviderGenerator extends GeneratorAbstract
             );
         }
 
+        if (in_array(VdnApiJsonContentTypeSerializer::MIME_TYPE, $allContentTypes, true)) {
+            $vdnApiJsonContentTypeSerializer = $this->builder->methodCall(
+                $xmlSerializerInit ?? $formEncodedSerializerInit ?? $jsonSerializerInit ?? $initialStatement,
+                'add',
+                [
+                    $this->builder->new('VdnApiJsonContentTypeSerializer'),
+                ]
+            );
+        }
+
         $registerBodySerializerClosureStatements[] = $this
             ->builder
-            ->return($xmlSerializerInit ?? $formEncodedSerializerInit ?? $jsonSerializerInit ?? $vdnApiJsonContentTypeSerializer ?? $initialStatement);
+            ->return($vdnApiJsonContentTypeSerializer ?? $xmlSerializerInit ?? $formEncodedSerializerInit ?? $jsonSerializerInit ?? $initialStatement);
 
         return $this->builder->closure(
             $registerBodySerializerClosureStatements,
