@@ -8,6 +8,7 @@ use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Entity\OperationCollection;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\FormUrlencodedContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\JsonContentTypeSerializer;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\VdnApiJsonContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\XmlContentTypeSerializer;
 
 class Specification
@@ -82,6 +83,7 @@ class Specification
             XmlContentTypeSerializer::MIME_TYPE            => false,
             FormUrlencodedContentTypeSerializer::MIME_TYPE => false,
             JsonContentTypeSerializer::MIME_TYPE           => false,
+            VdnApiJsonContentTypeSerializer::MIME_TYPE     => false,
         ];
 
         /** @var Operation $operation */
