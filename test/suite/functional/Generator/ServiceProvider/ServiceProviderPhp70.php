@@ -13,7 +13,9 @@ use Pimple\Container;
 use Test\Request\Mapper\GuzzleRequestMapper;
 use Test\Request\Mapper\RequestMapperInterface;
 use Test\Response\ResponseHandler;
+use Test\Schema\Mapper\FindHumanByIdResponseBodyMapper;
 use Test\Schema\Mapper\FoodMapper;
+use Test\Schema\Mapper\HumanMapper;
 use Test\Schema\Mapper\PetCollectionMapper;
 use Test\Schema\Mapper\PetMapper;
 use Test\Serializer\BodySerializer;
@@ -44,6 +46,12 @@ class ServiceProvider
         };
         $container[FoodMapper::class] = static function () use ($container): FoodMapper {
             return new FoodMapper();
+        };
+        $container[FindHumanByIdResponseBodyMapper::class] = static function () use ($container): FindHumanByIdResponseBodyMapper {
+            return new FindHumanByIdResponseBodyMapper($container[HumanMapper::class]);
+        };
+        $container[HumanMapper::class] = static function () use ($container): HumanMapper {
+            return new HumanMapper();
         };
     }
 }
