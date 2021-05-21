@@ -107,6 +107,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /humans:
+    post:
+      operationId: addHuman
+      requestBody:
+        description: Add Human
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/Human'
+      responses:
+        '200':
+          description: Human response
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Human'
   /humans/{id}:
     get:
       operationId: findHumanById
