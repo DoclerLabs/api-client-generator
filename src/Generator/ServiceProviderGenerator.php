@@ -221,7 +221,7 @@ class ServiceProviderGenerator extends GeneratorAbstract
         }
 
         if (in_array(VdnApiJsonContentTypeSerializer::MIME_TYPE, $allContentTypes, true)) {
-            $vdnApiJsonContentTypeSerializer = $this->builder->methodCall(
+            $vdnApiJsonSerializerInit = $this->builder->methodCall(
                 $xmlSerializerInit ?? $formEncodedSerializerInit ?? $jsonSerializerInit ?? $initialStatement,
                 'add',
                 [
@@ -232,7 +232,7 @@ class ServiceProviderGenerator extends GeneratorAbstract
 
         $registerBodySerializerClosureStatements[] = $this
             ->builder
-            ->return($vdnApiJsonContentTypeSerializer ?? $xmlSerializerInit ?? $formEncodedSerializerInit ?? $jsonSerializerInit ?? $initialStatement);
+            ->return($vdnApiJsonSerializerInit ?? $xmlSerializerInit ?? $formEncodedSerializerInit ?? $jsonSerializerInit ?? $initialStatement);
 
         return $this->builder->closure(
             $registerBodySerializerClosureStatements,
