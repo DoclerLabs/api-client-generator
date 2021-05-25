@@ -308,10 +308,10 @@ class Item implements SerializableInterface, JsonSerializable
      */
     public function setOptionalNumberBetweenIncluded(float $optionalNumberBetweenIncluded): self
     {
-        if ($optionalNumberBetweenIncluded < 0) {
+        if ($optionalNumberBetweenIncluded < 0.0) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be less than 0.', 'optionalNumberBetweenIncluded', $optionalNumberBetweenIncluded));
         }
-        if ($optionalNumberBetweenIncluded > 5) {
+        if ($optionalNumberBetweenIncluded > 5.0) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be greater than 5.', 'optionalNumberBetweenIncluded', $optionalNumberBetweenIncluded));
         }
         $this->optionalNumberBetweenIncluded = $optionalNumberBetweenIncluded;
@@ -324,10 +324,10 @@ class Item implements SerializableInterface, JsonSerializable
      */
     public function setOptionalNumberBetweenExcluded(float $optionalNumberBetweenExcluded): self
     {
-        if ($optionalNumberBetweenExcluded <= 0) {
+        if ($optionalNumberBetweenExcluded <= 0.0) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be less than or equal to 0.', 'optionalNumberBetweenExcluded', $optionalNumberBetweenExcluded));
         }
-        if ($optionalNumberBetweenExcluded >= 5) {
+        if ($optionalNumberBetweenExcluded >= 5.0) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be greater than or equal to 5.', 'optionalNumberBetweenExcluded', $optionalNumberBetweenExcluded));
         }
         $this->optionalNumberBetweenExcluded = $optionalNumberBetweenExcluded;
