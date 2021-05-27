@@ -5,23 +5,23 @@ declare(strict_types=1);
 namespace DoclerLabs\ApiClientGenerator\Entity\Constraint;
 
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
+use DoclerLabs\ApiClientGenerator\Entity\FieldType;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Variable;
 
 class MaximumConstraint implements ConstraintInterface
 {
-    private ?int  $maximum          = null;
+    private ?float $maximum = null;
+
     private ?bool $exclusiveMaximum = null;
 
-    public function __construct(?int $maximum, ?bool $exclusiveMaximum)
+    private FieldType $fieldType;
+
+    public function __construct(?float $maximum, ?bool $exclusiveMaximum, FieldType $fieldType)
     {
         $this->maximum          = $maximum;
         $this->exclusiveMaximum = $exclusiveMaximum;
-    }
-
-    public function getMaximum(): ?int
-    {
-        return $this->maximum;
+        $this->fieldType        = $fieldType;
     }
 
     public function isExclusiveMaximum(): ?bool
@@ -39,7 +39,7 @@ class MaximumConstraint implements ConstraintInterface
         return $builder->compare(
             $variable,
             $this->exclusiveMaximum === true ? '>=' : '>',
-            $builder->val($this->maximum)
+            $builder->val($this->fieldType->isInteger() ? (int)$this->maximum : $this->maximum)
         );
     }
 
@@ -48,7 +48,7 @@ class MaximumConstraint implements ConstraintInterface
         return sprintf(
             'Cannot be greater than %s%s.',
             $this->exclusiveMaximum === true ? 'or equal to ' : '',
-            $this->maximum
+            $this->fieldType->isInteger() ? (int)$this->maximum : $this->maximum
         );
     }
 }

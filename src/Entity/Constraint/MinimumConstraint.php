@@ -5,18 +5,23 @@ declare(strict_types=1);
 namespace DoclerLabs\ApiClientGenerator\Entity\Constraint;
 
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
+use DoclerLabs\ApiClientGenerator\Entity\FieldType;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Variable;
 
 class MinimumConstraint implements ConstraintInterface
 {
-    private ?int  $minimum          = null;
+    private ?float $minimum = null;
+
     private ?bool $exclusiveMinimum = null;
 
-    public function __construct(?int $minimum, ?bool $exclusiveMinimum)
+    private FieldType $fieldType;
+
+    public function __construct(?float $minimum, ?bool $exclusiveMinimum, FieldType $fieldType)
     {
         $this->minimum          = $minimum;
         $this->exclusiveMinimum = $exclusiveMinimum;
+        $this->fieldType        = $fieldType;
     }
 
     public function exists(): bool
@@ -29,7 +34,7 @@ class MinimumConstraint implements ConstraintInterface
         return $builder->compare(
             $variable,
             $this->exclusiveMinimum === true ? '<=' : '<',
-            $builder->val($this->minimum)
+            $builder->val($this->fieldType->isInteger() ? (int)$this->minimum : $this->minimum)
         );
     }
 
@@ -38,7 +43,7 @@ class MinimumConstraint implements ConstraintInterface
         return sprintf(
             'Cannot be less than %s%s.',
             $this->exclusiveMinimum === true ? 'or equal to ' : '',
-            $this->minimum
+            $this->fieldType->isInteger() ? (int)$this->minimum : $this->minimum
         );
     }
 }
