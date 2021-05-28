@@ -94,12 +94,13 @@ class FieldFactory
                 $objectProperties = $this->mapProperties($operationName, $schema, $referenceName);
             }
 
-            $field = new Field(
+            $fieldType = new FieldType($type);
+            $field     = new Field(
                 $fieldName,
-                new FieldType($type),
+                $fieldType,
                 new ConstraintCollection(
-                    new MinimumConstraint($schema->minimum, $schema->exclusiveMinimum),
-                    new MaximumConstraint($schema->maximum, $schema->exclusiveMaximum),
+                    new MinimumConstraint($schema->minimum, $schema->exclusiveMinimum, $fieldType),
+                    new MaximumConstraint($schema->maximum, $schema->exclusiveMaximum, $fieldType),
                     new MinLengthConstraint($schema->minLength),
                     new MaxLengthConstraint($schema->maxLength),
                     new PatternConstraint($schema->pattern),
