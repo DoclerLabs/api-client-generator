@@ -13,11 +13,15 @@ use Pimple\Container;
 use Test\Request\Mapper\GuzzleRequestMapper;
 use Test\Request\Mapper\RequestMapperInterface;
 use Test\Response\ResponseHandler;
+use Test\Schema\Mapper\AddHumanResponseBodyMapper;
+use Test\Schema\Mapper\FindHumanByIdResponseBodyMapper;
 use Test\Schema\Mapper\FoodMapper;
+use Test\Schema\Mapper\HumanMapper;
 use Test\Schema\Mapper\PetCollectionMapper;
 use Test\Schema\Mapper\PetMapper;
 use Test\Serializer\BodySerializer;
 use Test\Serializer\ContentType\JsonContentTypeSerializer;
+use Test\Serializer\ContentType\VdnApiJsonContentTypeSerializer;
 use Test\Serializer\QuerySerializer;
 
 class ServiceProvider
@@ -25,7 +29,7 @@ class ServiceProvider
     public function register(Container $container): void
     {
         $container[BodySerializer::class] = static function (): BodySerializer {
-            return (new BodySerializer())->add(new JsonContentTypeSerializer());
+            return (new BodySerializer())->add(new JsonContentTypeSerializer())->add(new VdnApiJsonContentTypeSerializer());
         };
         $container[QuerySerializer::class] = static function (): QuerySerializer {
             return new QuerySerializer();
@@ -44,6 +48,15 @@ class ServiceProvider
         };
         $container[FoodMapper::class] = static function () use ($container): FoodMapper {
             return new FoodMapper();
+        };
+        $container[AddHumanResponseBodyMapper::class] = static function () use ($container): AddHumanResponseBodyMapper {
+            return new AddHumanResponseBodyMapper($container[HumanMapper::class]);
+        };
+        $container[HumanMapper::class] = static function () use ($container): HumanMapper {
+            return new HumanMapper();
+        };
+        $container[FindHumanByIdResponseBodyMapper::class] = static function () use ($container): FindHumanByIdResponseBodyMapper {
+            return new FindHumanByIdResponseBodyMapper($container[HumanMapper::class]);
         };
     }
 }

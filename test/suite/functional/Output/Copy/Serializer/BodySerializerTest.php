@@ -7,8 +7,8 @@ namespace DoclerLabs\ApiClientGenerator\Test\Functional\Output\Copy\Serializer;
 use DoclerLabs\ApiClientException\UnexpectedResponseException;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\BodySerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\FormUrlencodedContentTypeSerializer;
-use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\Json\Json;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\JsonContentTypeSerializer;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\VdnApiJsonContentTypeSerializer;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Stream;
 use PHPUnit\Framework\TestCase;
@@ -22,12 +22,20 @@ class BodySerializerTest extends TestCase
         $this->sut = new BodySerializer();
         $this->sut
             ->add(new JsonContentTypeSerializer())
+            ->add(new VdnApiJsonContentTypeSerializer())
             ->add(new FormUrlencodedContentTypeSerializer());
     }
 
     public function testUnserializeJsonResponseForEmptyBody(): void
     {
         $response = $this->getResponse('application/json', '');
+
+        self::assertEquals([], $this->sut->unserializeResponse($response));
+    }
+
+    public function testUnserializeVdnApiJsonResponseForEmptyBody(): void
+    {
+        $response = $this->getResponse('application/vnd.api+json', '');
 
         self::assertEquals([], $this->sut->unserializeResponse($response));
     }

@@ -6,7 +6,6 @@ use DoclerLabs\ApiClientException\Factory\ResponseExceptionFactory;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\MethodBuilder;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
-use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
@@ -17,6 +16,7 @@ use DoclerLabs\ApiClientGenerator\Output\Copy\Response\ResponseHandler;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\BodySerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\FormUrlencodedContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\JsonContentTypeSerializer;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\VdnApiJsonContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\XmlContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\QuerySerializer;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
@@ -50,6 +50,7 @@ class ServiceProviderGenerator extends GeneratorAbstract
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, BodySerializer::class))
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, QuerySerializer::class))
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, JsonContentTypeSerializer::class))
+            ->addImport(CopiedNamespace::getImport($this->baseNamespace, VdnApiJsonContentTypeSerializer::class))
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, FormUrlencodedContentTypeSerializer::class))
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, XmlContentTypeSerializer::class))
             ->addImport(
@@ -219,9 +220,19 @@ class ServiceProviderGenerator extends GeneratorAbstract
             );
         }
 
+        if (in_array(VdnApiJsonContentTypeSerializer::MIME_TYPE, $allContentTypes, true)) {
+            $vdnApiJsonSerializerInit = $this->builder->methodCall(
+                $xmlSerializerInit ?? $formEncodedSerializerInit ?? $jsonSerializerInit ?? $initialStatement,
+                'add',
+                [
+                    $this->builder->new('VdnApiJsonContentTypeSerializer'),
+                ]
+            );
+        }
+
         $registerBodySerializerClosureStatements[] = $this
             ->builder
-            ->return($xmlSerializerInit ?? $formEncodedSerializerInit ?? $jsonSerializerInit ?? $initialStatement);
+            ->return($vdnApiJsonSerializerInit ?? $xmlSerializerInit ?? $formEncodedSerializerInit ?? $jsonSerializerInit ?? $initialStatement);
 
         return $this->builder->closure(
             $registerBodySerializerClosureStatements,

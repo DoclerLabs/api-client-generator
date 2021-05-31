@@ -12,6 +12,7 @@ use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\MetaTemplateFacade;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\FormUrlencodedContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\JsonContentTypeSerializer;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\VdnApiJsonContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\XmlContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFileCollection;
 use DoclerLabs\ApiClientGenerator\Output\MetaFilePrinter;
@@ -209,6 +210,7 @@ class GenerateCommand extends Command
             XmlContentTypeSerializer::MIME_TYPE            => XmlContentTypeSerializer::class,
             FormUrlencodedContentTypeSerializer::MIME_TYPE => FormUrlencodedContentTypeSerializer::class,
             JsonContentTypeSerializer::MIME_TYPE           => JsonContentTypeSerializer::class,
+            VdnApiJsonContentTypeSerializer::MIME_TYPE     => VdnApiJsonContentTypeSerializer::class,
         ];
 
         $allContentTypes = $specification->getAllContentTypes();

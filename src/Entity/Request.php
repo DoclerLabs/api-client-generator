@@ -7,6 +7,7 @@ namespace DoclerLabs\ApiClientGenerator\Entity;
 use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\FormUrlencodedContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\JsonContentTypeSerializer;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\VdnApiJsonContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\XmlContentTypeSerializer;
 
 class Request
@@ -31,6 +32,7 @@ class Request
         JsonContentTypeSerializer::MIME_TYPE,
         FormUrlencodedContentTypeSerializer::MIME_TYPE,
         XmlContentTypeSerializer::MIME_TYPE,
+        VdnApiJsonContentTypeSerializer::MIME_TYPE,
     ];
     private string               $path;
     private string               $method;

@@ -2,9 +2,9 @@
 
 namespace DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType;
 
-class JsonContentTypeSerializer extends AbstractJsonContentTypeSerializer
+class VdnApiJsonContentTypeSerializer extends AbstractJsonContentTypeSerializer
 {
-    public const MIME_TYPE = 'application/json';
+    public const MIME_TYPE = 'application/vnd.api+json';
 
     public function getMimeType(): string
     {
