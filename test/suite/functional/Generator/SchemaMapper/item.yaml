@@ -50,6 +50,8 @@ components:
             type: string
         mandatoryObject:
           $ref: '#/components/schemas/EmbeddedObject'
+        mandatoryNullableObject:
+          $ref: '#/components/schemas/EmbeddedNullableObject'
         optionalInteger:
           type: integer
         optionalString:
@@ -83,8 +85,15 @@ components:
         - mandatoryBoolean
         - mandatoryArray
         - mandatoryObject
+        - mandatoryNullableObject
     EmbeddedObject:
       type: object
+      properties:
+        string:
+          type: string
+    EmbeddedNullableObject:
+      type: object
+      nullable: true
       properties:
         string:
           type: string
