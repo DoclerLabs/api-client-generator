@@ -8,18 +8,11 @@
 
 namespace Test\Request;
 
-use DoclerLabs\ApiClientException\RequestValidationException;
 use Test\Schema\PatchResourceRequestBody;
 use Test\Schema\SerializableInterface;
 
 class PatchResourceRequest implements RequestInterface
 {
-    public const ACCEPT_APPLICATION_JSON = 'application/json';
-
-    public const ACCEPT_APPLICATION_XML = 'application/xml';
-
-    public const ALLOWED_ACCEPT_LIST = [self::ACCEPT_APPLICATION_JSON, self::ACCEPT_APPLICATION_XML];
-
     private string $accept;
 
     private PatchResourceRequestBody $patchResourceRequestBody;
@@ -28,9 +21,6 @@ class PatchResourceRequest implements RequestInterface
 
     public function __construct(PatchResourceRequestBody $patchResourceRequestBody, string $accept = 'application/json')
     {
-        if (! \in_array($accept, self::ALLOWED_ACCEPT_LIST, true)) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s` Allowed: %s', 'Accept', $accept, \json_encode(self::ALLOWED_ACCEPT_LIST)));
-        }
         $this->accept                   = $accept;
         $this->patchResourceRequestBody = $patchResourceRequestBody;
     }

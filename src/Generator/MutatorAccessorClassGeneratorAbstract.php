@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
@@ -22,10 +24,11 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
 
     protected function generateValidationStmts(Field $field): array
     {
-        return array_filter([
-            $this->generateEnumValidation($field),
-            ...$this->generateConstraints($field)
-        ]);
+        return array_filter(
+            [
+                ...$this->generateConstraints($field),
+            ]
+        );
     }
 
     protected function generateSet(Field $field): ClassMethod
@@ -97,68 +100,6 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
         return sprintf('get%s', ucfirst($field->getPhpVariableName()));
     }
 
-    protected function generateEnumStatements(Field $field): array
-    {
-        $statements = [];
-        $enumValues = $field->getEnumValues();
-        if (!empty($enumValues)) {
-            $enumConstCalls = [];
-            foreach ($enumValues as $enumValue) {
-                $constName    = SchemaNaming::getEnumConstName($field, $enumValue);
-                $statements[] = $this->builder->constant(
-                    $constName,
-                    $this->builder->val($enumValue)
-                );
-
-                $enumConstCalls[] = $this->builder->classConstFetch('self', $constName);
-            }
-            $statements[] = $this->builder->constant(
-                SchemaNaming::getAllowedEnumConstName($field),
-                $this->builder->array($enumConstCalls)
-            );
-        }
-
-        return $statements;
-    }
-
-    protected function generateEnumValidation(Field $root): ?Stmt
-    {
-        $enumValues = $root->getEnumValues();
-        if (empty($enumValues)) {
-            return null;
-        }
-
-        $this
-            ->addImport(RequestValidationException::class);
-
-        $propertyVar       = $this->builder->var($root->getPhpVariableName());
-        $allowedConstFetch = $this->builder->classConstFetch(
-            'self',
-            SchemaNaming::getAllowedEnumConstName($root)
-        );
-
-        $inArrayArgs = [
-            $propertyVar,
-            $allowedConstFetch,
-            $this->builder->val(true),
-        ];
-        $ifCondition = $this->builder->not($this->builder->funcCall('in_array', $inArrayArgs));
-
-        $exceptionMessage = $this->builder->funcCall(
-            'sprintf',
-            [
-                'Invalid %s value. Given: `%s` Allowed: %s',
-                $root->getName(),
-                $propertyVar,
-                $this->builder->funcCall('json_encode', [$allowedConstFetch]),
-            ]
-        );
-
-        $ifStmt = $this->builder->throw('RequestValidationException', $exceptionMessage);
-
-        return $this->builder->if($ifCondition, [$ifStmt]);
-    }
-
     protected function generateConstraints(Field $root): array
     {
         $stmts = [];
@@ -182,7 +123,7 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
             $stmts[] = $this->builder->if(
                 $constraint->getIfCondition($propertyVar, $this->builder),
                 [
-                    $this->builder->throw('RequestValidationException', $exceptionMessage)
+                    $this->builder->throw('RequestValidationException', $exceptionMessage),
                 ]
             );
         }

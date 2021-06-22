@@ -16,22 +16,6 @@ use Test\Schema\SerializableInterface;
 
 class PutResourceByIdRequest implements RequestInterface
 {
-    public const ENUM_PARAMETER_ONE_VALUE = 'one value';
-
-    public const ENUM_PARAMETER_ANOTHER_VALUE = 'another value';
-
-    public const ENUM_PARAMETER_THIRD_VALUE = 'third value';
-
-    public const ALLOWED_ENUM_PARAMETER_LIST = [self::ENUM_PARAMETER_ONE_VALUE, self::ENUM_PARAMETER_ANOTHER_VALUE, self::ENUM_PARAMETER_THIRD_VALUE];
-
-    public const MANDATORY_ENUM_PARAMETER_ONE_VALUE = 'one value';
-
-    public const MANDATORY_ENUM_PARAMETER_ANOTHER_VALUE = 'another value';
-
-    public const MANDATORY_ENUM_PARAMETER_THIRD_VALUE = 'third value';
-
-    public const ALLOWED_MANDATORY_ENUM_PARAMETER_LIST = [self::MANDATORY_ENUM_PARAMETER_ONE_VALUE, self::MANDATORY_ENUM_PARAMETER_ANOTHER_VALUE, self::MANDATORY_ENUM_PARAMETER_THIRD_VALUE];
-
     private int $resourceId;
 
     private ?int $integerParameter = null;
@@ -79,12 +63,9 @@ class PutResourceByIdRequest implements RequestInterface
         if ($resourceId < 0) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be less than 0.', 'resourceId', $resourceId));
         }
-        $this->resourceId                = $resourceId;
-        $this->mandatoryIntegerParameter = $mandatoryIntegerParameter;
-        $this->mandatoryStringParameter  = $mandatoryStringParameter;
-        if (! \in_array($mandatoryEnumParameter, self::ALLOWED_MANDATORY_ENUM_PARAMETER_LIST, true)) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s` Allowed: %s', 'mandatoryEnumParameter', $mandatoryEnumParameter, \json_encode(self::ALLOWED_MANDATORY_ENUM_PARAMETER_LIST)));
-        }
+        $this->resourceId                 = $resourceId;
+        $this->mandatoryIntegerParameter  = $mandatoryIntegerParameter;
+        $this->mandatoryStringParameter   = $mandatoryStringParameter;
         $this->mandatoryEnumParameter     = $mandatoryEnumParameter;
         $this->mandatoryDateParameter     = $mandatoryDateParameter;
         $this->mandatoryFloatParameter    = $mandatoryFloatParameter;
@@ -114,14 +95,8 @@ class PutResourceByIdRequest implements RequestInterface
         return $this;
     }
 
-    /**
-     * @throws RequestValidationException
-     */
     public function setEnumParameter(string $enumParameter): self
     {
-        if (! \in_array($enumParameter, self::ALLOWED_ENUM_PARAMETER_LIST, true)) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s` Allowed: %s', 'enumParameter', $enumParameter, \json_encode(self::ALLOWED_ENUM_PARAMETER_LIST)));
-        }
         $this->enumParameter = $enumParameter;
 
         return $this;
