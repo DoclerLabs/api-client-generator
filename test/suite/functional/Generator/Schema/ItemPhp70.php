@@ -14,18 +14,6 @@ use JsonSerializable;
 
 class Item implements SerializableInterface, JsonSerializable
 {
-    const MANDATORY_ENUM_ONE_OPTION = 'one option';
-
-    const MANDATORY_ENUM_ANOTHER_OPTION = 'another option';
-
-    const ALLOWED_MANDATORY_ENUM_LIST = [self::MANDATORY_ENUM_ONE_OPTION, self::MANDATORY_ENUM_ANOTHER_OPTION];
-
-    const OPTIONAL_ENUM_ONE_OPTION = 'one option';
-
-    const OPTIONAL_ENUM_ANOTHER_OPTION = 'another option';
-
-    const ALLOWED_OPTIONAL_ENUM_LIST = [self::OPTIONAL_ENUM_ONE_OPTION, self::OPTIONAL_ENUM_ANOTHER_OPTION];
-
     /** @var int */
     private $mandatoryInteger;
 
@@ -123,11 +111,8 @@ class Item implements SerializableInterface, JsonSerializable
      */
     public function __construct(int $mandatoryInteger, string $mandatoryString, string $mandatoryEnum, DateTimeInterface $mandatoryDate, $mandatoryNullableDate, float $mandatoryFloat, bool $mandatoryBoolean, array $mandatoryArray, array $mandatoryArrayWithMinItems, ItemMandatoryObject $mandatoryObject, $mandatoryMixed, $mandatoryAnyOf)
     {
-        $this->mandatoryInteger = $mandatoryInteger;
-        $this->mandatoryString  = $mandatoryString;
-        if (! \in_array($mandatoryEnum, self::ALLOWED_MANDATORY_ENUM_LIST, true)) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s` Allowed: %s', 'mandatoryEnum', $mandatoryEnum, \json_encode(self::ALLOWED_MANDATORY_ENUM_LIST)));
-        }
+        $this->mandatoryInteger      = $mandatoryInteger;
+        $this->mandatoryString       = $mandatoryString;
         $this->mandatoryEnum         = $mandatoryEnum;
         $this->mandatoryDate         = $mandatoryDate;
         $this->mandatoryNullableDate = $mandatoryNullableDate;
@@ -177,14 +162,8 @@ class Item implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @throws RequestValidationException
-     */
     public function setOptionalEnum(string $optionalEnum): self
     {
-        if (! \in_array($optionalEnum, self::ALLOWED_OPTIONAL_ENUM_LIST, true)) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s` Allowed: %s', 'optionalEnum', $optionalEnum, \json_encode(self::ALLOWED_OPTIONAL_ENUM_LIST)));
-        }
         $this->optionalEnum = $optionalEnum;
 
         return $this;

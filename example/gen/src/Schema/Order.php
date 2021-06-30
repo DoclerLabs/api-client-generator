@@ -9,19 +9,10 @@
 namespace OpenApi\PetStoreClient\Schema;
 
 use DateTimeInterface;
-use DoclerLabs\ApiClientException\RequestValidationException;
 use JsonSerializable;
 
 class Order implements SerializableInterface, JsonSerializable
 {
-    public const STATUS_PLACED = 'placed';
-
-    public const STATUS_APPROVED = 'approved';
-
-    public const STATUS_DELIVERED = 'delivered';
-
-    public const ALLOWED_STATUS_LIST = [self::STATUS_PLACED, self::STATUS_APPROVED, self::STATUS_DELIVERED];
-
     private ?int $id = null;
 
     private ?int $petId = null;
@@ -62,14 +53,8 @@ class Order implements SerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @throws RequestValidationException
-     */
     public function setStatus(string $status): self
     {
-        if (! \in_array($status, self::ALLOWED_STATUS_LIST, true)) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s` Allowed: %s', 'status', $status, \json_encode(self::ALLOWED_STATUS_LIST)));
-        }
         $this->status = $status;
 
         return $this;

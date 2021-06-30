@@ -262,35 +262,6 @@ class ParserTest extends TestCase
                     ],
                 ],
             ],
-            'Only string enum supported'                      => [
-                [
-                    'openapi' => '3.0.0',
-                    'info'    => [
-                        'title'   => 'Sample API',
-                        'version' => '1.0.0',
-                    ],
-                    'paths'   => [
-                        '/users' => [
-                            'get' => [
-                                'operationId' => 'getUsers',
-                                'responses'   => [
-                                    '200' => [
-                                        'description' => 'OK',
-                                        'content'     => [
-                                            'application/json' => [
-                                                'schema' => [
-                                                    'type' => 'integer',
-                                                    'enum' => [4, 5, 6],
-                                                ],
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
             'Invalid field name'                              => [
                 [
                     'openapi' => '3.0.0',

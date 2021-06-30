@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Input\Factory;
 
@@ -116,11 +118,6 @@ class FieldFactory
                 $field->setArrayItem($arrayItem);
             } elseif (!empty($objectProperties)) {
                 $field->setObjectProperties($objectProperties);
-            } elseif (isset($schema->enum)) {
-                if (!FieldType::isSpecificationTypeString($type)) {
-                    throw new InvalidSpecificationException('Only string enum fields are currently supported');
-                }
-                $field->setEnumValues($schema->enum);
             }
 
             if (isset($schema->format)) {
