@@ -10,7 +10,7 @@ use PhpParser\Node\Expr\Variable;
 
 class PatternConstraint implements ConstraintInterface
 {
-    private ?string $pattern = null;
+    private ?string $pattern;
 
     public function __construct(?string $pattern)
     {
@@ -30,7 +30,7 @@ class PatternConstraint implements ConstraintInterface
     public function getIfCondition(Variable $variable, CodeBuilder $builder): Expr
     {
         return $builder->notEquals(
-            $builder->funcCall('preg_match', [$builder->val($this->pattern), $variable]),
+            $builder->funcCall('preg_match', [$builder->val('/' . $this->pattern . '/'), $variable]),
             $builder->val(1)
         );
     }

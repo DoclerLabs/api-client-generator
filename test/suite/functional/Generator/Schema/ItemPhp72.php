@@ -242,7 +242,7 @@ class Item implements SerializableInterface, JsonSerializable
      */
     public function setOptionalStringWithPattern(string $optionalStringWithPattern): self
     {
-        if (\preg_match('^\\d{3}-\\d{2}-\\d{4}$', $optionalStringWithPattern) !== 1) {
+        if (\preg_match('/^\\d{3}-\\d{2}-\\d{4}$/', $optionalStringWithPattern) !== 1) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Pattern is ^\\d{3}-\\d{2}-\\d{4}$.', 'optionalStringWithPattern', $optionalStringWithPattern));
         }
         $this->optionalStringWithPattern = $optionalStringWithPattern;
