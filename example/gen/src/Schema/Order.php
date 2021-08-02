@@ -13,6 +13,12 @@ use JsonSerializable;
 
 class Order implements SerializableInterface, JsonSerializable
 {
+    public const STATUS_PLACED = 'placed';
+
+    public const STATUS_APPROVED = 'approved';
+
+    public const STATUS_DELIVERED = 'delivered';
+
     private ?int $id = null;
 
     private ?int $petId = null;

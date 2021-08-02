@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
@@ -10,6 +8,7 @@ use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Entity\Constraint\ConstraintInterface;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
+use DoclerLabs\ApiClientGenerator\Naming\SchemaNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
@@ -96,6 +95,23 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
     protected function getGetMethodName(Field $field): string
     {
         return sprintf('get%s', ucfirst($field->getPhpVariableName()));
+    }
+
+    protected function generateEnumStatements(Field $field): array
+    {
+        $statements = [];
+        $enumValues = $field->getEnumValues();
+        if (!empty($enumValues)) {
+            foreach ($enumValues as $enumValue) {
+                $constName    = SchemaNaming::getEnumConstName($field, $enumValue);
+                $statements[] = $this->builder->constant(
+                    $constName,
+                    $this->builder->val($enumValue)
+                );
+            }
+        }
+
+        return $statements;
     }
 
     protected function generateConstraints(Field $root): array

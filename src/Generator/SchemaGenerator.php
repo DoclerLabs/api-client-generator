@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
@@ -36,6 +34,7 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
         $classBuilder = $this->builder
             ->class($className)
             ->implement('SerializableInterface', 'JsonSerializable')
+            ->addStmts($this->generateEnumConsts($field))
             ->addStmts($this->generateProperties($field))
             ->addStmt($this->generateConstructor($field))
             ->addStmts($this->generateSetMethods($field))
@@ -44,6 +43,18 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
             ->addStmt($this->generateJsonSerialize());
 
         $this->registerFile($fileRegistry, $classBuilder, self::SUBDIRECTORY, self::NAMESPACE_SUBPATH);
+    }
+
+    protected function generateEnumConsts(Field $root): array
+    {
+        $statements = [];
+        foreach ($root->getObjectProperties() as $propertyField) {
+            foreach ($this->generateEnumStatements($propertyField) as $statement) {
+                $statements[] = $statement;
+            }
+        }
+
+        return $statements;
     }
 
     protected function generateProperties(Field $root): array
