@@ -40,7 +40,7 @@ class ResponseFactory
                     if ($schema !== null && !Parity::isEqualTo($content->schema, $schema)) {
                         throw new InvalidSpecificationException('Multiple schemas per response is not currently supported.');
                     }
-                    $schema = $content->schema;
+                    $schema         = $content->schema;
                     $contentTypes[] = $contentType;
                 }
 
