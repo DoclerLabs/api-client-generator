@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 use Pimple\Container;
 
 /**
- * \DoclerLabs\ApiClientGenerator\Input\Parser::getAllContentTypes
+ * @covers \DoclerLabs\ApiClientGenerator\Input\Parser
  */
 class SpecificationTest extends TestCase
 {
@@ -21,8 +21,8 @@ class SpecificationTest extends TestCase
      */
     public function testAllContentTypesArrayPopulatedCorrectly(array $data, array $expectedResult): void
     {
-        $specificaton = $this->sut->parse($data, '/openapi.yaml');
-        static::assertSame($specificaton->getAllContentTypes(), $expectedResult);
+        $specification = $this->sut->parse($data, '/openapi.yaml');
+        static::assertSame($specification->getAllContentTypes(), $expectedResult);
     }
 
     public function contentTypesTestProvider(): array
@@ -110,7 +110,7 @@ class SpecificationTest extends TestCase
                     'application/x-www-form-urlencoded',
                 ],
             ],
-            'Serializer specified in pesponse' => [
+            'Serializer specified in response' => [
                 [
                     'openapi' => '3.0.0',
                     'info'    => [
@@ -157,6 +157,79 @@ class SpecificationTest extends TestCase
                     'application/json',
                 ],
             ],
+            'Serializer specified in request and response' => [
+                [
+                    'openapi' => '3.0.0',
+                    'info'    => [
+                        'title'   => 'Sample API',
+                        'version' => '1.0.0',
+                    ],
+                    'paths'   => [
+                        '/users/{userId}' => [
+                            'parameters' => [
+                                [
+                                    'in'       => 'path',
+                                    'required' => true,
+                                    'name'     => 'userId',
+                                    'schema'   => [
+                                        'type' => 'integer',
+                                    ],
+                                ],
+                            ],
+                            'patch' => [
+                                'operationId' => 'createUser',
+                                'requestBody' => [
+                                    'required' => true,
+                                    'content'  => [
+                                        'application/x-www-form-urlencoded' => [
+                                            'schema' => [
+                                                'type'       => 'object',
+                                                'properties' => [
+                                                    'name' => [
+                                                        'type' => 'string',
+                                                    ],
+                                                ],
+                                            ],
+                                        ],
+                                        'application/xml' => [
+                                            'schema' => [
+                                                'type'       => 'object',
+                                                'properties' => [
+                                                    'name' => [
+                                                        'type' => 'string',
+                                                    ],
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'responses'   => [
+                                    '200' => [
+                                        'description' => 'Modified user',
+                                        'content' => [
+                                            'application/json' => [
+                                                'schema' => [
+                                                    'type'       => 'object',
+                                                    'properties' => [
+                                                        'name' => [
+                                                            'type' => 'string',
+                                                        ],
+                                                    ],
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+                [
+                    'application/xml',
+                    'application/x-www-form-urlencoded',
+                    'application/json',
+                ],
+            ]
         ];
     }
 
