@@ -35,11 +35,13 @@ class ResponseFactory
                 }
 
                 $schema = null;
-                foreach ($response->content as $content) {
+                $contentTypes = [];
+                foreach ($response->content as $contentType => $content) {
                     if ($schema !== null && !Parity::isEqualTo($content->schema, $schema)) {
                         throw new InvalidSpecificationException('Multiple schemas per response is not currently supported.');
                     }
                     $schema = $content->schema;
+                    $contentTypes[] = $contentType;
                 }
 
                 $schemaName = SchemaNaming::getClassName($schema, ucfirst($operationName) . 'ResponseBody');
@@ -52,7 +54,7 @@ class ResponseFactory
                     $schemaName
                 );
 
-                return new Response((int)$code, $body);
+                return new Response((int)$code, $body, $contentTypes);
             }
         }
 
