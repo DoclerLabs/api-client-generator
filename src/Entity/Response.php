@@ -29,7 +29,7 @@ class Response
         $unsupportedContentTypes = array_diff($bodyContentTypes, static::ALLOWED_CONTENT_TYPES);
         if (!empty($unsupportedContentTypes)) {
             throw new InvalidSpecificationException(
-                sprintf('Request content-type %s is not currently supported.', json_encode($unsupportedContentTypes))
+                sprintf('Response content-type %s is not currently supported.', json_encode($unsupportedContentTypes))
             );
         }
 

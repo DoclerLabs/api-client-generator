@@ -34,8 +34,8 @@ class ResponseFactory
                     return new Response((int)$code, null);
                 }
 
-                $schema       = null;
                 $contentTypes = [];
+                $schema       = null;
                 foreach ($response->content as $contentType => $content) {
                     if ($schema !== null && !Parity::isEqualTo($content->schema, $schema)) {
                         throw new InvalidSpecificationException('Multiple schemas per response is not currently supported.');
