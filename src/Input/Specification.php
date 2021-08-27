@@ -91,6 +91,9 @@ class Specification
             foreach ($operation->getRequest()->getBodyContentTypes() as $contentType) {
                 $allContentTypes[$contentType] = true;
             }
+            foreach ($operation->getSuccessfulResponse()->getBodyContentTypes() as $contentType) {
+                $allContentTypes[$contentType] = true;
+            }
         }
 
         return array_keys(array_filter($allContentTypes));
