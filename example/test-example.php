@@ -15,12 +15,12 @@ use OpenApi\PetStoreClient\Serializer\ContentType\XmlContentTypeSerializer;
 use OpenApi\PetStoreClient\SwaggerPetstoreOpenAPI3ClientFactory;
 
 // https://petstore3.swagger.io/api/v3/openapi.json
-$client  = new Client(['base_uri' => 'https://petstore.swagger.io/v2/pet']);
+$client  = new Client(['base_uri' => 'https://petstore.swagger.io/v2/']);
 $factory = new SwaggerPetstoreOpenAPI3ClientFactory();
 $client  = $factory->create($client);
 
 $request = new FindPetsByStatusRequest();
-$request->setStatus('sold');
+$request->setStatus('pending');
 $result = $client->findPetsByStatus($request);
 if ($result === null || $result->count() === 0) {
     sprintf('findPetsByStatus failed, result: %s', json_encode($result, JSON_THROW_ON_ERROR)) || exit(1);

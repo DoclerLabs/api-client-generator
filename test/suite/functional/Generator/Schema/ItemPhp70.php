@@ -14,6 +14,14 @@ use JsonSerializable;
 
 class Item implements SerializableInterface, JsonSerializable
 {
+    const MANDATORY_ENUM_ONE_OPTION = 'one option';
+
+    const MANDATORY_ENUM_ANOTHER_OPTION = 'another option';
+
+    const OPTIONAL_ENUM_ONE_OPTION = 'one option';
+
+    const OPTIONAL_ENUM_ANOTHER_OPTION = 'another option';
+
     /** @var int */
     private $mandatoryInteger;
 

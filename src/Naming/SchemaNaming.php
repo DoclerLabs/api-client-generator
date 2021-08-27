@@ -35,4 +35,13 @@ class SchemaNaming
 
         return CaseCaster::toPascal($referencePath[0]);
     }
+
+    public static function getEnumConstName(Field $field, string $enum): string
+    {
+        return sprintf(
+            '%s_%s',
+            CaseCaster::toMacro($field->getName()),
+            CaseCaster::toMacro($enum)
+        );
+    }
 }

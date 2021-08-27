@@ -23,6 +23,7 @@ class Field
     private bool                 $nullable;
     private ?Field               $arrayItem        = null;
     private array                $objectProperties = [];
+    private array                $enumValues       = [];
     private string               $format           = '';
     /** @phpstan-ignore-next-line cannot use strict type before PHP8 with "mixed" pseudo type */
     private $default;
@@ -70,6 +71,18 @@ class Field
     public function setObjectProperties(array $objectProperties): self
     {
         $this->objectProperties = $objectProperties;
+
+        return $this;
+    }
+
+    public function getEnumValues(): ?array
+    {
+        return $this->enumValues;
+    }
+
+    public function setEnumValues(array $enumValues): self
+    {
+        $this->enumValues = $enumValues;
 
         return $this;
     }
