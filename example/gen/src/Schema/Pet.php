@@ -12,6 +12,12 @@ use JsonSerializable;
 
 class Pet implements SerializableInterface, JsonSerializable
 {
+    public const STATUS_AVAILABLE = 'available';
+
+    public const STATUS_PENDING = 'pending';
+
+    public const STATUS_SOLD = 'sold';
+
     private ?int $id = null;
 
     private string $name;

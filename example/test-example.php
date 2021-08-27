@@ -15,7 +15,7 @@ use OpenApi\PetStoreClient\Serializer\ContentType\XmlContentTypeSerializer;
 use OpenApi\PetStoreClient\SwaggerPetstoreOpenAPI3ClientFactory;
 
 // https://petstore3.swagger.io/api/v3/openapi.json
-$client  = new Client(['base_uri' => 'https://petstore.swagger.io/v2/pet']);
+$client  = new Client(['base_uri' => 'https://petstore.swagger.io/v2/']);
 $factory = new SwaggerPetstoreOpenAPI3ClientFactory();
 $client  = $factory->create($client);
 

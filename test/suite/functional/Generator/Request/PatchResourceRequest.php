@@ -13,6 +13,10 @@ use Test\Schema\SerializableInterface;
 
 class PatchResourceRequest implements RequestInterface
 {
+    public const ACCEPT_APPLICATION_JSON = 'application/json';
+
+    public const ACCEPT_APPLICATION_XML = 'application/xml';
+
     private string $accept;
 
     private PatchResourceRequestBody $patchResourceRequestBody;
