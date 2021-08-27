@@ -233,10 +233,10 @@ class Item implements SerializableInterface, JsonSerializable
      */
     public function setOptionalStringWithMinMaxLength(string $optionalStringWithMinMaxLength): self
     {
-        if (grapheme_strlen($optionalStringWithMinMaxLength) < 1) {
+        if (\grapheme_strlen($optionalStringWithMinMaxLength) < 1) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Length should be greater than 1.', 'optionalStringWithMinMaxLength', $optionalStringWithMinMaxLength));
         }
-        if (grapheme_strlen($optionalStringWithMinMaxLength) > 5) {
+        if (\grapheme_strlen($optionalStringWithMinMaxLength) > 5) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Length should be less than 5.', 'optionalStringWithMinMaxLength', $optionalStringWithMinMaxLength));
         }
         $this->optionalStringWithMinMaxLength = $optionalStringWithMinMaxLength;
