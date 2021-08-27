@@ -1,0 +1,22 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Example API
+paths:
+  '/v1/items/{itemId}':
+    get:
+      operationId: getItem
+      responses:
+        '200':
+          $ref: '#/components/responses/ItemResponse'
+components:
+  responses:
+    ItemResponse:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FreeFormItem'
+  schemas:
+    FreeFormItem:
+      type: object

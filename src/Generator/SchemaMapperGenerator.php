@@ -9,12 +9,15 @@ use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaMapperNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\ClassMethod;
 
 class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 {
     public const NAMESPACE_SUBPATH = '\\Schema\\Mapper';
+
     public const SUBDIRECTORY      = 'Schema/Mapper/';
+
     private array $mapMethodThrownExceptions;
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
@@ -148,7 +151,9 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             )
         );
 
-        if ($root->isObject()) {
+        if ($root->isFreeFormObject()) {
+            $statements[] = $this->generateMapStatementsForFreeFormObject($root, $payloadVariable);
+        } elseif ($root->isObject()) {
             $statements = array_merge(
                 $statements,
                 $this->generateMapStatementsForObject($root, $payloadVariable)
@@ -200,6 +205,13 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         );
 
         return $statements;
+    }
+
+    protected function generateMapStatementsForFreeFormObject(Field $root, Variable $payloadVariable): Stmt
+    {
+        $schemaInit = $this->builder->new($root->getPhpClassName(), [$payloadVariable]);
+
+        return $this->builder->return($schemaInit);
     }
 
     protected function generateMapStatementsForObject(Field $root, Variable $payloadVariable): array

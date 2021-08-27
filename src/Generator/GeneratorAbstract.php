@@ -4,10 +4,12 @@ namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DoclerLabs\ApiClientGenerator\Ast\Builder\ClassBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
+use DoclerLabs\ApiClientGenerator\Entity\FieldType;
 use DoclerLabs\ApiClientGenerator\Entity\ImportCollection;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFile;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
+use PhpParser\Node\Stmt\ClassMethod;
 
 abstract class GeneratorAbstract implements GeneratorInterface
 {
@@ -62,5 +64,16 @@ abstract class GeneratorAbstract implements GeneratorInterface
     protected function resetImports(): void
     {
         $this->imports = new ImportCollection();
+    }
+
+    protected function generateJsonSerialize(): ClassMethod
+    {
+        return $this->builder
+            ->method('jsonSerialize')
+            ->makePublic()
+            ->addStmts([$this->builder->return($this->builder->localMethodCall('toArray'))])
+            ->setReturnType(FieldType::PHP_TYPE_ARRAY)
+            ->composeDocBlock([], FieldType::PHP_TYPE_ARRAY)
+            ->getNode();
     }
 }

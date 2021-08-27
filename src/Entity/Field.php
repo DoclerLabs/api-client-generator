@@ -133,6 +133,11 @@ class Field
         return $this->type->isObject();
     }
 
+    public function isFreeFormObject(): bool
+    {
+        return $this->isObject() && count($this->getObjectProperties()) === 0;
+    }
+
     public function isArray(): bool
     {
         return $this->type->isArray();

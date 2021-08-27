@@ -14,6 +14,6 @@ class GetInventoryResponseBodyMapper implements SchemaMapperInterface
 {
     public function toSchema(array $payload): GetInventoryResponseBody
     {
-        return new GetInventoryResponseBody();
+        return new GetInventoryResponseBody($payload);
     }
 }

@@ -6,12 +6,12 @@
  * Do not edit it manually.
  */
 
-namespace OpenApi\PetStoreClient\Schema;
+namespace Test\Schema;
 
 use JsonSerializable;
 use stdClass;
 
-class GetInventoryResponseBody implements SerializableInterface, JsonSerializable
+class Item implements SerializableInterface, JsonSerializable
 {
     private stdClass $data;
 

@@ -195,6 +195,16 @@ class CodeBuilder extends BuilderFactory
         return new Return_($expr, $attributes);
     }
 
+    public function castToObject(Expr $expr): Expr\Cast
+    {
+        return new Expr\Cast\Object_($expr);
+    }
+
+    public function castToArray(Expr $expr): Expr\Cast
+    {
+        return new Expr\Cast\Array_($expr);
+    }
+
     public function expr(Expr $expr): Expression
     {
         return new Expression($expr);
