@@ -61,6 +61,7 @@ class ComposerJsonTemplate implements TemplateInterface
     {
         return [
             'docler-labs/api-client-exception' => '^1.0',
+            'ext-intl'                         => '*',
             'psr/container'                    => '^1.0',
             'psr/http-client'                  => '^1.0',
             'psr/http-client-implementation'   => '^1.0',
