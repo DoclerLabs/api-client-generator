@@ -30,6 +30,7 @@ use PhpParser\Node\Expr\BinaryOp\Plus;
 use PhpParser\Node\Expr\BinaryOp\Smaller;
 use PhpParser\Node\Expr\BinaryOp\SmallerOrEqual;
 use PhpParser\Node\Expr\BooleanNot;
+use PhpParser\Node\Expr\Cast;
 use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\Instanceof_;
 use PhpParser\Node\Expr\MethodCall;
@@ -195,14 +196,14 @@ class CodeBuilder extends BuilderFactory
         return new Return_($expr, $attributes);
     }
 
-    public function castToObject(Expr $expr): Expr\Cast
+    public function castToObject(Expr $expr): Cast\Object_
     {
-        return new Expr\Cast\Object_($expr);
+        return new Cast\Object_($expr);
     }
 
-    public function castToArray(Expr $expr): Expr\Cast
+    public function castToArray(Expr $expr): Cast\Array_
     {
-        return new Expr\Cast\Array_($expr);
+        return new Cast\Array_($expr);
     }
 
     public function expr(Expr $expr): Expression

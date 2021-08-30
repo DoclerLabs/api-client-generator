@@ -39,7 +39,7 @@ class FreeFormSchemaGenerator extends MutatorAccessorClassGeneratorAbstract
             ->class($className)
             ->implement('SerializableInterface', 'JsonSerializable')
             ->addStmt($this->generateProperty($freeFormField))
-            ->addStmt($this->addConstructor())
+            ->addStmt($this->generateConstructor())
             ->addStmt($this->generateGet($freeFormField))
             ->addStmt($this->generateToArray())
             ->addStmt($this->generateJsonSerialize());
@@ -47,7 +47,7 @@ class FreeFormSchemaGenerator extends MutatorAccessorClassGeneratorAbstract
         $this->registerFile($fileRegistry, $classBuilder, SchemaGenerator::SUBDIRECTORY, SchemaGenerator::NAMESPACE_SUBPATH);
     }
 
-    private function addConstructor(): ClassMethod
+    private function generateConstructor(): ClassMethod
     {
         $param = $this->builder
             ->param(self::FREE_FORM_SCHEMA_VARIABLE)

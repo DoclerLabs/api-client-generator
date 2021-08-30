@@ -135,7 +135,6 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
     protected function generateMap(Field $root): ClassMethod
     {
         $statements   = [];
-        $returnObj    = null;
         $payloadParam = $this->builder
             ->param('payload')
             ->setType('array')
@@ -152,7 +151,7 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         );
 
         if ($root->isFreeFormObject()) {
-            $statements[] = $this->generateMapStatementsForFreeFormObject($root, $payloadVariable);
+            $statements[] = $this->generateMapStatementForFreeFormObject($root, $payloadVariable);
         } elseif ($root->isObject()) {
             $statements = array_merge(
                 $statements,
@@ -207,7 +206,7 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         return $statements;
     }
 
-    protected function generateMapStatementsForFreeFormObject(Field $root, Variable $payloadVariable): Stmt
+    protected function generateMapStatementForFreeFormObject(Field $root, Variable $payloadVariable): Stmt
     {
         $schemaInit = $this->builder->new($root->getPhpClassName(), [$payloadVariable]);
 
