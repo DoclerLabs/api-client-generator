@@ -36,6 +36,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         $classBuilder = $this->builder
             ->class($className)
             ->implement('RequestInterface')
+            ->addStmts($this->generateEnums($request))
             ->addStmts($this->generateProperties($request))
             ->addStmt($this->generateConstructor($request))
             ->addStmt($this->generateGetContentType())
@@ -45,6 +46,20 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->addStmts($this->generateGetParametersMethods($request));
 
         $this->registerFile($fileRegistry, $classBuilder, self::SUBDIRECTORY, self::NAMESPACE_SUBPATH);
+    }
+
+    protected function generateEnums(Request $request): array
+    {
+        $statements = [];
+        foreach ($request->getFields() as $fields) {
+            foreach ($fields as $field) {
+                foreach ($this->generateEnumStatements($field) as $statement) {
+                    $statements[] = $statement;
+                }
+            }
+        }
+
+        return $statements;
     }
 
     protected function generateProperties(Request $request): array

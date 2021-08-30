@@ -118,6 +118,11 @@ class FieldFactory
                 $field->setArrayItem($arrayItem);
             } elseif (!empty($objectProperties)) {
                 $field->setObjectProperties($objectProperties);
+            } elseif (isset($schema->enum)) {
+                if (!FieldType::isSpecificationTypeString($type)) {
+                    throw new InvalidSpecificationException('Only string enum fields are currently supported');
+                }
+                $field->setEnumValues($schema->enum);
             }
 
             if (isset($schema->format)) {

@@ -12,6 +12,12 @@ use OpenApi\PetStoreClient\Schema\SerializableInterface;
 
 class FindPetsByStatusRequest implements RequestInterface
 {
+    public const STATUS_AVAILABLE = 'available';
+
+    public const STATUS_PENDING = 'pending';
+
+    public const STATUS_SOLD = 'sold';
+
     private ?string $status = null;
 
     private string $contentType = '';

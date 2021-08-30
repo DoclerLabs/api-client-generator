@@ -16,6 +16,18 @@ use Test\Schema\SerializableInterface;
 
 class PutResourceByIdRequest implements RequestInterface
 {
+    public const ENUM_PARAMETER_ONE_VALUE = 'one value';
+
+    public const ENUM_PARAMETER_ANOTHER_VALUE = 'another value';
+
+    public const ENUM_PARAMETER_THIRD_VALUE = 'third value';
+
+    public const MANDATORY_ENUM_PARAMETER_ONE_VALUE = 'one value';
+
+    public const MANDATORY_ENUM_PARAMETER_ANOTHER_VALUE = 'another value';
+
+    public const MANDATORY_ENUM_PARAMETER_THIRD_VALUE = 'third value';
+
     private int $resourceId;
 
     private ?int $integerParameter = null;

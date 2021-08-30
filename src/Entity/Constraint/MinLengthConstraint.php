@@ -30,7 +30,7 @@ class MinLengthConstraint implements ConstraintInterface
     public function getIfCondition(Variable $variable, CodeBuilder $builder): Expr
     {
         return $builder->compare(
-            $builder->funcCall('strlen', [$variable]),
+            $builder->funcCall('grapheme_strlen', [$variable]),
             '<',
             $builder->val($this->minLength)
         );

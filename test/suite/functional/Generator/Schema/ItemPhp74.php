@@ -14,6 +14,14 @@ use JsonSerializable;
 
 class Item implements SerializableInterface, JsonSerializable
 {
+    public const MANDATORY_ENUM_ONE_OPTION = 'one option';
+
+    public const MANDATORY_ENUM_ANOTHER_OPTION = 'another option';
+
+    public const OPTIONAL_ENUM_ONE_OPTION = 'one option';
+
+    public const OPTIONAL_ENUM_ANOTHER_OPTION = 'another option';
+
     private int $mandatoryInteger;
 
     private string $mandatoryString;
@@ -198,10 +206,10 @@ class Item implements SerializableInterface, JsonSerializable
      */
     public function setOptionalStringWithMinMaxLength(string $optionalStringWithMinMaxLength): self
     {
-        if (\strlen($optionalStringWithMinMaxLength) < 1) {
+        if (\grapheme_strlen($optionalStringWithMinMaxLength) < 1) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Length should be greater than 1.', 'optionalStringWithMinMaxLength', $optionalStringWithMinMaxLength));
         }
-        if (\strlen($optionalStringWithMinMaxLength) > 5) {
+        if (\grapheme_strlen($optionalStringWithMinMaxLength) > 5) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Length should be less than 5.', 'optionalStringWithMinMaxLength', $optionalStringWithMinMaxLength));
         }
         $this->optionalStringWithMinMaxLength = $optionalStringWithMinMaxLength;
