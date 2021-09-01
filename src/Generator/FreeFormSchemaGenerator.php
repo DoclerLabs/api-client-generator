@@ -77,7 +77,8 @@ class FreeFormSchemaGenerator extends MutatorAccessorClassGeneratorAbstract
             new ConstraintCollection(),
             stdClass::class,
             true,
-            false
+            false,
+            true
         );
     }
 
