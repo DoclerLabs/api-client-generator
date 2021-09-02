@@ -42,10 +42,11 @@ class FieldFactory
         string $parentReferenceName = ''
     ): Field {
         try {
-            $arrayItem        = null;
-            $objectProperties = [];
-            $schemaReference  = $schemaOrReference;
-            $schema           = $this->resolveReference($schemaOrReference);
+            $arrayItem            = null;
+            $objectProperties     = [];
+            $additionalProperties = true;
+            $schemaReference      = $schemaOrReference;
+            $schema               = $this->resolveReference($schemaOrReference);
 
             if ($referenceName !== '' && !$this->nameValidator->isValidClassName($referenceName)) {
                 throw new InvalidSpecificationException('Invalid field reference name: ' . $referenceName);
@@ -95,6 +96,17 @@ class FieldFactory
 
                 $objectProperties = $this->mapProperties($operationName, $schema, $referenceName);
             }
+            if (isset($schema->additionalProperties)) {
+                if (is_bool($schema->additionalProperties)) {
+                    $additionalProperties = $schema->additionalProperties;
+                } elseif (is_object($schema->additionalProperties)) {
+                    $warningMessage = sprintf(
+                        'Additional properties object is not supported: %s.',
+                        $referenceName
+                    );
+                    trigger_error($warningMessage, E_USER_WARNING);
+                }
+            }
 
             $fieldType = new FieldType($type);
             $field     = new Field(
@@ -111,7 +123,8 @@ class FieldFactory
                 ),
                 $referenceName,
                 $required,
-                $schema->nullable
+                $schema->nullable,
+                $additionalProperties
             );
 
             if ($arrayItem !== null) {

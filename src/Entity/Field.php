@@ -12,19 +12,33 @@ use RuntimeException;
 class Field
 {
     public const FORMAT_DATE      = 'date';
+
     public const FORMAT_DATE_TIME = 'date-time';
+
     public const TYPE_MIXED       = 'mixed';
 
+    private bool                 $additionalProperties;
+
     private string               $name;
+
     private FieldType            $type;
+
     private ConstraintCollection $constraints;
+
     private string               $referenceName;
+
     private bool                 $required;
+
     private bool                 $nullable;
+
     private ?Field               $arrayItem        = null;
+
     private array                $objectProperties = [];
+
     private array                $enumValues       = [];
+
     private string               $format           = '';
+
     /** @phpstan-ignore-next-line cannot use strict type before PHP8 with "mixed" pseudo type */
     private $default;
 
@@ -34,14 +48,16 @@ class Field
         ConstraintCollection $constraints,
         string $referenceName,
         bool $required,
-        bool $nullable
+        bool $nullable,
+        bool $additionalProperties
     ) {
-        $this->name          = $name;
-        $this->type          = $type;
-        $this->constraints   = $constraints;
-        $this->referenceName = $referenceName;
-        $this->required      = $required;
-        $this->nullable      = $nullable;
+        $this->name                 = $name;
+        $this->type                 = $type;
+        $this->constraints          = $constraints;
+        $this->referenceName        = $referenceName;
+        $this->required             = $required;
+        $this->nullable             = $nullable;
+        $this->additionalProperties = $additionalProperties;
     }
 
     public function getArrayItem(): Field
@@ -144,6 +160,11 @@ class Field
     public function isObject(): bool
     {
         return $this->type->isObject();
+    }
+
+    public function isFreeFormObject(): bool
+    {
+        return $this->isObject() && $this->additionalProperties && count($this->getObjectProperties()) === 0;
     }
 
     public function isArray(): bool

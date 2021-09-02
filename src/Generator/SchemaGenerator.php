@@ -21,7 +21,7 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
     {
         $compositeFields = $specification->getCompositeFields()->getUniqueByPhpClassName();
         foreach ($compositeFields as $field) {
-            if ($field->isObject()) {
+            if ($field->isObject() && !$field->isFreeFormObject()) {
                 $this->generateSchema($field, $fileRegistry);
             }
         }
@@ -133,17 +133,6 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
         }
 
         return $statements;
-    }
-
-    protected function generateJsonSerialize(): ClassMethod
-    {
-        return $this->builder
-            ->method('jsonSerialize')
-            ->makePublic()
-            ->addStmts([$this->builder->return($this->builder->localMethodCall('toArray'))])
-            ->setReturnType(FieldType::PHP_TYPE_ARRAY)
-            ->composeDocBlock([], FieldType::PHP_TYPE_ARRAY)
-            ->getNode();
     }
 
     protected function generateToArray(Field $root): ClassMethod

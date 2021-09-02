@@ -85,17 +85,6 @@ class SchemaCollectionGenerator extends GeneratorAbstract
             ->getNode();
     }
 
-    protected function generateJsonSerialize(): ClassMethod
-    {
-        return $this->builder
-            ->method('jsonSerialize')
-            ->makePublic()
-            ->addStmts([$this->builder->return($this->builder->localMethodCall('toArray'))])
-            ->setReturnType(FieldType::PHP_TYPE_ARRAY)
-            ->composeDocBlock([], FieldType::PHP_TYPE_ARRAY)
-            ->getNode();
-    }
-
     protected function generateToArray(Field $field): ClassMethod
     {
         $statements = [];

@@ -9,6 +9,7 @@ use DoclerLabs\ApiClientGenerator\Ast\Visitor\NamespaceSubstituteVisitor;
 use DoclerLabs\ApiClientGenerator\Command\GenerateCommand;
 use DoclerLabs\ApiClientGenerator\Generator\ClientFactoryGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\ClientGenerator;
+use DoclerLabs\ApiClientGenerator\Generator\FreeFormSchemaGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\RequestGenerator;
@@ -120,6 +121,7 @@ class ServiceProvider implements ServiceProviderInterface
             ->add($container[SchemaMapperGenerator::class])
             ->add($container[SchemaCollectionGenerator::class])
             ->add($container[SchemaGenerator::class])
+            ->add($container[FreeFormSchemaGenerator::class])
             ->add($container[ServiceProviderGenerator::class]);
 
         $pimple[MetaTemplateFacade::class] = static fn (Container $container) => (new MetaTemplateFacade())
@@ -167,6 +169,11 @@ class ServiceProvider implements ServiceProviderInterface
         );
 
         $pimple[SchemaGenerator::class] = static fn (Container $container) => new SchemaGenerator(
+            $container[Configuration::class]->getBaseNamespace(),
+            $container[CodeBuilder::class]
+        );
+
+        $pimple[FreeFormSchemaGenerator::class] = static fn (Container $container) => new FreeFormSchemaGenerator(
             $container[Configuration::class]->getBaseNamespace(),
             $container[CodeBuilder::class]
         );
