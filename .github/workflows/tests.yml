@@ -31,7 +31,7 @@ jobs:
               run: vendor/bin/phpstan analyse
 
             - name: Run tests
-              run: vendor/bin/phpunit
+              run: make test
 
             - name: Coveralls
               env:
