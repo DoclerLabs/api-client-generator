@@ -5,6 +5,8 @@ WORKDIR /dependencies
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
 RUN apk --update add --no-cache --virtual .build-deps \
         $PHPIZE_DEPS \
+    && apk --update add --no-cache \
+        git \
     && install-php-extensions \
         pcov \
     && apk del .build-deps
