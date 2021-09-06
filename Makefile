@@ -16,3 +16,6 @@ cs: ## fix code style
 
 stan: ## statically analyse code
 	docker-compose run php vendor/bin/phpstan analyse src
+
+coverage: ## coverage for pipeline
+	docker-compose run php vendor/bin/php-coveralls -v

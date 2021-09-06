@@ -36,4 +36,4 @@ jobs:
             - name: Coveralls
               env:
                   COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: php vendor/bin/php-coveralls -v
+              run: make coverage
