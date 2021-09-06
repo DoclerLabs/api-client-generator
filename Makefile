@@ -8,7 +8,7 @@ help:
 test: ## run test suites
 	docker-compose up -d --build --remove-orphans
 	docker-compose run --rm wait -c wiremock:8080 -t 60
-	docker-compose exec php vendor/bin/phpunit -c phpunit.xml.dist --colors=always
+	docker-compose exec -T php vendor/bin/phpunit -c phpunit.xml.dist --colors=always
 	docker-compose down
 
 cs: ## fix code style
