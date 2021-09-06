@@ -18,4 +18,4 @@ stan: ## statically analyse code
 	docker-compose run php vendor/bin/phpstan analyse src
 
 coverage: ## coverage for pipeline
-	docker-compose run php vendor/bin/php-coveralls -v
+	docker-compose run -e COVERALLS_REPO_TOKEN=${COVERALLS_REPO_TOKEN} php vendor/bin/php-coveralls -v
