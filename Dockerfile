@@ -2,6 +2,15 @@ FROM php:7.4-cli-alpine as dependencies
 
 WORKDIR /dependencies
 
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
+RUN apk --update add --no-cache --virtual .build-deps \
+        $PHPIZE_DEPS \
+    && apk --update add --no-cache \
+        git \
+    && install-php-extensions \
+        pcov \
+    && apk del .build-deps
+
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 COPY composer.json /dependencies
 COPY composer.lock /dependencies

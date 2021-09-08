@@ -58,7 +58,7 @@ $rules = [
         'space_before' => 'none',
     ],
     'native_function_invocation'                => [
-        'include' => ['@internal'],
+        'include' => ['@all'],
     ],
     'braces'                                    => [
         'allow_single_line_closure' => true,

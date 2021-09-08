@@ -17,8 +17,13 @@ class PetStore3Test extends TestCase
     private const EXAMPLE_DIR = __DIR__ . '/../../../example';
     private const OUTPUT_DIR = self::EXAMPLE_DIR . '/gen';
 
-    /** @var Filesystem */
     private Filesystem $filesystem;
+
+    protected function setUp(): void
+    {
+        $this->filesystem = new Filesystem();
+        $this->filesystem->remove(self::OUTPUT_DIR);
+    }
 
     public function testPetStore3Example(): void
     {
@@ -67,13 +72,5 @@ class PetStore3Test extends TestCase
 
         self::assertEmpty($output);
         self::assertEquals(0, $exitCode);
-    }
-
-    protected function setUp(): void
-    {
-        $this->filesystem = new Filesystem();
-        $this->filesystem->remove(self::OUTPUT_DIR);
-
-        parent::setUp();
     }
 }

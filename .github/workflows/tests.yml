@@ -31,9 +31,9 @@ jobs:
               run: vendor/bin/phpstan analyse
 
             - name: Run tests
-              run: vendor/bin/phpunit
+              run: make test
 
             - name: Coveralls
               env:
                   COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: php vendor/bin/php-coveralls -v
+              run: make coverage

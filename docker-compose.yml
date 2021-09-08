@@ -1,0 +1,23 @@
+version: '3.7'
+
+services:
+  php:
+    build:
+      context: .
+      target: dependencies
+      dockerfile: Dockerfile
+    working_dir: /app
+    tty: true
+    volumes:
+      - .:/app
+
+  wiremock:
+    image: rodolpheche/wiremock:2.28.0-alpine
+    command: ["--verbose"]
+    networks:
+      default:
+        aliases:
+          - 'pet.wiremock'
+
+  wait:
+    image: dokku/wait
