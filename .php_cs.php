@@ -14,6 +14,7 @@ $rules = [
     'no_multiline_whitespace_before_semicolons' => true,
     'no_short_echo_tag'                         => true,
     'no_unused_imports'                         => true,
+    'blank_line_after_opening_tag'              => true,
     'not_operator_with_successor_space'         => true,
     'no_useless_else'                           => true,
     'ordered_imports'                           => [
