@@ -9,7 +9,6 @@ API client generator is a console application capable of auto-generating a [PSR1
 ## Requirements
 - OpenAPI >= 3.0
 - PHP >= 7.0
-- [PSR-18 base client](https://packagist.org/providers/psr/http-client-implementation)
 
 ## Why using it?
 - With generated client you are always sure that your OpenAPI specification is up-to-date.
@@ -29,7 +28,7 @@ API client generator is a console application capable of auto-generating a [PSR1
     * application/x-www-form-urlencoded
     * application/xml
 - Supports new PHP versions synthax features.
-- It is base client independent, you are free to choose any [existing PSR-18 compliant client](https://packagist.org/providers/psr/http-client-implementation). Just choose the one which you already use, so generated client would not cause conflicts in your dependencies.
+- It is base client independent, you are free to choose any [existing PSR-18 compliant client](https://packagist.org/providers/psr/http-client-implementation). Just choose the one which you already use, so generated client would not cause any conflicts with your dependencies. Although not recommended, you can also use or build your own PSR-18 implementation, as the generated client depends on PSR interfaces only.
 - Applies code style rules to generated code, you can specify your own.
 - Generates README and composer.json files with possibility to use your own template.
 - Supports `allOf` OpenAPI parameter.

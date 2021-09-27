@@ -66,7 +66,6 @@ class ComposerJsonTemplate implements TemplateInterface
             'ext-intl'                         => '*',
             'psr/container'                    => '^1.0',
             'psr/http-client'                  => '^1.0',
-            'psr/http-client-implementation'   => '^1.0',
         ];
     }
 }
