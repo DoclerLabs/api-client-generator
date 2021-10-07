@@ -12,6 +12,7 @@ $rules = [
     '@PSR2'                                     => true,
     'array_syntax'                              => ['syntax' => 'short'],
     'no_multiline_whitespace_before_semicolons' => true,
+    'no_blank_lines_after_class_opening'        => true,
     'no_short_echo_tag'                         => true,
     'no_unused_imports'                         => true,
     'blank_line_after_opening_tag'              => true,
