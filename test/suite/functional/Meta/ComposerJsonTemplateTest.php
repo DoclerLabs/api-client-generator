@@ -30,6 +30,12 @@ class ComposerJsonTemplateTest extends AbstractTemplateTest
                 'composer.json',
                 ConfigurationBuilder::fake()->build(),
             ],
+            'composer.json with intl'         => [
+                '/ComposerJson/petstore_with_intl_requirement.yaml',
+                '/ComposerJson/composer_with_intl_requirement.json',
+                'composer.json',
+                ConfigurationBuilder::fake()->build(),
+            ],
             'Guzzle message composer.json'  => [
                 '/ComposerJson/petstore.yaml',
                 '/ComposerJson/composer_guzzle_message.json',
