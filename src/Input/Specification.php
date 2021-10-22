@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace DoclerLabs\ApiClientGenerator\Input;
 
 use cebe\openapi\spec\OpenApi;
+use DoclerLabs\ApiClientGenerator\Entity\Constraint\ConstraintInterface;
+use DoclerLabs\ApiClientGenerator\Entity\Constraint\MaxLengthConstraint;
+use DoclerLabs\ApiClientGenerator\Entity\Constraint\MinLengthConstraint;
+use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\FieldCollection;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Entity\OperationCollection;
@@ -99,5 +103,51 @@ class Specification
         }
 
         return array_keys(array_filter($allContentTypes));
+    }
+
+    public function requiresIntlExtension(): bool
+    {
+        /** @var Operation $operation */
+        foreach ($this->getOperations() as $operation) {
+            foreach ($operation->getRequest()->getFields() as $fields) {
+                /** @var Field $field */
+                foreach ($fields as $field) {
+                    if ($this->fieldRequiresIntlExtension($field)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private function fieldRequiresIntlExtension(Field $field): bool
+    {
+        /** @var ConstraintInterface $constraint */
+        foreach ($field->getConstraints() as $constraint) {
+            if (
+                (
+                    $constraint instanceof MinLengthConstraint
+                    || $constraint instanceof MaxLengthConstraint
+                )
+                && $constraint->exists()
+            ) {
+                return true;
+            }
+        }
+
+        if (
+            $field->isObject()
+            && !empty($field->getObjectProperties())
+        ) {
+            foreach ($field->getObjectProperties() as $field) {
+                if ($this->fieldRequiresIntlExtension($field)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

@@ -22,7 +22,8 @@ class SpecificationTest extends TestCase
     public function testAllContentTypesArrayPopulatedCorrectly(array $data, array $expectedResult): void
     {
         $specification = $this->sut->parse($data, '/openapi.yaml');
-        static::assertSame($specification->getAllContentTypes(), $expectedResult);
+
+        static::assertSame($expectedResult, $specification->getAllContentTypes());
     }
 
     public function contentTypesTestProvider(): array
