@@ -11,6 +11,24 @@ paths:
         - $ref: '#/components/parameters/FilterById'
         - $ref: '#/components/parameters/FilterByName'
         - $ref: '#/components/parameters/FilterByIds'
+        - $ref: '#/components/parameters/ResourceFilter'
+      responses:
+        '200':
+          description: list of resources
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Resource'
+        '400':
+          description: Invalid request parameters.
+  '/v1/resources/sub-resources':
+    get:
+      description: Get a list of sub resources
+      operationId: getSubResources
+      parameters:
+        - $ref: '#/components/parameters/SubResourceFilter'
       responses:
         '200':
           description: list of resources
@@ -47,3 +65,19 @@ components:
         type: array
         items:
           type: integer
+    ResourceFilter:
+      name: filter
+      in: query
+      schema:
+        type: object
+        properties:
+          prop1:
+            type: string
+    SubResourceFilter:
+      name: filter
+      in: query
+      schema:
+        type: object
+        properties:
+          prop1:
+            type: integer

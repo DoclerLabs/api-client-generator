@@ -11,9 +11,9 @@ use UnexpectedValueException;
 
 class SchemaNaming
 {
-    private const OPENAPI_COMPONENT_TYPE = 'schemas';
+    private const OPENAPI_COMPONENT_TYPES = ['schemas', 'parameters'];
 
-    public static function getClassName(SpecObjectInterface $reference, string $fallbackName): string
+    public static function getClassName(SpecObjectInterface $reference, string $fallbackName = ''): string
     {
         if (!($reference instanceof Reference)) {
             $fallbackName   = CaseCaster::toPascal($fallbackName);
@@ -29,8 +29,8 @@ class SchemaNaming
         $referencePath = $reference->getReference();
         $referencePath = explode('/', $referencePath);
         $referencePath = array_reverse($referencePath);
-        if ($referencePath[1] !== self::OPENAPI_COMPONENT_TYPE) {
-            throw new UnexpectedValueException('Only schema components are supported to be entities.');
+        if (!in_array($referencePath[1], self::OPENAPI_COMPONENT_TYPES, true)) {
+            throw new UnexpectedValueException('Only schema and parameter components are supported to be entities.');
         }
 
         return CaseCaster::toPascal($referencePath[0]);

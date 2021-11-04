@@ -33,6 +33,12 @@ class RequestGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetResourcesRequest',
                 ConfigurationBuilder::fake()->build(),
             ],
+            'Request with same parameter name but different parameters' => [
+                '/Request/getResources.yaml',
+                '/Request/GetSubResourcesRequest.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetSubResourcesRequest',
+                ConfigurationBuilder::fake()->build(),
+            ],
         ];
     }
 
