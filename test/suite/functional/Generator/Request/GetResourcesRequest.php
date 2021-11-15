@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Test\Request;
 
+use Test\Schema\ResourceFilter;
 use Test\Schema\SerializableInterface;
 
 class GetResourcesRequest implements RequestInterface
@@ -19,6 +20,8 @@ class GetResourcesRequest implements RequestInterface
     private ?string $filterByName = null;
 
     private ?array $filterByIds = null;
+
+    private ?ResourceFilter $filter = null;
 
     private string $contentType = '';
 
@@ -51,6 +54,13 @@ class GetResourcesRequest implements RequestInterface
         return $this;
     }
 
+    public function setFilter(ResourceFilter $filter): self
+    {
+        $this->filter = $filter;
+
+        return $this;
+    }
+
     public function getMethod(): string
     {
         return 'GET';
@@ -65,14 +75,14 @@ class GetResourcesRequest implements RequestInterface
     {
         return \array_map(static function ($value) {
             return $value instanceof SerializableInterface ? $value->toArray() : $value;
-        }, \array_filter(['filterById' => $this->filterById, 'filterByName' => $this->filterByName, 'filterByIds' => $this->filterByIds], static function ($value) {
+        }, \array_filter(['filterById' => $this->filterById, 'filterByName' => $this->filterByName, 'filterByIds' => $this->filterByIds, 'filter' => $this->filter], static function ($value) {
             return null !== $value;
         }));
     }
 
     public function getRawQueryParameters(): array
     {
-        return ['filterById' => $this->filterById, 'filterByName' => $this->filterByName, 'filterByIds' => $this->filterByIds];
+        return ['filterById' => $this->filterById, 'filterByName' => $this->filterByName, 'filterByIds' => $this->filterByIds, 'filter' => $this->filter];
     }
 
     public function getCookies(): array

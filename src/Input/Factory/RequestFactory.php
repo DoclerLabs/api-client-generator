@@ -31,8 +31,10 @@ class RequestFactory
         $contentTypes = [];
         $collection   = new RequestFieldRegistry();
         foreach ($parameters as $parameter) {
+            $referenceName = '';
             if ($parameter instanceof Reference) {
-                $parameter = $parameter->resolve();
+                $referenceName = SchemaNaming::getClassName($parameter);
+                $parameter     = $parameter->resolve();
             }
             $collection->add(
                 $parameter->in,
@@ -41,7 +43,7 @@ class RequestFactory
                     $parameter->name,
                     $parameter->schema,
                     $parameter->required,
-                    ''
+                    $referenceName
                 )
             );
         }
