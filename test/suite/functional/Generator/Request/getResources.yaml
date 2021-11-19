@@ -27,6 +27,8 @@ paths:
     get:
       description: Get a list of sub resources
       operationId: getSubResources
+      security:
+          - BearerAuth: []
       parameters:
         - $ref: '#/components/parameters/SubResourceFilter'
       responses:
@@ -41,6 +43,11 @@ paths:
         '400':
           description: Invalid request parameters.
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     Resource:
       type: object

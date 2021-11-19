@@ -17,6 +17,7 @@ use DoclerLabs\ApiClientGenerator\Generator\RequestMapperGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\SchemaCollectionGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\SchemaGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\SchemaMapperGenerator;
+use DoclerLabs\ApiClientGenerator\Generator\Security\BearerAuthentication;
 use DoclerLabs\ApiClientGenerator\Generator\ServiceProviderGenerator;
 use DoclerLabs\ApiClientGenerator\Input\Configuration;
 use DoclerLabs\ApiClientGenerator\Input\Factory\FieldFactory;
@@ -144,7 +145,8 @@ class ServiceProvider implements ServiceProviderInterface
 
         $pimple[RequestGenerator::class] = static fn (Container $container) => new RequestGenerator(
             $container[Configuration::class]->getBaseNamespace(),
-            $container[CodeBuilder::class]
+            $container[CodeBuilder::class],
+            new BearerAuthentication($container[CodeBuilder::class])
         );
 
         $pimple[RequestMapperGenerator::class] = static fn (Container $container) => new RequestMapperGenerator(

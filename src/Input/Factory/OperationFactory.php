@@ -59,7 +59,8 @@ class OperationFactory
                 $this->requestMapper->create($operationId, $path, $method, $parameters, $requestBody),
                 $this->responseMapper->createSuccessful($operationId, $operation->responses->getResponses()),
                 $this->responseMapper->createPossibleErrors($operation->responses->getResponses()),
-                $operation->tags
+                $operation->tags,
+                $operation->security ?? []
             );
         } catch (Throwable $exception) {
             throw new InvalidSpecificationException(
