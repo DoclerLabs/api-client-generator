@@ -22,7 +22,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
     public const NAMESPACE_SUBPATH = '\\Request';
     public const SUBDIRECTORY = 'Request/';
 
-    /** @var SecurityStrategyInterface */
+    /** @var SecurityStrategyInterface[] */
     private array $securityStrategies;
 
     public function __construct(
