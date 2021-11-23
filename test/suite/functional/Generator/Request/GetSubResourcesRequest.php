@@ -19,6 +19,13 @@ class GetSubResourcesRequest implements RequestInterface
 
     private string $contentType = '';
 
+    private string $bearerToken;
+
+    public function __construct(string $bearerToken)
+    {
+        $this->bearerToken = $bearerToken;
+    }
+
     public function getContentType(): string
     {
         return $this->contentType;
@@ -62,7 +69,7 @@ class GetSubResourcesRequest implements RequestInterface
 
     public function getHeaders(): array
     {
-        return [];
+        return ['Authorization' => \sprintf('Bearer %s', $this->bearerToken)];
     }
 
     public function getBody()

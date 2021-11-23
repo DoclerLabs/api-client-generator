@@ -12,6 +12,7 @@ class Operation
     private Response $successfulResponse;
     private array    $errorResponses;
     private array    $tags;
+    private array    $security;
 
     public function __construct(
         string $name,
@@ -19,7 +20,8 @@ class Operation
         Request $request,
         Response $successfulResponse,
         array $errorResponses = [],
-        array $tags = []
+        array $tags = [],
+        array $security = []
     ) {
         $this->name               = $name;
         $this->description        = $description;
@@ -27,6 +29,7 @@ class Operation
         $this->successfulResponse = $successfulResponse;
         $this->errorResponses     = $errorResponses;
         $this->tags               = $tags;
+        $this->security           = $security;
     }
 
     public function getName(): string
@@ -57,5 +60,10 @@ class Operation
     public function getTags(): array
     {
         return $this->tags;
+    }
+
+    public function getSecurity(): array
+    {
+        return $this->security;
     }
 }

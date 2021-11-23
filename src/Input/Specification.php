@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace DoclerLabs\ApiClientGenerator\Input;
 
 use cebe\openapi\spec\OpenApi;
+use cebe\openapi\spec\Reference;
+use cebe\openapi\spec\SecurityScheme;
 use DoclerLabs\ApiClientGenerator\Entity\Constraint\ConstraintInterface;
 use DoclerLabs\ApiClientGenerator\Entity\Constraint\MaxLengthConstraint;
 use DoclerLabs\ApiClientGenerator\Entity\Constraint\MinLengthConstraint;
@@ -81,6 +83,20 @@ class Specification
     public function getCompositeResponseFields(): FieldCollection
     {
         return $this->compositeResponseFields;
+    }
+
+    /**
+     * @return SecurityScheme[]
+     */
+    public function getSecuritySchemes(): array
+    {
+        return array_map(static function ($securityScheme): SecurityScheme {
+            if ($securityScheme instanceof Reference) {
+                $securityScheme = $securityScheme->resolve();
+            }
+
+            return $securityScheme;
+        }, $this->openApi->components->securitySchemes ?? []);
     }
 
     public function getAllContentTypes(): array

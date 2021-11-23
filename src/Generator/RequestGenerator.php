@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
+use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\ParameterNode;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
@@ -21,15 +22,31 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
     public const NAMESPACE_SUBPATH = '\\Request';
     public const SUBDIRECTORY = 'Request/';
 
+    /** @var SecurityStrategyInterface[] */
+    private array $securityStrategies;
+
+    public function __construct(
+        string $baseNamespace,
+        CodeBuilder $builder,
+        SecurityStrategyInterface ...$securityStrategies
+    ) {
+        parent::__construct($baseNamespace, $builder);
+
+        $this->securityStrategies = $securityStrategies;
+    }
+
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
     {
         foreach ($specification->getOperations() as $operation) {
-            $this->generateRequest($fileRegistry, $operation);
+            $this->generateRequest($fileRegistry, $operation, $specification);
         }
     }
 
-    protected function generateRequest(PhpFileCollection $fileRegistry, Operation $operation): void
-    {
+    protected function generateRequest(
+        PhpFileCollection $fileRegistry,
+        Operation $operation,
+        Specification $specification
+    ): void {
         $className = RequestNaming::getClassName($operation);
         $request   = $operation->getRequest();
 
@@ -37,13 +54,13 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->class($className)
             ->implement('RequestInterface')
             ->addStmts($this->generateEnums($request))
-            ->addStmts($this->generateProperties($request))
-            ->addStmt($this->generateConstructor($request))
+            ->addStmts($this->generateProperties($request, $operation, $specification))
+            ->addStmt($this->generateConstructor($request, $operation, $specification))
             ->addStmt($this->generateGetContentType())
             ->addStmts($this->generateSetters($request))
             ->addStmt($this->generateGetMethod($request))
             ->addStmt($this->generateGetRoute($request))
-            ->addStmts($this->generateGetParametersMethods($request));
+            ->addStmts($this->generateGetParametersMethods($request, $operation, $specification));
 
         $this->registerFile($fileRegistry, $classBuilder, self::SUBDIRECTORY, self::NAMESPACE_SUBPATH);
     }
@@ -62,7 +79,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         return $statements;
     }
 
-    protected function generateProperties(Request $request): array
+    protected function generateProperties(Request $request, Operation $operation, Specification $specification): array
     {
         $statements = [];
         foreach ($request->getFields() as $fields) {
@@ -87,11 +104,19 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         }
         $statements[] = $this->builder->localProperty('contentType', 'string', 'string', false, $default);
 
+        foreach ($this->securityStrategies as $securityStrategy) {
+            /** @var SecurityStrategyInterface $securityStrategy */
+            array_push($statements, ...$securityStrategy->getProperties($operation, $specification));
+        }
+
         return $statements;
     }
 
-    protected function generateConstructor(Request $request): ?ClassMethod
-    {
+    protected function generateConstructor(
+        Request $request,
+        Operation $operation,
+        Specification $specification
+    ): ?ClassMethod {
         $params     = [];
         $paramInits = [];
         foreach ($request->getFields() as $fields) {
@@ -115,6 +140,12 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                     );
                 }
             }
+        }
+
+        foreach ($this->securityStrategies as $securityStrategy) {
+            /** @var SecurityStrategyInterface $securityStrategy */
+            array_push($params, ...$securityStrategy->getConstructorParams($operation, $specification));
+            array_push($paramInits, ...$securityStrategy->getConstructorParamInits($operation, $specification));
         }
 
         if (count($request->getBodyContentTypes()) > 1) {
@@ -224,8 +255,11 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->getNode();
     }
 
-    private function generateGetParametersMethods(Request $request): array
-    {
+    private function generateGetParametersMethods(
+        Request $request,
+        Operation $operation,
+        Specification $specification
+    ): array {
         $methods   = [];
         $fields    = $request->getFields();
         $methods[] = $this->generateGetParametersMethod(
@@ -240,7 +274,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             'getCookies',
             $fields->getCookieFields()
         );
-        $methods[] = $this->generateGetHeadersMethod($request, $fields->getHeaderFields());
+        $methods[] = $this->generateGetHeadersMethod($request, $fields->getHeaderFields(), $operation, $specification);
         $methods[] = $this->generateGetBody($fields->getBody());
 
         return $methods;
@@ -305,9 +339,13 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->getNode();
     }
 
-    private function generateGetHeadersMethod(Request $request, array $fields): ClassMethod
-    {
-        $headers = [];
+    private function generateGetHeadersMethod(
+        Request $request,
+        array $fields,
+        Operation $operation,
+        Specification $specification
+    ): ClassMethod {
+        $headers = $this->getSecurityHeaders($operation, $specification);
         if (!empty($request->getBodyContentTypes())) {
             $headers['Content-Type'] = $this->builder->localPropertyFetch('contentType');
         }
@@ -332,6 +370,18 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->setReturnType($returnType)
             ->composeDocBlock([], $returnType)
             ->getNode();
+    }
+
+    private function getSecurityHeaders(Operation $operation, Specification $specification): array
+    {
+        $headers = [];
+
+        foreach ($this->securityStrategies as $securityStrategy) {
+            /** @var SecurityStrategyInterface $securityStrategy */
+            $headers += $securityStrategy->getSecurityHeaders($operation, $specification);
+        }
+
+        return $headers;
     }
 
     private function generateParametersFromFields(array $fields): FuncCall
