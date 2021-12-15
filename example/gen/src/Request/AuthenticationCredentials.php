@@ -12,9 +12,11 @@ namespace OpenApi\PetStoreClient\Request;
 
 class AuthenticationCredentials
 {
-    private string $username;
+    /** @var string */
+    private $username;
 
-    private string $password;
+    /** @var string */
+    private $password;
 
     public function __construct(string $username, string $password)
     {

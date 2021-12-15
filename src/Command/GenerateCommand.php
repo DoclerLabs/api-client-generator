@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace DoclerLabs\ApiClientGenerator\Command;
 
 use DoclerLabs\ApiClientGenerator\CodeGeneratorFacade;
+use DoclerLabs\ApiClientGenerator\Generator\Security\BasicAuthenticationSecurityStrategy;
 use DoclerLabs\ApiClientGenerator\Input\Configuration;
 use DoclerLabs\ApiClientGenerator\Input\FileReader;
 use DoclerLabs\ApiClientGenerator\Input\Parser;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\MetaTemplateFacade;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Request\AuthenticationCredentials;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\FormUrlencodedContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\JsonContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\VdnApiJsonContentTypeSerializer;
@@ -155,7 +157,7 @@ class GenerateCommand extends Command
 
         $ss->progressStart($originalFiles->count());
         foreach ($originalFiles as $originalFile) {
-            if (empty($blacklistedFiles[$originalFile->getBasename()])) {
+            if (!in_array($originalFile->getBasename(), $blacklistedFiles, true)) {
                 $destinationPath = sprintf(
                     '%s/%s/%s',
                     $this->configuration->getOutputDirectory(),
@@ -204,7 +206,7 @@ class GenerateCommand extends Command
         }
     }
 
-    private function getBlacklistedFiles(Specification $specification): array
+    private function getUnusedSerializers(Specification $specification): array
     {
         $contentTypeMapping = [
             XmlContentTypeSerializer::MIME_TYPE            => XmlContentTypeSerializer::class,
@@ -215,13 +217,40 @@ class GenerateCommand extends Command
 
         $allContentTypes = $specification->getAllContentTypes();
 
-        return array_flip(array_map(
-            fn ($class) => basename((string)(new ReflectionClass($class))->getFileName()),
+        return array_values(
             array_filter(
                 $contentTypeMapping,
-                fn ($key) => !in_array($key, $allContentTypes),
+                static fn (string $key) => !in_array($key, $allContentTypes, true),
                 ARRAY_FILTER_USE_KEY
             )
-        ));
+        );
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getUnusedValueObjects(Specification $specification): array
+    {
+        $unusedClasses = [];
+
+        if (!$specification->isSecuritySchemeEnabled(BasicAuthenticationSecurityStrategy::SCHEME)) {
+            $unusedClasses[] = AuthenticationCredentials::class;
+        }
+
+        return $unusedClasses;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getBlacklistedFiles(Specification $specification): array
+    {
+        return array_map(
+            static fn ($class) => basename((string)(new ReflectionClass($class))->getFileName()),
+            array_merge(
+                $this->getUnusedSerializers($specification),
+                $this->getUnusedValueObjects($specification)
+            )
+        );
     }
 }
