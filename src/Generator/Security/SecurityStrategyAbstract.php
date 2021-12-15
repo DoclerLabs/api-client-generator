@@ -34,14 +34,8 @@ abstract class SecurityStrategyAbstract
     {
         $headers = [];
 
-        foreach ($this->loopSecuritySchemes($operation, $specification) as $securityScheme) {
-            /** @var SecurityScheme $securityScheme */
-            if (
-                $securityScheme->scheme === $this->getScheme()
-                && $securityScheme->type === $this->getType()
-            ) {
-                $headers['Authorization'] = $this->getAuthorizationHeader();
-            }
+        if ($this->isAuthenticationAvailable($operation, $specification)) {
+            $headers['Authorization'] = $this->getAuthorizationHeader();
         }
 
         return $headers;
