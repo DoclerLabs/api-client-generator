@@ -63,8 +63,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->addStmt($this->generateGetRoute($request))
             ->addStmts($this->generateGetParametersMethods($request, $operation, $specification));
 
-        foreach ($this->securityStrategies as $securityStrategy)
-        {
+        foreach ($this->securityStrategies as $securityStrategy) {
             $this->getImports()->append($securityStrategy->getImports($this->baseNamespace));
         }
 
