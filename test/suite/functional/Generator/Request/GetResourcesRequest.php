@@ -25,6 +25,13 @@ class GetResourcesRequest implements RequestInterface
 
     private string $contentType = '';
 
+    private AuthenticationCredentials $credentials;
+
+    public function __construct(AuthenticationCredentials $credentials)
+    {
+        $this->credentials = $credentials;
+    }
+
     public function getContentType(): string
     {
         return $this->contentType;
@@ -92,7 +99,7 @@ class GetResourcesRequest implements RequestInterface
 
     public function getHeaders(): array
     {
-        return [];
+        return ['Authorization' => \sprintf('Basic %s', \base64_encode(\sprintf('%s:%s', $this->credentials->getUsername(), $this->credentials->getPassword())))];
     }
 
     public function getBody()

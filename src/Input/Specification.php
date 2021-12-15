@@ -138,6 +138,21 @@ class Specification
         return false;
     }
 
+    public function isSecuritySchemeEnabled(string $scheme): bool
+    {
+        if (empty($this->getSecuritySchemes())) {
+            return false;
+        }
+
+        foreach ($this->getSecuritySchemes() as $securityScheme) {
+            if ($securityScheme->scheme === $scheme) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private function fieldRequiresIntlExtension(Field $field): bool
     {
         /** @var ConstraintInterface $constraint */

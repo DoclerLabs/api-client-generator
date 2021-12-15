@@ -1161,6 +1161,10 @@
         "type": "apiKey",
         "name": "api_key",
         "in": "header"
+      },
+      "basic_auth": {
+        "type": "http",
+        "scheme": "basic"
       }
     }
   }
