@@ -1,4 +1,4 @@
-FROM php:7.4-cli-alpine as dependencies
+FROM php:7.4-cli-alpine3.13 as dependencies
 
 WORKDIR /dependencies
 
