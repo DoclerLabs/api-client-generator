@@ -13,6 +13,12 @@ use PhpParser\Node\Expr;
 
 abstract class SecurityStrategyAbstract
 {
+    abstract public function getProperties(Operation $operation, Specification $specification): array;
+
+    abstract public function getConstructorParams(Operation $operation, Specification $specification): array;
+
+    abstract public function getConstructorParamInits(Operation $operation, Specification $specification): array;
+
     abstract protected function getScheme(): string;
 
     abstract protected function getType(): string;
