@@ -9,6 +9,7 @@ use DoclerLabs\ApiClientGenerator\Ast\ParameterNode;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Entity\Request;
+use DoclerLabs\ApiClientGenerator\Generator\Security\SecurityStrategyAbstract;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Naming\RequestNaming;
@@ -22,13 +23,13 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
     public const NAMESPACE_SUBPATH = '\\Request';
     public const SUBDIRECTORY = 'Request/';
 
-    /** @var SecurityStrategyInterface[] */
+    /** @var SecurityStrategyAbstract[] */
     private array $securityStrategies;
 
     public function __construct(
         string $baseNamespace,
         CodeBuilder $builder,
-        SecurityStrategyInterface ...$securityStrategies
+        SecurityStrategyAbstract ...$securityStrategies
     ) {
         parent::__construct($baseNamespace, $builder);
 
@@ -61,6 +62,11 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->addStmt($this->generateGetMethod($request))
             ->addStmt($this->generateGetRoute($request))
             ->addStmts($this->generateGetParametersMethods($request, $operation, $specification));
+
+        foreach ($this->securityStrategies as $securityStrategy)
+        {
+            $this->getImports()->append($securityStrategy->getImports($this->baseNamespace));
+        }
 
         $this->registerFile($fileRegistry, $classBuilder, self::SUBDIRECTORY, self::NAMESPACE_SUBPATH);
     }
@@ -105,7 +111,6 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         $statements[] = $this->builder->localProperty('contentType', 'string', 'string', false, $default);
 
         foreach ($this->securityStrategies as $securityStrategy) {
-            /** @var SecurityStrategyInterface $securityStrategy */
             array_push($statements, ...$securityStrategy->getProperties($operation, $specification));
         }
 
@@ -143,7 +148,6 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         }
 
         foreach ($this->securityStrategies as $securityStrategy) {
-            /** @var SecurityStrategyInterface $securityStrategy */
             array_push($params, ...$securityStrategy->getConstructorParams($operation, $specification));
             array_push($paramInits, ...$securityStrategy->getConstructorParamInits($operation, $specification));
         }
@@ -377,7 +381,6 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         $headers = [];
 
         foreach ($this->securityStrategies as $securityStrategy) {
-            /** @var SecurityStrategyInterface $securityStrategy */
             $headers += $securityStrategy->getSecurityHeaders($operation, $specification);
         }
 

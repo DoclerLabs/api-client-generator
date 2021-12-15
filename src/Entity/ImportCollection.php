@@ -15,6 +15,13 @@ class ImportCollection
         return $this;
     }
 
+    public function append(ImportCollection $anotherCollection): self
+    {
+        $this->items += $anotherCollection->items;
+
+        return $this;
+    }
+
     public function toArray(): array
     {
         return array_unique($this->items);

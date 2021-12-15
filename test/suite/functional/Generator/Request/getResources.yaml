@@ -7,6 +7,8 @@ paths:
     get:
       description: Get a list of resources
       operationId: getResources
+      security:
+        - BasicAuth: [ ]
       parameters:
         - $ref: '#/components/parameters/FilterById'
         - $ref: '#/components/parameters/FilterByName'
@@ -48,6 +50,9 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+    BasicAuth:
+      type: http
+      scheme: basic
   schemas:
     Resource:
       type: object
