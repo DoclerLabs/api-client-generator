@@ -14,9 +14,9 @@ use PhpParser\Node\Expr;
 
 class BasicAuthenticationSecurityStrategy extends SecurityStrategyAbstract
 {
+    public const SCHEME                = 'basic';
     private const PROPERTY_CREDENTIALS = 'credentials';
     private const TYPE                 = 'http';
-    public const SCHEME                = 'basic';
 
     private CodeBuilder $builder;
 
