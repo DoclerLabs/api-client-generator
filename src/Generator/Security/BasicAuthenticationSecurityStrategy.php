@@ -14,9 +14,9 @@ use PhpParser\Node\Expr;
 
 class BasicAuthenticationSecurityStrategy extends SecurityStrategyAbstract
 {
-    private const         PROPERTY_CREDENTIALS = 'credentials';
-    private const         SCHEME               = 'basic';
-    private const         TYPE                 = 'http';
+    private const PROPERTY_CREDENTIALS = 'credentials';
+    private const SCHEME               = 'basic';
+    private const TYPE                 = 'http';
 
     private CodeBuilder $builder;
 
@@ -36,7 +36,11 @@ class BasicAuthenticationSecurityStrategy extends SecurityStrategyAbstract
         $statements = [];
 
         if ($this->isAuthenticationAvailable($operation, $specification)) {
-            $statements[] = $this->builder->localProperty(self::PROPERTY_CREDENTIALS, 'AuthenticationCredentials', 'AuthenticationCredentials');
+            $statements[] = $this->builder->localProperty(
+                self::PROPERTY_CREDENTIALS,
+                'AuthenticationCredentials',
+                'AuthenticationCredentials'
+            );
         }
 
         return $statements;

@@ -15,7 +15,7 @@ class ImportCollection
         return $this;
     }
 
-    public function append(ImportCollection $anotherCollection): self
+    public function append(self $anotherCollection): self
     {
         $this->items += $anotherCollection->items;
 

@@ -7,10 +7,10 @@ namespace DoclerLabs\ApiClientGenerator\Output\Copy\Request;
 class AuthenticationCredentials
 {
     /** @var string */
-    private string $username;
+    private $username;
 
     /** @var string */
-    private string $password;
+    private $password;
 
     public function __construct(string $username, string $password)
     {
