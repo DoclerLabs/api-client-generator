@@ -17,7 +17,7 @@ COPY composer.lock /dependencies
 
 RUN composer install
 
-FROM php:7.4-cli-alpine
+FROM php:7.4-cli-alpine3.13
 
 ARG API_CLIENT_GENERATOR_VERSION
 ENV API_CLIENT_GENERATOR_VERSION=$API_CLIENT_GENERATOR_VERSION
