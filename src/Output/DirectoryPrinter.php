@@ -37,7 +37,12 @@ class DirectoryPrinter
             return unlink($path);
         }
 
-        foreach (scandir($path) as $item) {
+        $directoryContent = scandir($path);
+        if ($directoryContent === false) {
+            return true;
+        }
+
+        foreach ($directoryContent as $item) {
             if ($item === '.' || $item === '..') {
                 continue;
             }
