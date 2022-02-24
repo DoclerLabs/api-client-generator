@@ -16,6 +16,7 @@ use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\FormUrlenco
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\JsonContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\VdnApiJsonContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\XmlContentTypeSerializer;
+use DoclerLabs\ApiClientGenerator\Output\DirectoryPrinter;
 use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFileCollection;
 use DoclerLabs\ApiClientGenerator\Output\MetaFilePrinter;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
@@ -30,6 +31,7 @@ use Symfony\Component\Console\Style\StyleInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
+use Throwable;
 
 class GenerateCommand extends Command
 {
@@ -38,6 +40,7 @@ class GenerateCommand extends Command
     private FileReader          $fileReader;
     private Parser              $parser;
     private PhpFilePrinter      $phpPrinter;
+    private DirectoryPrinter    $directoryPrinter;
     private MetaTemplateFacade  $metaTemplate;
     private MetaFilePrinter     $templatePrinter;
     private Finder              $fileFinder;
@@ -51,6 +54,7 @@ class GenerateCommand extends Command
         Parser $parser,
         CodeGeneratorFacade $codeGenerator,
         PhpFilePrinter $phpPrinter,
+        DirectoryPrinter $directoryPrinter,
         MetaTemplateFacade $metaTemplate,
         MetaFilePrinter $templatePrinter,
         Finder $fileFinder,
@@ -64,6 +68,7 @@ class GenerateCommand extends Command
         $this->parser           = $parser;
         $this->codeGenerator    = $codeGenerator;
         $this->phpPrinter       = $phpPrinter;
+        $this->directoryPrinter = $directoryPrinter;
         $this->metaTemplate     = $metaTemplate;
         $this->templatePrinter  = $templatePrinter;
         $this->fileFinder       = $fileFinder;
@@ -93,10 +98,19 @@ class GenerateCommand extends Command
 
         $ss = new SymfonyStyle($input, $output);
 
-        $this->generatePhpFiles($ss, $specification);
-        $this->copySpecification($ss);
-        $this->generateMetaFiles($ss, $specification);
-        $this->copyStaticPhpFiles($ss, $specification);
+        $this->backup($ss);
+
+        try {
+            $this->generatePhpFiles($ss, $specification);
+            $this->copyStaticPhpFiles($ss, $specification);
+            $this->copySpecification($ss);
+            $this->generateMetaFiles($ss, $specification);
+        } catch (Throwable $throwable) {
+            $this->restoreBackup($ss);
+            return Command::FAILURE;
+        }
+
+        $this->removeBackup($ss);
 
         return Command::SUCCESS;
     }
@@ -190,6 +204,55 @@ class GenerateCommand extends Command
             $this->configuration->getSpecificationFilePath(),
             $destinationPath
         );
+    }
+
+    private function backup(StyleInterface $ss): void
+    {
+        $ss->text('<info>Backup original source.</info>');
+
+        $originalPath = sprintf(
+            '%s/%s',
+            $this->configuration->getOutputDirectory(),
+            $this->configuration->getSourceDirectory()
+        );
+
+        $backupPath = $originalPath . '_old';
+
+        $this->directoryPrinter->move(
+            $backupPath,
+            $originalPath
+        );
+    }
+
+    private function restoreBackup(StyleInterface $ss): void
+    {
+        $ss->text('<error>Restore original source from backup.</error>');
+
+        $originalPath = sprintf(
+            '%s/%s',
+            $this->configuration->getOutputDirectory(),
+            $this->configuration->getSourceDirectory()
+        );
+
+        $backupPath = $originalPath . '_old';
+
+        $this->directoryPrinter->move(
+            $originalPath,
+            $backupPath
+        );
+    }
+
+    private function removeBackup(StyleInterface $ss): void
+    {
+        $ss->text('<info>Delete backup.</info>');
+
+        $backupPath = sprintf(
+            '%s/%s_old',
+            $this->configuration->getOutputDirectory(),
+            $this->configuration->getSourceDirectory()
+        );
+
+        $this->directoryPrinter->delete($backupPath);
     }
 
     private function initWarningPrinting(InputInterface $input): void

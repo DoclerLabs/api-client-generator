@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator;
@@ -96,6 +97,7 @@ class ServiceProvider implements ServiceProviderInterface
             $container[OpenApiParser::class],
             $container[CodeGeneratorFacade::class],
             $container[PhpFilePrinter::class],
+            $container[DirectoryPrinter::class],
             $container[MetaTemplateFacade::class],
             $container[MetaFilePrinter::class],
             $container[Finder::class],
