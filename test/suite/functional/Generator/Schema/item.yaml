@@ -82,6 +82,12 @@ components:
           enum:
             - 'one option'
             - 'another option'
+        optionalIntEnum:
+          type: integer
+          enum:
+            - 0
+            - 1
+            - 2
         optionalDate:
           type: string
           format: 'date-time'

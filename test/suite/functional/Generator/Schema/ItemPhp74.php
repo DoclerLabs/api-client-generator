@@ -58,6 +58,8 @@ class Item implements SerializableInterface, JsonSerializable
 
     private ?string $optionalEnum = null;
 
+    private ?int $optionalIntEnum = null;
+
     private ?DateTimeInterface $optionalDate = null;
 
     private ?float $optionalFloat = null;
@@ -140,6 +142,13 @@ class Item implements SerializableInterface, JsonSerializable
     public function setOptionalEnum(string $optionalEnum): self
     {
         $this->optionalEnum = $optionalEnum;
+
+        return $this;
+    }
+
+    public function setOptionalIntEnum(int $optionalIntEnum): self
+    {
+        $this->optionalIntEnum = $optionalIntEnum;
 
         return $this;
     }
@@ -394,6 +403,11 @@ class Item implements SerializableInterface, JsonSerializable
         return $this->optionalEnum;
     }
 
+    public function getOptionalIntEnum(): ?int
+    {
+        return $this->optionalIntEnum;
+    }
+
     public function getOptionalDate(): ?DateTimeInterface
     {
         return $this->optionalDate;
@@ -493,6 +507,9 @@ class Item implements SerializableInterface, JsonSerializable
         }
         if ($this->optionalEnum !== null) {
             $fields['optionalEnum'] = $this->optionalEnum;
+        }
+        if ($this->optionalIntEnum !== null) {
+            $fields['optionalIntEnum'] = $this->optionalIntEnum;
         }
         if ($this->optionalDate !== null) {
             $fields['optionalDate'] = $this->optionalDate->format(DATE_RFC3339);
