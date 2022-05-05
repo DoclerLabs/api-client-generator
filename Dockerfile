@@ -15,7 +15,8 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 COPY composer.json /dependencies
 COPY composer.lock /dependencies
 
-RUN composer install
+RUN composer install \
+    && git config --global --add safe.directory /app
 
 FROM php:7.4-cli-alpine3.13
 
