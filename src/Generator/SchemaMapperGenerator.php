@@ -173,7 +173,7 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             ->makePublic()
             ->addParam($payloadParam)
             ->addStmts($statements)
-            ->setReturnType($root->getPhpTypeHint(), $root->isNullable())
+            ->setReturnType($root->getPhpTypeHint())
             ->composeDocBlock(
                 [$payloadParam],
                 $root->getPhpDocType(false),
