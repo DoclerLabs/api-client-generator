@@ -58,6 +58,11 @@ components:
               properties:
                 string:
                   type: string
+        mandatoryNullableObjectWithAllOf:
+          allOf:
+            - $ref: '#/components/schemas/EmbeddedObject'
+            - type: object
+              nullable: true
         mandatoryMixed: {}
         mandatoryAnyOf:
           anyOf:
@@ -150,6 +155,7 @@ components:
         - mandatoryArray
         - mandatoryArrayWithMinItems
         - mandatoryObject
+        - mandatoryNullableObjectWithAllOf
         - mandatoryMixed
         - mandatoryAnyOf
     EmbeddedObject:

@@ -66,6 +66,7 @@ class FieldFactory
                 }
 
                 $objectProperties = $this->mergeAllOfProperties($operationName, $schema);
+                $schema = $this->mergeAllOfAttributes($schema);
             } elseif (FieldType::isSpecificationTypeArray($type)) {
                 $itemReferenceName = '';
                 if ($schema->items === null) {
@@ -201,5 +202,22 @@ class FieldFactory
         }
 
         return array_merge([], ...$allOfProperties);
+    }
+
+    private function mergeAllOfAttributes(SpecObjectInterface $schema): SpecObjectInterface
+    {
+        foreach ($schema->allOf as $allOfSchema) {
+            if ($allOfSchema instanceof Reference) {
+                $allOfSchema = $allOfSchema->resolve();
+            }
+
+            if (isset($allOfSchema->nullable)) {
+                $schema->nullable = $allOfSchema->nullable;
+            }
+
+            // @TODO add more attributes here later if needed
+        }
+
+        return $schema;
     }
 }
