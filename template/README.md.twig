@@ -4,7 +4,7 @@ This client is generated using [docler-labs/api-client-generator](https://github
 
 You can generate the client with the following command:
 ```bash
-docker run -it \
+docker run -it --rm \
 -v <local-path-to-api>/doc/openapi.yaml:/openapi.yaml:ro \
 -v <local-path-to-client>:/client \
 -e NAMESPACE={{ addslashes(namespace) }} \
