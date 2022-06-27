@@ -107,6 +107,8 @@ class GenerateCommand extends Command
             $this->generateMetaFiles($ss, $specification);
         } catch (Throwable $throwable) {
             $this->restoreBackup($ss);
+            trigger_error($throwable->getMessage(), E_USER_WARNING);
+
             return Command::FAILURE;
         }
 
