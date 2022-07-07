@@ -201,10 +201,7 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
                 throw new UnexpectedValueException('Optional nullable fields are not supported!');
             }
 
-            if (
-                $propertyField->isOptional()
-                && !$propertyField->isNullable()
-            ) {
+            if ($propertyField->isOptional()) {
                 $ifCondition  = $this->builder->notEquals(
                     $this->builder->localPropertyFetch($propertyField->getPhpVariableName()),
                     $this->builder->val(null)
