@@ -68,16 +68,6 @@ components:
           anyOf:
             - type: number
             - type: string
-        nullableObject:
-          type: object
-          properties:
-            string:
-              type: string
-          nullable: true
-        nullableDate:
-          type: string
-          format: 'date-time'
-          nullable: true
         optionalInteger:
           type: integer
         optionalString:

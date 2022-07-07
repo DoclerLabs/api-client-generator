@@ -50,10 +50,6 @@ class Item implements SerializableInterface, JsonSerializable
 
     private $mandatoryAnyOf;
 
-    private ?ItemNullableObject $nullableObject = null;
-
-    private ?DateTimeInterface $nullableDate = null;
-
     private ?int $optionalInteger = null;
 
     private ?string $optionalString = null;
@@ -112,20 +108,6 @@ class Item implements SerializableInterface, JsonSerializable
         $this->mandatoryNullableObjectWithAllOf = $mandatoryNullableObjectWithAllOf;
         $this->mandatoryMixed                   = $mandatoryMixed;
         $this->mandatoryAnyOf                   = $mandatoryAnyOf;
-    }
-
-    public function setNullableObject(?ItemNullableObject $nullableObject): self
-    {
-        $this->nullableObject = $nullableObject;
-
-        return $this;
-    }
-
-    public function setNullableDate(?DateTimeInterface $nullableDate): self
-    {
-        $this->nullableDate = $nullableDate;
-
-        return $this;
     }
 
     public function setOptionalInteger(int $optionalInteger): self
@@ -386,16 +368,6 @@ class Item implements SerializableInterface, JsonSerializable
         return $this->mandatoryAnyOf;
     }
 
-    public function getNullableObject(): ?ItemNullableObject
-    {
-        return $this->nullableObject;
-    }
-
-    public function getNullableDate(): ?DateTimeInterface
-    {
-        return $this->nullableDate;
-    }
-
     public function getOptionalInteger(): ?int
     {
         return $this->optionalInteger;
@@ -506,8 +478,6 @@ class Item implements SerializableInterface, JsonSerializable
         $fields['mandatoryNullableObjectWithAllOf'] = $this->mandatoryNullableObjectWithAllOf !== null ? $this->mandatoryNullableObjectWithAllOf->toArray() : null;
         $fields['mandatoryMixed']                   = $this->mandatoryMixed;
         $fields['mandatoryAnyOf']                   = $this->mandatoryAnyOf;
-        $fields['nullableObject']                   = $this->nullableObject !== null ? $this->nullableObject->toArray() : null;
-        $fields['nullableDate']                     = $this->nullableDate   !== null ? $this->nullableDate->format(DATE_RFC3339) : null;
         if ($this->optionalInteger !== null) {
             $fields['optionalInteger'] = $this->optionalInteger;
         }

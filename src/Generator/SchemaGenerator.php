@@ -11,6 +11,7 @@ use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use JsonSerializable;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\ClassMethod;
+use UnexpectedValueException;
 
 class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
 {
@@ -193,7 +194,14 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
             $fieldName       = $this->builder->val($propertyField->getName());
             $assignStatement = $this->builder->appendToAssociativeArray($arrayVariable, $fieldName, $value);
 
-            if ($propertyField->isOptional() && !$propertyField->isNullable()) {
+            if (
+                $propertyField->isOptional()
+                && $propertyField->isNullable()
+            ) {
+                throw new UnexpectedValueException('Optional nullable fields are not supported!');
+            }
+
+            if ($propertyField->isOptional()) {
                 $ifCondition  = $this->builder->notEquals(
                     $this->builder->localPropertyFetch($propertyField->getPhpVariableName()),
                     $this->builder->val(null)
