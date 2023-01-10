@@ -9,7 +9,7 @@
     },
     "require": {
         "php": ">=7.4",
-        "docler-labs/api-client-exception": "^1.0",
+        "docler-labs/api-client-exception": "^1.0|^2.0",
         "ext-json": "*",
         "guzzlehttp/psr7": "^1.6",
         "pimple/pimple": "^3.3",
