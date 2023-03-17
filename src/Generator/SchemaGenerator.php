@@ -10,13 +10,16 @@ use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use JsonSerializable;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Expression;
 use UnexpectedValueException;
 
 class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
 {
-    public const SUBDIRECTORY      = 'Schema/';
+    public const SUBDIRECTORY = 'Schema/';
     public const NAMESPACE_SUBPATH = '\\Schema';
+    private const OPTIONAL_CHANGED_FIELDS_PROPERTY_NAME = 'optionalPropertyChanged';
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
     {
@@ -28,24 +31,61 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
         }
     }
 
-    protected function generateSchema(Field $field, PhpFileCollection $fileRegistry): void
+    protected function generateSchema(Field $root, PhpFileCollection $fileRegistry): void
     {
         $this->addImport(JsonSerializable::class);
 
-        $className = $field->getPhpClassName();
+        $className = $root->getPhpClassName();
 
         $classBuilder = $this->builder
             ->class($className)
             ->implement('SerializableInterface', 'JsonSerializable')
-            ->addStmts($this->generateEnumConsts($field))
-            ->addStmts($this->generateProperties($field))
-            ->addStmt($this->generateConstructor($field))
-            ->addStmts($this->generateSetMethods($field))
-            ->addStmts($this->generateGetMethods($field))
-            ->addStmt($this->generateToArray($field))
+            ->addStmts($this->generateEnumConsts($root))
+            ->addStmts($this->generateProperties($root))
+            ->addStmt($this->generateOptionalChangedFieldsProperty($root))
+            ->addStmt($this->generateConstructor($root))
+            ->addStmts($this->generateSetMethods($root))
+            ->addStmts($this->generateHasMethods($root))
+            ->addStmts($this->generateGetMethods($root))
+            ->addStmt($this->generateToArray($root))
             ->addStmt($this->generateJsonSerialize());
 
         $this->registerFile($fileRegistry, $classBuilder, self::SUBDIRECTORY, self::NAMESPACE_SUBPATH);
+    }
+
+    private function generateOptionalChangedFieldsProperty(Field $root): ?Stmt
+    {
+        $optionalProperties = [];
+
+        foreach ($root->getObjectProperties() as $propertyField) {
+            if ($propertyField->isOptional()) {
+                if ($propertyField->getPhpVariableName() === self::OPTIONAL_CHANGED_FIELDS_PROPERTY_NAME) {
+                    throw new UnexpectedValueException('Property "' . self::OPTIONAL_CHANGED_FIELDS_PROPERTY_NAME . '" not supported!');
+                }
+
+                if ($propertyField->isNullable()) {
+                    trigger_error('Property "' .$propertyField->getName() . '" is nullable and optional, that might be a sign of the bad api design', E_USER_WARNING);
+                }
+                $optionalProperties[] = $propertyField;
+            }
+        }
+
+        if (empty($optionalProperties)) {
+            return null;
+        }
+
+        $propertyArrayValues = [];
+        foreach ($optionalProperties as $optionalProperty) {
+            $propertyArrayValues[$optionalProperty->getPhpVariableName()] = $this->builder->val(false);
+        }
+
+        return $this->builder->localProperty(
+            self::OPTIONAL_CHANGED_FIELDS_PROPERTY_NAME,
+            'array',
+            'array',
+            false,
+            $this->builder->array($propertyArrayValues)
+        );
     }
 
     protected function generateEnumConsts(Field $root): array
@@ -119,7 +159,15 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
         $statements = [];
         foreach ($root->getObjectProperties() as $propertyField) {
             if ($propertyField->isOptional()) {
-                $statements[] = $this->generateSet($propertyField);
+                $changedFieldSetter = $this->builder->assign(
+                    $this->builder->getArrayItem(
+                        $this->builder->localPropertyFetch(self::OPTIONAL_CHANGED_FIELDS_PROPERTY_NAME),
+                        $this->builder->val($propertyField->getPhpVariableName())
+                    ),
+                    $this->builder->val(true)
+                );
+
+                $statements[] = $this->generateSet($propertyField, [$changedFieldSetter]);
             }
         }
 
@@ -134,6 +182,38 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
         }
 
         return $statements;
+    }
+
+    protected function generateHasMethods(Field $root): array
+    {
+        $statements = [];
+        foreach ($root->getObjectProperties() as $propertyField) {
+            if ($propertyField->isOptional()) {
+                $statements[] = $this->generateHas($propertyField);
+            }
+        }
+
+        return $statements;
+    }
+
+    private function generateHas(Field $field): ClassMethod
+    {
+        $return = $this->builder->return(
+            $this->builder->getArrayItem(
+                $this->builder->localPropertyFetch(
+                    self::OPTIONAL_CHANGED_FIELDS_PROPERTY_NAME
+                ),
+                $this->builder->val($field->getPhpVariableName())
+            )
+        );
+
+        return $this->builder
+            ->method($this->getHasMethodName($field))
+            ->makePublic()
+            ->addStmt($return)
+            ->setReturnType('bool')
+            ->composeDocBlock([], 'bool')
+            ->getNode();
     }
 
     protected function generateToArray(Field $root): ClassMethod
@@ -194,18 +274,11 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
             $fieldName       = $this->builder->val($propertyField->getName());
             $assignStatement = $this->builder->appendToAssociativeArray($arrayVariable, $fieldName, $value);
 
-            if (
-                $propertyField->isOptional()
-                && $propertyField->isNullable()
-            ) {
-                throw new UnexpectedValueException('Optional nullable fields are not supported!');
-            }
-
             if ($propertyField->isOptional()) {
-                $ifCondition  = $this->builder->notEquals(
-                    $this->builder->localPropertyFetch($propertyField->getPhpVariableName()),
-                    $this->builder->val(null)
+                $ifCondition = $this->builder->localMethodCall(
+                    $this->getHasMethodName($propertyField)
                 );
+
                 $statements[] = $this->builder->if($ifCondition, [$assignStatement]);
             } else {
                 $statements[] = $assignStatement;

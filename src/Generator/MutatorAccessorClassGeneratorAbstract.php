@@ -12,6 +12,7 @@ use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
+use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
 
@@ -30,7 +31,10 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
         );
     }
 
-    protected function generateSet(Field $field): ClassMethod
+    /**
+     * @param Stmt[] $additionalStatements
+     */
+    protected function generateSet(Field $field, array $additionalStatements = []): ClassMethod
     {
         $statements         = $this->generateValidationStmts($field);
         $thrownExceptionMap = empty($statements) ? [] : ['RequestValidationException' => true];
@@ -45,6 +49,8 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
             $this->builder->localPropertyFetch($field->getPhpVariableName()),
             $this->builder->var($field->getPhpVariableName())
         );
+
+        $statements = array_merge($statements, $additionalStatements);
 
         $return     = $this->builder->return($this->builder->var('this'));
         $returnType = 'self';
@@ -62,8 +68,6 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
 
     protected function generateGet(Field $field): ClassMethod
     {
-        $phpDocType = $field->getPhpDocType();
-
         $return = $this->builder->return($this->builder->localPropertyFetch($field->getPhpVariableName()));
 
         return $this->builder
@@ -71,7 +75,7 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
             ->makePublic()
             ->addStmt($return)
             ->setReturnType($field->getPhpTypeHint(), $field->isNullable() || !$field->isRequired())
-            ->composeDocBlock([], $phpDocType)
+            ->composeDocBlock([], $field->getPhpDocType())
             ->getNode();
     }
 
@@ -97,6 +101,11 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
     protected function getGetMethodName(Field $field): string
     {
         return sprintf('get%s', ucfirst($field->getPhpVariableName()));
+    }
+
+    protected function getHasMethodName(Field $field): string
+    {
+        return sprintf('has%s', ucfirst($field->getPhpVariableName()));
     }
 
     protected function generateEnumStatements(Field $field): array
