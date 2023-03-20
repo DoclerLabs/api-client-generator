@@ -18,18 +18,32 @@ class ItemMandatoryObject implements SerializableInterface, JsonSerializable
 
     private ?ItemMandatoryObjectNullableObject $nullableObject = null;
 
+    private array $optionalPropertyChanged = ['string' => false, 'nullableObject' => false];
+
     public function setString(string $string): self
     {
-        $this->string = $string;
+        $this->string                            = $string;
+        $this->optionalPropertyChanged['string'] = true;
 
         return $this;
     }
 
     public function setNullableObject(ItemMandatoryObjectNullableObject $nullableObject): self
     {
-        $this->nullableObject = $nullableObject;
+        $this->nullableObject                            = $nullableObject;
+        $this->optionalPropertyChanged['nullableObject'] = true;
 
         return $this;
+    }
+
+    public function hasString(): bool
+    {
+        return $this->optionalPropertyChanged['string'];
+    }
+
+    public function hasNullableObject(): bool
+    {
+        return $this->optionalPropertyChanged['nullableObject'];
     }
 
     public function getString(): ?string
@@ -45,10 +59,10 @@ class ItemMandatoryObject implements SerializableInterface, JsonSerializable
     public function toArray(): array
     {
         $fields = [];
-        if ($this->string !== null) {
+        if ($this->hasString()) {
             $fields['string'] = $this->string;
         }
-        if ($this->nullableObject !== null) {
+        if ($this->hasNullableObject()) {
             $fields['nullableObject'] = $this->nullableObject->toArray();
         }
 

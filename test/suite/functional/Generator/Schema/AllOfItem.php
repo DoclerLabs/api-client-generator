@@ -22,6 +22,10 @@ class ExtendedItem implements SerializableInterface, JsonSerializable
 
     private ?string $optionalChildString = null;
 
+    private ?string $optionalNullableChildString = null;
+
+    private array $optionalPropertyChanged = ['optionalParentInteger' => false, 'optionalChildString' => false, 'optionalNullableChildString' => false];
+
     public function __construct(string $madatoryParentString, int $mandatoryChildInteger)
     {
         $this->madatoryParentString  = $madatoryParentString;
@@ -30,16 +34,41 @@ class ExtendedItem implements SerializableInterface, JsonSerializable
 
     public function setOptionalParentInteger(int $optionalParentInteger): self
     {
-        $this->optionalParentInteger = $optionalParentInteger;
+        $this->optionalParentInteger                            = $optionalParentInteger;
+        $this->optionalPropertyChanged['optionalParentInteger'] = true;
 
         return $this;
     }
 
     public function setOptionalChildString(string $optionalChildString): self
     {
-        $this->optionalChildString = $optionalChildString;
+        $this->optionalChildString                            = $optionalChildString;
+        $this->optionalPropertyChanged['optionalChildString'] = true;
 
         return $this;
+    }
+
+    public function setOptionalNullableChildString(?string $optionalNullableChildString): self
+    {
+        $this->optionalNullableChildString                            = $optionalNullableChildString;
+        $this->optionalPropertyChanged['optionalNullableChildString'] = true;
+
+        return $this;
+    }
+
+    public function hasOptionalParentInteger(): bool
+    {
+        return $this->optionalPropertyChanged['optionalParentInteger'];
+    }
+
+    public function hasOptionalChildString(): bool
+    {
+        return $this->optionalPropertyChanged['optionalChildString'];
+    }
+
+    public function hasOptionalNullableChildString(): bool
+    {
+        return $this->optionalPropertyChanged['optionalNullableChildString'];
     }
 
     public function getMadatoryParentString(): string
@@ -62,16 +91,24 @@ class ExtendedItem implements SerializableInterface, JsonSerializable
         return $this->optionalChildString;
     }
 
+    public function getOptionalNullableChildString(): ?string
+    {
+        return $this->optionalNullableChildString;
+    }
+
     public function toArray(): array
     {
         $fields                         = [];
         $fields['madatoryParentString'] = $this->madatoryParentString;
-        if ($this->optionalParentInteger !== null) {
+        if ($this->hasOptionalParentInteger()) {
             $fields['optionalParentInteger'] = $this->optionalParentInteger;
         }
         $fields['mandatoryChildInteger'] = $this->mandatoryChildInteger;
-        if ($this->optionalChildString !== null) {
+        if ($this->hasOptionalChildString()) {
             $fields['optionalChildString'] = $this->optionalChildString;
+        }
+        if ($this->hasOptionalNullableChildString()) {
+            $fields['optionalNullableChildString'] = $this->optionalNullableChildString;
         }
 
         return $fields;
