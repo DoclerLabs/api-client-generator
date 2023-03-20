@@ -32,6 +32,8 @@ class Pet implements SerializableInterface, JsonSerializable
 
     private ?string $status = null;
 
+    private array $optionalPropertyChanged = ['id' => false, 'category' => false, 'tags' => false, 'status' => false];
+
     /**
      * @param string[] $photoUrls
      */
@@ -43,30 +45,54 @@ class Pet implements SerializableInterface, JsonSerializable
 
     public function setId(int $id): self
     {
-        $this->id = $id;
+        $this->id                            = $id;
+        $this->optionalPropertyChanged['id'] = true;
 
         return $this;
     }
 
     public function setCategory(Category $category): self
     {
-        $this->category = $category;
+        $this->category                            = $category;
+        $this->optionalPropertyChanged['category'] = true;
 
         return $this;
     }
 
     public function setTags(TagCollection $tags): self
     {
-        $this->tags = $tags;
+        $this->tags                            = $tags;
+        $this->optionalPropertyChanged['tags'] = true;
 
         return $this;
     }
 
     public function setStatus(string $status): self
     {
-        $this->status = $status;
+        $this->status                            = $status;
+        $this->optionalPropertyChanged['status'] = true;
 
         return $this;
+    }
+
+    public function hasId(): bool
+    {
+        return $this->optionalPropertyChanged['id'];
+    }
+
+    public function hasCategory(): bool
+    {
+        return $this->optionalPropertyChanged['category'];
+    }
+
+    public function hasTags(): bool
+    {
+        return $this->optionalPropertyChanged['tags'];
+    }
+
+    public function hasStatus(): bool
+    {
+        return $this->optionalPropertyChanged['status'];
     }
 
     public function getId(): ?int
@@ -105,18 +131,18 @@ class Pet implements SerializableInterface, JsonSerializable
     public function toArray(): array
     {
         $fields = [];
-        if ($this->id !== null) {
+        if ($this->hasId()) {
             $fields['id'] = $this->id;
         }
         $fields['name'] = $this->name;
-        if ($this->category !== null) {
+        if ($this->hasCategory()) {
             $fields['category'] = $this->category->toArray();
         }
         $fields['photoUrls'] = $this->photoUrls;
-        if ($this->tags !== null) {
+        if ($this->hasTags()) {
             $fields['tags'] = $this->tags->toArray();
         }
-        if ($this->status !== null) {
+        if ($this->hasStatus()) {
             $fields['status'] = $this->status;
         }
 

@@ -30,60 +30,110 @@ class User implements SerializableInterface, JsonSerializable
 
     private ?int $userStatus = null;
 
+    private array $optionalPropertyChanged = ['id' => false, 'username' => false, 'firstName' => false, 'lastName' => false, 'email' => false, 'password' => false, 'phone' => false, 'userStatus' => false];
+
     public function setId(int $id): self
     {
-        $this->id = $id;
+        $this->id                            = $id;
+        $this->optionalPropertyChanged['id'] = true;
 
         return $this;
     }
 
     public function setUsername(string $username): self
     {
-        $this->username = $username;
+        $this->username                            = $username;
+        $this->optionalPropertyChanged['username'] = true;
 
         return $this;
     }
 
     public function setFirstName(string $firstName): self
     {
-        $this->firstName = $firstName;
+        $this->firstName                            = $firstName;
+        $this->optionalPropertyChanged['firstName'] = true;
 
         return $this;
     }
 
     public function setLastName(string $lastName): self
     {
-        $this->lastName = $lastName;
+        $this->lastName                            = $lastName;
+        $this->optionalPropertyChanged['lastName'] = true;
 
         return $this;
     }
 
     public function setEmail(string $email): self
     {
-        $this->email = $email;
+        $this->email                            = $email;
+        $this->optionalPropertyChanged['email'] = true;
 
         return $this;
     }
 
     public function setPassword(string $password): self
     {
-        $this->password = $password;
+        $this->password                            = $password;
+        $this->optionalPropertyChanged['password'] = true;
 
         return $this;
     }
 
     public function setPhone(string $phone): self
     {
-        $this->phone = $phone;
+        $this->phone                            = $phone;
+        $this->optionalPropertyChanged['phone'] = true;
 
         return $this;
     }
 
     public function setUserStatus(int $userStatus): self
     {
-        $this->userStatus = $userStatus;
+        $this->userStatus                            = $userStatus;
+        $this->optionalPropertyChanged['userStatus'] = true;
 
         return $this;
+    }
+
+    public function hasId(): bool
+    {
+        return $this->optionalPropertyChanged['id'];
+    }
+
+    public function hasUsername(): bool
+    {
+        return $this->optionalPropertyChanged['username'];
+    }
+
+    public function hasFirstName(): bool
+    {
+        return $this->optionalPropertyChanged['firstName'];
+    }
+
+    public function hasLastName(): bool
+    {
+        return $this->optionalPropertyChanged['lastName'];
+    }
+
+    public function hasEmail(): bool
+    {
+        return $this->optionalPropertyChanged['email'];
+    }
+
+    public function hasPassword(): bool
+    {
+        return $this->optionalPropertyChanged['password'];
+    }
+
+    public function hasPhone(): bool
+    {
+        return $this->optionalPropertyChanged['phone'];
+    }
+
+    public function hasUserStatus(): bool
+    {
+        return $this->optionalPropertyChanged['userStatus'];
     }
 
     public function getId(): ?int
@@ -129,28 +179,28 @@ class User implements SerializableInterface, JsonSerializable
     public function toArray(): array
     {
         $fields = [];
-        if ($this->id !== null) {
+        if ($this->hasId()) {
             $fields['id'] = $this->id;
         }
-        if ($this->username !== null) {
+        if ($this->hasUsername()) {
             $fields['username'] = $this->username;
         }
-        if ($this->firstName !== null) {
+        if ($this->hasFirstName()) {
             $fields['firstName'] = $this->firstName;
         }
-        if ($this->lastName !== null) {
+        if ($this->hasLastName()) {
             $fields['lastName'] = $this->lastName;
         }
-        if ($this->email !== null) {
+        if ($this->hasEmail()) {
             $fields['email'] = $this->email;
         }
-        if ($this->password !== null) {
+        if ($this->hasPassword()) {
             $fields['password'] = $this->password;
         }
-        if ($this->phone !== null) {
+        if ($this->hasPhone()) {
             $fields['phone'] = $this->phone;
         }
-        if ($this->userStatus !== null) {
+        if ($this->hasUserStatus()) {
             $fields['userStatus'] = $this->userStatus;
         }
 

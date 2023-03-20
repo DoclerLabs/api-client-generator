@@ -33,46 +33,84 @@ class Order implements SerializableInterface, JsonSerializable
 
     private ?bool $complete = null;
 
+    private array $optionalPropertyChanged = ['id' => false, 'petId' => false, 'quantity' => false, 'shipDate' => false, 'status' => false, 'complete' => false];
+
     public function setId(int $id): self
     {
-        $this->id = $id;
+        $this->id                            = $id;
+        $this->optionalPropertyChanged['id'] = true;
 
         return $this;
     }
 
     public function setPetId(int $petId): self
     {
-        $this->petId = $petId;
+        $this->petId                            = $petId;
+        $this->optionalPropertyChanged['petId'] = true;
 
         return $this;
     }
 
     public function setQuantity(int $quantity): self
     {
-        $this->quantity = $quantity;
+        $this->quantity                            = $quantity;
+        $this->optionalPropertyChanged['quantity'] = true;
 
         return $this;
     }
 
     public function setShipDate(DateTimeInterface $shipDate): self
     {
-        $this->shipDate = $shipDate;
+        $this->shipDate                            = $shipDate;
+        $this->optionalPropertyChanged['shipDate'] = true;
 
         return $this;
     }
 
     public function setStatus(string $status): self
     {
-        $this->status = $status;
+        $this->status                            = $status;
+        $this->optionalPropertyChanged['status'] = true;
 
         return $this;
     }
 
     public function setComplete(bool $complete): self
     {
-        $this->complete = $complete;
+        $this->complete                            = $complete;
+        $this->optionalPropertyChanged['complete'] = true;
 
         return $this;
+    }
+
+    public function hasId(): bool
+    {
+        return $this->optionalPropertyChanged['id'];
+    }
+
+    public function hasPetId(): bool
+    {
+        return $this->optionalPropertyChanged['petId'];
+    }
+
+    public function hasQuantity(): bool
+    {
+        return $this->optionalPropertyChanged['quantity'];
+    }
+
+    public function hasShipDate(): bool
+    {
+        return $this->optionalPropertyChanged['shipDate'];
+    }
+
+    public function hasStatus(): bool
+    {
+        return $this->optionalPropertyChanged['status'];
+    }
+
+    public function hasComplete(): bool
+    {
+        return $this->optionalPropertyChanged['complete'];
     }
 
     public function getId(): ?int
@@ -108,22 +146,22 @@ class Order implements SerializableInterface, JsonSerializable
     public function toArray(): array
     {
         $fields = [];
-        if ($this->id !== null) {
+        if ($this->hasId()) {
             $fields['id'] = $this->id;
         }
-        if ($this->petId !== null) {
+        if ($this->hasPetId()) {
             $fields['petId'] = $this->petId;
         }
-        if ($this->quantity !== null) {
+        if ($this->hasQuantity()) {
             $fields['quantity'] = $this->quantity;
         }
-        if ($this->shipDate !== null) {
+        if ($this->hasShipDate()) {
             $fields['shipDate'] = $this->shipDate->format(DATE_RFC3339);
         }
-        if ($this->status !== null) {
+        if ($this->hasStatus()) {
             $fields['status'] = $this->status;
         }
-        if ($this->complete !== null) {
+        if ($this->hasComplete()) {
             $fields['complete'] = $this->complete;
         }
 
