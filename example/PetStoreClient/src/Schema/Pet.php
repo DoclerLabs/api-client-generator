@@ -32,7 +32,9 @@ class Pet implements SerializableInterface, JsonSerializable
 
     private ?string $status = null;
 
-    private array $optionalPropertyChanged = ['id' => false, 'category' => false, 'tags' => false, 'status' => false];
+    private ?bool $chipped = null;
+
+    private array $optionalPropertyChanged = ['id' => false, 'category' => false, 'tags' => false, 'status' => false, 'chipped' => false];
 
     /**
      * @param string[] $photoUrls
@@ -75,6 +77,14 @@ class Pet implements SerializableInterface, JsonSerializable
         return $this;
     }
 
+    public function setChipped(?bool $chipped): self
+    {
+        $this->chipped                            = $chipped;
+        $this->optionalPropertyChanged['chipped'] = true;
+
+        return $this;
+    }
+
     public function hasId(): bool
     {
         return $this->optionalPropertyChanged['id'];
@@ -93,6 +103,11 @@ class Pet implements SerializableInterface, JsonSerializable
     public function hasStatus(): bool
     {
         return $this->optionalPropertyChanged['status'];
+    }
+
+    public function hasChipped(): bool
+    {
+        return $this->optionalPropertyChanged['chipped'];
     }
 
     public function getId(): ?int
@@ -128,6 +143,11 @@ class Pet implements SerializableInterface, JsonSerializable
         return $this->status;
     }
 
+    public function getChipped(): ?bool
+    {
+        return $this->chipped;
+    }
+
     public function toArray(): array
     {
         $fields = [];
@@ -144,6 +164,9 @@ class Pet implements SerializableInterface, JsonSerializable
         }
         if ($this->hasStatus()) {
             $fields['status'] = $this->status;
+        }
+        if ($this->hasChipped()) {
+            $fields['chipped'] = $this->chipped;
         }
 
         return $fields;

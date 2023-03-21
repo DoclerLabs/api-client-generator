@@ -3,7 +3,7 @@
   "repositories": [
     {
       "type": "path",
-      "url": "./gen"
+      "url": "PetStoreClient"
     }
   ],
   "require": {
@@ -14,7 +14,9 @@
   },
   "autoload": {
     "psr-4": {
-      "OpenApi\\PetStoreClient\\": "gen/src"
+      "OpenApi\\PetStoreClient\\": "PetStoreClient/src",
+      "OpenApi\\PetStoreMock\\": "PetStoreMock",
+      "OpenApi\\PetStoreApiConsumer\\": "PetStoreApiConsumer"
     }
   }
 }

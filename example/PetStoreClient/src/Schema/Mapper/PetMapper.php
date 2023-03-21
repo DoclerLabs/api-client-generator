@@ -47,6 +47,9 @@ class PetMapper implements SchemaMapperInterface
         if (isset($payload['status'])) {
             $schema->setStatus($payload['status']);
         }
+        if (\array_key_exists('chipped', $payload)) {
+            $schema->setChipped($payload['chipped']);
+        }
 
         return $schema;
     }
