@@ -17,8 +17,7 @@ use PhpParser\Node\Stmt\ClassMethod;
 class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 {
     public const NAMESPACE_SUBPATH = '\\Schema\\Mapper';
-
-    public const SUBDIRECTORY      = 'Schema/Mapper/';
+    public const SUBDIRECTORY = 'Schema/Mapper/';
 
     private array $mapMethodThrownExceptions;
 
@@ -345,7 +344,7 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 } else {
                     $ifCondition = $this->builder->funcCall('isset', [$optionalResponseItems[$i]]);
                 }
-                $ifStmt       = $this->builder->expr(
+                $ifStmt = $this->builder->expr(
                     $this->builder->methodCall(
                         $schemaVar,
                         $this->getSetMethodName($field),

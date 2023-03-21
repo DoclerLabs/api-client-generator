@@ -17,7 +17,7 @@ class PetStoreApiConsumer
 
     public function __construct()
     {
-        $this->petClient      = (new SwaggerPetstoreOpenAPI3ClientFactory())
+        $this->petClient = (new SwaggerPetstoreOpenAPI3ClientFactory())
             ->create(new Client(['base_uri' => 'http://pet.wiremock:8080']));
     }
 

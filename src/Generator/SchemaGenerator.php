@@ -12,7 +12,6 @@ use JsonSerializable;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\ClassMethod;
-use PhpParser\Node\Stmt\Expression;
 use UnexpectedValueException;
 
 class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
@@ -64,7 +63,7 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
                 }
 
                 if ($propertyField->isNullable()) {
-                    trigger_error('Property "' .$propertyField->getName() . '" is nullable and optional, that might be a sign of the bad api design', E_USER_WARNING);
+                    trigger_error('Property "' . $propertyField->getName() . '" is nullable and optional, that might be a sign of a bad api design', E_USER_WARNING);
                 }
                 $optionalProperties[] = $propertyField;
             }
@@ -196,26 +195,6 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
         return $statements;
     }
 
-    private function generateHas(Field $field): ClassMethod
-    {
-        $return = $this->builder->return(
-            $this->builder->getArrayItem(
-                $this->builder->localPropertyFetch(
-                    self::OPTIONAL_CHANGED_FIELDS_PROPERTY_NAME
-                ),
-                $this->builder->val($field->getPhpVariableName())
-            )
-        );
-
-        return $this->builder
-            ->method($this->getHasMethodName($field))
-            ->makePublic()
-            ->addStmt($return)
-            ->setReturnType('bool')
-            ->composeDocBlock([], 'bool')
-            ->getNode();
-    }
-
     protected function generateToArray(Field $root): ClassMethod
     {
         $statements    = [];
@@ -234,6 +213,26 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
             ->addStmts($statements)
             ->setReturnType($returnType)
             ->composeDocBlock([], $returnType)
+            ->getNode();
+    }
+
+    private function generateHas(Field $field): ClassMethod
+    {
+        $return = $this->builder->return(
+            $this->builder->getArrayItem(
+                $this->builder->localPropertyFetch(
+                    self::OPTIONAL_CHANGED_FIELDS_PROPERTY_NAME
+                ),
+                $this->builder->val($field->getPhpVariableName())
+            )
+        );
+
+        return $this->builder
+            ->method($this->getHasMethodName($field))
+            ->makePublic()
+            ->addStmt($return)
+            ->setReturnType('bool')
+            ->composeDocBlock([], 'bool')
             ->getNode();
     }
 
