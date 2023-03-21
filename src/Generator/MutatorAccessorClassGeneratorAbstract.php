@@ -12,9 +12,9 @@ use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
-use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
+use PhpParser\NodeAbstract;
 
 abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
 {
@@ -32,7 +32,7 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
     }
 
     /**
-     * @param Stmt[] $additionalStatements
+     * @param array<int, NodeAbstract> $additionalStatements
      */
     protected function generateSet(Field $field, array $additionalStatements = []): ClassMethod
     {
