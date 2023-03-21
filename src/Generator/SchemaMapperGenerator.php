@@ -334,7 +334,17 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                     $optionalVar = $optionalResponseItems[$i];
                 }
 
-                $ifCondition  = $this->builder->funcCall('isset', [$optionalResponseItems[$i]]);
+                if ($field->isNullable()) {
+                    $ifCondition = $this->builder->funcCall(
+                        'array_key_exists',
+                        [
+                            $field->getName(),
+                            $payloadVariable,
+                        ]
+                    );
+                } else {
+                    $ifCondition = $this->builder->funcCall('isset', [$optionalResponseItems[$i]]);
+                }
                 $ifStmt       = $this->builder->expr(
                     $this->builder->methodCall(
                         $schemaVar,
