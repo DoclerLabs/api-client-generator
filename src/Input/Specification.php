@@ -123,14 +123,10 @@ class Specification
 
     public function requiresIntlExtension(): bool
     {
-        /** @var Operation $operation */
         foreach ($this->getOperations() as $operation) {
-            foreach ($operation->getRequest()->getFields() as $fields) {
-                /** @var Field $field */
-                foreach ($fields as $field) {
-                    if ($this->fieldRequiresIntlExtension($field)) {
-                        return true;
-                    }
+            foreach ($operation->getRequest()->getFields() as $field) {
+                if ($this->fieldRequiresIntlExtension($field)) {
+                    return true;
                 }
             }
         }
@@ -172,8 +168,8 @@ class Specification
             $field->isObject()
             && !empty($field->getObjectProperties())
         ) {
-            foreach ($field->getObjectProperties() as $field) {
-                if ($this->fieldRequiresIntlExtension($field)) {
+            foreach ($field->getObjectProperties() as $objectProperty) {
+                if ($this->fieldRequiresIntlExtension($objectProperty)) {
                     return true;
                 }
             }

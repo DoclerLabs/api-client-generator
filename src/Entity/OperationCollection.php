@@ -30,6 +30,9 @@ class OperationCollection implements IteratorAggregate
         return $this->items;
     }
 
+    /**
+     * @return ArrayIterator|Operation[]
+     */
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->toArray());

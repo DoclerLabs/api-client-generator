@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [10.1.0] - 2023.03.21
 ### Added
-- support for optional nullable properties
+- support for optional nullable scheme properties
 
 ## [10.0.1] - 2023.01.10
 ### Added

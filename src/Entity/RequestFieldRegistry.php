@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Entity;
 
-use ArrayIterator;
 use IteratorAggregate;
+use RecursiveArrayIterator;
+use RecursiveIteratorIterator;
 use UnexpectedValueException;
 
 class RequestFieldRegistry implements IteratorAggregate
@@ -80,8 +81,13 @@ class RequestFieldRegistry implements IteratorAggregate
         return current($this->items[self::ORIGIN_BODY]);
     }
 
-    public function getIterator(): ArrayIterator
+    /**
+     * @return RecursiveIteratorIterator|Field[]
+     */
+    public function getIterator(): RecursiveIteratorIterator
     {
-        return new ArrayIterator($this->items);
+        return new RecursiveIteratorIterator(
+            new RecursiveArrayIterator($this->items, RecursiveArrayIterator::CHILD_ARRAYS_ONLY)
+        );
     }
 }

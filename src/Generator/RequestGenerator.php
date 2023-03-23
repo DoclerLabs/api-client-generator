@@ -10,6 +10,7 @@ use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Entity\Request;
 use DoclerLabs\ApiClientGenerator\Generator\Security\SecurityStrategyAbstract;
+use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Naming\RequestNaming;
@@ -73,11 +74,9 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
     protected function generateEnums(Request $request): array
     {
         $statements = [];
-        foreach ($request->getFields() as $fields) {
-            foreach ($fields as $field) {
-                foreach ($this->generateEnumStatements($field) as $statement) {
-                    $statements[] = $statement;
-                }
+        foreach ($request->getFields() as $field) {
+            foreach ($this->generateEnumStatements($field) as $statement) {
+                $statements[] = $statement;
             }
         }
 
@@ -87,20 +86,18 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
     protected function generateProperties(Request $request, Operation $operation, Specification $specification): array
     {
         $statements = [];
-        foreach ($request->getFields() as $fields) {
-            foreach ($fields as $field) {
-                if ($field->isComposite()) {
-                    $this->addImport(
-                        sprintf(
-                            '%s%s\\%s',
-                            $this->baseNamespace,
-                            SchemaGenerator::NAMESPACE_SUBPATH,
-                            $field->getPhpClassName()
-                        )
-                    );
-                }
-                $statements[] = $this->generateProperty($field);
+        foreach ($request->getFields() as $field) {
+            if ($field->isComposite()) {
+                $this->addImport(
+                    sprintf(
+                        '%s%s\\%s',
+                        $this->baseNamespace,
+                        SchemaGenerator::NAMESPACE_SUBPATH,
+                        $field->getPhpClassName()
+                    )
+                );
             }
+            $statements[] = $this->generateProperty($field);
         }
 
         $default = null;
@@ -123,26 +120,24 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
     ): ?ClassMethod {
         $params     = [];
         $paramInits = [];
-        foreach ($request->getFields() as $fields) {
-            foreach ($fields as $field) {
-                if ($field->isRequired()) {
-                    array_push($paramInits, ...$this->generateValidationStmts($field));
+        foreach ($request->getFields() as $field) {
+            if ($field->isRequired()) {
+                array_push($paramInits, ...$this->generateValidationStmts($field));
 
-                    $param = $this->builder
-                        ->param($field->getPhpVariableName())
-                        ->setType($field->getPhpTypeHint(), $field->isNullable());
+                $param = $this->builder
+                    ->param($field->getPhpVariableName())
+                    ->setType($field->getPhpTypeHint(), $field->isNullable());
 
-                    if (null !== $field->getDefault()) {
-                        $param->setDefault($field->getDefault());
-                    }
-
-                    $params[] = $param->getNode();
-
-                    $paramInits[] = $this->builder->assign(
-                        $this->builder->localPropertyFetch($field->getPhpVariableName()),
-                        $this->builder->var($field->getPhpVariableName())
-                    );
+                if (null !== $field->getDefault()) {
+                    $param->setDefault($field->getDefault());
                 }
+
+                $params[] = $param->getNode();
+
+                $paramInits[] = $this->builder->assign(
+                    $this->builder->localPropertyFetch($field->getPhpVariableName()),
+                    $this->builder->var($field->getPhpVariableName())
+                );
             }
         }
 
@@ -183,12 +178,14 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
     private function generateSetters(Request $request): array
     {
         $statements = [];
-        foreach ($request->getFields() as $fields) {
-            foreach ($fields as $field) {
-                if (!$field->isRequired()) {
-                    $statements[] = $this->generateSet($field);
-                }
+        foreach ($request->getFields() as $field) {
+            if ($field->isRequired()) {
+                continue;
             }
+            if ($field->isNullable()) {
+                throw new InvalidSpecificationException('Nullable optional parameter is not supported');
+            }
+            $statements[] = $this->generateSet($field);
         }
 
         return $statements;
