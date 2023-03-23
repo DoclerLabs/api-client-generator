@@ -47,10 +47,8 @@ class Parser
         $allFields = new FieldCollection();
         foreach ($operations as $operation) {
             $request = $operation->getRequest();
-            foreach ($request->getFields() as $fields) {
-                foreach ($fields as $field) {
-                    $this->extractField($field, $allFields);
-                }
+            foreach ($request->getFields() as $field) {
+                $this->extractField($field, $allFields);
             }
         }
 

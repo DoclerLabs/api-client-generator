@@ -91,8 +91,16 @@ components:
           format: float
         optionalBoolean:
           type: boolean
+        optionalNullableBoolean:
+          type: boolean
+          nullable: true
         optionalArray:
           type: array
+          items:
+            type: string
+        optionalNullableArray:
+          type: array
+          nullable: true
           items:
             type: string
         optionalMixedArray:

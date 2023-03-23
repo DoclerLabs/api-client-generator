@@ -24,6 +24,9 @@ components:
               type: integer
             optionalChildString:
               type: string
+            optionalNullableChildString:
+              type: string
+              nullable: true
           required:
             - mandatoryChildInteger
     ParentObject:

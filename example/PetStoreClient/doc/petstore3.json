@@ -1089,6 +1089,11 @@
               "pending",
               "sold"
             ]
+          },
+          "chipped": {
+            "type": "boolean",
+            "description": "Is pet is chipped or not. Null means there is no information",
+            "nullable": true
           }
         },
         "xml": {

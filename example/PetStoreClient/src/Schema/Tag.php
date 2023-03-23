@@ -18,18 +18,32 @@ class Tag implements SerializableInterface, JsonSerializable
 
     private ?string $name = null;
 
+    private array $optionalPropertyChanged = ['id' => false, 'name' => false];
+
     public function setId(int $id): self
     {
-        $this->id = $id;
+        $this->id                            = $id;
+        $this->optionalPropertyChanged['id'] = true;
 
         return $this;
     }
 
     public function setName(string $name): self
     {
-        $this->name = $name;
+        $this->name                            = $name;
+        $this->optionalPropertyChanged['name'] = true;
 
         return $this;
+    }
+
+    public function hasId(): bool
+    {
+        return $this->optionalPropertyChanged['id'];
+    }
+
+    public function hasName(): bool
+    {
+        return $this->optionalPropertyChanged['name'];
     }
 
     public function getId(): ?int
@@ -45,10 +59,10 @@ class Tag implements SerializableInterface, JsonSerializable
     public function toArray(): array
     {
         $fields = [];
-        if ($this->id !== null) {
+        if ($this->hasId()) {
             $fields['id'] = $this->id;
         }
-        if ($this->name !== null) {
+        if ($this->hasName()) {
             $fields['name'] = $this->name;
         }
 

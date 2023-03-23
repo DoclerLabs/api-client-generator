@@ -64,7 +64,11 @@ class Item implements SerializableInterface, JsonSerializable
 
     private ?bool $optionalBoolean = null;
 
+    private ?bool $optionalNullableBoolean = null;
+
     private ?array $optionalArray = null;
+
+    private ?array $optionalNullableArray = null;
 
     private ?array $optionalMixedArray = null;
 
@@ -83,6 +87,8 @@ class Item implements SerializableInterface, JsonSerializable
     private ?float $optionalNumberBetweenExcluded = null;
 
     private ?EmbeddedObject $optionalObject = null;
+
+    private array $optionalPropertyChanged = ['optionalInteger' => false, 'optionalString' => false, 'optionalEnum' => false, 'optionalIntEnum' => false, 'optionalDate' => false, 'optionalFloat' => false, 'optionalBoolean' => false, 'optionalNullableBoolean' => false, 'optionalArray' => false, 'optionalNullableArray' => false, 'optionalMixedArray' => false, 'optionalArrayWithMinMaxItems' => false, 'optionalStringWithMinMaxLength' => false, 'optionalStringWithPattern' => false, 'optionalIntegerBetweenIncluded' => false, 'optionalIntegerBetweenExcluded' => false, 'optionalNumberBetweenIncluded' => false, 'optionalNumberBetweenExcluded' => false, 'optionalObject' => false];
 
     /**
      * @param string[] $mandatoryArray
@@ -112,49 +118,64 @@ class Item implements SerializableInterface, JsonSerializable
 
     public function setOptionalInteger(int $optionalInteger): self
     {
-        $this->optionalInteger = $optionalInteger;
+        $this->optionalInteger                            = $optionalInteger;
+        $this->optionalPropertyChanged['optionalInteger'] = true;
 
         return $this;
     }
 
     public function setOptionalString(string $optionalString): self
     {
-        $this->optionalString = $optionalString;
+        $this->optionalString                            = $optionalString;
+        $this->optionalPropertyChanged['optionalString'] = true;
 
         return $this;
     }
 
     public function setOptionalEnum(string $optionalEnum): self
     {
-        $this->optionalEnum = $optionalEnum;
+        $this->optionalEnum                            = $optionalEnum;
+        $this->optionalPropertyChanged['optionalEnum'] = true;
 
         return $this;
     }
 
     public function setOptionalIntEnum(int $optionalIntEnum): self
     {
-        $this->optionalIntEnum = $optionalIntEnum;
+        $this->optionalIntEnum                            = $optionalIntEnum;
+        $this->optionalPropertyChanged['optionalIntEnum'] = true;
 
         return $this;
     }
 
     public function setOptionalDate(DateTimeInterface $optionalDate): self
     {
-        $this->optionalDate = $optionalDate;
+        $this->optionalDate                            = $optionalDate;
+        $this->optionalPropertyChanged['optionalDate'] = true;
 
         return $this;
     }
 
     public function setOptionalFloat(float $optionalFloat): self
     {
-        $this->optionalFloat = $optionalFloat;
+        $this->optionalFloat                            = $optionalFloat;
+        $this->optionalPropertyChanged['optionalFloat'] = true;
 
         return $this;
     }
 
     public function setOptionalBoolean(bool $optionalBoolean): self
     {
-        $this->optionalBoolean = $optionalBoolean;
+        $this->optionalBoolean                            = $optionalBoolean;
+        $this->optionalPropertyChanged['optionalBoolean'] = true;
+
+        return $this;
+    }
+
+    public function setOptionalNullableBoolean(?bool $optionalNullableBoolean): self
+    {
+        $this->optionalNullableBoolean                            = $optionalNullableBoolean;
+        $this->optionalPropertyChanged['optionalNullableBoolean'] = true;
 
         return $this;
     }
@@ -164,7 +185,19 @@ class Item implements SerializableInterface, JsonSerializable
      */
     public function setOptionalArray(array $optionalArray): self
     {
-        $this->optionalArray = $optionalArray;
+        $this->optionalArray                            = $optionalArray;
+        $this->optionalPropertyChanged['optionalArray'] = true;
+
+        return $this;
+    }
+
+    /**
+     * @param string[]|null $optionalNullableArray
+     */
+    public function setOptionalNullableArray(?array $optionalNullableArray): self
+    {
+        $this->optionalNullableArray                            = $optionalNullableArray;
+        $this->optionalPropertyChanged['optionalNullableArray'] = true;
 
         return $this;
     }
@@ -174,7 +207,8 @@ class Item implements SerializableInterface, JsonSerializable
      */
     public function setOptionalMixedArray(array $optionalMixedArray): self
     {
-        $this->optionalMixedArray = $optionalMixedArray;
+        $this->optionalMixedArray                            = $optionalMixedArray;
+        $this->optionalPropertyChanged['optionalMixedArray'] = true;
 
         return $this;
     }
@@ -192,7 +226,8 @@ class Item implements SerializableInterface, JsonSerializable
         if (\count($optionalArrayWithMinMaxItems) > 5) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Expected max items: `5`.', 'optionalArrayWithMinMaxItems', $optionalArrayWithMinMaxItems));
         }
-        $this->optionalArrayWithMinMaxItems = $optionalArrayWithMinMaxItems;
+        $this->optionalArrayWithMinMaxItems                            = $optionalArrayWithMinMaxItems;
+        $this->optionalPropertyChanged['optionalArrayWithMinMaxItems'] = true;
 
         return $this;
     }
@@ -208,7 +243,8 @@ class Item implements SerializableInterface, JsonSerializable
         if (\grapheme_strlen($optionalStringWithMinMaxLength) > 5) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Length should be less than 5.', 'optionalStringWithMinMaxLength', $optionalStringWithMinMaxLength));
         }
-        $this->optionalStringWithMinMaxLength = $optionalStringWithMinMaxLength;
+        $this->optionalStringWithMinMaxLength                            = $optionalStringWithMinMaxLength;
+        $this->optionalPropertyChanged['optionalStringWithMinMaxLength'] = true;
 
         return $this;
     }
@@ -221,7 +257,8 @@ class Item implements SerializableInterface, JsonSerializable
         if (\preg_match('/^\\d{3}-\\d{2}-\\d{4}$/', $optionalStringWithPattern) !== 1) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Pattern is ^\\d{3}-\\d{2}-\\d{4}$.', 'optionalStringWithPattern', $optionalStringWithPattern));
         }
-        $this->optionalStringWithPattern = $optionalStringWithPattern;
+        $this->optionalStringWithPattern                            = $optionalStringWithPattern;
+        $this->optionalPropertyChanged['optionalStringWithPattern'] = true;
 
         return $this;
     }
@@ -237,7 +274,8 @@ class Item implements SerializableInterface, JsonSerializable
         if ($optionalIntegerBetweenIncluded > 5) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be greater than 5.', 'optionalIntegerBetweenIncluded', $optionalIntegerBetweenIncluded));
         }
-        $this->optionalIntegerBetweenIncluded = $optionalIntegerBetweenIncluded;
+        $this->optionalIntegerBetweenIncluded                            = $optionalIntegerBetweenIncluded;
+        $this->optionalPropertyChanged['optionalIntegerBetweenIncluded'] = true;
 
         return $this;
     }
@@ -253,7 +291,8 @@ class Item implements SerializableInterface, JsonSerializable
         if ($optionalIntegerBetweenExcluded >= 5) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be greater than or equal to 5.', 'optionalIntegerBetweenExcluded', $optionalIntegerBetweenExcluded));
         }
-        $this->optionalIntegerBetweenExcluded = $optionalIntegerBetweenExcluded;
+        $this->optionalIntegerBetweenExcluded                            = $optionalIntegerBetweenExcluded;
+        $this->optionalPropertyChanged['optionalIntegerBetweenExcluded'] = true;
 
         return $this;
     }
@@ -269,7 +308,8 @@ class Item implements SerializableInterface, JsonSerializable
         if ($optionalNumberBetweenIncluded > 5.0) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be greater than 5.', 'optionalNumberBetweenIncluded', $optionalNumberBetweenIncluded));
         }
-        $this->optionalNumberBetweenIncluded = $optionalNumberBetweenIncluded;
+        $this->optionalNumberBetweenIncluded                            = $optionalNumberBetweenIncluded;
+        $this->optionalPropertyChanged['optionalNumberBetweenIncluded'] = true;
 
         return $this;
     }
@@ -285,16 +325,113 @@ class Item implements SerializableInterface, JsonSerializable
         if ($optionalNumberBetweenExcluded >= 5.0) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be greater than or equal to 5.', 'optionalNumberBetweenExcluded', $optionalNumberBetweenExcluded));
         }
-        $this->optionalNumberBetweenExcluded = $optionalNumberBetweenExcluded;
+        $this->optionalNumberBetweenExcluded                            = $optionalNumberBetweenExcluded;
+        $this->optionalPropertyChanged['optionalNumberBetweenExcluded'] = true;
 
         return $this;
     }
 
     public function setOptionalObject(EmbeddedObject $optionalObject): self
     {
-        $this->optionalObject = $optionalObject;
+        $this->optionalObject                            = $optionalObject;
+        $this->optionalPropertyChanged['optionalObject'] = true;
 
         return $this;
+    }
+
+    public function hasOptionalInteger(): bool
+    {
+        return $this->optionalPropertyChanged['optionalInteger'];
+    }
+
+    public function hasOptionalString(): bool
+    {
+        return $this->optionalPropertyChanged['optionalString'];
+    }
+
+    public function hasOptionalEnum(): bool
+    {
+        return $this->optionalPropertyChanged['optionalEnum'];
+    }
+
+    public function hasOptionalIntEnum(): bool
+    {
+        return $this->optionalPropertyChanged['optionalIntEnum'];
+    }
+
+    public function hasOptionalDate(): bool
+    {
+        return $this->optionalPropertyChanged['optionalDate'];
+    }
+
+    public function hasOptionalFloat(): bool
+    {
+        return $this->optionalPropertyChanged['optionalFloat'];
+    }
+
+    public function hasOptionalBoolean(): bool
+    {
+        return $this->optionalPropertyChanged['optionalBoolean'];
+    }
+
+    public function hasOptionalNullableBoolean(): bool
+    {
+        return $this->optionalPropertyChanged['optionalNullableBoolean'];
+    }
+
+    public function hasOptionalArray(): bool
+    {
+        return $this->optionalPropertyChanged['optionalArray'];
+    }
+
+    public function hasOptionalNullableArray(): bool
+    {
+        return $this->optionalPropertyChanged['optionalNullableArray'];
+    }
+
+    public function hasOptionalMixedArray(): bool
+    {
+        return $this->optionalPropertyChanged['optionalMixedArray'];
+    }
+
+    public function hasOptionalArrayWithMinMaxItems(): bool
+    {
+        return $this->optionalPropertyChanged['optionalArrayWithMinMaxItems'];
+    }
+
+    public function hasOptionalStringWithMinMaxLength(): bool
+    {
+        return $this->optionalPropertyChanged['optionalStringWithMinMaxLength'];
+    }
+
+    public function hasOptionalStringWithPattern(): bool
+    {
+        return $this->optionalPropertyChanged['optionalStringWithPattern'];
+    }
+
+    public function hasOptionalIntegerBetweenIncluded(): bool
+    {
+        return $this->optionalPropertyChanged['optionalIntegerBetweenIncluded'];
+    }
+
+    public function hasOptionalIntegerBetweenExcluded(): bool
+    {
+        return $this->optionalPropertyChanged['optionalIntegerBetweenExcluded'];
+    }
+
+    public function hasOptionalNumberBetweenIncluded(): bool
+    {
+        return $this->optionalPropertyChanged['optionalNumberBetweenIncluded'];
+    }
+
+    public function hasOptionalNumberBetweenExcluded(): bool
+    {
+        return $this->optionalPropertyChanged['optionalNumberBetweenExcluded'];
+    }
+
+    public function hasOptionalObject(): bool
+    {
+        return $this->optionalPropertyChanged['optionalObject'];
     }
 
     public function getMandatoryInteger(): int
@@ -403,12 +540,25 @@ class Item implements SerializableInterface, JsonSerializable
         return $this->optionalBoolean;
     }
 
+    public function getOptionalNullableBoolean(): ?bool
+    {
+        return $this->optionalNullableBoolean;
+    }
+
     /**
      * @return string[]|null
      */
     public function getOptionalArray(): ?array
     {
         return $this->optionalArray;
+    }
+
+    /**
+     * @return string[]|null
+     */
+    public function getOptionalNullableArray(): ?array
+    {
+        return $this->optionalNullableArray;
     }
 
     /**
@@ -478,55 +628,61 @@ class Item implements SerializableInterface, JsonSerializable
         $fields['mandatoryNullableObjectWithAllOf'] = $this->mandatoryNullableObjectWithAllOf !== null ? $this->mandatoryNullableObjectWithAllOf->toArray() : null;
         $fields['mandatoryMixed']                   = $this->mandatoryMixed;
         $fields['mandatoryAnyOf']                   = $this->mandatoryAnyOf;
-        if ($this->optionalInteger !== null) {
+        if ($this->hasOptionalInteger()) {
             $fields['optionalInteger'] = $this->optionalInteger;
         }
-        if ($this->optionalString !== null) {
+        if ($this->hasOptionalString()) {
             $fields['optionalString'] = $this->optionalString;
         }
-        if ($this->optionalEnum !== null) {
+        if ($this->hasOptionalEnum()) {
             $fields['optionalEnum'] = $this->optionalEnum;
         }
-        if ($this->optionalIntEnum !== null) {
+        if ($this->hasOptionalIntEnum()) {
             $fields['optionalIntEnum'] = $this->optionalIntEnum;
         }
-        if ($this->optionalDate !== null) {
+        if ($this->hasOptionalDate()) {
             $fields['optionalDate'] = $this->optionalDate->format(DATE_RFC3339);
         }
-        if ($this->optionalFloat !== null) {
+        if ($this->hasOptionalFloat()) {
             $fields['optionalFloat'] = $this->optionalFloat;
         }
-        if ($this->optionalBoolean !== null) {
+        if ($this->hasOptionalBoolean()) {
             $fields['optionalBoolean'] = $this->optionalBoolean;
         }
-        if ($this->optionalArray !== null) {
+        if ($this->hasOptionalNullableBoolean()) {
+            $fields['optionalNullableBoolean'] = $this->optionalNullableBoolean;
+        }
+        if ($this->hasOptionalArray()) {
             $fields['optionalArray'] = $this->optionalArray;
         }
-        if ($this->optionalMixedArray !== null) {
+        if ($this->hasOptionalNullableArray()) {
+            $fields['optionalNullableArray'] = $this->optionalNullableArray;
+        }
+        if ($this->hasOptionalMixedArray()) {
             $fields['optionalMixedArray'] = $this->optionalMixedArray;
         }
-        if ($this->optionalArrayWithMinMaxItems !== null) {
+        if ($this->hasOptionalArrayWithMinMaxItems()) {
             $fields['optionalArrayWithMinMaxItems'] = $this->optionalArrayWithMinMaxItems;
         }
-        if ($this->optionalStringWithMinMaxLength !== null) {
+        if ($this->hasOptionalStringWithMinMaxLength()) {
             $fields['optionalStringWithMinMaxLength'] = $this->optionalStringWithMinMaxLength;
         }
-        if ($this->optionalStringWithPattern !== null) {
+        if ($this->hasOptionalStringWithPattern()) {
             $fields['optionalStringWithPattern'] = $this->optionalStringWithPattern;
         }
-        if ($this->optionalIntegerBetweenIncluded !== null) {
+        if ($this->hasOptionalIntegerBetweenIncluded()) {
             $fields['optionalIntegerBetweenIncluded'] = $this->optionalIntegerBetweenIncluded;
         }
-        if ($this->optionalIntegerBetweenExcluded !== null) {
+        if ($this->hasOptionalIntegerBetweenExcluded()) {
             $fields['optionalIntegerBetweenExcluded'] = $this->optionalIntegerBetweenExcluded;
         }
-        if ($this->optionalNumberBetweenIncluded !== null) {
+        if ($this->hasOptionalNumberBetweenIncluded()) {
             $fields['optionalNumberBetweenIncluded'] = $this->optionalNumberBetweenIncluded;
         }
-        if ($this->optionalNumberBetweenExcluded !== null) {
+        if ($this->hasOptionalNumberBetweenExcluded()) {
             $fields['optionalNumberBetweenExcluded'] = $this->optionalNumberBetweenExcluded;
         }
-        if ($this->optionalObject !== null) {
+        if ($this->hasOptionalObject()) {
             $fields['optionalObject'] = $this->optionalObject->toArray();
         }
 

@@ -15,7 +15,7 @@ class PetStore3Test extends TestCase
     private const BASE_NAMESPACE = 'OpenApi\\PetStoreClient';
     private const PACKAGE = 'openapi/pet-store-client';
     private const EXAMPLE_DIR = __DIR__ . '/../../../example';
-    private const OUTPUT_DIR = self::EXAMPLE_DIR . '/gen';
+    private const OUTPUT_DIR = self::EXAMPLE_DIR . '/PetStoreClient';
 
     private Filesystem $filesystem;
 
