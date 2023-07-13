@@ -68,6 +68,11 @@ components:
           anyOf:
             - type: number
             - type: string
+        mandatoryNullableStringWithMinMaxLength:
+          type: string
+          minLength: 1
+          maxLength: 5
+          nullable: true
         optionalInteger:
           type: integer
         optionalString:
@@ -142,6 +147,11 @@ components:
           exclusiveMaximum: true
         optionalObject:
           $ref: '#/components/schemas/EmbeddedObject'
+        optionalNullableStringWithMinMaxLength:
+          type: string
+          minLength: 1
+          maxLength: 5
+          nullable: true
       required:
         - mandatoryInteger
         - mandatoryString
@@ -156,6 +166,7 @@ components:
         - mandatoryNullableObjectWithAllOf
         - mandatoryMixed
         - mandatoryAnyOf
+        - mandatoryNullableStringWithMinMaxLength
     EmbeddedObject:
       type: object
       properties:
