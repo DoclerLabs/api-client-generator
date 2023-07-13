@@ -61,6 +61,9 @@ class Item implements SerializableInterface, JsonSerializable
 
     private $mandatoryAnyOf;
 
+    /** @var string|null */
+    private $mandatoryNullableStringWithMinMaxLength;
+
     /** @var int|null */
     private $optionalInteger;
 
@@ -118,18 +121,22 @@ class Item implements SerializableInterface, JsonSerializable
     /** @var EmbeddedObject|null */
     private $optionalObject;
 
+    /** @var string|null */
+    private $optionalNullableStringWithMinMaxLength;
+
     /** @var array */
-    private $optionalPropertyChanged = ['optionalInteger' => false, 'optionalString' => false, 'optionalEnum' => false, 'optionalIntEnum' => false, 'optionalDate' => false, 'optionalFloat' => false, 'optionalBoolean' => false, 'optionalNullableBoolean' => false, 'optionalArray' => false, 'optionalNullableArray' => false, 'optionalMixedArray' => false, 'optionalArrayWithMinMaxItems' => false, 'optionalStringWithMinMaxLength' => false, 'optionalStringWithPattern' => false, 'optionalIntegerBetweenIncluded' => false, 'optionalIntegerBetweenExcluded' => false, 'optionalNumberBetweenIncluded' => false, 'optionalNumberBetweenExcluded' => false, 'optionalObject' => false];
+    private $optionalPropertyChanged = ['optionalInteger' => false, 'optionalString' => false, 'optionalEnum' => false, 'optionalIntEnum' => false, 'optionalDate' => false, 'optionalFloat' => false, 'optionalBoolean' => false, 'optionalNullableBoolean' => false, 'optionalArray' => false, 'optionalNullableArray' => false, 'optionalMixedArray' => false, 'optionalArrayWithMinMaxItems' => false, 'optionalStringWithMinMaxLength' => false, 'optionalStringWithPattern' => false, 'optionalIntegerBetweenIncluded' => false, 'optionalIntegerBetweenExcluded' => false, 'optionalNumberBetweenIncluded' => false, 'optionalNumberBetweenExcluded' => false, 'optionalObject' => false, 'optionalNullableStringWithMinMaxLength' => false];
 
     /**
      * @param DateTimeInterface|null                $mandatoryNullableDate
      * @param string[]                              $mandatoryArray
      * @param string[]                              $mandatoryArrayWithMinItems
      * @param MandatoryNullableObjectWithAllOf|null $mandatoryNullableObjectWithAllOf
+     * @param string|null                           $mandatoryNullableStringWithMinMaxLength
      *
      * @throws RequestValidationException
      */
-    public function __construct(int $mandatoryInteger, string $mandatoryString, string $mandatoryEnum, DateTimeInterface $mandatoryDate, $mandatoryNullableDate, float $mandatoryFloat, bool $mandatoryBoolean, array $mandatoryArray, array $mandatoryArrayWithMinItems, ItemMandatoryObject $mandatoryObject, $mandatoryNullableObjectWithAllOf, $mandatoryMixed, $mandatoryAnyOf)
+    public function __construct(int $mandatoryInteger, string $mandatoryString, string $mandatoryEnum, DateTimeInterface $mandatoryDate, $mandatoryNullableDate, float $mandatoryFloat, bool $mandatoryBoolean, array $mandatoryArray, array $mandatoryArrayWithMinItems, ItemMandatoryObject $mandatoryObject, $mandatoryNullableObjectWithAllOf, $mandatoryMixed, $mandatoryAnyOf, $mandatoryNullableStringWithMinMaxLength)
     {
         $this->mandatoryInteger      = $mandatoryInteger;
         $this->mandatoryString       = $mandatoryString;
@@ -147,6 +154,13 @@ class Item implements SerializableInterface, JsonSerializable
         $this->mandatoryNullableObjectWithAllOf = $mandatoryNullableObjectWithAllOf;
         $this->mandatoryMixed                   = $mandatoryMixed;
         $this->mandatoryAnyOf                   = $mandatoryAnyOf;
+        if ($mandatoryNullableStringWithMinMaxLength !== null && \grapheme_strlen($mandatoryNullableStringWithMinMaxLength) < 1) {
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Length should be greater than 1.', 'mandatoryNullableStringWithMinMaxLength', $mandatoryNullableStringWithMinMaxLength));
+        }
+        if ($mandatoryNullableStringWithMinMaxLength !== null && \grapheme_strlen($mandatoryNullableStringWithMinMaxLength) > 5) {
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Length should be less than 5.', 'mandatoryNullableStringWithMinMaxLength', $mandatoryNullableStringWithMinMaxLength));
+        }
+        $this->mandatoryNullableStringWithMinMaxLength = $mandatoryNullableStringWithMinMaxLength;
     }
 
     public function setOptionalInteger(int $optionalInteger): self
@@ -375,6 +389,25 @@ class Item implements SerializableInterface, JsonSerializable
         return $this;
     }
 
+    /**
+     * @param string|null $optionalNullableStringWithMinMaxLength
+     *
+     * @throws RequestValidationException
+     */
+    public function setOptionalNullableStringWithMinMaxLength($optionalNullableStringWithMinMaxLength): self
+    {
+        if ($optionalNullableStringWithMinMaxLength !== null && \grapheme_strlen($optionalNullableStringWithMinMaxLength) < 1) {
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Length should be greater than 1.', 'optionalNullableStringWithMinMaxLength', $optionalNullableStringWithMinMaxLength));
+        }
+        if ($optionalNullableStringWithMinMaxLength !== null && \grapheme_strlen($optionalNullableStringWithMinMaxLength) > 5) {
+            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Length should be less than 5.', 'optionalNullableStringWithMinMaxLength', $optionalNullableStringWithMinMaxLength));
+        }
+        $this->optionalNullableStringWithMinMaxLength                            = $optionalNullableStringWithMinMaxLength;
+        $this->optionalPropertyChanged['optionalNullableStringWithMinMaxLength'] = true;
+
+        return $this;
+    }
+
     public function hasOptionalInteger(): bool
     {
         return $this->optionalPropertyChanged['optionalInteger'];
@@ -470,6 +503,11 @@ class Item implements SerializableInterface, JsonSerializable
         return $this->optionalPropertyChanged['optionalObject'];
     }
 
+    public function hasOptionalNullableStringWithMinMaxLength(): bool
+    {
+        return $this->optionalPropertyChanged['optionalNullableStringWithMinMaxLength'];
+    }
+
     public function getMandatoryInteger(): int
     {
         return $this->mandatoryInteger;
@@ -545,6 +583,14 @@ class Item implements SerializableInterface, JsonSerializable
     public function getMandatoryAnyOf()
     {
         return $this->mandatoryAnyOf;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMandatoryNullableStringWithMinMaxLength()
+    {
+        return $this->mandatoryNullableStringWithMinMaxLength;
     }
 
     /**
@@ -699,22 +745,31 @@ class Item implements SerializableInterface, JsonSerializable
         return $this->optionalObject;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getOptionalNullableStringWithMinMaxLength()
+    {
+        return $this->optionalNullableStringWithMinMaxLength;
+    }
+
     public function toArray(): array
     {
-        $fields                                     = [];
-        $fields['mandatoryInteger']                 = $this->mandatoryInteger;
-        $fields['mandatoryString']                  = $this->mandatoryString;
-        $fields['mandatoryEnum']                    = $this->mandatoryEnum;
-        $fields['mandatoryDate']                    = $this->mandatoryDate->format(DATE_RFC3339);
-        $fields['mandatoryNullableDate']            = $this->mandatoryNullableDate !== null ? $this->mandatoryNullableDate->format(DATE_RFC3339) : null;
-        $fields['mandatoryFloat']                   = $this->mandatoryFloat;
-        $fields['mandatoryBoolean']                 = $this->mandatoryBoolean;
-        $fields['mandatoryArray']                   = $this->mandatoryArray;
-        $fields['mandatoryArrayWithMinItems']       = $this->mandatoryArrayWithMinItems;
-        $fields['mandatoryObject']                  = $this->mandatoryObject->toArray();
-        $fields['mandatoryNullableObjectWithAllOf'] = $this->mandatoryNullableObjectWithAllOf !== null ? $this->mandatoryNullableObjectWithAllOf->toArray() : null;
-        $fields['mandatoryMixed']                   = $this->mandatoryMixed;
-        $fields['mandatoryAnyOf']                   = $this->mandatoryAnyOf;
+        $fields                                            = [];
+        $fields['mandatoryInteger']                        = $this->mandatoryInteger;
+        $fields['mandatoryString']                         = $this->mandatoryString;
+        $fields['mandatoryEnum']                           = $this->mandatoryEnum;
+        $fields['mandatoryDate']                           = $this->mandatoryDate->format(DATE_RFC3339);
+        $fields['mandatoryNullableDate']                   = $this->mandatoryNullableDate !== null ? $this->mandatoryNullableDate->format(DATE_RFC3339) : null;
+        $fields['mandatoryFloat']                          = $this->mandatoryFloat;
+        $fields['mandatoryBoolean']                        = $this->mandatoryBoolean;
+        $fields['mandatoryArray']                          = $this->mandatoryArray;
+        $fields['mandatoryArrayWithMinItems']              = $this->mandatoryArrayWithMinItems;
+        $fields['mandatoryObject']                         = $this->mandatoryObject->toArray();
+        $fields['mandatoryNullableObjectWithAllOf']        = $this->mandatoryNullableObjectWithAllOf !== null ? $this->mandatoryNullableObjectWithAllOf->toArray() : null;
+        $fields['mandatoryMixed']                          = $this->mandatoryMixed;
+        $fields['mandatoryAnyOf']                          = $this->mandatoryAnyOf;
+        $fields['mandatoryNullableStringWithMinMaxLength'] = $this->mandatoryNullableStringWithMinMaxLength;
         if ($this->hasOptionalInteger()) {
             $fields['optionalInteger'] = $this->optionalInteger;
         }
@@ -771,6 +826,9 @@ class Item implements SerializableInterface, JsonSerializable
         }
         if ($this->hasOptionalObject()) {
             $fields['optionalObject'] = $this->optionalObject->toArray();
+        }
+        if ($this->hasOptionalNullableStringWithMinMaxLength()) {
+            $fields['optionalNullableStringWithMinMaxLength'] = $this->optionalNullableStringWithMinMaxLength;
         }
 
         return $fields;
