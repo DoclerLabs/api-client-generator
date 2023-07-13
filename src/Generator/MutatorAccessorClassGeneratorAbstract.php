@@ -147,8 +147,17 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
                 ]
             );
 
+            $ifConditionExpr = $constraint->getIfCondition($propertyVar, $this->builder);
+
+            if ($root->isNullable()) {
+                $ifConditionExpr = $this->builder->and(
+                    $this->builder->notEquals($propertyVar, $this->builder->val(null)),
+                    $ifConditionExpr
+                );
+            }
+
             $stmts[] = $this->builder->if(
-                $constraint->getIfCondition($propertyVar, $this->builder),
+                $ifConditionExpr,
                 [
                     $this->builder->throw('RequestValidationException', $exceptionMessage),
                 ]
