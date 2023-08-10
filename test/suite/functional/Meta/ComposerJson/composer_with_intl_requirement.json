@@ -12,7 +12,7 @@
         "docler-labs/api-client-exception": "^1.0|^2.0",
         "ext-intl": "*",
         "ext-json": "*",
-        "guzzlehttp/psr7": "^1.6",
+        "guzzlehttp/psr7": "^1.6|^2.0",
         "pimple/pimple": "^3.3",
         "psr/container": "^1.0",
         "psr/http-client": "^1.0"
