@@ -204,7 +204,8 @@ class GenerateCommand extends Command
 
         $this->filesystem->copy(
             $this->configuration->getSpecificationFilePath(),
-            $destinationPath
+            $destinationPath,
+            true
         );
     }
 
