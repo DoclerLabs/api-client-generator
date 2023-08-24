@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [10.1.3] - 2023.08.23
+### Fixed
+- OpenAPI spec copied forcefully to destination directory
+
 ## [10.1.2] - 2023.08.10
 ### Added
 - support for guzzlehttp/psr7 version 2.0 to generated composer.json
