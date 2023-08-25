@@ -91,6 +91,10 @@ components:
         optionalDate:
           type: string
           format: 'date-time'
+        optionalNullableDate:
+          type: string
+          format: 'date-time'
+          nullable: true
         optionalFloat:
           type: number
           format: float

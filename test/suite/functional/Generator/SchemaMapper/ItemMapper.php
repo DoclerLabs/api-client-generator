@@ -48,6 +48,9 @@ class ItemMapper implements SchemaMapperInterface
         if (isset($payload['optionalDate'])) {
             $schema->setOptionalDate(new DateTimeImmutable($payload['optionalDate']));
         }
+        if (\array_key_exists('optionalNullableDate', $payload)) {
+            $schema->setOptionalNullableDate($payload['optionalNullableDate'] !== null ? new DateTimeImmutable($payload['optionalNullableDate']) : null);
+        }
         if (isset($payload['optionalFloat'])) {
             $schema->setOptionalFloat($payload['optionalFloat']);
         }
