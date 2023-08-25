@@ -79,6 +79,9 @@ class Item implements SerializableInterface, JsonSerializable
     /** @var DateTimeInterface|null */
     private $optionalDate;
 
+    /** @var DateTimeInterface|null */
+    private $optionalNullableDate;
+
     /** @var float|null */
     private $optionalFloat;
 
@@ -125,7 +128,7 @@ class Item implements SerializableInterface, JsonSerializable
     private $optionalNullableStringWithMinMaxLength;
 
     /** @var array */
-    private $optionalPropertyChanged = ['optionalInteger' => false, 'optionalString' => false, 'optionalEnum' => false, 'optionalIntEnum' => false, 'optionalDate' => false, 'optionalFloat' => false, 'optionalBoolean' => false, 'optionalNullableBoolean' => false, 'optionalArray' => false, 'optionalNullableArray' => false, 'optionalMixedArray' => false, 'optionalArrayWithMinMaxItems' => false, 'optionalStringWithMinMaxLength' => false, 'optionalStringWithPattern' => false, 'optionalIntegerBetweenIncluded' => false, 'optionalIntegerBetweenExcluded' => false, 'optionalNumberBetweenIncluded' => false, 'optionalNumberBetweenExcluded' => false, 'optionalObject' => false, 'optionalNullableStringWithMinMaxLength' => false];
+    private $optionalPropertyChanged = ['optionalInteger' => false, 'optionalString' => false, 'optionalEnum' => false, 'optionalIntEnum' => false, 'optionalDate' => false, 'optionalNullableDate' => false, 'optionalFloat' => false, 'optionalBoolean' => false, 'optionalNullableBoolean' => false, 'optionalArray' => false, 'optionalNullableArray' => false, 'optionalMixedArray' => false, 'optionalArrayWithMinMaxItems' => false, 'optionalStringWithMinMaxLength' => false, 'optionalStringWithPattern' => false, 'optionalIntegerBetweenIncluded' => false, 'optionalIntegerBetweenExcluded' => false, 'optionalNumberBetweenIncluded' => false, 'optionalNumberBetweenExcluded' => false, 'optionalObject' => false, 'optionalNullableStringWithMinMaxLength' => false];
 
     /**
      * @param string[] $mandatoryArray
@@ -196,6 +199,14 @@ class Item implements SerializableInterface, JsonSerializable
     {
         $this->optionalDate                            = $optionalDate;
         $this->optionalPropertyChanged['optionalDate'] = true;
+
+        return $this;
+    }
+
+    public function setOptionalNullableDate(?DateTimeInterface $optionalNullableDate): self
+    {
+        $this->optionalNullableDate                            = $optionalNullableDate;
+        $this->optionalPropertyChanged['optionalNullableDate'] = true;
 
         return $this;
     }
@@ -425,6 +436,11 @@ class Item implements SerializableInterface, JsonSerializable
         return $this->optionalPropertyChanged['optionalDate'];
     }
 
+    public function hasOptionalNullableDate(): bool
+    {
+        return $this->optionalPropertyChanged['optionalNullableDate'];
+    }
+
     public function hasOptionalFloat(): bool
     {
         return $this->optionalPropertyChanged['optionalFloat'];
@@ -601,6 +617,11 @@ class Item implements SerializableInterface, JsonSerializable
         return $this->optionalDate;
     }
 
+    public function getOptionalNullableDate(): ?DateTimeInterface
+    {
+        return $this->optionalNullableDate;
+    }
+
     public function getOptionalFloat(): ?float
     {
         return $this->optionalFloat;
@@ -719,6 +740,9 @@ class Item implements SerializableInterface, JsonSerializable
         }
         if ($this->hasOptionalDate()) {
             $fields['optionalDate'] = $this->optionalDate->format(DATE_RFC3339);
+        }
+        if ($this->hasOptionalNullableDate()) {
+            $fields['optionalNullableDate'] = $this->optionalNullableDate !== null ? $this->optionalNullableDate->format(DATE_RFC3339) : null;
         }
         if ($this->hasOptionalFloat()) {
             $fields['optionalFloat'] = $this->optionalFloat;
