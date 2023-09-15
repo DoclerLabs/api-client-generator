@@ -79,6 +79,8 @@ components:
             type: string
         optionalObject:
           $ref: '#/components/schemas/EmbeddedObject'
+        optionalNullableObject:
+          $ref: '#/components/schemas/EmbeddedNullableObject'
       required:
         - mandatoryInteger
         - mandatoryString
