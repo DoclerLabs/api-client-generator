@@ -320,12 +320,24 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 
             foreach ($optionalFields as $i => $field) {
                 if ($field->isComposite()) {
-                    $mapper      = $this->builder->localPropertyFetch(SchemaMapperNaming::getPropertyName($field));
-                    $optionalVar = $this->builder->methodCall(
-                        $mapper,
-                        'toSchema',
-                        [$optionalResponseItems[$i]]
-                    );
+                    $mapper = $this->builder->localPropertyFetch(SchemaMapperNaming::getPropertyName($field));
+                    if ($field->isNullable()) {
+                        $optionalVar = $this->builder->ternary(
+                            $this->builder->notEquals($optionalResponseItems[$i], $this->builder->val(null)),
+                            $this->builder->methodCall(
+                                $mapper,
+                                'toSchema',
+                                [$optionalResponseItems[$i]]
+                            ),
+                            $this->builder->val(null)
+                        );
+                    } else {
+                        $optionalVar = $this->builder->methodCall(
+                            $mapper,
+                            'toSchema',
+                            [$optionalResponseItems[$i]]
+                        );
+                    }
                 } elseif ($field->isDate()) {
                     $this->addImport(DateTimeImmutable::class);
                     if ($field->isNullable()) {

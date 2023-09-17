@@ -63,6 +63,9 @@ class ItemMapper implements SchemaMapperInterface
         if (isset($payload['optionalObject'])) {
             $schema->setOptionalObject($this->embeddedObjectMapper->toSchema($payload['optionalObject']));
         }
+        if (\array_key_exists('optionalNullableObject', $payload)) {
+            $schema->setOptionalNullableObject($payload['optionalNullableObject'] !== null ? $this->embeddedNullableObjectMapper->toSchema($payload['optionalNullableObject']) : null);
+        }
 
         return $schema;
     }
