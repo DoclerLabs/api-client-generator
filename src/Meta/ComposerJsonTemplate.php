@@ -65,8 +65,8 @@ class ComposerJsonTemplate implements TemplateInterface
     private function getCommonPackages(): array
     {
         return [
-            'docler-labs/api-client-exception' => '^1.0|^2.0',
-            'psr/container'                    => '^1.0',
+            'docler-labs/api-client-exception' => '^1.0 || ^2.0',
+            'psr/container'                    => '^1.0 || ^2.0',
             'psr/http-client'                  => '^1.0',
         ];
     }
