@@ -18,7 +18,7 @@ class GuzzleHttpMessage extends HttpMessageAbstract implements HttpMessageImplem
     public function getPackages(): array
     {
         return [
-            'guzzlehttp/psr7' => '^1.6|^2.0',
+            'guzzlehttp/psr7' => '^1.6 || ^2.6',
         ];
     }
 

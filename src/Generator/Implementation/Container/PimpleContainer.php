@@ -77,7 +77,7 @@ class PimpleContainer implements ContainerImplementationInterface
     public function getPackages(): array
     {
         return [
-            'pimple/pimple' => '^3.3',
+            'pimple/pimple' => '^3.5',
         ];
     }
 

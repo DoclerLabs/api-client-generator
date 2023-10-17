@@ -13,12 +13,14 @@ class PhpVersion
     public const VERSION_PHP72      = '7.2';
     public const VERSION_PHP73      = '7.3';
     public const VERSION_PHP74      = '7.4';
+    public const VERSION_PHP81      = '8.1';
     public const SUPPORTED_VERSIONS = [
         self::VERSION_PHP70,
         self::VERSION_PHP71,
         self::VERSION_PHP72,
         self::VERSION_PHP73,
         self::VERSION_PHP74,
+        self::VERSION_PHP81,
     ];
     private string $phpVersion;
 
