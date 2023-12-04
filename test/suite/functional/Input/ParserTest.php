@@ -45,10 +45,11 @@ class ParserTest extends TestCase
     public function testParseInvalidSpecification(array $data): void
     {
         $this->expectException(InvalidSpecificationException::class);
+
         $this->sut->parse($data, '/openapi.yaml');
     }
 
-    public function validSpecificationProvider()
+    public function validSpecificationProvider(): array
     {
         return [
             'All mandatory fields are in place' => [
@@ -75,7 +76,7 @@ class ParserTest extends TestCase
         ];
     }
 
-    public function invalidSpecificationProvider()
+    public function invalidSpecificationProvider(): array
     {
         return [
             'Empty specification file'                        => [
@@ -168,33 +169,6 @@ class ParserTest extends TestCase
                                             'application/json' => [
                                                 'schema' => [
                                                     'type' => 'integer',
-                                                ],
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-            'OneOf keyword is not supported'                          => [
-                [
-                    'openapi' => '3.0.0',
-                    'info'    => [
-                        'title'   => 'Sample API',
-                        'version' => '1.0.0',
-                    ],
-                    'paths'   => [
-                        '/users' => [
-                            'get' => [
-                                'responses' => [
-                                    '200' => [
-                                        'description' => 'OK',
-                                        'content'     => [
-                                            'application/json' => [
-                                                'schema' => [
-                                                    'oneOf' => [],
                                                 ],
                                             ],
                                         ],

@@ -136,10 +136,13 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
     protected function generateMap(Field $root): ClassMethod
     {
         $statements   = [];
-        $payloadParam = $this->builder
-            ->param('payload')
-            ->setType('array')
-            ->getNode();
+        $builder = $this->builder->param('payload');
+        if ($root->hasOneOf()) {
+            $builder->setDocBlockType('mixed');
+        } else {
+            $builder->setType('array');
+        }
+        $payloadParam = $builder->getNode();
 
         $payloadVariable = $this->builder->var('payload');
         $this->addImport(
@@ -231,10 +234,14 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 $requiredResponseItems[] = $this->builder->getArrayItem($payloadVariable, $requiredItemName);
             } else {
                 $optionalFields[]        = $property;
-                $optionalResponseItems[] = $this->builder->getArrayItem(
-                    $payloadVariable,
-                    $this->builder->val($property->getName())
-                );
+                if ($root->hasOneOf()) {
+                    $optionalResponseItems[] = $payloadVariable;
+                } else {
+                    $optionalResponseItems[] = $this->builder->getArrayItem(
+                        $payloadVariable,
+                        $this->builder->val($property->getName())
+                    );
+                }
             }
         }
 
@@ -364,6 +371,23 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 } else {
                     $ifCondition = $this->builder->funcCall('isset', [$optionalResponseItems[$i]]);
                 }
+
+                $addTryCatch = false;
+                if ($root->hasOneOf()) {
+                    if ($field->getType()->isString()) {
+                        $ifCondition = $this->builder->funcCall('is_string', [$optionalResponseItems[$i]]);
+                    } elseif ($field->getType()->isFloat()) {
+                        $ifCondition = $this->builder->funcCall('is_float', [$optionalResponseItems[$i]]);
+                    } elseif ($field->getType()->isInteger()) {
+                        $ifCondition = $this->builder->funcCall('is_integer', [$optionalResponseItems[$i]]);
+                    } elseif ($field->getType()->isBoolean()) {
+                        $ifCondition = $this->builder->funcCall('is_bool', [$optionalResponseItems[$i]]);
+                    } else {
+                        $addTryCatch = true;
+                        $ifCondition = $this->builder->funcCall('is_array', [$optionalResponseItems[$i]]);
+                    }
+                }
+
                 $ifStmt = $this->builder->expr(
                     $this->builder->methodCall(
                         $schemaVar,
@@ -371,7 +395,23 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                         [$optionalVar]
                     )
                 );
-                $statements[] = $this->builder->if($ifCondition, [$ifStmt]);
+
+                $if = $this->builder->if($ifCondition, [$ifStmt]);
+
+                if ($addTryCatch) {
+                    $statements[] = $this->builder->tryCatch(
+                        [$if],
+                        [
+                            $this->builder->catch(
+                                [$this->builder->className('\\' . UnexpectedResponseBodyException::class)],
+                                $this->builder->var('exception'),
+                                []
+                            )
+                        ]
+                    );
+                } else {
+                    $statements[] = $if;
+                }
             }
 
             $statements[] = $this->builder->return($schemaVar);

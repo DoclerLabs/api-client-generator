@@ -31,6 +31,8 @@ class Field
 
     private bool                 $nullable;
 
+    private bool                 $hasOneOf;
+
     private ?Field               $arrayItem        = null;
 
     private array                $objectProperties = [];
@@ -49,7 +51,8 @@ class Field
         string $referenceName,
         bool $required,
         bool $nullable,
-        bool $additionalProperties
+        bool $additionalProperties,
+        bool $hasOneOf = false
     ) {
         $this->name                 = $name;
         $this->type                 = $type;
@@ -58,6 +61,7 @@ class Field
         $this->required             = $required;
         $this->nullable             = $nullable;
         $this->additionalProperties = $additionalProperties;
+        $this->hasOneOf             = $hasOneOf;
     }
 
     public function getArrayItem(): Field
@@ -84,6 +88,9 @@ class Field
         return $this->objectProperties;
     }
 
+    /**
+     * @param Field[] $objectProperties
+     */
     public function setObjectProperties(array $objectProperties): self
     {
         $this->objectProperties = $objectProperties;
@@ -148,6 +155,11 @@ class Field
     public function isNullable(): bool
     {
         return $this->nullable;
+    }
+
+    public function hasOneOf(): bool
+    {
+        return $this->hasOneOf;
     }
 
     public function isDate(): bool

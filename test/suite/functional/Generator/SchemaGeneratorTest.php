@@ -16,19 +16,19 @@ class SchemaGeneratorTest extends AbstractGeneratorTest
     public function exampleProvider(): array
     {
         return [
-            'With PHP 7.0' => [
+            'With PHP 7.0'    => [
                 '/Schema/item.yaml',
                 '/Schema/ItemPhp70.php',
                 self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Item',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP70)->build(),
             ],
-            'With PHP 7.2' => [
+            'With PHP 7.2'    => [
                 '/Schema/item.yaml',
                 '/Schema/ItemPhp72.php',
                 self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Item',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP72)->build(),
             ],
-            'With PHP 7.4' => [
+            'With PHP 7.4'    => [
                 '/Schema/item.yaml',
                 '/Schema/ItemPhp74.php',
                 self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Item',
@@ -40,10 +40,22 @@ class SchemaGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ItemMandatoryObject',
                 ConfigurationBuilder::fake()->build(),
             ],
-            'All of'       => [
+            'All of'          => [
                 '/Schema/extendedItem.yaml',
                 '/Schema/AllOfItem.php',
                 self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ExtendedItem',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'One of - Dog'    => [
+                '/Schema/oneOf.yaml',
+                '/Schema/Dog.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Dog',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'One of - Cat'    => [
+                '/Schema/oneOf.yaml',
+                '/Schema/Cat.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Cat',
                 ConfigurationBuilder::fake()->build(),
             ],
         ];

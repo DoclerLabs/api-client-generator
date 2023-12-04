@@ -44,6 +44,7 @@ class FieldFactory
         try {
             $arrayItem            = null;
             $objectProperties     = [];
+            $oneOf                = [];
             $additionalProperties = true;
             $schemaReference      = $schemaOrReference;
             $schema               = $this->resolveReference($schemaOrReference);
@@ -58,7 +59,18 @@ class FieldFactory
 
             $type = $schema->type;
             if (isset($schema->oneOf)) {
-                throw new InvalidSpecificationException('oneOf keyword is not currently supported.');
+                $type = FieldType::SPEC_TYPE_OBJECT;
+                if ($referenceName === '') {
+                    $referenceName = SchemaNaming::getClassName($schemaReference, $fieldName);
+                }
+
+                /** @var Reference $oneOfSchema */
+                foreach ($schema->oneOf as $oneOfSchema) {
+                    $explodedReference = explode('/', $oneOfSchema->getReference());
+                    $objectName = $explodedReference[count($explodedReference) - 1];
+
+                    $oneOf[] = $this->create($operationName, $objectName, $this->resolveReference($oneOfSchema), false);
+                }
             } elseif (isset($schema->allOf)) {
                 $type = FieldType::SPEC_TYPE_OBJECT;
                 if ($referenceName === '') {
@@ -66,7 +78,7 @@ class FieldFactory
                 }
 
                 $objectProperties = $this->mergeAllOfProperties($operationName, $schema);
-                $schema = $this->mergeAllOfAttributes($schema);
+                $schema           = $this->mergeAllOfAttributes($schema);
             } elseif (FieldType::isSpecificationTypeArray($type)) {
                 $itemReferenceName = '';
                 if ($schema->items === null) {
@@ -125,7 +137,8 @@ class FieldFactory
                 $referenceName,
                 $required,
                 $schema->nullable,
-                $additionalProperties
+                $additionalProperties,
+                !empty($oneOf)
             );
 
             if ($arrayItem !== null) {
@@ -134,6 +147,8 @@ class FieldFactory
                 $field->setObjectProperties($objectProperties);
             } elseif (isset($schema->enum)) {
                 $field->setEnumValues($schema->enum);
+            } elseif (!empty($oneOf)) {
+                $field->setObjectProperties($oneOf);
             }
 
             if (isset($schema->format)) {

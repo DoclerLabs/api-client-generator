@@ -1,0 +1,43 @@
+openapi: 3.0.0
+info:
+  title: 'Sample API'
+  version: '1.0.0'
+
+paths:
+  /pets:
+    post:
+      operationId: oneOf
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/Cat'
+                - $ref: '#/components/schemas/Dog'
+      responses:
+        200:
+          description: Purchase was started
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Cat'
+                  - $ref: '#/components/schemas/Dog'
+
+components:
+  schemas:
+    Dog:
+      type: object
+      properties:
+        bark:
+          type: boolean
+        breed:
+          type: string
+          enum: [ Dingo, Husky, Retriever, Shepherd ]
+    Cat:
+      type: object
+      properties:
+        hunts:
+          type: boolean
+        age:
+          type: integer
