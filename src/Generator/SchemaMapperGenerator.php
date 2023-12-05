@@ -135,13 +135,9 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 
     protected function generateMap(Field $root): ClassMethod
     {
-        $statements   = [];
-        $builder = $this->builder->param('payload');
-        if ($root->hasOneOf()) {
-            $builder->setDocBlockType('mixed');
-        } else {
-            $builder->setType('array');
-        }
+        $statements = [];
+        $builder    = $this->builder->param('payload');
+        $builder->setType('array');
         $payloadParam = $builder->getNode();
 
         $payloadVariable = $this->builder->var('payload');
@@ -217,6 +213,17 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         return $this->builder->return($schemaInit);
     }
 
+    protected function hasComposite(array $fields): bool
+    {
+        foreach ($fields as $field) {
+            if ($field->isComposite()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     protected function generateMapStatementsForObject(Field $root, Variable $payloadVariable): array
     {
         $statements = [];
@@ -233,7 +240,7 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 $requiredItemsNames[]    = $requiredItemName;
                 $requiredResponseItems[] = $this->builder->getArrayItem($payloadVariable, $requiredItemName);
             } else {
-                $optionalFields[]        = $property;
+                $optionalFields[] = $property;
                 if ($root->hasOneOf()) {
                     $optionalResponseItems[] = $payloadVariable;
                 } else {
@@ -360,58 +367,52 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                     $optionalVar = $optionalResponseItems[$i];
                 }
 
-                if ($field->isNullable()) {
-                    $ifCondition = $this->builder->funcCall(
-                        'array_key_exists',
-                        [
-                            $field->getName(),
-                            $payloadVariable,
-                        ]
-                    );
-                } else {
-                    $ifCondition = $this->builder->funcCall('isset', [$optionalResponseItems[$i]]);
-                }
-
-                $addTryCatch = false;
                 if ($root->hasOneOf()) {
-                    if ($field->getType()->isString()) {
-                        $ifCondition = $this->builder->funcCall('is_string', [$optionalResponseItems[$i]]);
-                    } elseif ($field->getType()->isFloat()) {
-                        $ifCondition = $this->builder->funcCall('is_float', [$optionalResponseItems[$i]]);
-                    } elseif ($field->getType()->isInteger()) {
-                        $ifCondition = $this->builder->funcCall('is_integer', [$optionalResponseItems[$i]]);
-                    } elseif ($field->getType()->isBoolean()) {
-                        $ifCondition = $this->builder->funcCall('is_bool', [$optionalResponseItems[$i]]);
-                    } else {
-                        $addTryCatch = true;
-                        $ifCondition = $this->builder->funcCall('is_array', [$optionalResponseItems[$i]]);
-                    }
-                }
-
-                $ifStmt = $this->builder->expr(
-                    $this->builder->methodCall(
-                        $schemaVar,
-                        $this->getSetMethodName($field),
-                        [$optionalVar]
-                    )
-                );
-
-                $if = $this->builder->if($ifCondition, [$ifStmt]);
-
-                if ($addTryCatch) {
-                    $statements[] = $this->builder->tryCatch(
-                        [$if],
-                        [
-                            $this->builder->catch(
-                                [$this->builder->className('\\' . UnexpectedResponseBodyException::class)],
-                                $this->builder->var('exception'),
-                                []
-                            )
-                        ]
+                    $tryStmt = $this->builder->expr(
+                        $this->builder->methodCall(
+                            $schemaVar,
+                            $this->getSetMethodName($field),
+                            [$optionalVar]
+                        )
                     );
+
+                    $catchStmts = [
+                        $this->builder->catch(
+                            [$this->builder->className('\\' . UnexpectedResponseBodyException::class)],
+                            $this->builder->var('exception'),
+                            []
+                        ),
+                    ];
+
+                    $statements[] = $this->builder->tryCatch([$tryStmt], $catchStmts);
                 } else {
-                    $statements[] = $if;
+                    $ifCondition = $field->isNullable()
+                        ? $this->builder->funcCall('array_key_exists', [$field->getName(), $payloadVariable])
+                        : $this->builder->funcCall('isset', [$optionalResponseItems[$i]]);
+
+                    $ifStmt = $this->builder->expr(
+                        $this->builder->methodCall(
+                            $schemaVar,
+                            $this->getSetMethodName($field),
+                            [$optionalVar]
+                        )
+                    );
+
+                    $statements[] = $this->builder->if($ifCondition, [$ifStmt]);
                 }
+            }
+
+            if (!$this->hasComposite($optionalFields)) {
+                $this->addImport(UnexpectedResponseBodyException::class);
+                $statements[] = $this->builder->if(
+                    $this->builder->funcCall('empty', [$this->builder->methodCall($schemaVar, 'toArray')]),
+                    [
+                        $this->builder->throw(
+                            'UnexpectedResponseBodyException'
+                        ),
+                    ]
+                );
+                $this->mapMethodThrownExceptions['UnexpectedResponseBodyException'] = true;
             }
 
             $statements[] = $this->builder->return($schemaVar);

@@ -58,6 +58,42 @@ class SchemaGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Cat',
                 ConfigurationBuilder::fake()->build(),
             ],
+            'One of - Animal' => [
+                '/Schema/complexOneOf.yaml',
+                '/Schema/Animal.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Animal',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'One of - Bird' => [
+                '/Schema/complexOneOf.yaml',
+                '/Schema/Bird.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Bird',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'One of - Characteristics' => [
+                '/Schema/complexOneOf.yaml',
+                '/Schema/Characteristics.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Characteristics',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'One of - Machine' => [
+                '/Schema/complexOneOf.yaml',
+                '/Schema/Machine.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Machine',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'One of - MachineSpecifications' => [
+                '/Schema/complexOneOf.yaml',
+                '/Schema/MachineSpecifications.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\MachineSpecifications',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'One of - Mammal' => [
+                '/Schema/complexOneOf.yaml',
+                '/Schema/Mammal.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Mammal',
+                ConfigurationBuilder::fake()->build(),
+            ],
         ];
     }
 

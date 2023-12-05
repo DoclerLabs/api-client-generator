@@ -24,21 +24,17 @@ class OneOfResponseBodyMapper implements SchemaMapperInterface
         $this->dogMapper = $dogMapper;
     }
 
-    public function toSchema($payload): OneOfResponseBody
+    public function toSchema(array $payload): OneOfResponseBody
     {
         $schema = new OneOfResponseBody();
 
         try {
-            if (\is_array($payload)) {
-                $schema->setCat($this->catMapper->toSchema($payload));
-            }
+            $schema->setCat($this->catMapper->toSchema($payload));
         } catch (\DoclerLabs\ApiClientException\UnexpectedResponseBodyException $exception) {
         }
 
         try {
-            if (\is_array($payload)) {
-                $schema->setDog($this->dogMapper->toSchema($payload));
-            }
+            $schema->setDog($this->dogMapper->toSchema($payload));
         } catch (\DoclerLabs\ApiClientException\UnexpectedResponseBodyException $exception) {
         }
 

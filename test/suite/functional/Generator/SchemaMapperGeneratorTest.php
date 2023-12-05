@@ -45,6 +45,12 @@ class SchemaMapperGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\OneOfResponseBodyMapper',
                 ConfigurationBuilder::fake()->build(),
             ],
+            'Complex OneOf response'         => [
+                '/SchemaMapper/complexOneOf.yaml',
+                '/SchemaMapper/GetExampleResponseBodyMapper.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\GetExampleResponseBodyMapper',
+                ConfigurationBuilder::fake()->build(),
+            ],
         ];
     }
 
