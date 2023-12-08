@@ -43,6 +43,7 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\Name\Relative;
 use PhpParser\Node\Stmt;
+use PhpParser\Node\Stmt\Case_;
 use PhpParser\Node\Stmt\Catch_;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassConst;
@@ -55,6 +56,7 @@ use PhpParser\Node\Stmt\If_;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Property;
 use PhpParser\Node\Stmt\Return_;
+use PhpParser\Node\Stmt\Switch_;
 use PhpParser\Node\Stmt\Throw_;
 use PhpParser\Node\Stmt\TryCatch;
 use UnexpectedValueException;
@@ -216,6 +218,16 @@ class CodeBuilder extends BuilderFactory
     public function assign(Expr $left, Expr $right): Assign
     {
         return new Assign($left, $right);
+    }
+
+    public function switch(Expr $condition, Case_ ...$cases): Switch_
+    {
+        return new Switch_($condition, $cases);
+    }
+
+    public function case(Expr $condition, Stmt ...$stmts): Case_
+    {
+        return new Case_($condition, $stmts);
     }
 
     public function if(Expr $condition, array $stmts, array $elseIfs = [], Else_ $else = null): If_

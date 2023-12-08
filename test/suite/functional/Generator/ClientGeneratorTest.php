@@ -21,6 +21,12 @@ class ClientGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . '\\SwaggerPetstoreClient',
                 ConfigurationBuilder::fake()->build(),
             ],
+            'Multiple responses schema' => [
+                '/Client/multiple-responses.yaml',
+                '/Client/MultipleResponsesClient.php',
+                self::BASE_NAMESPACE . '\\MultipleResponsesClient',
+                ConfigurationBuilder::fake()->build(),
+            ],
         ];
     }
 

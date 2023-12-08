@@ -59,9 +59,11 @@ class Parser
     {
         $allFields = new FieldCollection();
         foreach ($operations as $operation) {
-            $responseRoot = $operation->getSuccessfulResponse()->getBody();
-            if ($responseRoot !== null) {
-                $this->extractField($responseRoot, $allFields);
+            foreach ($operation->getSuccessfulResponses() as $response) {
+                $responseRoot = $response->getBody();
+                if ($responseRoot !== null) {
+                    $this->extractField($responseRoot, $allFields);
+                }
             }
         }
 

@@ -57,7 +57,7 @@ class OperationFactory
                 $operationId,
                 $operation->description ?? '',
                 $this->requestMapper->create($operationId, $path, $method, $parameters, $requestBody),
-                $this->responseMapper->createSuccessful($operationId, $operation->responses->getResponses()),
+                $this->responseMapper->createSuccessfulResponses($operationId, $operation->responses->getResponses()),
                 $this->responseMapper->createPossibleErrors($operation->responses->getResponses()),
                 $operation->tags,
                 $operation->security ?? []

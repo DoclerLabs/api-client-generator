@@ -1,0 +1,88 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Multiple Responses
+paths:
+  /pets:
+    post:
+      operationId: savePet
+      requestBody:
+        description: Save pet to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPet'
+      responses:
+        '200':
+          description: pet updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '201':
+          description: pet created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '204':
+          description: pet did not change
+  /pets-task:
+    post:
+      operationId: addPetTask
+      requestBody:
+        description: Add a pet task
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPet'
+      responses:
+        '200':
+          description: pet updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '201':
+          description: pet created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '202':
+          description: pet task accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetTask'
+        '204':
+          description: pet did not change
+components:
+  schemas:
+    Pet:
+      allOf:
+        - $ref: '#/components/schemas/NewPet'
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: integer
+              format: int64
+    NewPet:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+    PetTask:
+      type: object
+      required:
+        - taskId
+      properties:
+        taskId:
+          type: integer
+          format: int64

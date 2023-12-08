@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DoclerLabs\ApiClientGenerator\Ast\Builder\MethodBuilder;
+use DoclerLabs\ApiClientGenerator\Ast\ParameterNode;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
+use DoclerLabs\ApiClientGenerator\Entity\Response;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\ClientNaming;
 use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
@@ -16,11 +18,16 @@ use DoclerLabs\ApiClientGenerator\Output\Copy\Request\RequestInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Response\ResponseHandler;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\ContentTypeSerializerInterface;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
+use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Scalar\LNumber;
+use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
 
 class ClientGenerator extends GeneratorAbstract
 {
@@ -78,7 +85,6 @@ class ClientGenerator extends GeneratorAbstract
     protected function generateAction(Operation $operation): ClassMethod
     {
         $requestClassName = RequestNaming::getClassName($operation);
-
         $this->addImport(
             sprintf(
                 '%s%s\\%s',
@@ -88,79 +94,18 @@ class ClientGenerator extends GeneratorAbstract
             )
         );
 
-        $requestVar  = $this->builder->var('request');
-        $methodParam = $this->builder
-            ->param('request')
-            ->setType($requestClassName)
-            ->getNode();
+        $sendRequestStmt = $this->builder->localMethodCall('sendRequest', [$this->builder->var('request')]);
+        $methodParam     = $this->builder->param('request')->setType($requestClassName)->getNode();
+        $responses       = $operation->getSuccessfulResponses();
+        if (count($responses) === 1) {
+            if ($responses[0]->getBody() === null) {
+                return $this->emptyBodyAction($operation, $sendRequestStmt, $methodParam);
+            }
 
-        $responseStmt = $this->builder->localMethodCall('sendRequest', [$requestVar]);
-
-        $handleResponseStmt = $this->builder->localMethodCall(
-            'handleResponse',
-            $this->builder->args([$responseStmt])
-        );
-
-        $responseBody = $operation->getSuccessfulResponse()->getBody();
-        if ($responseBody === null) {
-            return $this->builder
-                ->method($operation->getName())
-                ->makePublic()
-                ->addParam($methodParam)
-                ->addStmt($handleResponseStmt)
-                ->setReturnType(MethodBuilder::RETURN_TYPE_VOID)
-                ->composeDocBlock([$methodParam])
-                ->getNode();
+            return $this->singleBodyAction($operation, $responses[0], $sendRequestStmt, $methodParam);
         }
 
-        $responseVariable = $this->builder->var('response');
-        $stmts[]          = $this->builder->assign($responseVariable, $handleResponseStmt);
-        if ($responseBody->isComposite()) {
-            $mapperClassName = SchemaMapperNaming::getClassName($responseBody);
-            $this->addImport(
-                sprintf(
-                    '%s%s\\%s',
-                    $this->baseNamespace,
-                    SchemaMapperGenerator::NAMESPACE_SUBPATH,
-                    $mapperClassName
-                )
-            );
-
-            $getMethod = $this->builder->methodCall(
-                $this->builder->localPropertyFetch('container'),
-                'get',
-                [$this->builder->classConstFetch($mapperClassName, 'class')]
-            );
-
-            $mapMethod = $this->builder->methodCall($getMethod, 'toSchema', [$responseVariable]);
-            $stmts[]   = $this->builder->return($mapMethod);
-
-            $this->addImport(
-                sprintf(
-                    '%s%s\\%s',
-                    $this->baseNamespace,
-                    SchemaGenerator::NAMESPACE_SUBPATH,
-                    $responseBody->getPhpClassName()
-                )
-            );
-        } else {
-            $this->addImport(CopiedNamespace::getImport($this->baseNamespace, ContentTypeSerializerInterface::class));
-            $literalValue = $this->builder->getArrayItem(
-                $responseVariable,
-                $this->builder->classConstFetch('ContentTypeSerializerInterface', 'LITERAL_VALUE_KEY')
-            );
-
-            $stmts[] = $this->builder->return($literalValue);
-        }
-
-        return $this->builder
-            ->method($operation->getName())
-            ->makePublic()
-            ->addParam($methodParam)
-            ->addStmts($stmts)
-            ->setReturnType($responseBody->getPhpTypeHint(), $responseBody->isNullable())
-            ->composeDocBlock([$methodParam], $responseBody->getPhpDocType(false))
-            ->getNode();
+        return $this->multiBodyAction($operation, $responses, $sendRequestStmt, $methodParam);
     }
 
     /**
@@ -211,7 +156,7 @@ class ClientGenerator extends GeneratorAbstract
             ->getNode();
     }
 
-    public function generateHandleResponse(): ClassMethod
+    private function generateHandleResponse(): ClassMethod
     {
         $parameters[] = $this->builder
             ->param('response')
@@ -238,5 +183,167 @@ class ClientGenerator extends GeneratorAbstract
             ->addStmt($handleResponseStatement)
             ->composeDocBlock($parameters)
             ->getNode();
+    }
+
+    private function processResponse(Variable $unserializedResponseVar, Response $response): array
+    {
+        $stmts        = [];
+        $responseBody = $response->getBody();
+        if ($responseBody->isComposite()) {
+            $mapperClassName = SchemaMapperNaming::getClassName($responseBody);
+            $this->addImport(
+                sprintf(
+                    '%s%s\\%s',
+                    $this->baseNamespace,
+                    SchemaMapperGenerator::NAMESPACE_SUBPATH,
+                    $mapperClassName
+                )
+            );
+
+            $getMethod = $this->builder->methodCall(
+                $this->builder->localPropertyFetch('container'),
+                'get',
+                [$this->builder->classConstFetch($mapperClassName, 'class')]
+            );
+
+            $mapMethod = $this->builder->methodCall($getMethod, 'toSchema', [$unserializedResponseVar]);
+            $stmts[]   = $this->builder->return($mapMethod);
+
+            $this->addImport(
+                sprintf(
+                    '%s%s\\%s',
+                    $this->baseNamespace,
+                    SchemaGenerator::NAMESPACE_SUBPATH,
+                    $responseBody->getPhpClassName()
+                )
+            );
+        } else {
+            $this->addImport(CopiedNamespace::getImport($this->baseNamespace, ContentTypeSerializerInterface::class));
+            $literalValue = $this->builder->getArrayItem(
+                $unserializedResponseVar,
+                $this->builder->classConstFetch('ContentTypeSerializerInterface', 'LITERAL_VALUE_KEY')
+            );
+
+            $stmts[] = $this->builder->return($literalValue);
+        }
+
+        return $stmts;
+    }
+
+    private function emptyBodyAction(
+        Operation $operation,
+        MethodCall $sendRequestStmt,
+        ParameterNode $methodParam
+    ): ClassMethod {
+        return $this
+            ->builder
+            ->method($operation->getName())
+            ->makePublic()
+            ->addParam($methodParam)
+            ->addStmt($this->builder->localMethodCall('handleResponse', [$sendRequestStmt]))
+            ->setReturnType(MethodBuilder::RETURN_TYPE_VOID)
+            ->composeDocBlock([$methodParam])
+            ->getNode();
+    }
+
+    private function singleBodyAction(
+        Operation $operation,
+        Response $response,
+        MethodCall $sendRequestStmt,
+        ParameterNode $methodParam
+    ): ClassMethod {
+        $responseVar        = $this->builder->var('response');
+        $responseBody       = $response->getBody();
+        $handleResponseStmt = $this->builder->localMethodCall('handleResponse', $this->builder->args([$sendRequestStmt]));
+        $stmts              = [
+            $this->builder->assign($responseVar, $handleResponseStmt),
+            ...$this->processResponse($responseVar, $response)
+        ];
+
+        return $this
+            ->builder
+            ->method($operation->getName())
+            ->makePublic()
+            ->addParam($methodParam)
+            ->addStmts($stmts)
+            ->setReturnType($responseBody->getPhpTypeHint(), $responseBody->isNullable())
+            ->composeDocBlock([$methodParam], $responseBody->getPhpDocType(false))
+            ->getNode();
+    }
+
+    private function multiBodyAction(
+        Operation $operation,
+        array $responses,
+        MethodCall $sendRequestStmt,
+        ParameterNode $methodParam
+    ): ClassMethod {
+        $responseVar             = $this->builder->var('response');
+        $stmts                   = [$this->builder->assign($responseVar, $sendRequestStmt)];
+        $handleResponseStmt      = $this->builder->localMethodCall('handleResponse', [$responseVar]);
+        $unserializedResponseVar = $this->builder->var('unserializedResponse');
+
+        $stmts[] = $this->builder->assign($unserializedResponseVar, $handleResponseStmt);
+
+        $caseConditions  = [];
+        $caseBodies      = [];
+        $returnTypeHints = [];
+        $isNullable      = false;
+        $nullableCases   = [];
+        foreach ($responses as $response) {
+            /** @var Response $response */
+            $responseBody = $response->getBody();
+            if ($responseBody === null) {
+                $isNullable = true;
+
+                $nullableCases[$response->getStatusCode()] = $this->builder->return($this->builder->val(null));
+            } else {
+                $returnTypeHints[$responseBody->getPhpTypeHint()] = true;
+                $isNullable |= $responseBody->isNullable();
+
+                $phpClassName = $responseBody->getPhpClassName();
+
+                $caseConditions[$phpClassName][] = new LNumber($response->getStatusCode());
+                if (!isset($caseBodies[$phpClassName])) {
+                    $caseBodies[$phpClassName] = $this->processResponse($unserializedResponseVar, $response);
+                }
+            }
+        }
+
+        $cases = [];
+        foreach ($nullableCases as $statusCode => $nullableCase) {
+            $cases[] = $this->builder->case(new LNumber($statusCode), $nullableCase);
+        }
+        foreach ($caseBodies as $phpClassName => $caseBody) {
+            /** @var Stmt[] $caseBody */
+            for ($i = 0, $l = count($caseConditions[$phpClassName]) - 1; $i < $l; ++$i) {
+                $cases[] = $this->builder->case($caseConditions[$phpClassName][$i]);
+            }
+            $cases[] = $this->builder->case($caseConditions[$phpClassName][$l], ...$caseBody);
+        }
+
+        $stmts[] = $this->builder->switch(
+            $this->builder->methodCall($responseVar, 'getStatusCode'),
+            ...$cases
+        );
+
+        $this->addImport(RuntimeException::class);
+        $stmts[] = $this->builder->throw(
+            'RuntimeException',
+            $this->builder->val('Response status code not properly mapped in schema.')
+        );
+
+        $method = $this
+            ->builder
+            ->method($operation->getName())
+            ->makePublic()
+            ->addParam($methodParam)
+            ->addStmts($stmts);
+
+        if (count($returnTypeHints) === 1) {
+            $returnTypeHint = array_keys($returnTypeHints)[0];
+            $method->setReturnType($returnTypeHint, $isNullable);
+        }
+
+        return $method->getNode();
     }
 }
