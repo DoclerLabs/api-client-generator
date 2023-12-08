@@ -6,6 +6,7 @@ namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DoclerLabs\ApiClientGenerator\Ast\Builder\MethodBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\ParameterNode;
+use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Entity\Response;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
@@ -102,7 +103,7 @@ class ClientGenerator extends GeneratorAbstract
                 return $this->emptyBodyAction($operation, $sendRequestStmt, $methodParam);
             }
 
-            return $this->singleBodyAction($operation, $responses[0], $sendRequestStmt, $methodParam);
+            return $this->singleBodyAction($operation, $responses[0]->getBody(), $sendRequestStmt, $methodParam);
         }
 
         return $this->multiBodyAction($operation, $responses, $sendRequestStmt, $methodParam);
@@ -185,10 +186,9 @@ class ClientGenerator extends GeneratorAbstract
             ->getNode();
     }
 
-    private function processResponse(Variable $unserializedResponseVar, Response $response): array
+    private function processResponse(Variable $unserializedResponseVar, Field $responseBody): array
     {
-        $stmts        = [];
-        $responseBody = $response->getBody();
+        $stmts = [];
         if ($responseBody->isComposite()) {
             $mapperClassName = SchemaMapperNaming::getClassName($responseBody);
             $this->addImport(
@@ -248,16 +248,15 @@ class ClientGenerator extends GeneratorAbstract
 
     private function singleBodyAction(
         Operation $operation,
-        Response $response,
+        Field $responseBody,
         MethodCall $sendRequestStmt,
         ParameterNode $methodParam
     ): ClassMethod {
         $responseVar        = $this->builder->var('response');
-        $responseBody       = $response->getBody();
         $handleResponseStmt = $this->builder->localMethodCall('handleResponse', $this->builder->args([$sendRequestStmt]));
         $stmts              = [
             $this->builder->assign($responseVar, $handleResponseStmt),
-            ...$this->processResponse($responseVar, $response)
+            ...$this->processResponse($responseVar, $responseBody)
         ];
 
         return $this
@@ -298,13 +297,13 @@ class ClientGenerator extends GeneratorAbstract
                 $nullableCases[$response->getStatusCode()] = $this->builder->return($this->builder->val(null));
             } else {
                 $returnTypeHints[$responseBody->getPhpTypeHint()] = true;
-                $isNullable |= $responseBody->isNullable();
+                $isNullable = $isNullable || $responseBody->isNullable();
 
                 $phpClassName = $responseBody->getPhpClassName();
 
                 $caseConditions[$phpClassName][] = new LNumber($response->getStatusCode());
                 if (!isset($caseBodies[$phpClassName])) {
-                    $caseBodies[$phpClassName] = $this->processResponse($unserializedResponseVar, $response);
+                    $caseBodies[$phpClassName] = $this->processResponse($unserializedResponseVar, $responseBody);
                 }
             }
         }
