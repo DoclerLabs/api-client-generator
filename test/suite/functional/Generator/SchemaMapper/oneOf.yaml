@@ -1,43 +1,82 @@
 openapi: 3.0.0
 info:
-  title: 'Sample API'
-  version: '1.0.0'
+  title: OneOf with Nested Structures
+  version: 1.0.0
 
 paths:
-  /pets:
-    post:
-      operationId: oneOf
-      requestBody:
-        content:
-          application/json:
-            schema:
-              oneOf:
-                - $ref: '#/components/schemas/Cat'
-                - $ref: '#/components/schemas/Dog'
+  /example:
+    get:
       responses:
-        200:
-          description: Purchase was started
+        '200':
+          description: An example of an oneOf structure
           content:
             application/json:
               schema:
                 oneOf:
-                  - $ref: '#/components/schemas/Cat'
-                  - $ref: '#/components/schemas/Dog'
+                  - $ref: '#/components/schemas/Animal'
+                  - $ref: '#/components/schemas/Machine'
+                discriminator:
+                  propertyName: objectType
+                  mapping:
+                    animal: '#/components/schemas/Animal'
+                    machine: '#/components/schemas/Machine'
 
 components:
   schemas:
-    Dog:
+    Animal:
       type: object
+      required:
+        - objectType
+        - name
       properties:
-        bark:
-          type: boolean
-        breed:
+        objectType:
           type: string
-          enum: [ Dingo, Husky, Retriever, Shepherd ]
-    Cat:
+        name:
+          type: string
+        characteristics:
+          oneOf:
+            - $ref: '#/components/schemas/Mammal'
+            - $ref: '#/components/schemas/Bird'
+          discriminator:
+            propertyName: type
+            mapping:
+              mammal: '#/components/schemas/Mammal'
+              bird: '#/components/schemas/Bird'
+    Mammal:
       type: object
+      required:
+        - type
+        - furColor
       properties:
-        hunts:
-          type: boolean
-        age:
+        type:
+          type: string
+        furColor:
+          type: string
+    Bird:
+      type: object
+      required:
+        - type
+        - wingSpan
+      properties:
+        type:
+          type: string
+          enum: [bird]
+        wingSpan:
           type: integer
+    Machine:
+      type: object
+      required:
+        - objectType
+        - model
+      properties:
+        objectType:
+          type: string
+        model:
+          type: string
+        specifications:
+          type: object
+          properties:
+            power:
+              type: integer
+            year:
+              type: integer

@@ -27,15 +27,10 @@ class GetExampleResponseBodyMapper implements SchemaMapperInterface
     public function toSchema(array $payload): GetExampleResponseBody
     {
         $schema = new GetExampleResponseBody();
-
-        try {
-            $schema->setAnimal($this->animalMapper->toSchema($payload));
-        } catch (\DoclerLabs\ApiClientException\UnexpectedResponseBodyException $exception) {
-        }
-
-        try {
-            $schema->setMachine($this->machineMapper->toSchema($payload));
-        } catch (\DoclerLabs\ApiClientException\UnexpectedResponseBodyException $exception) {
+        if (\array_key_exists('objectType', $payload)) {
+            $methodName = 'set' . \ucfirst($payload['objectType']);
+            $mapperName = $payload['objectType'] . 'Mapper';
+            $schema->$methodName($this->$mapperName->toSchema($payload));
         }
 
         return $schema;

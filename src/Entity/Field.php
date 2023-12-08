@@ -44,6 +44,9 @@ class Field
     /** @phpstan-ignore-next-line cannot use strict type before PHP8 with "mixed" pseudo type */
     private $default;
 
+    /** @phpstan-ignore-next-line cannot use strict type before PHP8 with "mixed" pseudo type */
+    private $discriminator;
+
     public function __construct(
         string $name,
         FieldType $type,
@@ -205,6 +208,24 @@ class Field
     public function setDefault($default): self
     {
         $this->default = $default;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDiscriminator()
+    {
+        return $this->discriminator;
+    }
+
+    /**
+     * @param mixed $discriminator
+     */
+    public function setDiscriminator($discriminator): self
+    {
+        $this->discriminator = $discriminator;
 
         return $this;
     }

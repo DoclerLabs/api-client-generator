@@ -159,6 +159,10 @@ class FieldFactory
                 $field->setDefault($schema->default);
             }
 
+            if (isset($schema->discriminator)) {
+                $field->setDiscriminator($schema->discriminator);
+            }
+
             return $field;
         } catch (Throwable $exception) {
             throw new InvalidSpecificationException(
