@@ -113,8 +113,10 @@ class Specification
             foreach ($operation->getRequest()->getBodyContentTypes() as $contentType) {
                 $allContentTypes[$contentType] = true;
             }
-            foreach ($operation->getSuccessfulResponse()->getBodyContentTypes() as $contentType) {
-                $allContentTypes[$contentType] = true;
+            foreach ($operation->getSuccessfulResponses() as $response) {
+                foreach ($response->getBodyContentTypes() as $contentType) {
+                    $allContentTypes[$contentType] = true;
+                }
             }
         }
 
