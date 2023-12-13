@@ -189,12 +189,12 @@ class ServiceProviderGenerator extends GeneratorAbstract
 
     private function generateBodySerializerClosure(Specification $specification): Closure
     {
-        $initialStatement = $this->builder->new('BodySerializer');
-        $allContentTypes  = $specification->getAllContentTypes();
+        $serializer      = $this->builder->new('BodySerializer');
+        $allContentTypes = $specification->getAllContentTypes();
 
         if (in_array(JsonContentTypeSerializer::MIME_TYPE, $allContentTypes, true)) {
-            $jsonSerializerInit = $this->builder->methodCall(
-                $initialStatement,
+            $serializer = $this->builder->methodCall(
+                $serializer,
                 'add',
                 [
                     $this->builder->new('JsonContentTypeSerializer'),
@@ -203,8 +203,8 @@ class ServiceProviderGenerator extends GeneratorAbstract
         }
 
         if (in_array(FormUrlencodedContentTypeSerializer::MIME_TYPE, $allContentTypes, true)) {
-            $formEncodedSerializerInit = $this->builder->methodCall(
-                $jsonSerializerInit ?? $initialStatement,
+            $serializer = $this->builder->methodCall(
+                $serializer,
                 'add',
                 [
                     $this->builder->new('FormUrlencodedContentTypeSerializer'),
@@ -213,8 +213,8 @@ class ServiceProviderGenerator extends GeneratorAbstract
         }
 
         if (in_array(XmlContentTypeSerializer::MIME_TYPE, $allContentTypes, true)) {
-            $xmlSerializerInit = $this->builder->methodCall(
-                $formEncodedSerializerInit ?? $jsonSerializerInit ?? $initialStatement,
+            $serializer = $this->builder->methodCall(
+                $serializer,
                 'add',
                 [
                     $this->builder->new('XmlContentTypeSerializer'),
@@ -223,8 +223,8 @@ class ServiceProviderGenerator extends GeneratorAbstract
         }
 
         if (in_array(VdnApiJsonContentTypeSerializer::MIME_TYPE, $allContentTypes, true)) {
-            $vdnApiJsonSerializerInit = $this->builder->methodCall(
-                $xmlSerializerInit ?? $formEncodedSerializerInit ?? $jsonSerializerInit ?? $initialStatement,
+            $serializer = $this->builder->methodCall(
+                $serializer,
                 'add',
                 [
                     $this->builder->new('VdnApiJsonContentTypeSerializer'),
@@ -232,12 +232,8 @@ class ServiceProviderGenerator extends GeneratorAbstract
             );
         }
 
-        $registerBodySerializerClosureStatements[] = $this
-            ->builder
-            ->return($vdnApiJsonSerializerInit ?? $xmlSerializerInit ?? $formEncodedSerializerInit ?? $jsonSerializerInit ?? $initialStatement);
-
         return $this->builder->closure(
-            $registerBodySerializerClosureStatements,
+            [$this->builder->return($serializer)],
             [],
             [],
             'BodySerializer'

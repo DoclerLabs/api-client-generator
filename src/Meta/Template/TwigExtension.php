@@ -18,7 +18,7 @@ class TwigExtension extends AbstractExtension
         ];
     }
 
-    public function staticCall(string $class, string $method, ...$arguments)
+    public function staticCall(string $class, string $method, mixed ...$arguments): mixed
     {
         if (!class_exists($class)) {
             throw new RuntimeException("Cannot call static method $method on $class: class does not exist.");

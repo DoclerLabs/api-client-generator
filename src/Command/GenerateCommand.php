@@ -17,8 +17,10 @@ use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\JsonContent
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\VdnApiJsonContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\XmlContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\DirectoryPrinter;
+use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFile;
 use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFileCollection;
 use DoclerLabs\ApiClientGenerator\Output\MetaFilePrinter;
+use DoclerLabs\ApiClientGenerator\Output\Php\PhpFile;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use DoclerLabs\ApiClientGenerator\Output\PhpFilePrinter;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhpFileCopier;
@@ -102,6 +104,7 @@ class GenerateCommand extends Command
 
         $ss->progressStart($phpFiles->count());
         foreach ($phpFiles as $phpFile) {
+            /* @var PhpFile $phpFile */
             $this->phpPrinter->print(
                 sprintf(
                     '%s/%s/%s',
@@ -126,6 +129,7 @@ class GenerateCommand extends Command
 
         $ss->progressStart($metaFiles->count());
         foreach ($metaFiles as $metaFile) {
+            /* @var MetaFile $metaFile */
             $this->templatePrinter->print(
                 sprintf('%s/%s', $this->configuration->outputDirectory, $metaFile->filePath),
                 $metaFile

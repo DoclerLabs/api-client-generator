@@ -43,7 +43,7 @@ class Specification
 
     public function getLicenseName(): string
     {
-        return $this->openApi->info->license->name;
+        return (string)$this->openApi->info->license?->name;
     }
 
     public function getServerUrls(): array
@@ -85,6 +85,8 @@ class Specification
             if ($securityScheme instanceof Reference) {
                 $securityScheme = $securityScheme->resolve();
             }
+
+            /* @var SecurityScheme $securityScheme */
 
             return $securityScheme;
         }, $this->openApi->components->securitySchemes ?? []);

@@ -52,6 +52,7 @@ class OperationCollectionFactory
         }
         $properties = $parentClass->getProperty('_properties');
         $properties->setAccessible(true);
+        /** @var array $operations */
         $operations = $properties->getValue($pathItem);
 
         foreach (self::NON_OPERATION_ALLOWED_KEYS as $key) {

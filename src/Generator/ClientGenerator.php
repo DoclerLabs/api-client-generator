@@ -24,7 +24,6 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Scalar\LNumber;
-use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
 use Psr\Container\ContainerInterface;
@@ -203,7 +202,7 @@ class ClientGenerator extends GeneratorAbstract
             ->getNode();
     }
 
-    private function processResponse(Variable $unserializedResponseVar, Field $responseBody): Stmt|Expr
+    private function processResponse(Variable $unserializedResponseVar, Field $responseBody): Expr
     {
         if ($responseBody->isComposite()) {
             $mapperClassName = SchemaMapperNaming::getClassName($responseBody);
@@ -222,8 +221,6 @@ class ClientGenerator extends GeneratorAbstract
                 [$this->builder->classConstFetch($mapperClassName, 'class')]
             );
 
-            $mapMethod = $this->builder->methodCall($getMethod, 'toSchema', [$unserializedResponseVar]);
-
             $this->addImport(
                 sprintf(
                     '%s%s\\%s',
@@ -233,7 +230,7 @@ class ClientGenerator extends GeneratorAbstract
                 )
             );
 
-            return $mapMethod;
+            return $this->builder->methodCall($getMethod, 'toSchema', [$unserializedResponseVar]);
         }
 
         $this->addImport(CopiedNamespace::getImport($this->baseNamespace, ContentTypeSerializerInterface::class));
@@ -298,11 +295,13 @@ class ClientGenerator extends GeneratorAbstract
 
         $stmts[] = $this->builder->assign($unserializedResponseVar, $handleResponseStmt);
 
-        $caseConditions  = [];
-        $caseBodies      = [];
-        $returnTypeHints = [];
-        $isNullable      = false;
-        $nullableCases   = [];
+        $caseConditions    = [];
+        $caseBodies        = [];
+        $matchBodies       = [];
+        $returnTypeHints   = [];
+        $isNullable        = false;
+        $nullableCases     = [];
+        $nullableMatchArms = [];
         foreach ($responses as $response) {
             /** @var Response $response */
             $responseBody = $response->body;
@@ -310,7 +309,7 @@ class ClientGenerator extends GeneratorAbstract
                 $isNullable = true;
 
                 if ($this->phpVersion->isMatchSupported()) {
-                    $nullableCases[$response->statusCode] = $this->builder->val(null);
+                    $nullableMatchArms[$response->statusCode] = $this->builder->val(null);
                 } else {
                     $nullableCases[$response->statusCode] = $this->builder->return($this->builder->val(null));
                 }
@@ -324,7 +323,7 @@ class ClientGenerator extends GeneratorAbstract
                 if (!isset($caseBodies[$phpClassName])) {
                     $response = $this->processResponse($unserializedResponseVar, $responseBody);
                     if ($this->phpVersion->isMatchSupported()) {
-                        $caseBodies[$phpClassName] = $response;
+                        $matchBodies[$phpClassName] = $response;
                     } else {
                         $caseBodies[$phpClassName] = $this->builder->return($response);
                     }
@@ -332,27 +331,14 @@ class ClientGenerator extends GeneratorAbstract
             }
         }
 
-        $cases     = [];
-        $matchArms = [];
-        foreach ($nullableCases as $statusCode => $nullableCase) {
-            if ($this->phpVersion->isMatchSupported()) {
-                $matchArms[] = $this->builder->matchArm([new LNumber($statusCode)], $nullableCase);
-            } else {
-                $cases[] = $this->builder->case(new LNumber($statusCode), $nullableCase);
-            }
-        }
-        foreach ($caseBodies as $phpClassName => $caseBody) {
-            if ($this->phpVersion->isMatchSupported()) {
-                $matchArms[] = $this->builder->matchArm($caseConditions[$phpClassName], $caseBody);
-            } else {
-                for ($i = 0, $l = count($caseConditions[$phpClassName]) - 1; $i < $l; ++$i) {
-                    $cases[] = $this->builder->case($caseConditions[$phpClassName][$i]);
-                }
-                $cases[] = $this->builder->case($caseConditions[$phpClassName][$l], $caseBody);
-            }
-        }
-
         if ($this->phpVersion->isMatchSupported()) {
+            $matchArms = [];
+            foreach ($nullableMatchArms as $statusCode => $nullableMatchArm) {
+                $matchArms[] = $this->builder->matchArm([new LNumber($statusCode)], $nullableMatchArm);
+            }
+            foreach ($matchBodies as $phpClassName => $matchBody) {
+                $matchArms[] = $this->builder->matchArm($caseConditions[$phpClassName], $matchBody);
+            }
             $stmts[] = $this->builder->return(
                 $this->builder->match(
                     $this->builder->methodCall($responseVar, 'getStatusCode'),
@@ -360,6 +346,16 @@ class ClientGenerator extends GeneratorAbstract
                 )
             );
         } else {
+            $cases = [];
+            foreach ($nullableCases as $statusCode => $nullableCase) {
+                $cases[] = $this->builder->case(new LNumber($statusCode), $nullableCase);
+            }
+            foreach ($caseBodies as $phpClassName => $caseBody) {
+                for ($i = 0, $l = count($caseConditions[$phpClassName]) - 1; $i < $l; ++$i) {
+                    $cases[] = $this->builder->case($caseConditions[$phpClassName][$i]);
+                }
+                $cases[] = $this->builder->case($caseConditions[$phpClassName][$l], $caseBody);
+            }
             $stmts[] = $this->builder->switch(
                 $this->builder->methodCall($responseVar, 'getStatusCode'),
                 ...$cases

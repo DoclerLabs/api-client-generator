@@ -37,7 +37,7 @@
     "composer/composer": "^2.1",
     "mikey179/vfsstream": "^1.6",
     "php-coveralls/php-coveralls": "^2.2",
-    "phpstan/phpstan": "^0.12.32",
+    "phpstan/phpstan": "^1.10",
     "phpunit/phpunit": "^9.5",
     "roave/security-advisories": "dev-latest",
     "symfony/filesystem": "^5.1"

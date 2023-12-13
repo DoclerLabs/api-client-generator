@@ -6,6 +6,7 @@ namespace DoclerLabs\ApiClientGenerator\Input\Factory;
 
 use cebe\openapi\spec\Reference;
 use cebe\openapi\spec\RequestBody;
+use cebe\openapi\SpecObjectInterface;
 use DoclerLabs\ApiClientGenerator\Entity\Request;
 use DoclerLabs\ApiClientGenerator\Entity\RequestFieldRegistry;
 use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
@@ -54,6 +55,8 @@ class RequestFactory
                 $schema         = $content->schema;
                 $contentTypes[] = $contentType;
             }
+
+            /** @var SpecObjectInterface $schema */
 
             $schemaName = SchemaNaming::getClassName($schema, ucfirst($operationName) . 'RequestBody');
 

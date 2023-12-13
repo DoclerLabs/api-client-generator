@@ -6,6 +6,8 @@ namespace DoclerLabs\ApiClientGenerator\Input\Factory;
 
 use cebe\openapi\spec\Operation as OpenApiOperation;
 use cebe\openapi\spec\Reference;
+use cebe\openapi\spec\RequestBody;
+use cebe\openapi\spec\Responses;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
 use DoclerLabs\ApiClientGenerator\Naming\CaseCaster;
@@ -25,6 +27,7 @@ class OperationFactory
         array $commonParameters
     ): Operation {
         $operationId = $operation->operationId;
+        /** @var string|null $operationId */
         if ($operationId === null) {
             $underscorePath = preg_replace(['/[{}]/', '@[/-]@'], ['', '_'], $path);
             if ($underscorePath === null) {
@@ -44,14 +47,18 @@ class OperationFactory
         if ($requestBody instanceof Reference) {
             $requestBody = $requestBody->resolve();
         }
+        /** @var RequestBody $requestBody */
+
+        /** @var Responses $responses */
+        $responses = $operation->responses;
 
         try {
             return new Operation(
                 $operationId,
                 $operation->description ?? '',
                 $this->requestMapper->create($operationId, $path, $method, $parameters, $requestBody),
-                $this->responseMapper->createSuccessfulResponses($operationId, $operation->responses->getResponses()),
-                $this->responseMapper->createPossibleErrors($operation->responses->getResponses()),
+                $this->responseMapper->createSuccessfulResponses($operationId, $responses->getResponses()),
+                $this->responseMapper->createPossibleErrors($responses->getResponses()),
                 $operation->tags,
                 $operation->security ?? []
             );
