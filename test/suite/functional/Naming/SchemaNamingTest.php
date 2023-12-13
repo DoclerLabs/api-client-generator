@@ -7,25 +7,20 @@ namespace DoclerLabs\ApiClientGenerator\Test\Functional\Naming;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Input\FileReader;
 use DoclerLabs\ApiClientGenerator\Input\Parser;
-use DoclerLabs\ApiClientGenerator\ServiceProvider;
+use DoclerLabs\ApiClientGenerator\Test\Functional\ConfigurationAwareTrait;
+use DoclerLabs\ApiClientGenerator\Test\Functional\ConfigurationBuilder;
 use PHPUnit\Framework\TestCase;
-use Pimple\Container;
 
 class SchemaNamingTest extends TestCase
 {
+    use ConfigurationAwareTrait;
+
     private FileReader $specificationReader;
     private Parser     $specificationParser;
 
     protected function setUp(): void
     {
-        $container = new Container();
-        $container->register(new ServiceProvider());
-
-        set_error_handler(
-            static function (int $code, string $message) {
-            },
-            E_USER_WARNING
-        );
+        $container = $this->getContainerWith(ConfigurationBuilder::fake()->build());
 
         $this->specificationReader = $container[FileReader::class];
         $this->specificationParser = $container[Parser::class];

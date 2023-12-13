@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
+use DoclerLabs\ApiClientGenerator\Ast\Builder\ParameterBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\ParameterNode;
+use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Entity\Request;
@@ -30,9 +32,10 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
     public function __construct(
         string $baseNamespace,
         CodeBuilder $builder,
+        PhpVersion $phpVersion,
         SecurityStrategyAbstract ...$securityStrategies
     ) {
-        parent::__construct($baseNamespace, $builder);
+        parent::__construct($baseNamespace, $builder, $phpVersion);
 
         $this->securityStrategies = $securityStrategies;
     }
@@ -50,9 +53,10 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         Specification $specification
     ): void {
         $className = RequestNaming::getClassName($operation);
-        $request   = $operation->getRequest();
+        $request   = $operation->request;
 
-        $classBuilder = $this->builder
+        $classBuilder = $this
+            ->builder
             ->class($className)
             ->implement('RequestInterface')
             ->addStmts($this->generateEnums($request))
@@ -74,7 +78,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
     protected function generateEnums(Request $request): array
     {
         $statements = [];
-        foreach ($request->getFields() as $field) {
+        foreach ($request->fields as $field) {
             foreach ($this->generateEnumStatements($field) as $statement) {
                 $statements[] = $statement;
             }
@@ -86,7 +90,8 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
     protected function generateProperties(Request $request, Operation $operation, Specification $specification): array
     {
         $statements = [];
-        foreach ($request->getFields() as $field) {
+
+        foreach ($request->fields as $field) {
             if ($field->isComposite()) {
                 $this->addImport(
                     sprintf(
@@ -97,12 +102,19 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                     )
                 );
             }
+            if (
+                $field->isRequired()
+                && $this->phpVersion->isConstructorPropertyPromotionSupported()
+            ) {
+                continue;
+            }
+
             $statements[] = $this->generateProperty($field);
         }
 
         $default = null;
-        if (count($request->getBodyContentTypes()) < 2) {
-            $default = $this->builder->val($request->getBodyContentTypes()[0] ?? '');
+        if (count($request->bodyContentTypes) < 2) {
+            $default = $this->builder->val($request->bodyContentTypes[0] ?? '');
         }
         $statements[] = $this->builder->localProperty('contentType', 'string', 'string', false, $default);
 
@@ -118,13 +130,15 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         Operation $operation,
         Specification $specification
     ): ?ClassMethod {
-        $params     = [];
-        $paramInits = [];
-        foreach ($request->getFields() as $field) {
+        $params      = [];
+        $paramInits  = [];
+        $validations = [];
+        foreach ($request->fields as $field) {
             if ($field->isRequired()) {
-                array_push($paramInits, ...$this->generateValidationStmts($field));
+                array_push($validations, ...$this->generateValidationStmts($field));
 
-                $param = $this->builder
+                $param = $this
+                    ->builder
                     ->param($field->getPhpVariableName())
                     ->setType($field->getPhpTypeHint(), $field->isNullable());
 
@@ -132,7 +146,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                     $param->setDefault($field->getDefault());
                 }
 
-                $params[] = $param->getNode();
+                $params[] = $param;
 
                 $paramInits[] = $this->builder->assign(
                     $this->builder->localPropertyFetch($field->getPhpVariableName()),
@@ -146,13 +160,10 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             array_push($paramInits, ...$securityStrategy->getConstructorParamInits($operation, $specification));
         }
 
-        if (count($request->getBodyContentTypes()) > 1) {
+        if (count($request->bodyContentTypes) > 1) {
             $contentTypeVariableName = 'contentType';
 
-            $params[] = $this->builder
-                ->param($contentTypeVariableName)
-                ->setType('string')
-                ->getNode();
+            $params[] = $this->builder->param($contentTypeVariableName)->setType('string');
 
             $paramInits[] = $this->builder->assign(
                 $this->builder->localPropertyFetch($contentTypeVariableName),
@@ -164,21 +175,37 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             return null;
         }
 
+        if ($this->phpVersion->isConstructorPropertyPromotionSupported()) {
+            foreach ($params as $param) {
+                $param->makePrivate();
+            }
+        }
+
+        $params = array_map(
+            static fn (ParameterBuilder $param): ParameterNode => $param->getNode(),
+            $params
+        );
+
         $params = $this->sortParameters(...$params);
 
-        return $this->builder
+        $constructor = $this->builder
             ->method('__construct')
             ->makePublic()
             ->addParams($params)
-            ->addStmts($paramInits)
-            ->composeDocBlock($params)
-            ->getNode();
+            ->addStmts($validations)
+            ->composeDocBlock($params);
+
+        if (!$this->phpVersion->isConstructorPropertyPromotionSupported()) {
+            $constructor->addStmts($paramInits);
+        }
+
+        return $constructor->getNode();
     }
 
     private function generateSetters(Request $request): array
     {
         $statements = [];
-        foreach ($request->getFields() as $field) {
+        foreach ($request->fields as $field) {
             if ($field->isRequired()) {
                 continue;
             }
@@ -196,7 +223,8 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         $return     = $this->builder->return($this->builder->localPropertyFetch('contentType'));
         $returnType = 'string';
 
-        return $this->builder
+        return $this
+            ->builder
             ->method('getContentType')
             ->makePublic()
             ->addStmt($return)
@@ -207,10 +235,11 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
 
     private function generateGetMethod(Request $request): ClassMethod
     {
-        $return     = $this->builder->return($this->builder->val($request->getMethod()));
+        $return     = $this->builder->return($this->builder->val($request->method));
         $returnType = 'string';
 
-        return $this->builder
+        return $this
+            ->builder
             ->method('getMethod')
             ->makePublic()
             ->addStmt($return)
@@ -224,15 +253,16 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         $values     = [];
         $returnType = 'string';
 
-        foreach ($request->getFields()->getPathFields() as $field) {
+        foreach ($request->fields->getPathFields() as $field) {
             $key          = sprintf('{%s}', $field->getName());
             $values[$key] = $this->builder->localPropertyFetch($field->getPhpVariableName());
         }
 
         if (empty($values)) {
-            $return = $this->builder->return($this->builder->val($request->getPath()));
+            $return = $this->builder->return($this->builder->val($request->path));
 
-            return $this->builder
+            return $this
+                ->builder
                 ->method('getRoute')
                 ->makePublic()
                 ->addStmt($return)
@@ -243,10 +273,11 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
 
         $map    = $this->builder->array($values);
         $return = $this->builder->return(
-            $this->builder->funcCall('strtr', [$this->builder->val($request->getPath()), $map])
+            $this->builder->funcCall('strtr', [$this->builder->val($request->path), $map])
         );
 
-        return $this->builder
+        return $this
+            ->builder
             ->method('getRoute')
             ->makePublic()
             ->addStmt($return)
@@ -261,7 +292,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         Specification $specification
     ): array {
         $methods   = [];
-        $fields    = $request->getFields();
+        $fields    = $request->fields;
         $methods[] = $this->generateGetParametersMethod(
             'getQueryParameters',
             $fields->getQueryFields()
@@ -293,7 +324,8 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             $returnVal = $this->generateParametersFromFields($fieldsArr);
         }
 
-        return $this->builder
+        return $this
+            ->builder
             ->method($methodName)
             ->makePublic()
             ->addStmt($this->builder->return($returnVal))
@@ -310,7 +342,8 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             $fieldsArr[$field->getName()] = $this->builder->localPropertyFetch($field->getPhpVariableName());
         }
 
-        return $this->builder
+        return $this
+            ->builder
             ->method($methodName)
             ->makePublic()
             ->addStmt($this->builder->return($this->builder->array($fieldsArr)))
@@ -324,7 +357,8 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         if ($body !== null) {
             $returnType = $body->getPhpTypeHint();
 
-            return $this->builder
+            return $this
+                ->builder
                 ->method('getBody')
                 ->makePublic()
                 ->addStmt($this->builder->return($this->builder->localPropertyFetch($body->getPhpVariableName())))
@@ -332,7 +366,8 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                 ->getNode();
         }
 
-        return $this->builder
+        return $this
+            ->builder
             ->method('getBody')
             ->makePublic()
             ->addStmt($this->builder->return($this->builder->val(null)))
@@ -346,7 +381,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         Specification $specification
     ): ClassMethod {
         $headers = $this->getSecurityHeaders($operation, $specification);
-        if (!empty($request->getBodyContentTypes())) {
+        if (!empty($request->bodyContentTypes)) {
             $headers['Content-Type'] = $this->builder->localPropertyFetch('contentType');
         }
         $returnVal  = $this->builder->array($headers);
@@ -363,7 +398,8 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             );
         }
 
-        return $this->builder
+        return $this
+            ->builder
             ->method('getHeaders')
             ->makePublic()
             ->addStmt($this->builder->return($returnVal))
@@ -431,9 +467,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
     {
         usort(
             $parameterNodes,
-            static function (ParameterNode $paramA, ParameterNode $paramB) {
-                return $paramA->default <=> $paramB->default;
-            }
+            static fn (ParameterNode $paramA, ParameterNode $paramB) => $paramA->default <=> $paramB->default
         );
 
         return $parameterNodes;

@@ -11,11 +11,11 @@ use UnexpectedValueException;
 
 class RequestFieldRegistry implements IteratorAggregate
 {
-    public const  ORIGIN_QUERY    = 'query';
-    public const  ORIGIN_PATH     = 'path';
-    public const  ORIGIN_HEADER   = 'header';
-    public const  ORIGIN_COOKIE   = 'cookie';
-    public const  ORIGIN_BODY     = 'body';
+    public const ORIGIN_QUERY = 'query';
+    public const ORIGIN_PATH = 'path';
+    public const ORIGIN_HEADER = 'header';
+    public const ORIGIN_COOKIE = 'cookie';
+    public const ORIGIN_BODY = 'body';
     private const ALLOWED_ORIGINS = [
         self::ORIGIN_QUERY,
         self::ORIGIN_PATH,
@@ -23,6 +23,7 @@ class RequestFieldRegistry implements IteratorAggregate
         self::ORIGIN_COOKIE,
         self::ORIGIN_BODY,
     ];
+
     private array $items = [];
 
     public function add(string $type, Field $data): self

@@ -11,20 +11,17 @@ use PhpParser\Node\UnionType;
 
 class ParameterNode extends Param
 {
-    protected string $docBlockType;
-
     public function __construct(
         $var,
         Expr $default = null,
         $type = null,
+        int $flags = 0,
         bool $byRef = false,
         bool $variadic = false,
         array $attributes = [],
-        string $docBlockType = ''
+        protected string $docBlockType = ''
     ) {
-        $this->docBlockType = $docBlockType;
-
-        parent::__construct($var, $default, $type, $byRef, $variadic, $attributes);
+        parent::__construct($var, $default, $type, $byRef, $variadic, $attributes, $flags);
     }
 
     public function getDocBlockType(): string

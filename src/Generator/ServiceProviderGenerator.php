@@ -7,6 +7,7 @@ namespace DoclerLabs\ApiClientGenerator\Generator;
 use DoclerLabs\ApiClientException\Factory\ResponseExceptionFactory;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\MethodBuilder;
+use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
@@ -29,18 +30,14 @@ use PhpParser\Node\Stmt\ClassMethod;
 
 class ServiceProviderGenerator extends GeneratorAbstract
 {
-    private ContainerImplementationStrategy   $containerImplementation;
-    private HttpMessageImplementationStrategy $messageImplementation;
-
     public function __construct(
         string $baseNamespace,
         CodeBuilder $builder,
-        ContainerImplementationStrategy $containerImplementation,
-        HttpMessageImplementationStrategy $messageImplementation
+        PhpVersion $phpVersion,
+        private ContainerImplementationStrategy $containerImplementation,
+        private HttpMessageImplementationStrategy $messageImplementation
     ) {
-        parent::__construct($baseNamespace, $builder);
-        $this->containerImplementation = $containerImplementation;
-        $this->messageImplementation   = $messageImplementation;
+        parent::__construct($baseNamespace, $builder, $phpVersion);
     }
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
@@ -66,7 +63,8 @@ class ServiceProviderGenerator extends GeneratorAbstract
 
         $compositeFields = $specification->getCompositeResponseFields()->getUniqueByPhpClassName();
 
-        $classBuilder = $this->builder
+        $classBuilder = $this
+            ->builder
             ->class('ServiceProvider')
             ->addStmt($this->generateRegisterMethod($specification, $compositeFields));
 
@@ -83,7 +81,8 @@ class ServiceProviderGenerator extends GeneratorAbstract
     ): ClassMethod {
         $statements = [];
 
-        $param = $this->builder
+        $param = $this
+            ->builder
             ->param('container')
             ->setType('Container')
             ->getNode();
@@ -165,7 +164,8 @@ class ServiceProviderGenerator extends GeneratorAbstract
             );
         }
 
-        return $this->builder
+        return $this
+            ->builder
             ->method('register')
             ->makePublic()
             ->addParam($param)

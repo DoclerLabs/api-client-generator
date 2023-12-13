@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
+use DoclerLabs\ApiClientGenerator\Ast\Builder\ParameterBuilder;
+use DoclerLabs\ApiClientGenerator\Ast\ParameterNode;
+use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
@@ -19,16 +22,15 @@ use Psr\Http\Message\RequestInterface as PsrRequestInterface;
 class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 {
     public const NAMESPACE_SUBPATH = '\\Request\\Mapper';
-    public const SUBDIRECTORY      = 'Request/Mapper/';
-    private HttpMessageImplementationStrategy $messageImplementation;
+    public const SUBDIRECTORY = 'Request/Mapper/';
 
     public function __construct(
         string $baseNamespace,
         CodeBuilder $builder,
-        HttpMessageImplementationStrategy $messageImplementation
+        PhpVersion $phpVersion,
+        private HttpMessageImplementationStrategy $messageImplementation
     ) {
-        parent::__construct($baseNamespace, $builder);
-        $this->messageImplementation = $messageImplementation;
+        parent::__construct($baseNamespace, $builder, $phpVersion);
     }
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
@@ -57,15 +59,21 @@ class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             'QuerySerializer'
         );
 
-        $parameters   = [];
-        $parameters[] = $this->builder
-            ->param($bodySerializerPropertyName)
-            ->setType('BodySerializer')
-            ->getNode();
-        $parameters[] = $this->builder
-            ->param($querySerializerPropertyName)
-            ->setType('QuerySerializer')
-            ->getNode();
+        /** @var ParameterBuilder[] $parameters */
+        $parameters = [];
+        $parameters[] = $this->builder->param($bodySerializerPropertyName)->setType('BodySerializer');
+        $parameters[] = $this->builder->param($querySerializerPropertyName)->setType('QuerySerializer');
+
+        if ($this->phpVersion->isConstructorPropertyPromotionSupported()) {
+            foreach ($parameters as $parameter) {
+                $parameter->makePrivate();
+            }
+        }
+
+        $parameters = array_map(
+            static fn (ParameterBuilder $parameter): ParameterNode => $parameter->getNode(),
+            $parameters
+        );
 
         $paramInits[] = $this->builder->assign(
             $this->builder->localPropertyFetch($bodySerializerPropertyName),
@@ -76,21 +84,30 @@ class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             $this->builder->var($querySerializerPropertyName)
         );
 
-        $constructor = $this->builder
+        $constructor = $this
+            ->builder
             ->method('__construct')
             ->makePublic()
             ->addParams($parameters)
-            ->addStmts($paramInits)
-            ->composeDocBlock($parameters)
-            ->getNode();
+            ->composeDocBlock($parameters);
+
+        if (!$this->phpVersion->isConstructorPropertyPromotionSupported()) {
+            $constructor->addStmts($paramInits);
+        }
+
+        $constructor = $constructor->getNode();
 
         $className    = $this->messageImplementation->getRequestMapperClassName();
-        $classBuilder = $this->builder
+        $classBuilder = $this
+            ->builder
             ->class($className)
             ->implement('RequestMapperInterface')
-            ->addStmts($properties)
             ->addStmt($constructor)
             ->addStmt($this->generateMap());
+
+        if (!$this->phpVersion->isConstructorPropertyPromotionSupported()) {
+            $classBuilder->addStmts($properties);
+        }
 
         $this->registerFile($fileRegistry, $classBuilder, self::SUBDIRECTORY, self::NAMESPACE_SUBPATH);
     }
@@ -101,12 +118,14 @@ class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             ->addImport(PsrRequestInterface::class, 'PsrRequestInterface')
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, RequestInterface::class));
 
-        $requestParam = $this->builder
+        $requestParam = $this
+            ->builder
             ->param('request')
             ->setType('RequestInterface')
             ->getNode();
 
-        return $this->messageImplementation
+        return $this
+            ->messageImplementation
             ->generateRequestMapMethod()
             ->makePublic()
             ->addParam($requestParam)

@@ -6,27 +6,22 @@ namespace DoclerLabs\ApiClientGenerator\Test\Functional\Input;
 
 use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
 use DoclerLabs\ApiClientGenerator\Input\Parser;
-use DoclerLabs\ApiClientGenerator\ServiceProvider;
+use DoclerLabs\ApiClientGenerator\Test\Functional\ConfigurationAwareTrait;
+use DoclerLabs\ApiClientGenerator\Test\Functional\ConfigurationBuilder;
 use PHPUnit\Framework\TestCase;
-use Pimple\Container;
 
 /**
  * @covers \DoclerLabs\ApiClientGenerator\Input\Parser
  */
 class ParserTest extends TestCase
 {
+    use ConfigurationAwareTrait;
+
     protected Parser $sut;
 
     protected function setUp(): void
     {
-        $container = new Container();
-        $container->register(new ServiceProvider());
-
-        set_error_handler(
-            static function (int $code, string $message) {
-            },
-            E_USER_WARNING
-        );
+        $container = $this->getContainerWith(ConfigurationBuilder::fake()->build());
 
         $this->sut = $container[Parser::class];
     }

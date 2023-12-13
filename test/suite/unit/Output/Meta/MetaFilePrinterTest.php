@@ -29,9 +29,10 @@ class MetaFilePrinterTest extends TestCase
 
     public function testCreateFiles()
     {
-        $file = $this->createMock(MetaFile::class);
-        $file->expects(self::once())
-            ->method('getContent');
+        $file = $this
+            ->getMockBuilder(MetaFile::class)
+            ->setConstructorArgs(['filepath', 'content'])
+            ->getMock();
 
         $this->printer->expects(self::once())
             ->method('print');

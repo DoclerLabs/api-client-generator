@@ -10,17 +10,17 @@ use IteratorAggregate;
 
 class OperationCollection implements IteratorAggregate
 {
-    protected array $items          = [];
+    protected array $items = [];
     protected array $operationNames = [];
 
     public function add(Operation $item): self
     {
-        if (isset($this->operationNames[$item->getName()])) {
-            throw new InvalidSpecificationException('Duplicated operationId found: ' . $item->getName());
+        if (isset($this->operationNames[$item->name])) {
+            throw new InvalidSpecificationException('Duplicated operationId found: ' . $item->name);
         }
 
-        $this->items[]                          = $item;
-        $this->operationNames[$item->getName()] = true;
+        $this->items[] = $item;
+        $this->operationNames[$item->name] = true;
 
         return $this;
     }

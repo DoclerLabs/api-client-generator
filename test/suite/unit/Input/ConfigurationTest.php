@@ -22,7 +22,7 @@ class ConfigurationTest extends TestCase
         string $sourceDirectory,
         string $codeStyleConfig,
         string $packageName,
-        string $phpVersion,
+        float $phpVersion,
         string $generatorVersion,
         string $composerJsonTemplateDir,
         string $readmeMdTemplateDir,
@@ -44,18 +44,18 @@ class ConfigurationTest extends TestCase
             $container
         );
 
-        self::assertEquals($openapiFilePath, $sut->getSpecificationFilePath());
-        self::assertEquals($namespace, $sut->getBaseNamespace());
-        self::assertEquals($outputDirectory, $sut->getOutputDirectory());
-        self::assertEquals($sourceDirectory, $sut->getSourceDirectory());
-        self::assertEquals($codeStyleConfig, $sut->getCodeStyleConfig());
-        self::assertEquals($packageName, $sut->getPackageName());
-        self::assertEquals($phpVersion, $sut->getPhpVersion());
-        self::assertEquals($generatorVersion, $sut->getGeneratorVersion());
-        self::assertEquals($composerJsonTemplateDir, $sut->getComposerJsonTemplateDir());
-        self::assertEquals($readmeMdTemplateDir, $sut->getReadmeMdTemplateDir());
-        self::assertEquals($httpMessage, $sut->getHttpMessage());
-        self::assertEquals($container, $sut->getContainer());
+        self::assertEquals($openapiFilePath, $sut->specificationFilePath);
+        self::assertEquals($namespace, $sut->baseNamespace);
+        self::assertEquals($outputDirectory, $sut->outputDirectory);
+        self::assertEquals($sourceDirectory, $sut->sourceDirectory);
+        self::assertEquals($codeStyleConfig, $sut->codeStyleConfig);
+        self::assertEquals($packageName, $sut->packageName);
+        self::assertEquals($phpVersion, $sut->phpVersion);
+        self::assertEquals($generatorVersion, $sut->generatorVersion);
+        self::assertEquals($composerJsonTemplateDir, $sut->composerJsonTemplateDir);
+        self::assertEquals($readmeMdTemplateDir, $sut->readmeMdTemplateDir);
+        self::assertEquals($httpMessage, $sut->httpMessage);
+        self::assertEquals($container, $sut->container);
     }
 
     public function validConfigurationOptions(): array
@@ -66,9 +66,9 @@ class ConfigurationTest extends TestCase
                 'Test',
                 '/dir/output',
                 'another-dir',
-                '/dir/.php_cs.php',
+                '/dir/.php-cs-fixer.php',
                 'test/test-api-client',
-                '7.1',
+                7.1,
                 '5.6.0',
                 __DIR__,
                 __DIR__,

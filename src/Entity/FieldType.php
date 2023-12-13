@@ -4,23 +4,25 @@ declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Entity;
 
+use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use InvalidArgumentException;
 
 class FieldType
 {
-    public const  SPEC_TYPE_STRING     = 'string';
-    public const  SPEC_TYPE_FLOAT      = 'number';
-    public const  SPEC_TYPE_INTEGER    = 'integer';
-    public const  SPEC_TYPE_ARRAY      = 'array';
-    public const  SPEC_TYPE_BOOLEAN    = 'boolean';
-    public const  SPEC_TYPE_OBJECT     = 'object';
-    public const  PHP_TYPE_STRING      = 'string';
-    public const  PHP_TYPE_FLOAT       = 'float';
-    public const  PHP_TYPE_INTEGER     = 'int';
-    public const  PHP_TYPE_ARRAY       = 'array';
-    public const  PHP_TYPE_BOOLEAN     = 'bool';
-    public const  PHP_TYPE_OBJECT      = 'object';
-    private const SPEC_TYPES           = [
+    public const  SPEC_TYPE_STRING = 'string';
+    public const  SPEC_TYPE_FLOAT = 'number';
+    public const  SPEC_TYPE_INTEGER = 'integer';
+    public const  SPEC_TYPE_ARRAY = 'array';
+    public const  SPEC_TYPE_BOOLEAN = 'boolean';
+    public const  SPEC_TYPE_OBJECT = 'object';
+    public const  PHP_TYPE_STRING = 'string';
+    public const  PHP_TYPE_FLOAT = 'float';
+    public const  PHP_TYPE_INTEGER = 'int';
+    public const  PHP_TYPE_ARRAY = 'array';
+    public const  PHP_TYPE_BOOLEAN = 'bool';
+    public const  PHP_TYPE_OBJECT = 'object';
+    public const  PHP_TYPE_MIXED = 'mixed';
+    private const SPEC_TYPES = [
         self::SPEC_TYPE_STRING,
         self::SPEC_TYPE_FLOAT,
         self::SPEC_TYPE_INTEGER,
@@ -36,10 +38,10 @@ class FieldType
         self::SPEC_TYPE_BOOLEAN => self::PHP_TYPE_BOOLEAN,
         self::SPEC_TYPE_OBJECT  => self::PHP_TYPE_OBJECT,
     ];
-    private ?string $specificationType;
-    private string  $phpType;
 
-    public function __construct(?string $specificationType)
+    private string $phpType;
+
+    public function __construct(private ?string $specificationType, private PhpVersion $phpVersion)
     {
         if (
             $specificationType !== null
@@ -51,8 +53,8 @@ class FieldType
             throw new InvalidArgumentException('Unknown type passed: ' . $specificationType);
         }
 
-        $this->specificationType = $specificationType;
-        $this->phpType           = self::SPEC_TO_PHP_TYPE_MAP[$this->specificationType] ?? '';
+        $this->phpType = self::SPEC_TO_PHP_TYPE_MAP[$this->specificationType]
+            ?? ($this->phpVersion->isMixedTypehintSupported() ? self::PHP_TYPE_MIXED : '');
     }
 
     public function toSpecificationType(): ?string

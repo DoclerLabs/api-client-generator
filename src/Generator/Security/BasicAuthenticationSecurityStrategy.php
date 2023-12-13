@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Generator\Security;
 
-use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Entity\ImportCollection;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
@@ -14,16 +13,10 @@ use PhpParser\Node\Expr;
 
 class BasicAuthenticationSecurityStrategy extends SecurityStrategyAbstract
 {
-    public const SCHEME                = 'basic';
+    public const SCHEME = 'basic';
+
     private const PROPERTY_CREDENTIALS = 'credentials';
-    private const TYPE                 = 'http';
-
-    private CodeBuilder $builder;
-
-    public function __construct(CodeBuilder $builder)
-    {
-        $this->builder = $builder;
-    }
+    private const TYPE = 'http';
 
     public function getImports(string $baseNamespace): ImportCollection
     {
@@ -33,6 +26,10 @@ class BasicAuthenticationSecurityStrategy extends SecurityStrategyAbstract
 
     public function getProperties(Operation $operation, Specification $specification): array
     {
+        if ($this->phpVersion->isConstructorPropertyPromotionSupported()) {
+            return [];
+        }
+
         $statements = [];
 
         if ($this->isAuthenticationAvailable($operation, $specification)) {
@@ -53,8 +50,7 @@ class BasicAuthenticationSecurityStrategy extends SecurityStrategyAbstract
         if ($this->isAuthenticationAvailable($operation, $specification)) {
             $params[] = $this->builder
                 ->param(self::PROPERTY_CREDENTIALS)
-                ->setType('AuthenticationCredentials')
-                ->getNode();
+                ->setType('AuthenticationCredentials');
         }
 
         return $params;
@@ -62,6 +58,10 @@ class BasicAuthenticationSecurityStrategy extends SecurityStrategyAbstract
 
     public function getConstructorParamInits(Operation $operation, Specification $specification): array
     {
+        if ($this->phpVersion->isConstructorPropertyPromotionSupported()) {
+            return [];
+        }
+
         $paramInits = [];
 
         if ($this->isAuthenticationAvailable($operation, $specification)) {

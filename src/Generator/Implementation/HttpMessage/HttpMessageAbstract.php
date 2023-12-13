@@ -9,11 +9,8 @@ use DoclerLabs\ApiClientGenerator\Ast\Builder\MethodBuilder;
 
 abstract class HttpMessageAbstract
 {
-    protected CodeBuilder $builder;
-
-    public function __construct(CodeBuilder $builder)
+    public function __construct(protected CodeBuilder $builder)
     {
-        $this->builder = $builder;
     }
 
     public function generateRequestMapMethod(): MethodBuilder

@@ -11,17 +11,8 @@ use PhpParser\Node\Expr\Variable;
 
 class MinimumConstraint implements ConstraintInterface
 {
-    private ?float $minimum = null;
-
-    private ?bool $exclusiveMinimum = null;
-
-    private FieldType $fieldType;
-
-    public function __construct(?float $minimum, ?bool $exclusiveMinimum, FieldType $fieldType)
+    public function __construct(private ?float $minimum, private ?bool $exclusiveMinimum, private FieldType $fieldType)
     {
-        $this->minimum          = $minimum;
-        $this->exclusiveMinimum = $exclusiveMinimum;
-        $this->fieldType        = $fieldType;
     }
 
     public function exists(): bool

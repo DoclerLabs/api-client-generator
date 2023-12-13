@@ -14,15 +14,8 @@ use Throwable;
 
 class OperationFactory
 {
-    private RequestFactory  $requestMapper;
-    private ResponseFactory $responseMapper;
-
-    public function __construct(
-        RequestFactory $requestMapper,
-        ResponseFactory $responseMapper
-    ) {
-        $this->requestMapper = $requestMapper;
-        $this->responseMapper = $responseMapper;
+    public function __construct(private RequestFactory $requestMapper, private ResponseFactory $responseMapper)
+    {
     }
 
     public function create(

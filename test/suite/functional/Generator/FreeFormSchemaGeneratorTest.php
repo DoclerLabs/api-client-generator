@@ -38,6 +38,12 @@ class FreeFormSchemaGeneratorTest extends AbstractGeneratorTest
                 $className,
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
             ],
+            'With PHP 8.0' => [
+                $yaml,
+                '/FreeFormSchema/ItemPhp80.php',
+                $className,
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
+            ],
         ];
     }
 

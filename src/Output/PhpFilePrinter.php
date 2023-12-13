@@ -10,23 +10,16 @@ use PhpParser\PrettyPrinterAbstract;
 
 class PhpFilePrinter
 {
-    private PrettyPrinterAbstract $marshaller;
-    private TextFilePrinter       $textPrinter;
-    private PhpCodeStyleFixer     $codeStyleFixer;
-
     public function __construct(
-        PrettyPrinterAbstract $marshaller,
-        TextFilePrinter $textPrinter,
-        PhpCodeStyleFixer $codeStyleFixer
+        private PrettyPrinterAbstract $marshaller,
+        private TextFilePrinter $textPrinter,
+        private PhpCodeStyleFixer $codeStyleFixer
     ) {
-        $this->marshaller     = $marshaller;
-        $this->textPrinter    = $textPrinter;
-        $this->codeStyleFixer = $codeStyleFixer;
     }
 
     public function print(string $destinationPath, PhpFile $file): void
     {
-        $this->textPrinter->print($destinationPath, $this->marshaller->prettyPrintFile($file->getNodes()));
+        $this->textPrinter->print($destinationPath, $this->marshaller->prettyPrintFile($file->nodes));
         $this->codeStyleFixer->fix($destinationPath);
     }
 }

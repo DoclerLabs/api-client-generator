@@ -12,11 +12,8 @@ use Icecave\Parity\Parity;
 
 class ResponseFactory
 {
-    private FieldFactory $fieldMapper;
-
-    public function __construct(FieldFactory $fieldMapper)
+    public function __construct(private FieldFactory $fieldMapper)
     {
-        $this->fieldMapper = $fieldMapper;
     }
 
     public function createSuccessfulResponses(string $operationName, array $openApiResponses): array

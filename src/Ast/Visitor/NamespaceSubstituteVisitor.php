@@ -13,13 +13,8 @@ use PhpParser\NodeVisitorAbstract;
 
 class NamespaceSubstituteVisitor extends NodeVisitorAbstract
 {
-    private string $original;
-    private string $substitute;
-
-    public function __construct(string $original, string $substitute)
+    public function __construct(private string $original, private string $substitute)
     {
-        $this->original = $original;
-        $this->substitute = $substitute;
     }
 
     public function leaveNode(Node $node)

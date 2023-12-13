@@ -10,16 +10,8 @@ use PhpParser\Node\Expr\Variable;
 
 class MinLengthConstraint implements ConstraintInterface
 {
-    private ?int $minLength = null;
-
-    public function __construct(?int $minLength)
+    public function __construct(private ?int $minLength)
     {
-        $this->minLength = $minLength;
-    }
-
-    public function getMinLength(): ?int
-    {
-        return $this->minLength;
     }
 
     public function exists(): bool

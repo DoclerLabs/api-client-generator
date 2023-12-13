@@ -19,37 +19,16 @@ class Response
         VdnApiJsonContentTypeSerializer::MIME_TYPE,
     ];
 
-    private int    $statusCode;
-    private ?Field $body;
-    private array  $bodyContentTypes;
-
-    public function __construct(int $statusCode, Field $body = null, array $bodyContentTypes = [])
-    {
-        $this->statusCode = $statusCode;
-        $this->body       = $body;
-
-        $unsupportedContentTypes = array_diff($bodyContentTypes, static::ALLOWED_CONTENT_TYPES);
+    public function __construct(
+        public readonly int $statusCode,
+        public readonly ?Field $body = null,
+        public readonly array $bodyContentTypes = []
+    ) {
+        $unsupportedContentTypes = array_diff($bodyContentTypes, self::ALLOWED_CONTENT_TYPES);
         if (!empty($unsupportedContentTypes)) {
             throw new InvalidSpecificationException(
                 sprintf('Response content-type %s is not currently supported.', json_encode($unsupportedContentTypes))
             );
         }
-
-        $this->bodyContentTypes = $bodyContentTypes;
-    }
-
-    public function getStatusCode(): int
-    {
-        return $this->statusCode;
-    }
-
-    public function getBody(): ?Field
-    {
-        return $this->body;
-    }
-
-    public function getBodyContentTypes(): array
-    {
-        return $this->bodyContentTypes;
     }
 }

@@ -6,6 +6,7 @@ namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DoclerLabs\ApiClientGenerator\Ast\Builder\ClassBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
+use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Entity\FieldType;
 use DoclerLabs\ApiClientGenerator\Entity\ImportCollection;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
@@ -15,15 +16,14 @@ use PhpParser\Node\Stmt\ClassMethod;
 
 abstract class GeneratorAbstract implements GeneratorInterface
 {
-    protected string         $baseNamespace;
-    protected CodeBuilder    $builder;
     private ImportCollection $imports;
 
-    public function __construct(string $baseNamespace, CodeBuilder $builder)
-    {
-        $this->baseNamespace = $baseNamespace;
-        $this->imports       = new ImportCollection();
-        $this->builder       = $builder;
+    public function __construct(
+        protected string $baseNamespace,
+        protected CodeBuilder $builder,
+        protected PhpVersion $phpVersion
+    ) {
+        $this->imports = new ImportCollection();
     }
 
     abstract public function generate(Specification $specification, PhpFileCollection $fileRegistry): void;
@@ -70,7 +70,8 @@ abstract class GeneratorAbstract implements GeneratorInterface
 
     protected function generateJsonSerialize(): ClassMethod
     {
-        return $this->builder
+        return $this
+            ->builder
             ->method('jsonSerialize')
             ->makePublic()
             ->addStmts([$this->builder->return($this->builder->localMethodCall('toArray'))])

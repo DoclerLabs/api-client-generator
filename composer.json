@@ -14,13 +14,13 @@
     "api-client-generator"
   ],
   "require": {
-    "php": ">=7.4",
+    "php": ">=8.2",
     "ext-dom": "*",
     "ext-json": "*",
     "ext-xml": "*",
     "cebe/php-openapi": "^1.4",
     "docler-labs/api-client-exception": "^1.0.1 || ^2.0",
-    "friendsofphp/php-cs-fixer": "^2.16",
+    "friendsofphp/php-cs-fixer": "^3.0",
     "guzzlehttp/psr7": "^1.6",
     "icecave/parity": "^3.0",
     "nikic/php-parser": "^4.10",

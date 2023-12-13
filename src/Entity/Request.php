@@ -34,16 +34,12 @@ class Request
         XmlContentTypeSerializer::MIME_TYPE,
         VdnApiJsonContentTypeSerializer::MIME_TYPE,
     ];
-    private string               $path;
-    private string               $method;
-    private RequestFieldRegistry $fields;
-    private array                $bodyContentTypes;
 
     public function __construct(
-        string $path,
-        string $method,
-        RequestFieldRegistry $fieldCollection,
-        array $bodyContentTypes
+        public readonly string $path,
+        public readonly string $method,
+        public readonly RequestFieldRegistry $fields,
+        public readonly array $bodyContentTypes
     ) {
         if (!in_array($method, self::ALLOWED_METHODS, true)) {
             throw new InvalidSpecificationException(
@@ -57,35 +53,5 @@ class Request
                 sprintf('Request content-type %s is not currently supported.', json_encode($unsupportedContentTypes))
             );
         }
-
-        $this->path             = $this->toRelativePath($path);
-        $this->method           = $method;
-        $this->fields           = $fieldCollection;
-        $this->bodyContentTypes = $bodyContentTypes;
-    }
-
-    public function getPath(): string
-    {
-        return $this->path;
-    }
-
-    public function getMethod(): string
-    {
-        return $this->method;
-    }
-
-    public function getFields(): RequestFieldRegistry
-    {
-        return $this->fields;
-    }
-
-    public function getBodyContentTypes(): array
-    {
-        return $this->bodyContentTypes;
-    }
-
-    private function toRelativePath(string $path): string
-    {
-        return ltrim($path, '/');
     }
 }

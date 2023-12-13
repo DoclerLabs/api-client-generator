@@ -10,16 +10,8 @@ use PhpParser\Node\Expr\Variable;
 
 class MinItemsConstraint implements ConstraintInterface
 {
-    private ?int $minItems = null;
-
-    public function __construct(?int $minItems)
+    public function __construct(private ?int $minItems)
     {
-        $this->minItems = $minItems;
-    }
-
-    public function getMinItems(): ?int
-    {
-        return $this->minItems;
     }
 
     public function exists(): bool

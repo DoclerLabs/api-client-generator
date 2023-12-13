@@ -9,12 +9,13 @@ use DoclerLabs\ApiClientGenerator\Input\FileReader;
 use DoclerLabs\ApiClientGenerator\Input\Parser;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use DoclerLabs\ApiClientGenerator\Output\PhpFilePrinter;
-use DoclerLabs\ApiClientGenerator\ServiceProvider;
+use DoclerLabs\ApiClientGenerator\Test\Functional\ConfigurationAwareTrait;
 use PHPUnit\Framework\TestCase;
-use Pimple\Container;
 
 abstract class AbstractGeneratorTest extends TestCase
 {
+    use ConfigurationAwareTrait;
+
     public const BASE_NAMESPACE = 'Test';
     protected GeneratorInterface $sut;
     protected FileReader         $specificationReader;
@@ -52,17 +53,7 @@ abstract class AbstractGeneratorTest extends TestCase
 
     protected function setUpContainer(Configuration $configuration): void
     {
-        $container = new Container();
-        $container->register(new ServiceProvider());
-        set_error_handler(
-            static function (): bool {
-                return true;
-            },
-            E_USER_WARNING
-        );
-        $container[Configuration::class] = static function () use ($configuration) {
-            return $configuration;
-        };
+        $container = $this->getContainerWith($configuration);
 
         $this->sut                 = $container[$this->generatorClassName()];
         $this->specificationReader = $container[FileReader::class];

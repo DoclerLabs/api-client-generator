@@ -8,6 +8,7 @@ use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Entity\ImportCollection;
 use InvalidArgumentException;
 use PhpParser\BuilderFactory;
+use PhpParser\BuilderHelpers;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Const_;
@@ -35,10 +36,14 @@ use PhpParser\Node\Expr\BooleanNot;
 use PhpParser\Node\Expr\Cast;
 use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\Instanceof_;
+use PhpParser\Node\Expr\Match_;
 use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\NullsafeMethodCall;
+use PhpParser\Node\Expr\NullsafePropertyFetch;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Ternary;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\MatchArm;
 use PhpParser\Node\Name;
 use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\Name\Relative;
@@ -63,11 +68,8 @@ use UnexpectedValueException;
 
 class CodeBuilder extends BuilderFactory
 {
-    private PhpVersion $phpVersion;
-
-    public function __construct(PhpVersion $phpVersion)
+    public function __construct(private PhpVersion $phpVersion)
     {
-        $this->phpVersion = $phpVersion;
     }
 
     public function method(string $name): MethodBuilder
@@ -169,9 +171,23 @@ class CodeBuilder extends BuilderFactory
         return $this->propertyFetch($this->var('this'), $propertyName);
     }
 
+    public function localNullsafePropertyFetch(string $propertyName): NullsafePropertyFetch
+    {
+        return new NullsafePropertyFetch($this->var('this'), BuilderHelpers::normalizeIdentifierOrExpr($propertyName));
+    }
+
     public function localMethodCall(string $methodName, array $args = []): MethodCall
     {
         return $this->methodCall($this->var('this'), $methodName, $args);
+    }
+
+    public function nullsafeMethodCall(Expr $var, string $name, array $args = []): NullsafeMethodCall
+    {
+        return new NullsafeMethodCall(
+            $var,
+            BuilderHelpers::normalizeIdentifierOrExpr($name),
+            $this->args($args)
+        );
     }
 
     public function buildClass(string $namespace, ImportCollection $imports, Node $class): array
@@ -218,6 +234,16 @@ class CodeBuilder extends BuilderFactory
     public function assign(Expr $left, Expr $right): Assign
     {
         return new Assign($left, $right);
+    }
+
+    public function match(Expr $condition, MatchArm ...$cases): Match_
+    {
+        return new Match_($condition, $cases);
+    }
+
+    public function matchArm(array $conditions, Expr $body): MatchArm
+    {
+        return new MatchArm($conditions, $body);
     }
 
     public function switch(Expr $condition, Case_ ...$cases): Switch_
@@ -347,36 +373,25 @@ class CodeBuilder extends BuilderFactory
 
     public function compare(Expr $left, string $operator, Expr $right): BinaryOp
     {
-        switch ($operator) {
-            case '>':
-                return new Greater($left, $right);
-            case '>=':
-                return new GreaterOrEqual($left, $right);
-            case '<':
-                return new Smaller($left, $right);
-            case '<=':
-                return new SmallerOrEqual($left, $right);
-        }
-
-        throw new InvalidArgumentException('Unknown operator passed: ' . $operator);
+        return match($operator) {
+            '>'     => new Greater($left, $right),
+            '>='    => new GreaterOrEqual($left, $right),
+            '<'     => new Smaller($left, $right),
+            '<='    => new SmallerOrEqual($left, $right),
+            default => throw new InvalidArgumentException('Unknown operator passed: ' . $operator),
+        };
     }
 
     public function operation(Expr $left, string $operator, Expr $right): BinaryOp
     {
-        switch ($operator) {
-            case '-':
-                return new Minus($left, $right);
-            case '+':
-                return new Plus($left, $right);
-            case '*':
-                return new Mul($left, $right);
-            case '/':
-                return new Div($left, $right);
-            case '%':
-                return new Mod($left, $right);
-        }
-
-        throw new InvalidArgumentException('Unknown operator passed: ' . $operator);
+        return match($operator) {
+            '-'     => new Minus($left, $right),
+            '+'     => new Plus($left, $right),
+            '*'     => new Mul($left, $right),
+            '/'     => new Div($left, $right),
+            '%'     => new Mod($left, $right),
+            default => throw new InvalidArgumentException('Unknown operator passed: ' . $operator),
+        };
     }
 
     public function param(string $name): ParameterBuilder

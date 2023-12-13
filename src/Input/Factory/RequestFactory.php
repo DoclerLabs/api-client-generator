@@ -14,11 +14,8 @@ use Icecave\Parity\Parity;
 
 class RequestFactory
 {
-    private FieldFactory $fieldFactory;
-
-    public function __construct(FieldFactory $fieldFactory)
+    public function __construct(private FieldFactory $fieldFactory)
     {
-        $this->fieldFactory = $fieldFactory;
     }
 
     public function create(
@@ -72,6 +69,11 @@ class RequestFactory
             );
         }
 
-        return new Request($path, $method, $collection, $contentTypes);
+        return new Request($this->toRelativePath($path), $method, $collection, $contentTypes);
+    }
+
+    private function toRelativePath(string $path): string
+    {
+        return ltrim($path, '/');
     }
 }

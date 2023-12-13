@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Test\Unit\Entity;
 
+use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Entity\FieldType;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
@@ -13,6 +14,13 @@ use PHPUnit\Framework\TestCase;
  */
 class FieldTypeTest extends TestCase
 {
+    private $phpVersion;
+
+    protected function setUp(): void
+    {
+        $this->phpVersion = $this->createMock(PhpVersion::class);
+    }
+
     public function testStatic(): void
     {
         self::assertTrue(FieldType::isSpecificationTypeString('string'));
@@ -26,7 +34,7 @@ class FieldTypeTest extends TestCase
 
     public function testIsString(): void
     {
-        $sut = new FieldType(FieldType::SPEC_TYPE_STRING);
+        $sut = new FieldType(FieldType::SPEC_TYPE_STRING, $this->phpVersion);
         self::assertTrue($sut->isString());
         self::assertEquals(FieldType::PHP_TYPE_STRING, $sut->toPhpType());
         self::assertEquals(FieldType::SPEC_TYPE_STRING, $sut->toSpecificationType());
@@ -34,7 +42,7 @@ class FieldTypeTest extends TestCase
 
     public function testIsMixed(): void
     {
-        $sut = new FieldType(null);
+        $sut = new FieldType(null, $this->phpVersion);
         self::assertTrue($sut->isMixed());
         self::assertEquals('', $sut->toPhpType());
         self::assertEquals(null, $sut->toSpecificationType());
@@ -42,7 +50,7 @@ class FieldTypeTest extends TestCase
 
     public function testIsFloat(): void
     {
-        $sut = new FieldType(FieldType::SPEC_TYPE_FLOAT);
+        $sut = new FieldType(FieldType::SPEC_TYPE_FLOAT, $this->phpVersion);
         self::assertTrue($sut->isFloat());
         self::assertEquals(FieldType::PHP_TYPE_FLOAT, $sut->toPhpType());
         self::assertEquals(FieldType::SPEC_TYPE_FLOAT, $sut->toSpecificationType());
@@ -50,7 +58,7 @@ class FieldTypeTest extends TestCase
 
     public function testIsInteger(): void
     {
-        $sut = new FieldType(FieldType::SPEC_TYPE_INTEGER);
+        $sut = new FieldType(FieldType::SPEC_TYPE_INTEGER, $this->phpVersion);
         self::assertTrue($sut->isInteger());
         self::assertEquals(FieldType::PHP_TYPE_INTEGER, $sut->toPhpType());
         self::assertEquals(FieldType::SPEC_TYPE_INTEGER, $sut->toSpecificationType());
@@ -58,7 +66,7 @@ class FieldTypeTest extends TestCase
 
     public function testIsObject(): void
     {
-        $sut = new FieldType(FieldType::SPEC_TYPE_OBJECT);
+        $sut = new FieldType(FieldType::SPEC_TYPE_OBJECT, $this->phpVersion);
         self::assertTrue($sut->isObject());
         self::assertEquals(FieldType::PHP_TYPE_OBJECT, $sut->toPhpType());
         self::assertEquals(FieldType::SPEC_TYPE_OBJECT, $sut->toSpecificationType());
@@ -66,7 +74,7 @@ class FieldTypeTest extends TestCase
 
     public function testIsBoolean(): void
     {
-        $sut = new FieldType(FieldType::SPEC_TYPE_BOOLEAN);
+        $sut = new FieldType(FieldType::SPEC_TYPE_BOOLEAN, $this->phpVersion);
         self::assertTrue($sut->isBoolean());
         self::assertEquals(FieldType::PHP_TYPE_BOOLEAN, $sut->toPhpType());
         self::assertEquals(FieldType::SPEC_TYPE_BOOLEAN, $sut->toSpecificationType());
@@ -74,7 +82,7 @@ class FieldTypeTest extends TestCase
 
     public function testIsArray(): void
     {
-        $sut = new FieldType(FieldType::SPEC_TYPE_ARRAY);
+        $sut = new FieldType(FieldType::SPEC_TYPE_ARRAY, $this->phpVersion);
         self::assertTrue($sut->isArray());
         self::assertEquals(FieldType::PHP_TYPE_ARRAY, $sut->toPhpType());
         self::assertEquals(FieldType::SPEC_TYPE_ARRAY, $sut->toSpecificationType());
@@ -83,6 +91,6 @@ class FieldTypeTest extends TestCase
     public function testInvalidType(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new FieldType('invalid');
+        new FieldType('invalid', $this->phpVersion);
     }
 }

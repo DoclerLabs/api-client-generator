@@ -12,13 +12,9 @@ use Symfony\Component\Console\Output\BufferedOutput;
 class PhpCodeStyleFixer
 {
     private const CS_FIXER_ERROR_PREFIX = 'Files that were not fixed';
-    private FixCommand $command;
-    private string     $codeStyleConfig;
 
-    public function __construct(FixCommand $command, string $codeStyleConfig)
+    public function __construct(private FixCommand $command, private string $codeStyleConfig)
     {
-        $this->command         = $command;
-        $this->codeStyleConfig = $codeStyleConfig;
     }
 
     public function fix(string $file): void

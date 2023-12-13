@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Generator\Security;
 
-use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use PhpParser\Node\Expr;
@@ -12,18 +11,15 @@ use PhpParser\Node\Expr;
 class BearerAuthenticationSecurityStrategy extends SecurityStrategyAbstract
 {
     private const PROPERTY_NAME = 'bearerToken';
-    private const SCHEME        = 'bearer';
-    private const TYPE          = 'http';
-
-    private CodeBuilder $builder;
-
-    public function __construct(CodeBuilder $builder)
-    {
-        $this->builder = $builder;
-    }
+    private const SCHEME = 'bearer';
+    private const TYPE = 'http';
 
     public function getProperties(Operation $operation, Specification $specification): array
     {
+        if ($this->phpVersion->isConstructorPropertyPromotionSupported()) {
+            return [];
+        }
+
         $statements = [];
 
         if ($this->isAuthenticationAvailable($operation, $specification)) {
@@ -40,8 +36,7 @@ class BearerAuthenticationSecurityStrategy extends SecurityStrategyAbstract
         if ($this->isAuthenticationAvailable($operation, $specification)) {
             $params[] = $this->builder
                 ->param(self::PROPERTY_NAME)
-                ->setType('string')
-                ->getNode();
+                ->setType('string');
         }
 
         return $params;
@@ -49,6 +44,10 @@ class BearerAuthenticationSecurityStrategy extends SecurityStrategyAbstract
 
     public function getConstructorParamInits(Operation $operation, Specification $specification): array
     {
+        if ($this->phpVersion->isConstructorPropertyPromotionSupported()) {
+            return [];
+        }
+
         $paramInits = [];
 
         if ($this->isAuthenticationAvailable($operation, $specification)) {

@@ -104,28 +104,28 @@ class Item implements SerializableInterface, JsonSerializable
      */
     public function __construct(int $mandatoryInteger, string $mandatoryString, string $mandatoryEnum, DateTimeInterface $mandatoryDate, ?DateTimeInterface $mandatoryNullableDate, float $mandatoryFloat, bool $mandatoryBoolean, array $mandatoryArray, array $mandatoryArrayWithMinItems, ItemMandatoryObject $mandatoryObject, ?MandatoryNullableObjectWithAllOf $mandatoryNullableObjectWithAllOf, $mandatoryMixed, $mandatoryAnyOf, ?string $mandatoryNullableStringWithMinMaxLength)
     {
-        $this->mandatoryInteger      = $mandatoryInteger;
-        $this->mandatoryString       = $mandatoryString;
-        $this->mandatoryEnum         = $mandatoryEnum;
-        $this->mandatoryDate         = $mandatoryDate;
-        $this->mandatoryNullableDate = $mandatoryNullableDate;
-        $this->mandatoryFloat        = $mandatoryFloat;
-        $this->mandatoryBoolean      = $mandatoryBoolean;
-        $this->mandatoryArray        = $mandatoryArray;
         if (\count($mandatoryArrayWithMinItems) < 1) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Expected min items: `1`.', 'mandatoryArrayWithMinItems', $mandatoryArrayWithMinItems));
         }
-        $this->mandatoryArrayWithMinItems       = $mandatoryArrayWithMinItems;
-        $this->mandatoryObject                  = $mandatoryObject;
-        $this->mandatoryNullableObjectWithAllOf = $mandatoryNullableObjectWithAllOf;
-        $this->mandatoryMixed                   = $mandatoryMixed;
-        $this->mandatoryAnyOf                   = $mandatoryAnyOf;
         if ($mandatoryNullableStringWithMinMaxLength !== null && \grapheme_strlen($mandatoryNullableStringWithMinMaxLength) < 1) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Length should be greater than 1.', 'mandatoryNullableStringWithMinMaxLength', $mandatoryNullableStringWithMinMaxLength));
         }
         if ($mandatoryNullableStringWithMinMaxLength !== null && \grapheme_strlen($mandatoryNullableStringWithMinMaxLength) > 5) {
             throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Length should be less than 5.', 'mandatoryNullableStringWithMinMaxLength', $mandatoryNullableStringWithMinMaxLength));
         }
+        $this->mandatoryInteger                        = $mandatoryInteger;
+        $this->mandatoryString                         = $mandatoryString;
+        $this->mandatoryEnum                           = $mandatoryEnum;
+        $this->mandatoryDate                           = $mandatoryDate;
+        $this->mandatoryNullableDate                   = $mandatoryNullableDate;
+        $this->mandatoryFloat                          = $mandatoryFloat;
+        $this->mandatoryBoolean                        = $mandatoryBoolean;
+        $this->mandatoryArray                          = $mandatoryArray;
+        $this->mandatoryArrayWithMinItems              = $mandatoryArrayWithMinItems;
+        $this->mandatoryObject                         = $mandatoryObject;
+        $this->mandatoryNullableObjectWithAllOf        = $mandatoryNullableObjectWithAllOf;
+        $this->mandatoryMixed                          = $mandatoryMixed;
+        $this->mandatoryAnyOf                          = $mandatoryAnyOf;
         $this->mandatoryNullableStringWithMinMaxLength = $mandatoryNullableStringWithMinMaxLength;
     }
 
