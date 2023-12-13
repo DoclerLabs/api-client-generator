@@ -60,7 +60,6 @@ class PhpVersion
         return $this->isVersionGreaterThanOrEqualTo74();
     }
 
-
     public function isConstructorPropertyPromotionSupported(): bool
     {
         return $this->isVersionGreaterThanOrEqualTo80();
