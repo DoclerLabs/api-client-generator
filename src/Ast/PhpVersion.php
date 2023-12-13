@@ -60,49 +60,22 @@ class PhpVersion
         return $this->isVersionGreaterThanOrEqualTo74();
     }
 
-    // @TODO check if being used otherwise remove
-    public function isNamedArgumentSupported(): bool
-    {
-        return $this->isVersionGreaterThanOrEqualTo80();
-    }
 
-    // @TODO check if being used otherwise remove
-    public function isAttributesSupported(): bool
-    {
-        return $this->isVersionGreaterThanOrEqualTo80();
-    }
-
-    // @TODO check if being used otherwise remove
     public function isConstructorPropertyPromotionSupported(): bool
     {
         return $this->isVersionGreaterThanOrEqualTo80();
     }
 
-    // @TODO check if being used otherwise remove
-    public function isUnionTypesSupported(): bool
-    {
-        return $this->isVersionGreaterThanOrEqualTo80();
-    }
-
-    // @TODO check if being used otherwise remove
     public function isMatchSupported(): bool
     {
         return $this->isVersionGreaterThanOrEqualTo80();
     }
 
-    // @TODO check if being used otherwise remove
     public function isNullSafeSupported(): bool
     {
         return $this->isVersionGreaterThanOrEqualTo80();
     }
 
-    // @TODO check if being used otherwise remove
-    public function isCatchWithoutVariableSupported(): bool
-    {
-        return $this->isVersionGreaterThanOrEqualTo80();
-    }
-
-    // @TODO check if being used otherwise remove
     public function isMixedTypehintSupported(): bool
     {
         return $this->isVersionGreaterThanOrEqualTo80();
