@@ -83,16 +83,16 @@ class PhpVersion
 
     private function isVersionGreaterThanOrEqualTo71(): bool
     {
-        return $this->phpVersion >= (float)self::VERSION_PHP71;
+        return $this->phpVersion >= self::VERSION_PHP71;
     }
 
     private function isVersionGreaterThanOrEqualTo74(): bool
     {
-        return $this->phpVersion >= (float)self::VERSION_PHP74;
+        return $this->phpVersion >= self::VERSION_PHP74;
     }
 
     private function isVersionGreaterThanOrEqualTo80(): bool
     {
-        return $this->phpVersion >= (float)self::VERSION_PHP80;
+        return $this->phpVersion >= self::VERSION_PHP80;
     }
 }
