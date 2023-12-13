@@ -27,7 +27,7 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
     {
         foreach ($specification->getCompositeResponseFields() as $field) {
-            /* @var Field $field */
+            /** @var Field $field */
             $this->generateMapper($fileRegistry, $field);
         }
     }

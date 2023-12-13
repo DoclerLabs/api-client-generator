@@ -86,7 +86,7 @@ class Specification
                 $securityScheme = $securityScheme->resolve();
             }
 
-            /* @var SecurityScheme $securityScheme */
+            /** @var SecurityScheme $securityScheme */
 
             return $securityScheme;
         }, $this->openApi->components->securitySchemes ?? []);

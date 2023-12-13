@@ -104,7 +104,7 @@ class GenerateCommand extends Command
 
         $ss->progressStart($phpFiles->count());
         foreach ($phpFiles as $phpFile) {
-            /* @var PhpFile $phpFile */
+            /** @var PhpFile $phpFile */
             $this->phpPrinter->print(
                 sprintf(
                     '%s/%s/%s',
@@ -129,7 +129,7 @@ class GenerateCommand extends Command
 
         $ss->progressStart($metaFiles->count());
         foreach ($metaFiles as $metaFile) {
-            /* @var MetaFile $metaFile */
+            /** @var MetaFile $metaFile */
             $this->templatePrinter->print(
                 sprintf('%s/%s', $this->configuration->outputDirectory, $metaFile->filePath),
                 $metaFile

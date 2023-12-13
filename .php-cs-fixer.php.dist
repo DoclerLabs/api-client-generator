@@ -39,7 +39,7 @@ $rules = [
     'phpdoc_single_line_var_spacing'            => true,
     'phpdoc_trim'                               => true,
     'phpdoc_var_without_name'                   => true,
-    'phpdoc_to_comment'                         => true,
+    'phpdoc_to_comment'                         => false,
     'phpdoc_scalar'                             => [
         'types' => ['boolean', 'double', 'integer', 'real', 'str'],
     ],

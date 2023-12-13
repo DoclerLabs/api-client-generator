@@ -15,7 +15,7 @@ cs: ## fix code style
 	docker-compose run php vendor/bin/php-cs-fixer fix .
 
 stan: ## statically analyse code
-	docker-compose run php vendor/bin/phpstan --memory-limit=1G analyse src
+	docker-compose run php vendor/bin/phpstan --memory-limit=1G analyse
 
 coverage: ## coverage for pipeline
 	docker-compose run -e COVERALLS_REPO_TOKEN=${COVERALLS_REPO_TOKEN} -e GITHUB_REF=${GITHUB_REF} -e GITHUB_ACTIONS=${GITHUB_ACTIONS} -e GITHUB_RUN_ID=${GITHUB_RUN_ID} -e GITHUB_EVENT_NAME=${GITHUB_EVENT_NAME} php vendor/bin/php-coveralls -v

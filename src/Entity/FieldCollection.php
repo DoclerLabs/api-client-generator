@@ -29,12 +29,12 @@ class FieldCollection implements IteratorAggregate
     {
         $unique = [];
         foreach ($this as $field) {
-            /* @var Field $field */
+            /** @var Field $field */
             $unique[$field->getPhpClassName()] = $field;
         }
 
         foreach ($fieldCollection as $field) {
-            /* @var Field $field */
+            /** @var Field $field */
             $unique[$field->getPhpClassName()] = $field;
         }
 
@@ -45,7 +45,7 @@ class FieldCollection implements IteratorAggregate
     {
         $unique = [];
         foreach ($this as $field) {
-            /* @var Field $field */
+            /** @var Field $field */
             $unique[$field->getPhpClassName()] = $field;
         }
 
