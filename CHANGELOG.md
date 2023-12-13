@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [10.4.0] - 2023.12.13
 ### Added
 - Added generated code support for php 8.0
+### Changed
+- php-cs-fixer rules `not_operator_with_successor_space`, `phpdoc_to_comment`, `native_function_invocation`
 
 ## [10.3.0] - 2023.12.08
 ### Added
