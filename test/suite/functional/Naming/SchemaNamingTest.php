@@ -16,6 +16,7 @@ class SchemaNamingTest extends TestCase
     use ConfigurationAwareTrait;
 
     private FileReader $specificationReader;
+
     private Parser     $specificationParser;
 
     protected function setUp(): void

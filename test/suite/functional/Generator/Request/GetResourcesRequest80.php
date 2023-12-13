@@ -77,9 +77,9 @@ class GetResourcesRequest implements RequestInterface
 
     public function getQueryParameters(): array
     {
-        return \array_map(static function ($value) {
+        return array_map(static function ($value) {
             return $value instanceof SerializableInterface ? $value->toArray() : $value;
-        }, \array_filter(['filterById' => $this->filterById, 'filterByName' => $this->filterByName, 'filterByIds' => $this->filterByIds, 'filter' => $this->filter], static function ($value) {
+        }, array_filter(['filterById' => $this->filterById, 'filterByName' => $this->filterByName, 'filterByIds' => $this->filterByIds, 'filter' => $this->filter], static function ($value) {
             return null !== $value;
         }));
     }
@@ -96,7 +96,7 @@ class GetResourcesRequest implements RequestInterface
 
     public function getHeaders(): array
     {
-        return ['Authorization' => \sprintf('Basic %s', \base64_encode(\sprintf('%s:%s', $this->credentials->getUsername(), $this->credentials->getPassword())))];
+        return ['Authorization' => sprintf('Basic %s', base64_encode(sprintf('%s:%s', $this->credentials->getUsername(), $this->credentials->getPassword())))];
     }
 
     public function getBody()

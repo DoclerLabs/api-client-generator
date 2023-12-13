@@ -24,8 +24,8 @@ abstract class AbstractJsonContentTypeSerializer implements ContentTypeSerialize
      */
     public function encode(SerializableInterface $body): string
     {
-        $encodedData   = \json_encode($body->toArray(), self::JSON_OPTIONS);
-        $lastErrorCode = \json_last_error();
+        $encodedData   = json_encode($body->toArray(), self::JSON_OPTIONS);
+        $lastErrorCode = json_last_error();
         if ($lastErrorCode === JSON_ERROR_NONE && $encodedData !== false) {
             return $encodedData;
         }
@@ -40,10 +40,10 @@ abstract class AbstractJsonContentTypeSerializer implements ContentTypeSerialize
         $body->rewind();
         // According to RFC7159 a JSON value MUST be an object, array, number, string,
         // or one of the following three literal names: false, null, true.
-        $result        = \json_decode($body->getContents(), true, self::JSON_DEPTH, self::JSON_OPTIONS);
-        $lastErrorCode = \json_last_error();
+        $result        = json_decode($body->getContents(), true, self::JSON_DEPTH, self::JSON_OPTIONS);
+        $lastErrorCode = json_last_error();
         if ($lastErrorCode === JSON_ERROR_NONE) {
-            if (! \is_array($result)) {
+            if (!is_array($result)) {
                 $result = [ContentTypeSerializerInterface::LITERAL_VALUE_KEY => $result];
             }
 

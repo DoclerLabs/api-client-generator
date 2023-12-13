@@ -16,8 +16,10 @@ use PHPUnit\Framework\TestCase;
  */
 class NamespaceSubstituteVisitorTest extends TestCase
 {
-    private const ORIGINAL_NAMESPACE   = 'Some\\Original\\Namespace';
+    private const ORIGINAL_NAMESPACE = 'Some\\Original\\Namespace';
+
     private const SUBSTITUTE_NAMESPACE = 'Substitute\\Namespace';
+
     private NamespaceSubstituteVisitor $sut;
 
     protected function setUp(): void

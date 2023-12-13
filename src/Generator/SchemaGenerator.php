@@ -19,7 +19,9 @@ use UnexpectedValueException;
 class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
 {
     public const SUBDIRECTORY = 'Schema/';
+
     public const NAMESPACE_SUBPATH = '\\Schema';
+
     private const OPTIONAL_CHANGED_FIELDS_PROPERTY_NAME = 'optionalPropertyChanged';
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void

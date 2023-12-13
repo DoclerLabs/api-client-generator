@@ -212,18 +212,16 @@ class ServiceProvider implements ServiceProviderInterface
             $container[HttpMessageImplementationStrategy::class],
         );
 
-        $pimple[HttpMessageImplementationStrategy::class] =
-            static fn (Container $container) => new HttpMessageImplementationStrategy(
-                $container[Configuration::class]->httpMessage,
-                $container[CodeBuilder::class]
-            );
+        $pimple[HttpMessageImplementationStrategy::class] = static fn (Container $container) => new HttpMessageImplementationStrategy(
+            $container[Configuration::class]->httpMessage,
+            $container[CodeBuilder::class]
+        );
 
-        $pimple[ContainerImplementationStrategy::class] =
-            static fn (Container $container) => new ContainerImplementationStrategy(
-                $container[Configuration::class]->container,
-                $container[Configuration::class]->baseNamespace,
-                $container[CodeBuilder::class]
-            );
+        $pimple[ContainerImplementationStrategy::class] = static fn (Container $container) => new ContainerImplementationStrategy(
+            $container[Configuration::class]->container,
+            $container[Configuration::class]->baseNamespace,
+            $container[CodeBuilder::class]
+        );
 
         $pimple[PhpFilePrinter::class] = static fn (Container $container) => new PhpFilePrinter(
             new Standard(),

@@ -64,7 +64,7 @@ class FieldFactory
                 }
 
                 $objectProperties = $this->mergeAllOfProperties($operationName, $schema);
-                $schema = $this->mergeAllOfAttributes($schema);
+                $schema           = $this->mergeAllOfAttributes($schema);
             } elseif (FieldType::isSpecificationTypeArray($type)) {
                 $itemReferenceName = '';
                 if ($schema->items === null) {

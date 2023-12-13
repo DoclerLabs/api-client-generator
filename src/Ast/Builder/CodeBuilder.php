@@ -373,7 +373,7 @@ class CodeBuilder extends BuilderFactory
 
     public function compare(Expr $left, string $operator, Expr $right): BinaryOp
     {
-        return match($operator) {
+        return match ($operator) {
             '>'     => new Greater($left, $right),
             '>='    => new GreaterOrEqual($left, $right),
             '<'     => new Smaller($left, $right),
@@ -384,7 +384,7 @@ class CodeBuilder extends BuilderFactory
 
     public function operation(Expr $left, string $operator, Expr $right): BinaryOp
     {
-        return match($operator) {
+        return match ($operator) {
             '-'     => new Minus($left, $right),
             '+'     => new Plus($left, $right),
             '*'     => new Mul($left, $right),

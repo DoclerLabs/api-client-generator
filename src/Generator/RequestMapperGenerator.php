@@ -22,6 +22,7 @@ use Psr\Http\Message\RequestInterface as PsrRequestInterface;
 class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 {
     public const NAMESPACE_SUBPATH = '\\Request\\Mapper';
+
     public const SUBDIRECTORY = 'Request/Mapper/';
 
     public function __construct(
@@ -60,7 +61,7 @@ class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         );
 
         /** @var ParameterBuilder[] $parameters */
-        $parameters = [];
+        $parameters   = [];
         $parameters[] = $this->builder->param($bodySerializerPropertyName)->setType('BodySerializer');
         $parameters[] = $this->builder->param($querySerializerPropertyName)->setType('QuerySerializer');
 

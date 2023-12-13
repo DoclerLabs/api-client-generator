@@ -53,7 +53,7 @@ class ParserTest extends TestCase
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'   => [
+                    'paths' => [
                         '/users' => [
                             'get' => [
                                 'operationId' => 'getUsers',
@@ -73,23 +73,23 @@ class ParserTest extends TestCase
     public function invalidSpecificationProvider()
     {
         return [
-            'Empty specification file'                        => [
+            'Empty specification file' => [
                 [],
             ],
-            'No paths'                                        => [
+            'No paths' => [
                 [
                     'openapi' => '3.0.0',
                     'info'    => [
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'   => [],
+                    'paths' => [],
                 ],
             ],
             'Swagger specification version is lower than 3.0' => [
                 [
-                    'swagger'  => '2.0',
-                    'info'     => [
+                    'swagger' => '2.0',
+                    'info'    => [
                         'title'       => 'Sample API',
                         'description' => 'API description.',
                         'version'     => '1.0.0',
@@ -100,7 +100,7 @@ class ParserTest extends TestCase
                     'paths'    => [],
                 ],
             ],
-            'Paths field is missing'                          => [
+            'Paths field is missing' => [
                 [
                     'openapi' => '3.0.0',
                     'info'    => [
@@ -109,14 +109,14 @@ class ParserTest extends TestCase
                     ],
                 ],
             ],
-            'Responses field is missing'                      => [
+            'Responses field is missing' => [
                 [
                     'openapi' => '3.0.0',
                     'info'    => [
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'   => [
+                    'paths' => [
                         '/users' => [
                             'get' => [
                                 'operationId' => 'getUsers',
@@ -125,14 +125,14 @@ class ParserTest extends TestCase
                     ],
                 ],
             ],
-            'Unsupported operation'                           => [
+            'Unsupported operation' => [
                 [
                     'openapi' => '3.0.0',
                     'info'    => [
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'   => [
+                    'paths' => [
                         '/users' => [
                             'flurp' => [
                                 'operationId' => 'flurpThem',
@@ -146,14 +146,14 @@ class ParserTest extends TestCase
                     ],
                 ],
             ],
-            'Response without description'                    => [
+            'Response without description' => [
                 [
                     'openapi' => '3.0.0',
                     'info'    => [
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'   => [
+                    'paths' => [
                         '/users' => [
                             'get' => [
                                 'operationId' => 'getUsers',
@@ -173,14 +173,14 @@ class ParserTest extends TestCase
                     ],
                 ],
             ],
-            'OneOf keyword is not supported'                          => [
+            'OneOf keyword is not supported' => [
                 [
                     'openapi' => '3.0.0',
                     'info'    => [
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'   => [
+                    'paths' => [
                         '/users' => [
                             'get' => [
                                 'responses' => [
@@ -200,14 +200,14 @@ class ParserTest extends TestCase
                     ],
                 ],
             ],
-            'Reference to non-existing schema'                => [
+            'Reference to non-existing schema' => [
                 [
                     'openapi' => '3.0.0',
                     'info'    => [
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'   => [
+                    'paths' => [
                         '/users' => [
                             'get' => [
                                 'operationId' => 'getUsers',
@@ -231,14 +231,14 @@ class ParserTest extends TestCase
                     ],
                 ],
             ],
-            'Array schema without items'                      => [
+            'Array schema without items' => [
                 [
                     'openapi' => '3.0.0',
                     'info'    => [
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'   => [
+                    'paths' => [
                         '/users' => [
                             'get' => [
                                 'operationId' => 'getUsers',
@@ -259,14 +259,14 @@ class ParserTest extends TestCase
                     ],
                 ],
             ],
-            'Invalid field name'                              => [
+            'Invalid field name' => [
                 [
                     'openapi' => '3.0.0',
                     'info'    => [
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'   => [
+                    'paths' => [
                         '/users' => [
                             'get' => [
                                 'operationId' => 'getUsers',
@@ -292,14 +292,14 @@ class ParserTest extends TestCase
                     ],
                 ],
             ],
-            'Invalid reference name'                          => [
+            'Invalid reference name' => [
                 [
-                    'openapi'    => '3.0.0',
-                    'info'       => [
+                    'openapi' => '3.0.0',
+                    'info'    => [
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'      => [
+                    'paths' => [
                         '/users' => [
                             'get' => [
                                 'operationId' => 'getItems',
@@ -323,8 +323,7 @@ class ParserTest extends TestCase
                             '7Item' => [
                                 'type'       => 'object',
                                 'properties' => [
-                                    'name' =>
-                                        [
+                                    'name' => [
                                             'type' => 'string',
                                         ],
                                 ],
@@ -333,14 +332,14 @@ class ParserTest extends TestCase
                     ],
                 ],
             ],
-            'Invalid array item reference name'               => [
+            'Invalid array item reference name' => [
                 [
-                    'openapi'    => '3.0.0',
-                    'info'       => [
+                    'openapi' => '3.0.0',
+                    'info'    => [
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'      => [
+                    'paths' => [
                         '/users' => [
                             'get' => [
                                 'operationId' => 'getItems',
@@ -367,8 +366,7 @@ class ParserTest extends TestCase
                             '7Item' => [
                                 'type'       => 'object',
                                 'properties' => [
-                                    'name' =>
-                                        [
+                                    'name' => [
                                             'type' => 'string',
                                         ],
                                 ],
@@ -377,17 +375,17 @@ class ParserTest extends TestCase
                     ],
                 ],
             ],
-            'Incomplete parameter'                            => [
+            'Incomplete parameter' => [
                 [
-                    'openapi'    => '3.0.0',
-                    'info'       => [
+                    'openapi' => '3.0.0',
+                    'info'    => [
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'      => [
+                    'paths' => [
                         '/users' => [
                             'get' => [
-                                'parameters'  => [
+                                'parameters' => [
                                     ['$ref' => '#/components/parameters/ItemName',],
                                 ],
                                 'operationId' => 'getItems',
@@ -408,14 +406,14 @@ class ParserTest extends TestCase
                     ],
                 ],
             ],
-            'Usage of parameter inside a schema'              => [
+            'Usage of parameter inside a schema' => [
                 [
-                    'openapi'    => '3.0.0',
-                    'info'       => [
+                    'openapi' => '3.0.0',
+                    'info'    => [
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'      => [
+                    'paths' => [
                         '/users' => [
                             'get' => [
                                 'operationId' => 'getItems',
@@ -450,14 +448,14 @@ class ParserTest extends TestCase
                     ],
                 ],
             ],
-            'Duplicated operation id'                         => [
+            'Duplicated operation id' => [
                 [
                     'openapi' => '3.0.0',
                     'info'    => [
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'   => [
+                    'paths' => [
                         '/users' => [
                             'get' => [
                                 'operationId' => 'getUsers',
@@ -481,17 +479,17 @@ class ParserTest extends TestCase
                     ],
                 ],
             ],
-            'Parameter with invalid origin'                   => [
+            'Parameter with invalid origin' => [
                 [
-                    'openapi'    => '3.0.0',
-                    'info'       => [
+                    'openapi' => '3.0.0',
+                    'info'    => [
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'      => [
+                    'paths' => [
                         '/users' => [
                             'get' => [
-                                'parameters'  => [
+                                'parameters' => [
                                     ['$ref' => '#/components/parameters/ItemName',],
                                 ],
                                 'operationId' => 'getItems',

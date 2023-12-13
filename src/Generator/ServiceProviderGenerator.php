@@ -179,7 +179,7 @@ class ServiceProviderGenerator extends GeneratorAbstract
     {
         return $this->builder->closure(
             [
-                $this->builder->return($this->builder->new('QuerySerializer'))
+                $this->builder->return($this->builder->new('QuerySerializer')),
             ],
             [],
             [],
@@ -274,7 +274,7 @@ class ServiceProviderGenerator extends GeneratorAbstract
             $alreadyInjected = [];
             foreach ($field->getObjectProperties() as $subfield) {
                 if ($subfield->isComposite() && !isset($alreadyInjected[$subfield->getPhpClassName()])) {
-                    $getMethodArg   = $this->builder->classConstFetch(
+                    $getMethodArg = $this->builder->classConstFetch(
                         SchemaMapperNaming::getClassName($subfield),
                         'class'
                     );
@@ -284,7 +284,7 @@ class ServiceProviderGenerator extends GeneratorAbstract
                 }
             }
         } elseif ($field->isArrayOfObjects()) {
-            $getMethodArg   = $this->builder->classConstFetch(
+            $getMethodArg = $this->builder->classConstFetch(
                 SchemaMapperNaming::getClassName($field->getArrayItem()),
                 'class'
             );

@@ -19,6 +19,7 @@ use PhpParser\Node\Stmt\ClassMethod;
 class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 {
     public const NAMESPACE_SUBPATH = '\\Schema\\Mapper';
+
     public const SUBDIRECTORY = 'Schema/Mapper/';
 
     private array $mapMethodThrownExceptions;
@@ -99,7 +100,7 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                             ->param($propertyName)
                             ->setType($childClassName);
 
-                        $paramInits[]                     = $this->builder->assign(
+                        $paramInits[] = $this->builder->assign(
                             $this->builder->localPropertyFetch($propertyName),
                             $this->builder->var($propertyName)
                         );
@@ -267,7 +268,7 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 'array_diff',
                 [$this->builder->array($requiredItemsNames), $missingFieldsArrayKeys]
             );
-            $missingFieldsImplode   = $this->builder->funcCall(
+            $missingFieldsImplode = $this->builder->funcCall(
                 'implode',
                 [$this->builder->val(', '), $missingFieldsArrayDiff]
             );

@@ -74,7 +74,7 @@ The following environment variables are available:
 | `PACKAGE` | yes | | | group/some-api-client |
 | `OPENAPI ` | yes | | | /api/openapi.yaml |
 | `OUTPUT_DIR` | yes | | | /client |
-| `CODE_STYLE` | no | {path-to-repository}/.php-cs-fixer.php | | /client/myCodeStyle.php |
+| `CODE_STYLE` | no | {path-to-repository}/.php-cs-fixer.php.dist | | /client/myCodeStyle.php |
 | `SOURCE_DIR` | no | src | | src |
 | `CLIENT_PHP_VERSION` | no | 7.4 | 7.0, 7.1, 7.2, 7.3, 7.4, 8.0 | 7.4 |
 | `COMPOSER_JSON_TEMPLATE_DIR` | no | {path-to-repository}/template/composer.json.twig | | /path/composer.json.twig |

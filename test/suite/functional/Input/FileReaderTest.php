@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Test\Functional\Input;
 
-use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
 use DoclerLabs\ApiClientGenerator\Input\FileReader;
+use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
 use DoclerLabs\ApiClientGenerator\Test\Functional\ConfigurationAwareTrait;
 use DoclerLabs\ApiClientGenerator\Test\Functional\ConfigurationBuilder;
 use PHPUnit\Framework\TestCase;

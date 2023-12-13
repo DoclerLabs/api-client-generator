@@ -8,7 +8,8 @@ use DoclerLabs\ApiClientGenerator\Input\Specification;
 
 class ClientNaming
 {
-    private const CLIENT_SUFFIX  = 'Client';
+    private const CLIENT_SUFFIX = 'Client';
+
     private const FACTORY_SUFFIX = 'ClientFactory';
 
     public static function getClassName(Specification $specification): string

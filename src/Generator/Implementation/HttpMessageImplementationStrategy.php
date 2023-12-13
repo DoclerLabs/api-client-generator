@@ -12,12 +12,15 @@ use UnexpectedValueException;
 
 class HttpMessageImplementationStrategy implements HttpMessageImplementationInterface
 {
-    public const HTTP_MESSAGE_GUZZLE          = 'guzzle';
-    public const HTTP_MESSAGE_NYHOLM          = 'nyholm';
+    public const HTTP_MESSAGE_GUZZLE = 'guzzle';
+
+    public const HTTP_MESSAGE_NYHOLM = 'nyholm';
+
     public const HTTP_MESSAGE_IMPLEMENTATIONS = [
         self::HTTP_MESSAGE_GUZZLE => GuzzleHttpMessage::class,
         self::HTTP_MESSAGE_NYHOLM => NyholmHttpMessage::class,
     ];
+
     private HttpMessageImplementationInterface $httpMessageImplementation;
 
     public function __construct(string $httpMessage, CodeBuilder $builder)

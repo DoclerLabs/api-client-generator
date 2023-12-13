@@ -9,10 +9,15 @@ use UnexpectedValueException;
 class PhpVersion
 {
     public const VERSION_PHP70 = 7.0;
+
     public const VERSION_PHP71 = 7.1;
+
     public const VERSION_PHP72 = 7.2;
+
     public const VERSION_PHP73 = 7.3;
+
     public const VERSION_PHP74 = 7.4;
+
     public const VERSION_PHP80 = 8.0;
 
     private const SUPPORTED_VERSIONS = [

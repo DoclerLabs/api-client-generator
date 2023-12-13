@@ -19,10 +19,13 @@ class PhpPrinterTest extends TestCase
 {
     /** @var PhpFilePrinter */
     private $sut;
+
     /** @var PrettyPrinterAbstract|MockObject */
     private $marshaler;
+
     /** @var TextFilePrinter|MockObject */
     private $printer;
+
     /** @var PhpCodeStyleFixer|MockObject */
     private $fixer;
 

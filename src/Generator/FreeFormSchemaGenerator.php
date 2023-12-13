@@ -85,7 +85,7 @@ class FreeFormSchemaGenerator extends MutatorAccessorClassGeneratorAbstract
 
     private function generateToArray(): ClassMethod
     {
-        $return     = $this->builder->return(
+        $return = $this->builder->return(
             $this->builder->castToArray(
                 $this->builder->localPropertyFetch(self::FREE_FORM_SCHEMA_VARIABLE)
             )

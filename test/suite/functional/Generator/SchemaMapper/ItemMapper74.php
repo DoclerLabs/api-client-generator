@@ -31,8 +31,8 @@ class ItemMapper implements SchemaMapperInterface
      */
     public function toSchema(array $payload): Item
     {
-        $missingFields = \implode(', ', \array_diff(['mandatoryInteger', 'mandatoryString', 'mandatoryEnum', 'mandatoryDate', 'mandatoryNullableDate', 'mandatoryFloat', 'mandatoryBoolean', 'mandatoryArray', 'mandatoryObject', 'mandatoryNullableObject'], \array_keys($payload)));
-        if (! empty($missingFields)) {
+        $missingFields = implode(', ', array_diff(['mandatoryInteger', 'mandatoryString', 'mandatoryEnum', 'mandatoryDate', 'mandatoryNullableDate', 'mandatoryFloat', 'mandatoryBoolean', 'mandatoryArray', 'mandatoryObject', 'mandatoryNullableObject'], array_keys($payload)));
+        if (!empty($missingFields)) {
             throw new UnexpectedResponseBodyException('Required attributes for `Item` missing in the response body: ' . $missingFields);
         }
         $schema = new Item($payload['mandatoryInteger'], $payload['mandatoryString'], $payload['mandatoryEnum'], new DateTimeImmutable($payload['mandatoryDate']), $payload['mandatoryNullableDate'] !== null ? new DateTimeImmutable($payload['mandatoryNullableDate']) : null, $payload['mandatoryFloat'], $payload['mandatoryBoolean'], $payload['mandatoryArray'], $this->embeddedObjectMapper->toSchema($payload['mandatoryObject']), $payload['mandatoryNullableObject'] !== null ? $this->embeddedNullableObjectMapper->toSchema($payload['mandatoryNullableObject']) : null);
@@ -48,7 +48,7 @@ class ItemMapper implements SchemaMapperInterface
         if (isset($payload['optionalDate'])) {
             $schema->setOptionalDate(new DateTimeImmutable($payload['optionalDate']));
         }
-        if (\array_key_exists('optionalNullableDate', $payload)) {
+        if (array_key_exists('optionalNullableDate', $payload)) {
             $schema->setOptionalNullableDate($payload['optionalNullableDate'] !== null ? new DateTimeImmutable($payload['optionalNullableDate']) : null);
         }
         if (isset($payload['optionalFloat'])) {
@@ -63,7 +63,7 @@ class ItemMapper implements SchemaMapperInterface
         if (isset($payload['optionalObject'])) {
             $schema->setOptionalObject($this->embeddedObjectMapper->toSchema($payload['optionalObject']));
         }
-        if (\array_key_exists('optionalNullableObject', $payload)) {
+        if (array_key_exists('optionalNullableObject', $payload)) {
             $schema->setOptionalNullableObject($payload['optionalNullableObject'] !== null ? $this->embeddedNullableObjectMapper->toSchema($payload['optionalNullableObject']) : null);
         }
 

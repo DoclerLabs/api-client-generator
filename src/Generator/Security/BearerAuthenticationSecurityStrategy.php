@@ -11,7 +11,9 @@ use PhpParser\Node\Expr;
 class BearerAuthenticationSecurityStrategy extends SecurityStrategyAbstract
 {
     private const PROPERTY_NAME = 'bearerToken';
+
     private const SCHEME = 'bearer';
+
     private const TYPE = 'http';
 
     public function getProperties(Operation $operation, Specification $specification): array

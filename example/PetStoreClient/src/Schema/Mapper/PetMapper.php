@@ -30,8 +30,8 @@ class PetMapper implements SchemaMapperInterface
      */
     public function toSchema(array $payload): Pet
     {
-        $missingFields = \implode(', ', \array_diff(['name', 'photoUrls'], \array_keys($payload)));
-        if (! empty($missingFields)) {
+        $missingFields = implode(', ', array_diff(['name', 'photoUrls'], array_keys($payload)));
+        if (!empty($missingFields)) {
             throw new UnexpectedResponseBodyException('Required attributes for `Pet` missing in the response body: ' . $missingFields);
         }
         $schema = new Pet($payload['name'], $payload['photoUrls']);
@@ -47,7 +47,7 @@ class PetMapper implements SchemaMapperInterface
         if (isset($payload['status'])) {
             $schema->setStatus($payload['status']);
         }
-        if (\array_key_exists('chipped', $payload)) {
+        if (array_key_exists('chipped', $payload)) {
             $schema->setChipped($payload['chipped']);
         }
 

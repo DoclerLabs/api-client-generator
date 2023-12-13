@@ -31,7 +31,7 @@ class ParameterNode extends Param
         }
 
         if ($this->type instanceof UnionType) {
-            return implode("|", $this->type->getAttribute('types'));
+            return implode('|', $this->type->getAttribute('types'));
         }
 
         if ($this->type instanceof NullableType) {

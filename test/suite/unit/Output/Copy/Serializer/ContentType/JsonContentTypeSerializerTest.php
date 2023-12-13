@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DoclerLabs\ApiClientGenerator\Test\Unit\Output\Copy\Serializer\ContentType;
 
 use DoclerLabs\ApiClientGenerator\Output\Copy\Schema\SerializableInterface;
@@ -60,9 +62,9 @@ class JsonContentTypeSerializerTest extends TestCase
                         ['name' => 'Shyam', 'email' => 'shyamjaiswal@gmail.com'],
                         ['name' => 'Bob', 'email' => 'bob32@gmail.com'],
                         ['name' => 'Jai', 'email' => 'jai87@gmail.com'],
-                    ]
+                    ],
                 ],
-                '{"employees":[{"name":"Shyam","email":"shyamjaiswal@gmail.com"},{"name":"Bob","email":"bob32@gmail.com"},{"name":"Jai","email":"jai87@gmail.com"}]}'
+                '{"employees":[{"name":"Shyam","email":"shyamjaiswal@gmail.com"},{"name":"Bob","email":"bob32@gmail.com"},{"name":"Jai","email":"jai87@gmail.com"}]}',
             ],
             [
                 [
@@ -76,13 +78,13 @@ class JsonContentTypeSerializerTest extends TestCase
                                 ['value' => 'Save', 'onclick' => 'SaveDoc()'],
                             ],
                         ],
-                    ]
+                    ],
                 ],
-                '{"menu":{"id":"file","value":"File","popup":{"menuitem":[{"value":"New","onclick":"CreateDoc()"},{"value":"Open","onclick":"OpenDoc()"},{"value":"Save","onclick":"SaveDoc()"}]}}}'
+                '{"menu":{"id":"file","value":"File","popup":{"menuitem":[{"value":"New","onclick":"CreateDoc()"},{"value":"Open","onclick":"OpenDoc()"},{"value":"Save","onclick":"SaveDoc()"}]}}}',
             ],
             [
                 [1, 2, 3],
-                '[1,2,3]'
+                '[1,2,3]',
             ],
         ];
     }
@@ -92,27 +94,27 @@ class JsonContentTypeSerializerTest extends TestCase
         return [
             [
                 [
-                    '__literalResponseValue' => null
+                    '__literalResponseValue' => null,
                 ],
-                'null'
+                'null',
             ],
             [
                 [
-                    '__literalResponseValue' => false
+                    '__literalResponseValue' => false,
                 ],
-                'false'
+                'false',
             ],
             [
                 [
-                    '__literalResponseValue' => 0
+                    '__literalResponseValue' => 0,
                 ],
-                '0'
+                '0',
             ],
             [
                 [
-                    '__literalResponseValue' => 'asd'
+                    '__literalResponseValue' => 'asd',
                 ],
-                '"asd"'
+                '"asd"',
             ],
         ];
     }

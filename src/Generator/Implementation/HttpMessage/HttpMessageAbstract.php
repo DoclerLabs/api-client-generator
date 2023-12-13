@@ -25,7 +25,7 @@ abstract class HttpMessageAbstract
 
         $bodyVariable = $this->builder->var('body');
 
-        $bodyEncodeMethodCall  = $this->builder->methodCall(
+        $bodyEncodeMethodCall = $this->builder->methodCall(
             $this->builder->localPropertyFetch('bodySerializer'),
             'serializeRequest',
             [
@@ -66,7 +66,7 @@ abstract class HttpMessageAbstract
                         $this->builder->methodCall($psr7RequestVariable, 'getUri'),
                         'withQuery',
                         [$query]
-                    )
+                    ),
                 ]
             )
         );

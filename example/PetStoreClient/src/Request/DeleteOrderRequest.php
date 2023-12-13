@@ -33,7 +33,7 @@ class DeleteOrderRequest implements RequestInterface
 
     public function getRoute(): string
     {
-        return \strtr('store/order/{orderId}', ['{orderId}' => $this->orderId]);
+        return strtr('store/order/{orderId}', ['{orderId}' => $this->orderId]);
     }
 
     public function getQueryParameters(): array

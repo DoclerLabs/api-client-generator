@@ -10,6 +10,7 @@ use Psr\Http\Message\StreamInterface;
 abstract class AbstractJsonContentTypeSerializer implements ContentTypeSerializerInterface
 {
     private const JSON_DEPTH = 512;
+
     private const JSON_OPTIONS = JSON_BIGINT_AS_STRING | JSON_PRESERVE_ZERO_FRACTION | JSON_UNESCAPED_UNICODE;
 
     /**

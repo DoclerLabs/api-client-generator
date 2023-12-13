@@ -17,6 +17,7 @@ class MetaFilePrinterTest extends TestCase
 {
     /** @var MetaFilePrinter */
     private $sut;
+
     /** @var TextFilePrinter|MockObject */
     private $printer;
 

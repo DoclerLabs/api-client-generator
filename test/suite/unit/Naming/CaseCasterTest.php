@@ -48,92 +48,92 @@ class CaseCasterTest extends TestCase
     {
         return [
             [
-                "f",
-                "f",
+                'f',
+                'f',
             ],
             [
-                "1234",
-                "1234",
+                '1234',
+                '1234',
             ],
             [
-                "FOO",
-                "foo",
+                'FOO',
+                'foo',
             ],
             [
-                "FooBar",
-                "fooBar",
+                'FooBar',
+                'fooBar',
             ],
             [
-                "fooBar",
-                "fooBar",
+                'fooBar',
+                'fooBar',
             ],
             [
-                "foo bar",
-                "fooBar",
+                'foo bar',
+                'fooBar',
             ],
             [
-                "Foo - Bar",
-                "fooBar",
+                'Foo - Bar',
+                'fooBar',
             ],
             [
-                "foo & bar",
-                "fooBar",
+                'foo & bar',
+                'fooBar',
             ],
             [
-                "FooFooBar",
-                "fooFooBar",
+                'FooFooBar',
+                'fooFooBar',
             ],
             [
-                "Foo2Foo2Bar",
-                "foo2Foo2Bar",
+                'Foo2Foo2Bar',
+                'foo2Foo2Bar',
             ],
             [
-                "foo-bar-baz",
-                "fooBarBaz",
+                'foo-bar-baz',
+                'fooBarBaz',
             ],
             [
-                "foo_bar_1_2",
-                "fooBar12",
+                'foo_bar_1_2',
+                'fooBar12',
             ],
             [
-                "_foo_bar_baz_",
-                "fooBarBaz",
+                '_foo_bar_baz_',
+                'fooBarBaz',
             ],
             [
-                "--foo-bar--",
-                "fooBar",
+                '--foo-bar--',
+                'fooBar',
             ],
             [
-                "FOO_BAR_baz",
-                "fooBarBaz",
+                'FOO_BAR_baz',
+                'fooBarBaz',
             ],
             [
-                "__FOO_BAR__",
-                "fooBar",
+                '__FOO_BAR__',
+                'fooBar',
             ],
             [
                 "Foo w1th apo's and punc]t",
-                "fooW1thApoSAndPuncT",
+                'fooW1thApoSAndPuncT',
             ],
             [
-                "getHTTPResponse",
-                "getHttpResponse",
+                'getHTTPResponse',
+                'getHttpResponse',
             ],
             [
-                "currencyISOCode",
-                "currencyIsoCode",
+                'currencyISOCode',
+                'currencyIsoCode',
             ],
             [
-                "get2HTTPResponse",
-                "get2HttpResponse",
+                'get2HTTPResponse',
+                'get2HttpResponse',
             ],
             [
-                "HTTPResponseCode",
-                "httpResponseCode",
+                'HTTPResponseCode',
+                'httpResponseCode',
             ],
             [
-                "HTTPResponseCodeXY",
-                "httpResponseCodeXy",
+                'HTTPResponseCodeXY',
+                'httpResponseCodeXy',
             ],
         ];
     }
@@ -142,96 +142,96 @@ class CaseCasterTest extends TestCase
     {
         return [
             [
-                "",
-                "",
+                '',
+                '',
             ],
             [
-                "f",
-                "f",
+                'f',
+                'f',
             ],
             [
-                "1234",
-                "1234",
+                '1234',
+                '1234',
             ],
             [
-                "FOO",
-                "foo",
+                'FOO',
+                'foo',
             ],
             [
-                "FooBar",
-                "foo_bar",
+                'FooBar',
+                'foo_bar',
             ],
             [
-                "fooBar",
-                "foo_bar",
+                'fooBar',
+                'foo_bar',
             ],
             [
-                "foo bar",
-                "foo_bar",
+                'foo bar',
+                'foo_bar',
             ],
             [
-                "Foo - Bar",
-                "foo_bar",
+                'Foo - Bar',
+                'foo_bar',
             ],
             [
-                "foo & bar",
-                "foo_bar",
+                'foo & bar',
+                'foo_bar',
             ],
             [
-                "FooFooBar",
-                "foo_foo_bar",
+                'FooFooBar',
+                'foo_foo_bar',
             ],
             [
-                "Foo2Foo2Bar",
-                "foo2_foo2_bar",
+                'Foo2Foo2Bar',
+                'foo2_foo2_bar',
             ],
             [
-                "foo-bar-baz",
-                "foo_bar_baz",
+                'foo-bar-baz',
+                'foo_bar_baz',
             ],
             [
-                "foo_bar_1_2",
-                "foo_bar_1_2",
+                'foo_bar_1_2',
+                'foo_bar_1_2',
             ],
             [
-                "_foo_bar_baz_",
-                "foo_bar_baz",
+                '_foo_bar_baz_',
+                'foo_bar_baz',
             ],
             [
-                "--foo-bar--",
-                "foo_bar",
+                '--foo-bar--',
+                'foo_bar',
             ],
             [
-                "FOO_BAR_baz",
-                "foo_bar_baz",
+                'FOO_BAR_baz',
+                'foo_bar_baz',
             ],
             [
-                "__FOO_BAR__",
-                "foo_bar",
+                '__FOO_BAR__',
+                'foo_bar',
             ],
             [
                 "Foo w1th apo's and punc]t",
-                "foo_w1th_apo_s_and_punc_t",
+                'foo_w1th_apo_s_and_punc_t',
             ],
             [
-                "getHTTPResponse",
-                "get_http_response",
+                'getHTTPResponse',
+                'get_http_response',
             ],
             [
-                "currencyISOCode",
-                "currency_iso_code",
+                'currencyISOCode',
+                'currency_iso_code',
             ],
             [
-                "get2HTTPResponse",
-                "get2_http_response",
+                'get2HTTPResponse',
+                'get2_http_response',
             ],
             [
-                "HTTPResponseCode",
-                "http_response_code",
+                'HTTPResponseCode',
+                'http_response_code',
             ],
             [
-                "HTTPResponseCodeXY",
-                "http_response_code_xy",
+                'HTTPResponseCodeXY',
+                'http_response_code_xy',
             ],
         ];
     }

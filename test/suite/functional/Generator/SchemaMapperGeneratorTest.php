@@ -16,25 +16,25 @@ class SchemaMapperGeneratorTest extends AbstractGeneratorTest
     public function exampleProvider(): array
     {
         return [
-            'Single object response with php 7.4'         => [
+            'Single object response with php 7.4' => [
                 '/SchemaMapper/item.yaml',
                 '/SchemaMapper/ItemMapper74.php',
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ItemMapper',
                 ConfigurationBuilder::fake()->build(),
             ],
-            'Single object response with php 8.0'         => [
+            'Single object response with php 8.0' => [
                 '/SchemaMapper/item.yaml',
                 '/SchemaMapper/ItemMapper80.php',
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ItemMapper',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
             ],
-            'Collection response with php 7.4'            => [
+            'Collection response with php 7.4' => [
                 '/SchemaMapper/itemCollection.yaml',
                 '/SchemaMapper/ItemCollectionMapper74.php',
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ItemCollectionMapper',
                 ConfigurationBuilder::fake()->build(),
             ],
-            'Collection response with php 8.0'            => [
+            'Collection response with php 8.0' => [
                 '/SchemaMapper/itemCollection.yaml',
                 '/SchemaMapper/ItemCollectionMapper80.php',
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ItemCollectionMapper',
@@ -52,13 +52,13 @@ class SchemaMapperGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ResourceMapper',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
             ],
-            'Free form object response with php 7.4'      => [
+            'Free form object response with php 7.4' => [
                 '/SchemaMapper/freeFormItem.yaml',
                 '/SchemaMapper/FreeFormItemMapper74.php',
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\FreeFormItemMapper',
                 ConfigurationBuilder::fake()->build(),
             ],
-            'Free form object response with php 8.0'      => [
+            'Free form object response with php 8.0' => [
                 '/SchemaMapper/freeFormItem.yaml',
                 '/SchemaMapper/FreeFormItemMapper80.php',
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\FreeFormItemMapper',

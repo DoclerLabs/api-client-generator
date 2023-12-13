@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Test\Functional\Generator;
@@ -17,10 +18,15 @@ abstract class AbstractGeneratorTest extends TestCase
     use ConfigurationAwareTrait;
 
     public const BASE_NAMESPACE = 'Test';
+
     protected GeneratorInterface $sut;
+
     protected FileReader         $specificationReader;
+
     protected Parser             $specificationParser;
+
     protected PhpFileCollection  $fileRegistry;
+
     protected PhpFilePrinter     $printer;
 
     /**

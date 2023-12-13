@@ -20,10 +20,10 @@ class FileReader
             throw new InvalidSpecificationException('Specification file is empty.');
         }
 
-        return match($ext) {
+        return match ($ext) {
             'yaml', 'yml' => Yaml::parse($contents),
-            'json'        => json_decode($contents, true, 512, JSON_THROW_ON_ERROR),
-            default       => throw new InvalidSpecificationException(sprintf('Unknown specification file extension: %s. Supported: yaml, yml, json', $ext)),
+            'json'  => json_decode($contents, true, 512, JSON_THROW_ON_ERROR),
+            default => throw new InvalidSpecificationException(sprintf('Unknown specification file extension: %s. Supported: yaml, yml, json', $ext)),
         };
     }
 }

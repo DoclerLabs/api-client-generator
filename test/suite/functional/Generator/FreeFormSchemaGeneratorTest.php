@@ -16,7 +16,7 @@ class FreeFormSchemaGeneratorTest extends AbstractGeneratorTest
 {
     public function exampleProvider(): array
     {
-        $yaml = '/FreeFormSchema/item.yaml';
+        $yaml      = '/FreeFormSchema/item.yaml';
         $className = self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Item';
 
         return [

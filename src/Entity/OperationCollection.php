@@ -11,6 +11,7 @@ use IteratorAggregate;
 class OperationCollection implements IteratorAggregate
 {
     protected array $items = [];
+
     protected array $operationNames = [];
 
     public function add(Operation $item): self
@@ -19,7 +20,7 @@ class OperationCollection implements IteratorAggregate
             throw new InvalidSpecificationException('Duplicated operationId found: ' . $item->name);
         }
 
-        $this->items[] = $item;
+        $this->items[]                     = $item;
         $this->operationNames[$item->name] = true;
 
         return $this;

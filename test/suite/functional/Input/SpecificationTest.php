@@ -31,14 +31,14 @@ class SpecificationTest extends TestCase
     public function contentTypesTestProvider(): array
     {
         return [
-            'No serializers required'         => [
+            'No serializers required' => [
                 [
                     'openapi' => '3.0.0',
                     'info'    => [
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'   => [
+                    'paths' => [
                         '/users/{userId}' => [
                             'parameters' => [
                                 [
@@ -50,7 +50,7 @@ class SpecificationTest extends TestCase
                                     ],
                                 ],
                             ],
-                            'delete'     => [
+                            'delete' => [
                                 'operationId' => 'deleteUser',
                                 'responses'   => [
                                     '204' => [
@@ -70,7 +70,7 @@ class SpecificationTest extends TestCase
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'   => [
+                    'paths' => [
                         '/users' => [
                             'post' => [
                                 'operationId' => 'createUser',
@@ -99,7 +99,7 @@ class SpecificationTest extends TestCase
                                         ],
                                     ],
                                 ],
-                                'responses'   => [
+                                'responses' => [
                                     '201' => [
                                         'description' => 'Created',
                                     ],
@@ -120,14 +120,14 @@ class SpecificationTest extends TestCase
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'   => [
+                    'paths' => [
                         '/users' => [
                             'get' => [
                                 'operationId' => 'createUser',
                                 'responses'   => [
                                     '200' => [
                                         'description' => 'Array of users',
-                                        'content' => [
+                                        'content'     => [
                                             'application/json' => [
                                                 'schema' => [
                                                     'type'       => 'object',
@@ -167,7 +167,7 @@ class SpecificationTest extends TestCase
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'   => [
+                    'paths' => [
                         '/users/{userId}' => [
                             'parameters' => [
                                 [
@@ -206,10 +206,10 @@ class SpecificationTest extends TestCase
                                         ],
                                     ],
                                 ],
-                                'responses'   => [
+                                'responses' => [
                                     '200' => [
                                         'description' => 'Modified user',
-                                        'content' => [
+                                        'content'     => [
                                             'application/json' => [
                                                 'schema' => [
                                                     'type'       => 'object',
@@ -232,7 +232,7 @@ class SpecificationTest extends TestCase
                     'application/x-www-form-urlencoded',
                     'application/json',
                 ],
-            ]
+            ],
         ];
     }
 

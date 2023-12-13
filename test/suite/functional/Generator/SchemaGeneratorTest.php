@@ -46,7 +46,7 @@ class SchemaGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ItemMandatoryObject',
                 ConfigurationBuilder::fake()->build(),
             ],
-            'All of'       => [
+            'All of' => [
                 '/Schema/extendedItem.yaml',
                 '/Schema/AllOfItem.php',
                 self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ExtendedItem',

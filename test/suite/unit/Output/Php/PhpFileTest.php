@@ -12,8 +12,10 @@ use PHPUnit\Framework\TestCase;
  */
 class PhpFileTest extends TestCase
 {
-    private const FILE_NAME  = 'test.php';
+    private const FILE_NAME = 'test.php';
+
     private const CLASS_NAME = 'Test\\Test';
+
     /** @var PhpFile */
     private $sut;
 

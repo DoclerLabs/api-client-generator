@@ -141,14 +141,14 @@ class Item implements SerializableInterface, JsonSerializable
      */
     public function __construct(int $mandatoryInteger, string $mandatoryString, string $mandatoryEnum, DateTimeInterface $mandatoryDate, $mandatoryNullableDate, float $mandatoryFloat, bool $mandatoryBoolean, array $mandatoryArray, array $mandatoryArrayWithMinItems, ItemMandatoryObject $mandatoryObject, $mandatoryNullableObjectWithAllOf, $mandatoryMixed, $mandatoryAnyOf, $mandatoryNullableStringWithMinMaxLength)
     {
-        if (\count($mandatoryArrayWithMinItems) < 1) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Expected min items: `1`.', 'mandatoryArrayWithMinItems', $mandatoryArrayWithMinItems));
+        if (count($mandatoryArrayWithMinItems) < 1) {
+            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Expected min items: `1`.', 'mandatoryArrayWithMinItems', $mandatoryArrayWithMinItems));
         }
-        if ($mandatoryNullableStringWithMinMaxLength !== null && \grapheme_strlen($mandatoryNullableStringWithMinMaxLength) < 1) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Length should be greater than 1.', 'mandatoryNullableStringWithMinMaxLength', $mandatoryNullableStringWithMinMaxLength));
+        if ($mandatoryNullableStringWithMinMaxLength !== null && grapheme_strlen($mandatoryNullableStringWithMinMaxLength) < 1) {
+            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Length should be greater than 1.', 'mandatoryNullableStringWithMinMaxLength', $mandatoryNullableStringWithMinMaxLength));
         }
-        if ($mandatoryNullableStringWithMinMaxLength !== null && \grapheme_strlen($mandatoryNullableStringWithMinMaxLength) > 5) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Length should be less than 5.', 'mandatoryNullableStringWithMinMaxLength', $mandatoryNullableStringWithMinMaxLength));
+        if ($mandatoryNullableStringWithMinMaxLength !== null && grapheme_strlen($mandatoryNullableStringWithMinMaxLength) > 5) {
+            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Length should be less than 5.', 'mandatoryNullableStringWithMinMaxLength', $mandatoryNullableStringWithMinMaxLength));
         }
         $this->mandatoryInteger                        = $mandatoryInteger;
         $this->mandatoryString                         = $mandatoryString;
@@ -284,11 +284,11 @@ class Item implements SerializableInterface, JsonSerializable
      */
     public function setOptionalArrayWithMinMaxItems(array $optionalArrayWithMinMaxItems): self
     {
-        if (\count($optionalArrayWithMinMaxItems) < 1) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Expected min items: `1`.', 'optionalArrayWithMinMaxItems', $optionalArrayWithMinMaxItems));
+        if (count($optionalArrayWithMinMaxItems) < 1) {
+            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Expected min items: `1`.', 'optionalArrayWithMinMaxItems', $optionalArrayWithMinMaxItems));
         }
-        if (\count($optionalArrayWithMinMaxItems) > 5) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Expected max items: `5`.', 'optionalArrayWithMinMaxItems', $optionalArrayWithMinMaxItems));
+        if (count($optionalArrayWithMinMaxItems) > 5) {
+            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Expected max items: `5`.', 'optionalArrayWithMinMaxItems', $optionalArrayWithMinMaxItems));
         }
         $this->optionalArrayWithMinMaxItems                            = $optionalArrayWithMinMaxItems;
         $this->optionalPropertyChanged['optionalArrayWithMinMaxItems'] = true;
@@ -301,11 +301,11 @@ class Item implements SerializableInterface, JsonSerializable
      */
     public function setOptionalStringWithMinMaxLength(string $optionalStringWithMinMaxLength): self
     {
-        if (\grapheme_strlen($optionalStringWithMinMaxLength) < 1) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Length should be greater than 1.', 'optionalStringWithMinMaxLength', $optionalStringWithMinMaxLength));
+        if (grapheme_strlen($optionalStringWithMinMaxLength) < 1) {
+            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Length should be greater than 1.', 'optionalStringWithMinMaxLength', $optionalStringWithMinMaxLength));
         }
-        if (\grapheme_strlen($optionalStringWithMinMaxLength) > 5) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Length should be less than 5.', 'optionalStringWithMinMaxLength', $optionalStringWithMinMaxLength));
+        if (grapheme_strlen($optionalStringWithMinMaxLength) > 5) {
+            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Length should be less than 5.', 'optionalStringWithMinMaxLength', $optionalStringWithMinMaxLength));
         }
         $this->optionalStringWithMinMaxLength                            = $optionalStringWithMinMaxLength;
         $this->optionalPropertyChanged['optionalStringWithMinMaxLength'] = true;
@@ -318,8 +318,8 @@ class Item implements SerializableInterface, JsonSerializable
      */
     public function setOptionalStringWithPattern(string $optionalStringWithPattern): self
     {
-        if (\preg_match('/^\\d{3}-\\d{2}-\\d{4}$/', $optionalStringWithPattern) !== 1) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Pattern is ^\\d{3}-\\d{2}-\\d{4}$.', 'optionalStringWithPattern', $optionalStringWithPattern));
+        if (preg_match('/^\\d{3}-\\d{2}-\\d{4}$/', $optionalStringWithPattern) !== 1) {
+            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Pattern is ^\\d{3}-\\d{2}-\\d{4}$.', 'optionalStringWithPattern', $optionalStringWithPattern));
         }
         $this->optionalStringWithPattern                            = $optionalStringWithPattern;
         $this->optionalPropertyChanged['optionalStringWithPattern'] = true;
@@ -333,10 +333,10 @@ class Item implements SerializableInterface, JsonSerializable
     public function setOptionalIntegerBetweenIncluded(int $optionalIntegerBetweenIncluded): self
     {
         if ($optionalIntegerBetweenIncluded < 0) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be less than 0.', 'optionalIntegerBetweenIncluded', $optionalIntegerBetweenIncluded));
+            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Cannot be less than 0.', 'optionalIntegerBetweenIncluded', $optionalIntegerBetweenIncluded));
         }
         if ($optionalIntegerBetweenIncluded > 5) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be greater than 5.', 'optionalIntegerBetweenIncluded', $optionalIntegerBetweenIncluded));
+            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Cannot be greater than 5.', 'optionalIntegerBetweenIncluded', $optionalIntegerBetweenIncluded));
         }
         $this->optionalIntegerBetweenIncluded                            = $optionalIntegerBetweenIncluded;
         $this->optionalPropertyChanged['optionalIntegerBetweenIncluded'] = true;
@@ -350,10 +350,10 @@ class Item implements SerializableInterface, JsonSerializable
     public function setOptionalIntegerBetweenExcluded(int $optionalIntegerBetweenExcluded): self
     {
         if ($optionalIntegerBetweenExcluded <= 0) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be less than or equal to 0.', 'optionalIntegerBetweenExcluded', $optionalIntegerBetweenExcluded));
+            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Cannot be less than or equal to 0.', 'optionalIntegerBetweenExcluded', $optionalIntegerBetweenExcluded));
         }
         if ($optionalIntegerBetweenExcluded >= 5) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be greater than or equal to 5.', 'optionalIntegerBetweenExcluded', $optionalIntegerBetweenExcluded));
+            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Cannot be greater than or equal to 5.', 'optionalIntegerBetweenExcluded', $optionalIntegerBetweenExcluded));
         }
         $this->optionalIntegerBetweenExcluded                            = $optionalIntegerBetweenExcluded;
         $this->optionalPropertyChanged['optionalIntegerBetweenExcluded'] = true;
@@ -367,10 +367,10 @@ class Item implements SerializableInterface, JsonSerializable
     public function setOptionalNumberBetweenIncluded(float $optionalNumberBetweenIncluded): self
     {
         if ($optionalNumberBetweenIncluded < 0.0) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be less than 0.', 'optionalNumberBetweenIncluded', $optionalNumberBetweenIncluded));
+            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Cannot be less than 0.', 'optionalNumberBetweenIncluded', $optionalNumberBetweenIncluded));
         }
         if ($optionalNumberBetweenIncluded > 5.0) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be greater than 5.', 'optionalNumberBetweenIncluded', $optionalNumberBetweenIncluded));
+            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Cannot be greater than 5.', 'optionalNumberBetweenIncluded', $optionalNumberBetweenIncluded));
         }
         $this->optionalNumberBetweenIncluded                            = $optionalNumberBetweenIncluded;
         $this->optionalPropertyChanged['optionalNumberBetweenIncluded'] = true;
@@ -384,10 +384,10 @@ class Item implements SerializableInterface, JsonSerializable
     public function setOptionalNumberBetweenExcluded(float $optionalNumberBetweenExcluded): self
     {
         if ($optionalNumberBetweenExcluded <= 0.0) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be less than or equal to 0.', 'optionalNumberBetweenExcluded', $optionalNumberBetweenExcluded));
+            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Cannot be less than or equal to 0.', 'optionalNumberBetweenExcluded', $optionalNumberBetweenExcluded));
         }
         if ($optionalNumberBetweenExcluded >= 5.0) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be greater than or equal to 5.', 'optionalNumberBetweenExcluded', $optionalNumberBetweenExcluded));
+            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Cannot be greater than or equal to 5.', 'optionalNumberBetweenExcluded', $optionalNumberBetweenExcluded));
         }
         $this->optionalNumberBetweenExcluded                            = $optionalNumberBetweenExcluded;
         $this->optionalPropertyChanged['optionalNumberBetweenExcluded'] = true;
@@ -410,11 +410,11 @@ class Item implements SerializableInterface, JsonSerializable
      */
     public function setOptionalNullableStringWithMinMaxLength($optionalNullableStringWithMinMaxLength): self
     {
-        if ($optionalNullableStringWithMinMaxLength !== null && \grapheme_strlen($optionalNullableStringWithMinMaxLength) < 1) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Length should be greater than 1.', 'optionalNullableStringWithMinMaxLength', $optionalNullableStringWithMinMaxLength));
+        if ($optionalNullableStringWithMinMaxLength !== null && grapheme_strlen($optionalNullableStringWithMinMaxLength) < 1) {
+            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Length should be greater than 1.', 'optionalNullableStringWithMinMaxLength', $optionalNullableStringWithMinMaxLength));
         }
-        if ($optionalNullableStringWithMinMaxLength !== null && \grapheme_strlen($optionalNullableStringWithMinMaxLength) > 5) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Length should be less than 5.', 'optionalNullableStringWithMinMaxLength', $optionalNullableStringWithMinMaxLength));
+        if ($optionalNullableStringWithMinMaxLength !== null && grapheme_strlen($optionalNullableStringWithMinMaxLength) > 5) {
+            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Length should be less than 5.', 'optionalNullableStringWithMinMaxLength', $optionalNullableStringWithMinMaxLength));
         }
         $this->optionalNullableStringWithMinMaxLength                            = $optionalNullableStringWithMinMaxLength;
         $this->optionalPropertyChanged['optionalNullableStringWithMinMaxLength'] = true;

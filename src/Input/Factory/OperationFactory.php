@@ -39,7 +39,7 @@ class OperationFactory
             trigger_error($warningMessage, E_USER_WARNING);
         }
 
-        $parameters = array_merge($commonParameters, $operation->parameters ?? []);
+        $parameters  = array_merge($commonParameters, $operation->parameters ?? []);
         $requestBody = $operation->requestBody;
         if ($requestBody instanceof Reference) {
             $requestBody = $requestBody->resolve();

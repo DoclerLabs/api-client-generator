@@ -57,7 +57,7 @@ class GenerateCommand extends Command
         $this->setName('generate');
         $this->setDescription('Generate an api client based on a given OpenApi specification');
         $this->addUsage(
-            'OPENAPI={path}/swagger.yaml NAMESPACE=Group\SomeApiClient PACKAGE=dh-group/some-api-client OUTPUT_DIR={path}/generated CODE_STYLE={path}/.php-cs-fixer.php ./bin/api-client-generator generate'
+            'OPENAPI={path}/swagger.yaml NAMESPACE=Group\SomeApiClient PACKAGE=dh-group/some-api-client OUTPUT_DIR={path}/generated CODE_STYLE={path}/.php-cs-fixer.php.dist ./bin/api-client-generator generate'
         );
     }
 

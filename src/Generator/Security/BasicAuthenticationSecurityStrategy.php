@@ -16,6 +16,7 @@ class BasicAuthenticationSecurityStrategy extends SecurityStrategyAbstract
     public const SCHEME = 'basic';
 
     private const PROPERTY_CREDENTIALS = 'credentials';
+
     private const TYPE = 'http';
 
     public function getImports(string $baseNamespace): ImportCollection

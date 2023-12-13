@@ -10,7 +10,8 @@ use Symfony\Component\Console\Application as BaseApplication;
 
 class Application extends BaseApplication
 {
-    protected const NAME    = 'OpenApi client generator';
+    protected const NAME = 'OpenApi client generator';
+
     protected const VERSION = '1.0.0';
 
     public function __construct()

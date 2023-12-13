@@ -18,13 +18,6 @@ class TwigExtension extends AbstractExtension
         ];
     }
 
-    /**
-     * @param string $class
-     * @param string $method
-     * @param mixed  ...$arguments
-     *
-     * @return mixed
-     */
     public function staticCall(string $class, string $method, ...$arguments)
     {
         if (!class_exists($class)) {

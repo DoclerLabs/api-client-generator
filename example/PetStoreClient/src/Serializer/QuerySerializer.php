@@ -34,6 +34,6 @@ class QuerySerializer
             $queryParameters[$name] = $value;
         }
 
-        return \http_build_query($queryParameters, '', '&', PHP_QUERY_RFC3986);
+        return http_build_query($queryParameters, '', '&', PHP_QUERY_RFC3986);
     }
 }

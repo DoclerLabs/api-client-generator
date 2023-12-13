@@ -34,7 +34,7 @@ class NamespaceSubstituteVisitor extends NodeVisitorAbstract
     private function renameNode($namespacedStatement): void
     {
         if ($namespacedStatement->name !== null) {
-            $newName = str_replace($this->original, $this->substitute, $namespacedStatement->name->toString());
+            $newName                   = str_replace($this->original, $this->substitute, $namespacedStatement->name->toString());
             $namespacedStatement->name = new Name($newName);
         }
     }

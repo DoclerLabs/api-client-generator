@@ -17,8 +17,10 @@ use PhpParser\Node\Stmt\ClassMethod;
 
 class SchemaCollectionGenerator extends GeneratorAbstract
 {
-    public const  SUBDIRECTORY        = 'Schema/';
-    public const  NAMESPACE_SUBPATH   = '\\Schema';
+    public const  SUBDIRECTORY = 'Schema/';
+
+    public const  NAMESPACE_SUBPATH = '\\Schema';
+
     private const INTERNAL_ARRAY_NAME = 'items';
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void

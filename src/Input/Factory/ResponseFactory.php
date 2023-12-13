@@ -28,12 +28,14 @@ class ResponseFactory
 
             if ($code === 204) {
                 $responses[] = new Response(204, null);
+
                 continue;
             }
 
             if (200 <= $code && $code < 300) {
                 if (empty($response->content) || current($response->content) === false) {
                     $responses[] = new Response((int)$code, null);
+
                     continue;
                 }
 

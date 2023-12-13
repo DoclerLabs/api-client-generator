@@ -44,7 +44,7 @@ class DeletePetRequest implements RequestInterface
 
     public function getRoute(): string
     {
-        return \strtr('pet/{petId}', ['{petId}' => $this->petId]);
+        return strtr('pet/{petId}', ['{petId}' => $this->petId]);
     }
 
     public function getQueryParameters(): array
@@ -64,9 +64,9 @@ class DeletePetRequest implements RequestInterface
 
     public function getHeaders(): array
     {
-        return \array_merge([], \array_map(static function ($value) {
+        return array_merge([], array_map(static function ($value) {
             return $value instanceof SerializableInterface ? $value->toArray() : $value;
-        }, \array_filter(['api_key' => $this->apiKey], static function ($value) {
+        }, array_filter(['api_key' => $this->apiKey], static function ($value) {
             return null !== $value;
         })));
     }

@@ -24,6 +24,7 @@ use PhpParser\Node\Stmt\ClassMethod;
 class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
 {
     public const NAMESPACE_SUBPATH = '\\Request';
+
     public const SUBDIRECTORY = 'Request/';
 
     /** @var SecurityStrategyAbstract[] */

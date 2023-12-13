@@ -48,9 +48,9 @@ class FindPetsByStatusRequest implements RequestInterface
 
     public function getQueryParameters(): array
     {
-        return \array_map(static function ($value) {
+        return array_map(static function ($value) {
             return $value instanceof SerializableInterface ? $value->toArray() : $value;
-        }, \array_filter(['status' => $this->status], static function ($value) {
+        }, array_filter(['status' => $this->status], static function ($value) {
             return null !== $value;
         }));
     }

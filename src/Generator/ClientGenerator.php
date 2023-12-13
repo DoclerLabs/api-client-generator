@@ -137,7 +137,7 @@ class ClientGenerator extends GeneratorAbstract
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, RequestInterface::class));
 
         /** @var ParameterBuilder[] $parameters */
-        $parameters = [];
+        $parameters   = [];
         $parameters[] = $this->builder->param('client')->setType('ClientInterface');
         $parameters[] = $this->builder->param('container')->setType('ContainerInterface');
 
@@ -180,7 +180,7 @@ class ClientGenerator extends GeneratorAbstract
             ->param('response')
             ->setType('ResponseInterface')
             ->getNode();
-        $response     = $this->builder->var('response');
+        $response = $this->builder->var('response');
 
         $handleResponseStatement = $this->builder->return(
             $this->builder->methodCall(
@@ -271,7 +271,7 @@ class ClientGenerator extends GeneratorAbstract
         $handleResponseStmt = $this->builder->localMethodCall('handleResponse', $this->builder->args([$sendRequestStmt]));
         $stmts              = [
             $this->builder->assign($responseVar, $handleResponseStmt),
-            $this->builder->return($this->processResponse($responseVar, $responseBody))
+            $this->builder->return($this->processResponse($responseVar, $responseBody)),
         ];
 
         return $this
@@ -316,7 +316,7 @@ class ClientGenerator extends GeneratorAbstract
                 }
             } else {
                 $returnTypeHints[$responseBody->getPhpTypeHint()] = true;
-                $isNullable = $isNullable || $responseBody->isNullable();
+                $isNullable                                       = $isNullable || $responseBody->isNullable();
 
                 $phpClassName = $responseBody->getPhpClassName();
 
@@ -332,7 +332,7 @@ class ClientGenerator extends GeneratorAbstract
             }
         }
 
-        $cases = [];
+        $cases     = [];
         $matchArms = [];
         foreach ($nullableCases as $statusCode => $nullableCase) {
             if ($this->phpVersion->isMatchSupported()) {

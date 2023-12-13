@@ -18,7 +18,9 @@ abstract class AbstractTemplateTest extends TestCase
     use ConfigurationAwareTrait;
 
     protected FileReader         $specificationReader;
+
     protected Parser             $specificationParser;
+
     protected MetaFileCollection $fileRegistry;
 
     protected function setUp(): void

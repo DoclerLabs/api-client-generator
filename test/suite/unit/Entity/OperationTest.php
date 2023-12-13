@@ -16,13 +16,18 @@ use PHPUnit\Framework\TestCase;
 class OperationTest extends TestCase
 {
     private const NAME = 'operation';
+
     private const DESCRIPTION = 'Very important operation';
+
     private const TAGS = ['one', 'two'];
 
     private Operation $sut;
+
     private array $errorResponses;
+
     /** @var Request|MockObject */
     private $request;
+
     /** @var Response[]|MockObject[] */
     private array $succesfulResponses;
 

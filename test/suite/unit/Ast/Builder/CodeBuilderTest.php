@@ -19,8 +19,10 @@ use PHPUnit\Framework\TestCase;
 class CodeBuilderTest extends TestCase
 {
     private CodeBuilder $sut;
+
     /** @var PhpVersion|MockObject */
     private $phpVersionResolver;
+
     private Standard $printer;
 
     protected function setUp(): void
@@ -73,10 +75,10 @@ class CodeBuilderTest extends TestCase
 
     public function testTryCatch(): void
     {
-        $tryStmts[]     = $this->sut->expr($this->sut->assign($this->sut->val(1), $this->sut->val(1)));
-        $catchStmts[]   = $this->sut->expr($this->sut->assign($this->sut->val(2), $this->sut->val(2)));
-        $exceptionVar   = $this->sut->var('exception');
-        $catches[]      = $this->sut->catch(
+        $tryStmts[]   = $this->sut->expr($this->sut->assign($this->sut->val(1), $this->sut->val(1)));
+        $catchStmts[] = $this->sut->expr($this->sut->assign($this->sut->val(2), $this->sut->val(2)));
+        $exceptionVar = $this->sut->var('exception');
+        $catches[]    = $this->sut->catch(
             [
                 $this->sut->className('LogicException'),
                 $this->sut->className('RuntimeException'),

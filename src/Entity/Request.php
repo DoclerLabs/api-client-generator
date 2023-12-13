@@ -13,12 +13,19 @@ use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\XmlContentT
 class Request
 {
     public const GET = 'GET';
+
     public const POST = 'POST';
+
     public const PUT = 'PUT';
+
     public const PATCH = 'PATCH';
+
     public const OPTIONS = 'OPTIONS';
+
     public const DELETE = 'DELETE';
+
     public const HEAD = 'HEAD';
+
     public const ALLOWED_METHODS = [
         self::GET,
         self::POST,
@@ -28,6 +35,7 @@ class Request
         self::DELETE,
         self::HEAD,
     ];
+
     private const ALLOWED_CONTENT_TYPES = [
         JsonContentTypeSerializer::MIME_TYPE,
         FormUrlencodedContentTypeSerializer::MIME_TYPE,

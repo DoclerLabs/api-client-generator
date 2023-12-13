@@ -38,6 +38,6 @@ class ResponseHandler
         if ($statusCode >= 200 && $statusCode < 300) {
             return $this->bodySerializer->unserializeResponse($response);
         }
-        throw $this->responseExceptionFactory->create(\sprintf('Server replied with a non-200 status code: %s', $response->getStatusCode()), $response);
+        throw $this->responseExceptionFactory->create(sprintf('Server replied with a non-200 status code: %s', $response->getStatusCode()), $response);
     }
 }
