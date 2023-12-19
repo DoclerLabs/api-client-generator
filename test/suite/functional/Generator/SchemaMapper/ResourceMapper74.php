@@ -21,8 +21,8 @@ class ResourceMapper implements SchemaMapperInterface
      */
     public function toSchema(array $payload): Resource
     {
-        $missingFields = \implode(', ', \array_diff(['mandatoryInteger', 'mandatoryString', 'mandatoryEnum', 'mandatoryDate'], \array_keys($payload)));
-        if (! empty($missingFields)) {
+        $missingFields = implode(', ', array_diff(['mandatoryInteger', 'mandatoryString', 'mandatoryEnum', 'mandatoryDate'], array_keys($payload)));
+        if (!empty($missingFields)) {
             throw new UnexpectedResponseBodyException('Required attributes for `Resource` missing in the response body: ' . $missingFields);
         }
 

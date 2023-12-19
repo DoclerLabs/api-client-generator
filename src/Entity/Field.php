@@ -11,53 +11,31 @@ use RuntimeException;
 
 class Field
 {
-    public const FORMAT_DATE      = 'date';
+    private const FORMAT_DATE = 'date';
 
-    public const FORMAT_DATE_TIME = 'date-time';
+    private const FORMAT_DATE_TIME = 'date-time';
 
-    public const TYPE_MIXED       = 'mixed';
+    private const TYPE_MIXED = 'mixed';
 
-    private bool                 $additionalProperties;
+    private ?Field $arrayItem = null;
 
-    private string               $name;
+    private array $objectProperties = [];
 
-    private FieldType            $type;
+    private array $enumValues = [];
 
-    private ConstraintCollection $constraints;
+    private string $format = '';
 
-    private string               $referenceName;
-
-    private bool                 $required;
-
-    private bool                 $nullable;
-
-    private ?Field               $arrayItem        = null;
-
-    private array                $objectProperties = [];
-
-    private array                $enumValues       = [];
-
-    private string               $format           = '';
-
-    /** @phpstan-ignore-next-line cannot use strict type before PHP8 with "mixed" pseudo type */
-    private $default;
+    private mixed $default = null;
 
     public function __construct(
-        string $name,
-        FieldType $type,
-        ConstraintCollection $constraints,
-        string $referenceName,
-        bool $required,
-        bool $nullable,
-        bool $additionalProperties
+        private string $name,
+        private FieldType $type,
+        private ConstraintCollection $constraints,
+        private string $referenceName,
+        private bool $required,
+        private bool $nullable,
+        private bool $additionalProperties
     ) {
-        $this->name                 = $name;
-        $this->type                 = $type;
-        $this->constraints          = $constraints;
-        $this->referenceName        = $referenceName;
-        $this->required             = $required;
-        $this->nullable             = $nullable;
-        $this->additionalProperties = $additionalProperties;
     }
 
     public function getArrayItem(): Field
@@ -179,18 +157,12 @@ class Field
                && $this->getArrayItem()->isObject();
     }
 
-    /**
-     * @return mixed
-     */
-    public function getDefault()
+    public function getDefault(): mixed
     {
         return $this->default;
     }
 
-    /**
-     * @param mixed $default
-     */
-    public function setDefault($default): self
+    public function setDefault(mixed $default): self
     {
         $this->default = $default;
 

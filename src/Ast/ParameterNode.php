@@ -8,23 +8,21 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\NullableType;
 use PhpParser\Node\Param;
 use PhpParser\Node\UnionType;
+use Stringable;
 
 class ParameterNode extends Param
 {
-    protected string $docBlockType;
-
     public function __construct(
         $var,
         Expr $default = null,
         $type = null,
+        int $flags = 0,
         bool $byRef = false,
         bool $variadic = false,
         array $attributes = [],
-        string $docBlockType = ''
+        protected string $docBlockType = ''
     ) {
-        $this->docBlockType = $docBlockType;
-
-        parent::__construct($var, $default, $type, $byRef, $variadic, $attributes);
+        parent::__construct($var, $default, $type, $byRef, $variadic, $attributes, $flags);
     }
 
     public function getDocBlockType(): string
@@ -34,15 +32,18 @@ class ParameterNode extends Param
         }
 
         if ($this->type instanceof UnionType) {
-            return implode("|", $this->type->getAttribute('types'));
+            return implode('|', (array)$this->type->getAttribute('types'));
         }
 
         if ($this->type instanceof NullableType) {
             return sprintf('%s|null', $this->type->type->toString());
         }
 
-        if ($this->type !== null) {
-            return $this->type->toString();
+        if (
+            $this->type !== null
+            && $this->type instanceof Stringable
+        ) {
+            return (string)$this->type;
         }
 
         return '';

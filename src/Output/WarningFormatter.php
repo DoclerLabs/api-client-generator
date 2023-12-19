@@ -8,11 +8,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class WarningFormatter
 {
-    private SymfonyStyle $output;
-
-    public function __construct(SymfonyStyle $output)
+    public function __construct(private SymfonyStyle $output)
     {
-        $this->output = $output;
     }
 
     public function __invoke(int $code, string $message): bool

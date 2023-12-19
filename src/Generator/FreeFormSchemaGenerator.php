@@ -49,7 +49,8 @@ class FreeFormSchemaGenerator extends MutatorAccessorClassGeneratorAbstract
 
     private function generateConstructor(): ClassMethod
     {
-        $param = $this->builder
+        $param = $this
+            ->builder
             ->param(self::FREE_FORM_SCHEMA_VARIABLE)
             ->setType(FieldType::PHP_TYPE_ARRAY)
             ->getNode();
@@ -73,7 +74,7 @@ class FreeFormSchemaGenerator extends MutatorAccessorClassGeneratorAbstract
     {
         return new Field(
             self::FREE_FORM_SCHEMA_VARIABLE,
-            new FieldType(FieldType::PHP_TYPE_OBJECT),
+            new FieldType(FieldType::PHP_TYPE_OBJECT, $this->phpVersion),
             new ConstraintCollection(),
             stdClass::class,
             true,
@@ -84,7 +85,7 @@ class FreeFormSchemaGenerator extends MutatorAccessorClassGeneratorAbstract
 
     private function generateToArray(): ClassMethod
     {
-        $return     = $this->builder->return(
+        $return = $this->builder->return(
             $this->builder->castToArray(
                 $this->builder->localPropertyFetch(self::FREE_FORM_SCHEMA_VARIABLE)
             )

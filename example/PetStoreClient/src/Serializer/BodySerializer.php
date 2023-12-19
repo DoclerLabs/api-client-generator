@@ -66,9 +66,9 @@ class BodySerializer
 
     private function getContentTypeSerializer(string $contentType): ContentTypeSerializerInterface
     {
-        $contentType = \strtolower(\trim(\explode(';', $contentType)[0]));
-        if (! isset($this->contentTypeSerializers[$contentType])) {
-            throw new InvalidArgumentException(\sprintf('Serializer for `%s` is not found. Supported: %s', $contentType, \json_encode(\array_keys($this->contentTypeSerializers))));
+        $contentType = strtolower(trim(explode(';', $contentType)[0]));
+        if (!isset($this->contentTypeSerializers[$contentType])) {
+            throw new InvalidArgumentException(sprintf('Serializer for `%s` is not found. Supported: %s', $contentType, json_encode(array_keys($this->contentTypeSerializers))));
         }
 
         return $this->contentTypeSerializers[$contentType];

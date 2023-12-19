@@ -10,16 +10,8 @@ use PhpParser\Node\Expr\Variable;
 
 class MaxLengthConstraint implements ConstraintInterface
 {
-    private ?int $maxLength = null;
-
-    public function __construct(?int $maxLength)
+    public function __construct(private ?int $maxLength)
     {
-        $this->maxLength = $maxLength;
-    }
-
-    public function getMaxLength(): ?int
-    {
-        return $this->maxLength;
     }
 
     public function exists(): bool

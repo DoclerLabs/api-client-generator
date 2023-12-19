@@ -6,6 +6,8 @@ namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DateTimeImmutable;
 use DoclerLabs\ApiClientException\UnexpectedResponseBodyException;
+use DoclerLabs\ApiClientGenerator\Ast\Builder\ParameterBuilder;
+use DoclerLabs\ApiClientGenerator\Ast\ParameterNode;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaMapperNaming;
@@ -17,6 +19,7 @@ use PhpParser\Node\Stmt\ClassMethod;
 class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 {
     public const NAMESPACE_SUBPATH = '\\Schema\\Mapper';
+
     public const SUBDIRECTORY = 'Schema/Mapper/';
 
     private array $mapMethodThrownExceptions;
@@ -24,6 +27,7 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
     {
         foreach ($specification->getCompositeResponseFields() as $field) {
+            /** @var Field $field */
             $this->generateMapper($fileRegistry, $field);
         }
     }
@@ -45,6 +49,10 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 
     protected function generateProperties(Field $root): array
     {
+        if ($this->phpVersion->isConstructorPropertyPromotionSupported()) {
+            return [];
+        }
+
         $properties = [];
         if ($root->isObject()) {
             $alreadyInjected = [];
@@ -91,10 +99,9 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                         $propertyName = SchemaMapperNaming::getPropertyName($child);
                         $params[]     = $this->builder
                             ->param($propertyName)
-                            ->setType($childClassName)
-                            ->getNode();
+                            ->setType($childClassName);
 
-                        $paramInits[]                     = $this->builder->assign(
+                        $paramInits[] = $this->builder->assign(
                             $this->builder->localPropertyFetch($propertyName),
                             $this->builder->var($propertyName)
                         );
@@ -110,8 +117,7 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 $propertyName = SchemaMapperNaming::getPropertyName($child);
                 $params[]     = $this->builder
                     ->param($propertyName)
-                    ->setType(SchemaMapperNaming::getClassName($child))
-                    ->getNode();
+                    ->setType(SchemaMapperNaming::getClassName($child));
 
                 $paramInits[] = $this->builder->assign(
                     $this->builder->localPropertyFetch($propertyName),
@@ -124,13 +130,28 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             return null;
         }
 
-        return $this->builder
+        if ($this->phpVersion->isConstructorPropertyPromotionSupported()) {
+            foreach ($params as $param) {
+                $param->makePrivate();
+            }
+        }
+
+        $params = array_map(
+            static fn (ParameterBuilder $param): ParameterNode => $param->getNode(),
+            $params
+        );
+
+        $constructor = $this->builder
             ->method('__construct')
             ->makePublic()
             ->addParams($params)
-            ->addStmts($paramInits)
-            ->composeDocBlock($params)
-            ->getNode();
+            ->composeDocBlock($params);
+
+        if (!$this->phpVersion->isConstructorPropertyPromotionSupported()) {
+            $constructor->addStmts($paramInits);
+        }
+
+        return $constructor->getNode();
     }
 
     protected function generateMap(Field $root): ClassMethod
@@ -248,7 +269,7 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 'array_diff',
                 [$this->builder->array($requiredItemsNames), $missingFieldsArrayKeys]
             );
-            $missingFieldsImplode   = $this->builder->funcCall(
+            $missingFieldsImplode = $this->builder->funcCall(
                 'implode',
                 [$this->builder->val(', '), $missingFieldsArrayDiff]
             );

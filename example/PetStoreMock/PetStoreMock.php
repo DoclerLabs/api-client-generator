@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OpenApi\PetStoreMock;
 
 use GuzzleHttp\Client;
@@ -7,8 +9,8 @@ use GuzzleHttp\Client;
 class PetStoreMock
 {
     private const PET_RESPONSE = [
-        'id'        => 2972962088,
-        'category'  => [
+        'id'       => 2972962088,
+        'category' => [
             'id'   => 1085449728,
             'name' => 'dog',
         ],
@@ -17,12 +19,12 @@ class PetStoreMock
             'http://foo.bar.com/1',
             'http://foo.bar.com/2',
         ],
-        'tags'      => [
+        'tags' => [
             [
                 'id' => 2291630681,
             ],
         ],
-        'status'    => 'sold',
+        'status' => 'sold',
     ];
 
     private Client $wiremockClient;
@@ -82,7 +84,7 @@ class PetStoreMock
             [
                 'body' => json_encode(
                     [
-                        'request'  => array_filter(
+                        'request' => array_filter(
                             [
                                 'method'          => $requestMethod,
                                 'urlPathPattern'  => $urlMatcher,

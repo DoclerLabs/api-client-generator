@@ -12,11 +12,8 @@ use Icecave\Parity\Parity;
 
 class ResponseFactory
 {
-    private FieldFactory $fieldMapper;
-
-    public function __construct(FieldFactory $fieldMapper)
+    public function __construct(private FieldFactory $fieldMapper)
     {
-        $this->fieldMapper = $fieldMapper;
     }
 
     public function createSuccessfulResponses(string $operationName, array $openApiResponses): array
@@ -31,12 +28,14 @@ class ResponseFactory
 
             if ($code === 204) {
                 $responses[] = new Response(204, null);
+
                 continue;
             }
 
             if (200 <= $code && $code < 300) {
                 if (empty($response->content) || current($response->content) === false) {
                     $responses[] = new Response((int)$code, null);
+
                     continue;
                 }
 

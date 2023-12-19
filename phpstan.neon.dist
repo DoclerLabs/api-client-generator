@@ -4,6 +4,9 @@ parameters:
     checkGenericClassInNonGenericObjectType: false
     paths:
         - src
+    excludePaths:
+        - src/Output/Copy
+        - src/ServiceProvider.php
     fileExtensions:
         - php
     universalObjectCratesClasses:

@@ -33,7 +33,7 @@ class GetUserByNameRequest implements RequestInterface
 
     public function getRoute(): string
     {
-        return \strtr('user/{username}', ['{username}' => $this->username]);
+        return strtr('user/{username}', ['{username}' => $this->username]);
     }
 
     public function getQueryParameters(): array

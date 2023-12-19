@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DoclerLabs\ApiClientGenerator\Ast\Builder\MethodBuilder;
+use DoclerLabs\ApiClientGenerator\Ast\Builder\ParameterBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\ParameterNode;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
@@ -19,10 +20,10 @@ use DoclerLabs\ApiClientGenerator\Output\Copy\Request\RequestInterface;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Response\ResponseHandler;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\ContentTypeSerializerInterface;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Scalar\LNumber;
-use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
 use Psr\Container\ContainerInterface;
@@ -97,13 +98,13 @@ class ClientGenerator extends GeneratorAbstract
 
         $sendRequestStmt = $this->builder->localMethodCall('sendRequest', [$this->builder->var('request')]);
         $methodParam     = $this->builder->param('request')->setType($requestClassName)->getNode();
-        $responses       = $operation->getSuccessfulResponses();
+        $responses       = $operation->successfulResponses;
         if (count($responses) === 1) {
-            if ($responses[0]->getBody() === null) {
+            if ($responses[0]->body === null) {
                 return $this->emptyBodyAction($operation, $sendRequestStmt, $methodParam);
             }
 
-            return $this->singleBodyAction($operation, $responses[0]->getBody(), $sendRequestStmt, $methodParam);
+            return $this->singleBodyAction($operation, $responses[0]->body, $sendRequestStmt, $methodParam);
         }
 
         return $this->multiBodyAction($operation, $responses, $sendRequestStmt, $methodParam);
@@ -114,6 +115,10 @@ class ClientGenerator extends GeneratorAbstract
      */
     protected function generateProperties(): array
     {
+        if ($this->phpVersion->isConstructorPropertyPromotionSupported()) {
+            return [];
+        }
+
         return [
             $this->builder->localProperty('client', 'ClientInterface', 'ClientInterface'),
             $this->builder->localProperty('container', 'ContainerInterface', 'ContainerInterface'),
@@ -130,14 +135,21 @@ class ClientGenerator extends GeneratorAbstract
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, ResponseHandler::class))
             ->addImport(CopiedNamespace::getImport($this->baseNamespace, RequestInterface::class));
 
-        $parameters[] = $this->builder
-            ->param('client')
-            ->setType('ClientInterface')
-            ->getNode();
-        $parameters[] = $this->builder
-            ->param('container')
-            ->setType('ContainerInterface')
-            ->getNode();
+        /** @var ParameterBuilder[] $parameters */
+        $parameters   = [];
+        $parameters[] = $this->builder->param('client')->setType('ClientInterface');
+        $parameters[] = $this->builder->param('container')->setType('ContainerInterface');
+
+        if ($this->phpVersion->isConstructorPropertyPromotionSupported()) {
+            foreach ($parameters as $parameter) {
+                $parameter->makePrivate();
+            }
+        }
+
+        $parameters = array_map(
+            static fn (ParameterBuilder $parameter): ParameterNode => $parameter->getNode(),
+            $parameters
+        );
 
         $inits[] = $this->builder->assign(
             $this->builder->localPropertyFetch('client'),
@@ -148,13 +160,17 @@ class ClientGenerator extends GeneratorAbstract
             $this->builder->var('container')
         );
 
-        return $this->builder
+        $constructor = $this->builder
             ->method('__construct')
             ->makePublic()
             ->addParams($parameters)
-            ->addStmts($inits)
-            ->composeDocBlock($parameters)
-            ->getNode();
+            ->composeDocBlock($parameters);
+
+        if (!$this->phpVersion->isConstructorPropertyPromotionSupported()) {
+            $constructor->addStmts($inits);
+        }
+
+        return $constructor->getNode();
     }
 
     private function generateHandleResponse(): ClassMethod
@@ -163,7 +179,7 @@ class ClientGenerator extends GeneratorAbstract
             ->param('response')
             ->setType('ResponseInterface')
             ->getNode();
-        $response     = $this->builder->var('response');
+        $response = $this->builder->var('response');
 
         $handleResponseStatement = $this->builder->return(
             $this->builder->methodCall(
@@ -186,9 +202,8 @@ class ClientGenerator extends GeneratorAbstract
             ->getNode();
     }
 
-    private function processResponse(Variable $unserializedResponseVar, Field $responseBody): array
+    private function processResponse(Variable $unserializedResponseVar, Field $responseBody): Expr
     {
-        $stmts = [];
         if ($responseBody->isComposite()) {
             $mapperClassName = SchemaMapperNaming::getClassName($responseBody);
             $this->addImport(
@@ -206,9 +221,6 @@ class ClientGenerator extends GeneratorAbstract
                 [$this->builder->classConstFetch($mapperClassName, 'class')]
             );
 
-            $mapMethod = $this->builder->methodCall($getMethod, 'toSchema', [$unserializedResponseVar]);
-            $stmts[]   = $this->builder->return($mapMethod);
-
             $this->addImport(
                 sprintf(
                     '%s%s\\%s',
@@ -217,17 +229,17 @@ class ClientGenerator extends GeneratorAbstract
                     $responseBody->getPhpClassName()
                 )
             );
-        } else {
-            $this->addImport(CopiedNamespace::getImport($this->baseNamespace, ContentTypeSerializerInterface::class));
-            $literalValue = $this->builder->getArrayItem(
-                $unserializedResponseVar,
-                $this->builder->classConstFetch('ContentTypeSerializerInterface', 'LITERAL_VALUE_KEY')
-            );
 
-            $stmts[] = $this->builder->return($literalValue);
+            return $this->builder->methodCall($getMethod, 'toSchema', [$unserializedResponseVar]);
         }
 
-        return $stmts;
+        $this->addImport(CopiedNamespace::getImport($this->baseNamespace, ContentTypeSerializerInterface::class));
+        $literalValue = $this->builder->getArrayItem(
+            $unserializedResponseVar,
+            $this->builder->classConstFetch('ContentTypeSerializerInterface', 'LITERAL_VALUE_KEY')
+        );
+
+        return $literalValue;
     }
 
     private function emptyBodyAction(
@@ -237,7 +249,7 @@ class ClientGenerator extends GeneratorAbstract
     ): ClassMethod {
         return $this
             ->builder
-            ->method($operation->getName())
+            ->method($operation->name)
             ->makePublic()
             ->addParam($methodParam)
             ->addStmt($this->builder->localMethodCall('handleResponse', [$sendRequestStmt]))
@@ -256,12 +268,12 @@ class ClientGenerator extends GeneratorAbstract
         $handleResponseStmt = $this->builder->localMethodCall('handleResponse', $this->builder->args([$sendRequestStmt]));
         $stmts              = [
             $this->builder->assign($responseVar, $handleResponseStmt),
-            ...$this->processResponse($responseVar, $responseBody)
+            $this->builder->return($this->processResponse($responseVar, $responseBody)),
         ];
 
         return $this
             ->builder
-            ->method($operation->getName())
+            ->method($operation->name)
             ->makePublic()
             ->addParam($methodParam)
             ->addStmts($stmts)
@@ -283,57 +295,82 @@ class ClientGenerator extends GeneratorAbstract
 
         $stmts[] = $this->builder->assign($unserializedResponseVar, $handleResponseStmt);
 
-        $caseConditions  = [];
-        $caseBodies      = [];
-        $returnTypeHints = [];
-        $isNullable      = false;
-        $nullableCases   = [];
+        $caseConditions    = [];
+        $caseBodies        = [];
+        $matchBodies       = [];
+        $returnTypeHints   = [];
+        $isNullable        = false;
+        $nullableCases     = [];
+        $nullableMatchArms = [];
         foreach ($responses as $response) {
             /** @var Response $response */
-            $responseBody = $response->getBody();
+            $responseBody = $response->body;
             if ($responseBody === null) {
                 $isNullable = true;
 
-                $nullableCases[$response->getStatusCode()] = $this->builder->return($this->builder->val(null));
+                if ($this->phpVersion->isMatchSupported()) {
+                    $nullableMatchArms[$response->statusCode] = $this->builder->val(null);
+                } else {
+                    $nullableCases[$response->statusCode] = $this->builder->return($this->builder->val(null));
+                }
             } else {
                 $returnTypeHints[$responseBody->getPhpTypeHint()] = true;
-                $isNullable = $isNullable || $responseBody->isNullable();
+                $isNullable                                       = $isNullable || $responseBody->isNullable();
 
                 $phpClassName = $responseBody->getPhpClassName();
 
-                $caseConditions[$phpClassName][] = new LNumber($response->getStatusCode());
+                $caseConditions[$phpClassName][] = new LNumber($response->statusCode);
                 if (!isset($caseBodies[$phpClassName])) {
-                    $caseBodies[$phpClassName] = $this->processResponse($unserializedResponseVar, $responseBody);
+                    $response = $this->processResponse($unserializedResponseVar, $responseBody);
+                    if ($this->phpVersion->isMatchSupported()) {
+                        $matchBodies[$phpClassName] = $response;
+                    } else {
+                        $caseBodies[$phpClassName] = $this->builder->return($response);
+                    }
                 }
             }
         }
 
-        $cases = [];
-        foreach ($nullableCases as $statusCode => $nullableCase) {
-            $cases[] = $this->builder->case(new LNumber($statusCode), $nullableCase);
-        }
-        foreach ($caseBodies as $phpClassName => $caseBody) {
-            /** @var Stmt[] $caseBody */
-            for ($i = 0, $l = count($caseConditions[$phpClassName]) - 1; $i < $l; ++$i) {
-                $cases[] = $this->builder->case($caseConditions[$phpClassName][$i]);
+        if ($this->phpVersion->isMatchSupported()) {
+            $matchArms = [];
+            foreach ($nullableMatchArms as $statusCode => $nullableMatchArm) {
+                $matchArms[] = $this->builder->matchArm([new LNumber($statusCode)], $nullableMatchArm);
             }
-            $cases[] = $this->builder->case($caseConditions[$phpClassName][$l], ...$caseBody);
+            foreach ($matchBodies as $phpClassName => $matchBody) {
+                $matchArms[] = $this->builder->matchArm($caseConditions[$phpClassName], $matchBody);
+            }
+            $stmts[] = $this->builder->return(
+                $this->builder->match(
+                    $this->builder->methodCall($responseVar, 'getStatusCode'),
+                    ...$matchArms
+                )
+            );
+        } else {
+            $cases = [];
+            foreach ($nullableCases as $statusCode => $nullableCase) {
+                $cases[] = $this->builder->case(new LNumber($statusCode), $nullableCase);
+            }
+            foreach ($caseBodies as $phpClassName => $caseBody) {
+                for ($i = 0, $l = count($caseConditions[$phpClassName]) - 1; $i < $l; ++$i) {
+                    $cases[] = $this->builder->case($caseConditions[$phpClassName][$i]);
+                }
+                $cases[] = $this->builder->case($caseConditions[$phpClassName][$l], $caseBody);
+            }
+            $stmts[] = $this->builder->switch(
+                $this->builder->methodCall($responseVar, 'getStatusCode'),
+                ...$cases
+            );
+
+            $this->addImport(RuntimeException::class);
+            $stmts[] = $this->builder->throw(
+                'RuntimeException',
+                $this->builder->val('Response status code not properly mapped in schema.')
+            );
         }
-
-        $stmts[] = $this->builder->switch(
-            $this->builder->methodCall($responseVar, 'getStatusCode'),
-            ...$cases
-        );
-
-        $this->addImport(RuntimeException::class);
-        $stmts[] = $this->builder->throw(
-            'RuntimeException',
-            $this->builder->val('Response status code not properly mapped in schema.')
-        );
 
         $method = $this
             ->builder
-            ->method($operation->getName())
+            ->method($operation->name)
             ->makePublic()
             ->addParam($methodParam)
             ->addStmts($stmts);

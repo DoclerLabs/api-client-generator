@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DoclerLabs\ApiClientGenerator\Test\Unit\Output\Copy\Serializer\ContentType;
 
 use DoclerLabs\ApiClientGenerator\Output\Copy\Schema\SerializableInterface;
@@ -55,7 +57,7 @@ class FormEncodedContentTypeSerializerTest extends TestCase
         return [
             [
                 [1, 2, 3],
-                '0=1&1=2&2=3'
+                '0=1&1=2&2=3',
             ],
             [
                 [
@@ -63,9 +65,9 @@ class FormEncodedContentTypeSerializerTest extends TestCase
                         ['name' => 'Shyam', 'email' => 'shyamjaiswal@gmail.com'],
                         ['name' => 'Bob', 'email' => 'bob32@gmail.com'],
                         ['name' => 'Jai', 'email' => 'jai87@gmail.com'],
-                    ]
+                    ],
                 ],
-                'employees%5B0%5D%5Bname%5D=Shyam&employees%5B0%5D%5Bemail%5D=shyamjaiswal%40gmail.com&employees%5B1%5D%5Bname%5D=Bob&employees%5B1%5D%5Bemail%5D=bob32%40gmail.com&employees%5B2%5D%5Bname%5D=Jai&employees%5B2%5D%5Bemail%5D=jai87%40gmail.com'
+                'employees%5B0%5D%5Bname%5D=Shyam&employees%5B0%5D%5Bemail%5D=shyamjaiswal%40gmail.com&employees%5B1%5D%5Bname%5D=Bob&employees%5B1%5D%5Bemail%5D=bob32%40gmail.com&employees%5B2%5D%5Bname%5D=Jai&employees%5B2%5D%5Bemail%5D=jai87%40gmail.com',
             ],
             [
                 [
@@ -79,9 +81,9 @@ class FormEncodedContentTypeSerializerTest extends TestCase
                                 ['value' => 'Save', 'onclick' => 'SaveDoc()'],
                             ],
                         ],
-                    ]
+                    ],
                 ],
-                'menu%5Bid%5D=file&menu%5Bvalue%5D=File&menu%5Bpopup%5D%5Bmenuitem%5D%5B0%5D%5Bvalue%5D=New&menu%5Bpopup%5D%5Bmenuitem%5D%5B0%5D%5Bonclick%5D=CreateDoc%28%29&menu%5Bpopup%5D%5Bmenuitem%5D%5B1%5D%5Bvalue%5D=Open&menu%5Bpopup%5D%5Bmenuitem%5D%5B1%5D%5Bonclick%5D=OpenDoc%28%29&menu%5Bpopup%5D%5Bmenuitem%5D%5B2%5D%5Bvalue%5D=Save&menu%5Bpopup%5D%5Bmenuitem%5D%5B2%5D%5Bonclick%5D=SaveDoc%28%29'
+                'menu%5Bid%5D=file&menu%5Bvalue%5D=File&menu%5Bpopup%5D%5Bmenuitem%5D%5B0%5D%5Bvalue%5D=New&menu%5Bpopup%5D%5Bmenuitem%5D%5B0%5D%5Bonclick%5D=CreateDoc%28%29&menu%5Bpopup%5D%5Bmenuitem%5D%5B1%5D%5Bvalue%5D=Open&menu%5Bpopup%5D%5Bmenuitem%5D%5B1%5D%5Bonclick%5D=OpenDoc%28%29&menu%5Bpopup%5D%5Bmenuitem%5D%5B2%5D%5Bvalue%5D=Save&menu%5Bpopup%5D%5Bmenuitem%5D%5B2%5D%5Bonclick%5D=SaveDoc%28%29',
             ],
         ];
     }

@@ -62,17 +62,17 @@ class CookieJarTest extends TestCase
     public function validCookiesProvider(): array
     {
         return [
-            'regular cookie'          => [
+            'regular cookie' => [
                 'cookies'          => ['foo' => 'bar'],
-                'serializedCookie' => 'foo=bar'
+                'serializedCookie' => 'foo=bar',
             ],
-            'multiple cookies'        => [
+            'multiple cookies' => [
                 'cookies'          => ['foo' => 'bar', 'foobar' => 'barfoo'],
-                'serializedCookie' => 'foo=bar; foobar=barfoo'
+                'serializedCookie' => 'foo=bar; foobar=barfoo',
             ],
             'with integers as values' => [
                 'cookies'          => ['foo' => '0', 'bar' => 123, 'foobar' => 0],
-                'serializedCookie' => 'foo=0; bar=123; foobar=0'
+                'serializedCookie' => 'foo=0; bar=123; foobar=0',
             ],
         ];
     }
@@ -80,13 +80,13 @@ class CookieJarTest extends TestCase
     public function invalidCookiesProvider(): array
     {
         return [
-            'with spaces on name'  => [
+            'with spaces on name' => [
                 'cookies' => ['foo bar' => 'bar'],
             ],
             'with newline on name' => [
                 'cookies' => ["foo\n" => 'bar'],
             ],
-            'with empty value'     => [
+            'with empty value' => [
                 'cookies' => ['foo' => ''],
             ],
         ];

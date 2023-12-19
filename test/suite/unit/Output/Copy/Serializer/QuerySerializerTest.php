@@ -55,7 +55,7 @@ class QuerySerializerTest extends TestCase
                          ->willReturn($jsonSerialized = ['bar' => 'foo']);
 
         return [
-            'DateTime'                   => [
+            'DateTime' => [
                 [
                     'dateTime' => $dateTime = new DateTimeImmutable(
                         '2020-11-24 01:02:03',
@@ -66,13 +66,13 @@ class QuerySerializerTest extends TestCase
                     'dateTime' => $dateTime->format(DateTimeInterface::RFC3339),
                 ],
             ],
-            'Nullable'                   => [
+            'Nullable' => [
                 [
                     'nullable' => null,
                 ],
                 [],
             ],
-            'Integer'                    => [
+            'Integer' => [
                 [
                     'integer' => $integer = 11,
                 ],
@@ -80,7 +80,7 @@ class QuerySerializerTest extends TestCase
                     'integer' => (string)$integer,
                 ],
             ],
-            'String'                     => [
+            'String' => [
                 [
                     'string' => $string = 'simple string',
                 ],
@@ -88,7 +88,7 @@ class QuerySerializerTest extends TestCase
                     'string' => $string,
                 ],
             ],
-            'Float'                      => [
+            'Float' => [
                 [
                     'float' => $float = 42.13,
                 ],
@@ -96,9 +96,9 @@ class QuerySerializerTest extends TestCase
                     'float' => (string)$float,
                 ],
             ],
-            'Boolean'                    => [
+            'Boolean' => [
                 [
-                    'booleanTrue'  => $booleanTrue = true,
+                    'booleanTrue'  => $booleanTrue  = true,
                     'booleanFalse' => $booleanFalse = false,
                 ],
                 [
@@ -106,7 +106,7 @@ class QuerySerializerTest extends TestCase
                     'booleanFalse' => (string)(int)$booleanFalse,
                 ],
             ],
-            'Serializable interface'     => [
+            'Serializable interface' => [
                 [
                     'serializable' => $serializable,
                 ],

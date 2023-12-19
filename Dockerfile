@@ -1,4 +1,4 @@
-FROM php:7.4-cli-alpine3.13 as dependencies
+FROM php:8.2-cli-alpine as dependencies
 
 WORKDIR /dependencies
 
@@ -18,7 +18,7 @@ COPY composer.lock /dependencies
 RUN composer install \
     && git config --global --add safe.directory /app
 
-FROM php:7.4-cli-alpine3.13
+FROM php:8.2-cli-alpine
 
 ARG API_CLIENT_GENERATOR_VERSION
 ENV API_CLIENT_GENERATOR_VERSION=$API_CLIENT_GENERATOR_VERSION

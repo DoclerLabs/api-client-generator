@@ -7,6 +7,7 @@ namespace DoclerLabs\ApiClientGenerator\Input\Factory;
 use cebe\openapi\spec\Parameter;
 use cebe\openapi\spec\Reference;
 use cebe\openapi\SpecObjectInterface;
+use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Entity\Constraint\ConstraintCollection;
 use DoclerLabs\ApiClientGenerator\Entity\Constraint\MaximumConstraint;
 use DoclerLabs\ApiClientGenerator\Entity\Constraint\MaxItemsConstraint;
@@ -26,11 +27,8 @@ use UnexpectedValueException;
 
 class FieldFactory
 {
-    private PhpNameValidator $nameValidator;
-
-    public function __construct(PhpNameValidator $nameValidator)
+    public function __construct(private PhpNameValidator $nameValidator, private PhpVersion $phpVersion)
     {
-        $this->nameValidator = $nameValidator;
     }
 
     public function create(
@@ -66,7 +64,7 @@ class FieldFactory
                 }
 
                 $objectProperties = $this->mergeAllOfProperties($operationName, $schema);
-                $schema = $this->mergeAllOfAttributes($schema);
+                $schema           = $this->mergeAllOfAttributes($schema);
             } elseif (FieldType::isSpecificationTypeArray($type)) {
                 $itemReferenceName = '';
                 if ($schema->items === null) {
@@ -109,7 +107,7 @@ class FieldFactory
                 }
             }
 
-            $fieldType = new FieldType($type);
+            $fieldType = new FieldType($type, $this->phpVersion);
             $field     = new Field(
                 $fieldName,
                 $fieldType,
@@ -124,7 +122,7 @@ class FieldFactory
                 ),
                 $referenceName,
                 $required,
-                $schema->nullable,
+                (bool)$schema->nullable,
                 $additionalProperties
             );
 

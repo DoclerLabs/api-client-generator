@@ -6,6 +6,8 @@ namespace DoclerLabs\ApiClientGenerator\Generator\Security;
 
 use cebe\openapi\spec\SecurityRequirement;
 use cebe\openapi\spec\SecurityScheme;
+use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
+use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Entity\ImportCollection;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
@@ -13,6 +15,10 @@ use PhpParser\Node\Expr;
 
 abstract class SecurityStrategyAbstract
 {
+    public function __construct(protected CodeBuilder $builder, protected PhpVersion $phpVersion)
+    {
+    }
+
     abstract public function getProperties(Operation $operation, Specification $specification): array;
 
     abstract public function getConstructorParams(Operation $operation, Specification $specification): array;
@@ -60,11 +66,11 @@ abstract class SecurityStrategyAbstract
     {
         if (
             !empty($specification->getSecuritySchemes())
-            && !empty($operation->getSecurity())
+            && !empty($operation->security)
         ) {
             foreach ($specification->getSecuritySchemes() as $name => $securityScheme) {
                 /** @var SecurityRequirement $securityRequirement */
-                foreach ($operation->getSecurity() as $securityRequirement) {
+                foreach ($operation->security as $securityRequirement) {
                     if (isset($securityRequirement->$name)) {
                         yield $securityScheme;
                     }

@@ -11,13 +11,11 @@ use PhpParser\Node\Expr\Variable;
 
 class ParameterBuilder extends Param
 {
-    protected string   $docBlockType = '';
-    private PhpVersion $phpVersion;
+    protected string $docBlockType = '';
 
-    public function __construct(string $name, PhpVersion $phpVersion)
+    public function __construct(string $name, private PhpVersion $phpVersion)
     {
         parent::__construct($name);
-        $this->phpVersion = $phpVersion;
     }
 
     public function setType($type, bool $isNullable = false): self
@@ -43,6 +41,7 @@ class ParameterBuilder extends Param
             new Variable($this->name),
             $this->default,
             $this->type,
+            $this->flags,
             $this->byRef,
             $this->variadic,
             [],

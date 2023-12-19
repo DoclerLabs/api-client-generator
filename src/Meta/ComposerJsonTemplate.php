@@ -16,21 +16,12 @@ use Twig\Environment;
 
 class ComposerJsonTemplate implements TemplateInterface
 {
-    private Environment                       $renderer;
-    private Configuration                     $configuration;
-    private HttpMessageImplementationStrategy $messageImplementation;
-    private ContainerImplementationStrategy   $containerImplementation;
-
     public function __construct(
-        Environment $renderer,
-        Configuration $configuration,
-        HttpMessageImplementationStrategy $messageImplementation,
-        ContainerImplementationStrategy $containerImplementation
+        private Environment $renderer,
+        private Configuration $configuration,
+        private HttpMessageImplementationStrategy $messageImplementation,
+        private ContainerImplementationStrategy $containerImplementation
     ) {
-        $this->renderer                = $renderer;
-        $this->configuration           = $configuration;
-        $this->messageImplementation   = $messageImplementation;
-        $this->containerImplementation = $containerImplementation;
     }
 
     public function getOutputFilePath(): string
@@ -52,9 +43,9 @@ class ComposerJsonTemplate implements TemplateInterface
             'composer.json.twig',
             [
                 'specification' => $specification,
-                'packageName'   => $this->configuration->getPackageName(),
-                'phpVersion'    => $this->configuration->getPhpVersion(),
-                'namespace'     => $this->configuration->getBaseNamespace(),
+                'packageName'   => $this->configuration->packageName,
+                'phpVersion'    => sprintf('%.1f', $this->configuration->phpVersion),
+                'namespace'     => $this->configuration->baseNamespace,
                 'packages'      => $packages,
             ]
         );

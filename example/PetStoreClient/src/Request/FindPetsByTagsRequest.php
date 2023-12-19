@@ -45,9 +45,9 @@ class FindPetsByTagsRequest implements RequestInterface
 
     public function getQueryParameters(): array
     {
-        return \array_map(static function ($value) {
+        return array_map(static function ($value) {
             return $value instanceof SerializableInterface ? $value->toArray() : $value;
-        }, \array_filter(['tags' => $this->tags], static function ($value) {
+        }, array_filter(['tags' => $this->tags], static function ($value) {
             return null !== $value;
         }));
     }

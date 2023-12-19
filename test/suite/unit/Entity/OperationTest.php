@@ -16,13 +16,18 @@ use PHPUnit\Framework\TestCase;
 class OperationTest extends TestCase
 {
     private const NAME = 'operation';
+
     private const DESCRIPTION = 'Very important operation';
+
     private const TAGS = ['one', 'two'];
 
     private Operation $sut;
+
     private array $errorResponses;
+
     /** @var Request|MockObject */
     private $request;
+
     /** @var Response[]|MockObject[] */
     private array $succesfulResponses;
 
@@ -47,31 +52,31 @@ class OperationTest extends TestCase
 
     public function testGetSuccessfulResponses(): void
     {
-        self::assertEquals($this->succesfulResponses, $this->sut->getSuccessfulResponses());
+        self::assertEquals($this->succesfulResponses, $this->sut->successfulResponses);
     }
 
     public function testGetTags(): void
     {
-        self::assertEquals(self::TAGS, $this->sut->getTags());
+        self::assertEquals(self::TAGS, $this->sut->tags);
     }
 
     public function testGetName(): void
     {
-        self::assertEquals(self::NAME, $this->sut->getName());
+        self::assertEquals(self::NAME, $this->sut->name);
     }
 
     public function testGetRequest(): void
     {
-        self::assertEquals($this->request, $this->sut->getRequest());
+        self::assertEquals($this->request, $this->sut->request);
     }
 
     public function testGetErrorResponses(): void
     {
-        self::assertEquals($this->errorResponses, $this->sut->getErrorResponses());
+        self::assertEquals($this->errorResponses, $this->sut->errorResponses);
     }
 
     public function testGetDescription(): void
     {
-        self::assertEquals(self::DESCRIPTION, $this->sut->getDescription());
+        self::assertEquals(self::DESCRIPTION, $this->sut->description);
     }
 }

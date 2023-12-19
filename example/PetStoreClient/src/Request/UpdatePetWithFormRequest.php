@@ -53,14 +53,14 @@ class UpdatePetWithFormRequest implements RequestInterface
 
     public function getRoute(): string
     {
-        return \strtr('pet/{petId}', ['{petId}' => $this->petId]);
+        return strtr('pet/{petId}', ['{petId}' => $this->petId]);
     }
 
     public function getQueryParameters(): array
     {
-        return \array_map(static function ($value) {
+        return array_map(static function ($value) {
             return $value instanceof SerializableInterface ? $value->toArray() : $value;
-        }, \array_filter(['name' => $this->name, 'status' => $this->status], static function ($value) {
+        }, array_filter(['name' => $this->name, 'status' => $this->status], static function ($value) {
             return null !== $value;
         }));
     }

@@ -16,7 +16,7 @@ class FreeFormSchemaGeneratorTest extends AbstractGeneratorTest
 {
     public function exampleProvider(): array
     {
-        $yaml = '/FreeFormSchema/item.yaml';
+        $yaml      = '/FreeFormSchema/item.yaml';
         $className = self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Item';
 
         return [
@@ -37,6 +37,12 @@ class FreeFormSchemaGeneratorTest extends AbstractGeneratorTest
                 '/FreeFormSchema/ItemPhp74.php',
                 $className,
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'With PHP 8.0' => [
+                $yaml,
+                '/FreeFormSchema/ItemPhp80.php',
+                $className,
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
             ],
         ];
     }

@@ -33,7 +33,7 @@ class GetPetByIdRequest implements RequestInterface
 
     public function getRoute(): string
     {
-        return \strtr('pet/{petId}', ['{petId}' => $this->petId]);
+        return strtr('pet/{petId}', ['{petId}' => $this->petId]);
     }
 
     public function getQueryParameters(): array
