@@ -11,60 +11,34 @@ use RuntimeException;
 
 class Field
 {
-    public const FORMAT_DATE      = 'date';
+    private const FORMAT_DATE = 'date';
 
-    public const FORMAT_DATE_TIME = 'date-time';
+    private const FORMAT_DATE_TIME = 'date-time';
 
-    public const TYPE_MIXED       = 'mixed';
+    private const TYPE_MIXED = 'mixed';
 
-    private bool                 $additionalProperties;
+    private ?Field $arrayItem = null;
 
-    private string               $name;
+    private array $objectProperties = [];
 
-    private FieldType            $type;
+    private array $enumValues = [];
 
-    private ConstraintCollection $constraints;
+    private string $format = '';
 
-    private string               $referenceName;
+    private mixed $default = null;
 
-    private bool                 $required;
-
-    private bool                 $nullable;
-
-    private bool                 $hasOneOf;
-
-    private ?Field               $arrayItem        = null;
-
-    private array                $objectProperties = [];
-
-    private array                $enumValues       = [];
-
-    private string               $format           = '';
-
-    /** @phpstan-ignore-next-line cannot use strict type before PHP8 with "mixed" pseudo type */
-    private $default;
-
-    /** @phpstan-ignore-next-line cannot use strict type before PHP8 with "mixed" pseudo type */
-    private $discriminator;
+    private mixed $discriminator = null;
 
     public function __construct(
-        string $name,
-        FieldType $type,
-        ConstraintCollection $constraints,
-        string $referenceName,
-        bool $required,
-        bool $nullable,
-        bool $additionalProperties,
-        bool $hasOneOf = false
+        private string $name,
+        private FieldType $type,
+        private ConstraintCollection $constraints,
+        private string $referenceName,
+        private bool $required,
+        private bool $nullable,
+        private bool $additionalProperties,
+        private bool $hasOneOf = false
     ) {
-        $this->name                 = $name;
-        $this->type                 = $type;
-        $this->constraints          = $constraints;
-        $this->referenceName        = $referenceName;
-        $this->required             = $required;
-        $this->nullable             = $nullable;
-        $this->additionalProperties = $additionalProperties;
-        $this->hasOneOf             = $hasOneOf;
     }
 
     public function getArrayItem(): Field
@@ -194,36 +168,24 @@ class Field
                && $this->getArrayItem()->isObject();
     }
 
-    /**
-     * @return mixed
-     */
-    public function getDefault()
+    public function getDefault(): mixed
     {
         return $this->default;
     }
 
-    /**
-     * @param mixed $default
-     */
-    public function setDefault($default): self
+    public function setDefault(mixed $default): self
     {
         $this->default = $default;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getDiscriminator()
+    public function getDiscriminator(): mixed
     {
         return $this->discriminator;
     }
 
-    /**
-     * @param mixed $discriminator
-     */
-    public function setDiscriminator($discriminator): self
+    public function setDiscriminator(mixed $discriminator): self
     {
         $this->discriminator = $discriminator;
 

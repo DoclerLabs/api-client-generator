@@ -30,8 +30,6 @@ class PutResourceByIdRequest implements RequestInterface
 
     public const MANDATORY_ENUM_PARAMETER_THIRD_VALUE = 'third value';
 
-    private int $resourceId;
-
     private ?int $integerParameter = null;
 
     private ?string $stringParameter = null;
@@ -48,46 +46,15 @@ class PutResourceByIdRequest implements RequestInterface
 
     private ?EmbeddedObject $objectParameter = null;
 
-    private int $mandatoryIntegerParameter;
-
-    private string $mandatoryStringParameter;
-
-    private string $mandatoryEnumParameter;
-
-    private DateTimeInterface $mandatoryDateParameter;
-
-    private float $mandatoryFloatParameter;
-
-    private bool $mandatoryBooleanParameter;
-
-    private array $mandatoryArrayParameter;
-
-    private EmbeddedObject $mandatoryObjectParameter;
-
-    private string $xRequestId;
-
     private ?string $csrfToken = null;
-
-    private PutResourceByIdRequestBody $putResourceByIdRequestBody;
 
     private string $contentType = 'application/json';
 
-    public function __construct(int $resourceId, int $mandatoryIntegerParameter, string $mandatoryStringParameter, string $mandatoryEnumParameter, DateTimeInterface $mandatoryDateParameter, float $mandatoryFloatParameter, bool $mandatoryBooleanParameter, array $mandatoryArrayParameter, EmbeddedObject $mandatoryObjectParameter, string $xRequestId, PutResourceByIdRequestBody $putResourceByIdRequestBody)
+    public function __construct(private int $resourceId, private int $mandatoryIntegerParameter, private string $mandatoryStringParameter, private string $mandatoryEnumParameter, private DateTimeInterface $mandatoryDateParameter, private float $mandatoryFloatParameter, private bool $mandatoryBooleanParameter, private array $mandatoryArrayParameter, private EmbeddedObject $mandatoryObjectParameter, private string $xRequestId, private PutResourceByIdRequestBody $putResourceByIdRequestBody)
     {
         if ($resourceId < 0) {
-            throw new RequestValidationException(\sprintf('Invalid %s value. Given: `%s`. Cannot be less than 0.', 'resourceId', $resourceId));
+            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Cannot be less than 0.', 'resourceId', $resourceId));
         }
-        $this->resourceId                 = $resourceId;
-        $this->mandatoryIntegerParameter  = $mandatoryIntegerParameter;
-        $this->mandatoryStringParameter   = $mandatoryStringParameter;
-        $this->mandatoryEnumParameter     = $mandatoryEnumParameter;
-        $this->mandatoryDateParameter     = $mandatoryDateParameter;
-        $this->mandatoryFloatParameter    = $mandatoryFloatParameter;
-        $this->mandatoryBooleanParameter  = $mandatoryBooleanParameter;
-        $this->mandatoryArrayParameter    = $mandatoryArrayParameter;
-        $this->mandatoryObjectParameter   = $mandatoryObjectParameter;
-        $this->xRequestId                 = $xRequestId;
-        $this->putResourceByIdRequestBody = $putResourceByIdRequestBody;
     }
 
     public function getContentType(): string
@@ -168,14 +135,14 @@ class PutResourceByIdRequest implements RequestInterface
 
     public function getRoute(): string
     {
-        return \strtr('v1/resources/{resourceId}', ['{resourceId}' => $this->resourceId]);
+        return strtr('v1/resources/{resourceId}', ['{resourceId}' => $this->resourceId]);
     }
 
     public function getQueryParameters(): array
     {
-        return \array_map(static function ($value) {
+        return array_map(static function ($value) {
             return $value instanceof SerializableInterface ? $value->toArray() : $value;
-        }, \array_filter(['integerParameter' => $this->integerParameter, 'stringParameter' => $this->stringParameter, 'enumParameter' => $this->enumParameter, 'dateParameter' => $this->dateParameter, 'floatParameter' => $this->floatParameter, 'booleanParameter' => $this->booleanParameter, 'arrayParameter' => $this->arrayParameter, 'objectParameter' => $this->objectParameter, 'mandatoryIntegerParameter' => $this->mandatoryIntegerParameter, 'mandatoryStringParameter' => $this->mandatoryStringParameter, 'mandatoryEnumParameter' => $this->mandatoryEnumParameter, 'mandatoryDateParameter' => $this->mandatoryDateParameter, 'mandatoryFloatParameter' => $this->mandatoryFloatParameter, 'mandatoryBooleanParameter' => $this->mandatoryBooleanParameter, 'mandatoryArrayParameter' => $this->mandatoryArrayParameter, 'mandatoryObjectParameter' => $this->mandatoryObjectParameter], static function ($value) {
+        }, array_filter(['integerParameter' => $this->integerParameter, 'stringParameter' => $this->stringParameter, 'enumParameter' => $this->enumParameter, 'dateParameter' => $this->dateParameter, 'floatParameter' => $this->floatParameter, 'booleanParameter' => $this->booleanParameter, 'arrayParameter' => $this->arrayParameter, 'objectParameter' => $this->objectParameter, 'mandatoryIntegerParameter' => $this->mandatoryIntegerParameter, 'mandatoryStringParameter' => $this->mandatoryStringParameter, 'mandatoryEnumParameter' => $this->mandatoryEnumParameter, 'mandatoryDateParameter' => $this->mandatoryDateParameter, 'mandatoryFloatParameter' => $this->mandatoryFloatParameter, 'mandatoryBooleanParameter' => $this->mandatoryBooleanParameter, 'mandatoryArrayParameter' => $this->mandatoryArrayParameter, 'mandatoryObjectParameter' => $this->mandatoryObjectParameter], static function ($value) {
             return null !== $value;
         }));
     }
@@ -187,18 +154,18 @@ class PutResourceByIdRequest implements RequestInterface
 
     public function getCookies(): array
     {
-        return \array_map(static function ($value) {
+        return array_map(static function ($value) {
             return $value instanceof SerializableInterface ? $value->toArray() : $value;
-        }, \array_filter(['csrf_token' => $this->csrfToken], static function ($value) {
+        }, array_filter(['csrf_token' => $this->csrfToken], static function ($value) {
             return null !== $value;
         }));
     }
 
     public function getHeaders(): array
     {
-        return \array_merge(['Content-Type' => $this->contentType], \array_map(static function ($value) {
+        return array_merge(['Content-Type' => $this->contentType], array_map(static function ($value) {
             return $value instanceof SerializableInterface ? $value->toArray() : $value;
-        }, \array_filter(['X-Request-ID' => $this->xRequestId], static function ($value) {
+        }, array_filter(['X-Request-ID' => $this->xRequestId], static function ($value) {
             return null !== $value;
         })));
     }

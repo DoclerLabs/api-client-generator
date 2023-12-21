@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Test\Functional\Generator;
 
+use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Generator\ClientGenerator;
 use DoclerLabs\ApiClientGenerator\Test\Functional\ConfigurationBuilder;
 
@@ -15,11 +16,29 @@ class ClientGeneratorTest extends AbstractGeneratorTest
     public function exampleProvider(): array
     {
         return [
-            'Basic schema' => [
+            'Basic schema with php 7.4' => [
                 '/Client/petstore.yaml',
-                '/Client/SwaggerPetstoreClient.php',
+                '/Client/SwaggerPetstoreClient74.php',
                 self::BASE_NAMESPACE . '\\SwaggerPetstoreClient',
                 ConfigurationBuilder::fake()->build(),
+            ],
+            'Basic schema with php 8.0' => [
+                '/Client/petstore.yaml',
+                '/Client/SwaggerPetstoreClient80.php',
+                self::BASE_NAMESPACE . '\\SwaggerPetstoreClient',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
+            ],
+            'Multiple responses schema with php 7.4' => [
+                '/Client/multiple-responses.yaml',
+                '/Client/MultipleResponsesClient74.php',
+                self::BASE_NAMESPACE . '\\MultipleResponsesClient',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'Multiple responses schema with php 8.0' => [
+                '/Client/multiple-responses.yaml',
+                '/Client/MultipleResponsesClient80.php',
+                self::BASE_NAMESPACE . '\\MultipleResponsesClient',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
             ],
         ];
     }

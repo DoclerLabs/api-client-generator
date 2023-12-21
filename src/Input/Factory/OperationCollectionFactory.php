@@ -15,11 +15,9 @@ use UnexpectedValueException;
 class OperationCollectionFactory
 {
     private const NON_OPERATION_ALLOWED_KEYS = ['parameters'];
-    private OperationFactory $operationFactory;
 
-    public function __construct(OperationFactory $operationFactory)
+    public function __construct(private OperationFactory $operationFactory)
     {
-        $this->operationFactory = $operationFactory;
     }
 
     public function create(OpenApi $specification): OperationCollection
@@ -54,6 +52,7 @@ class OperationCollectionFactory
         }
         $properties = $parentClass->getProperty('_properties');
         $properties->setAccessible(true);
+        /** @var array $operations */
         $operations = $properties->getValue($pathItem);
 
         foreach (self::NON_OPERATION_ALLOWED_KEYS as $key) {

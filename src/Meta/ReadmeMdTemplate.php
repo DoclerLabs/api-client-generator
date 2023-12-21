@@ -14,15 +14,11 @@ use Twig\Environment;
 class ReadmeMdTemplate implements TemplateInterface
 {
     private const NO_TAG_PLACEHOLDER = '[No tag]';
-    private Environment   $renderer;
-    private Configuration $configuration;
 
     public function __construct(
-        Environment $renderer,
-        Configuration $configuration
+        private Environment $renderer,
+        private Configuration $configuration
     ) {
-        $this->renderer      = $renderer;
-        $this->configuration = $configuration;
     }
 
     public function getOutputFilePath(): string
@@ -36,10 +32,10 @@ class ReadmeMdTemplate implements TemplateInterface
             'README.md.twig',
             [
                 'specification'           => $specification,
-                'packageName'             => $this->configuration->getPackageName(),
-                'phpVersion'              => $this->configuration->getPhpVersion(),
-                'generatorVersion'        => $this->configuration->getGeneratorVersion(),
-                'namespace'               => $this->configuration->getBaseNamespace(),
+                'packageName'             => $this->configuration->packageName,
+                'phpVersion'              => sprintf('%.1f', $this->configuration->phpVersion),
+                'generatorVersion'        => $this->configuration->generatorVersion,
+                'namespace'               => $this->configuration->baseNamespace,
                 'exampleOperation'        => $this->pickExampleOperation($specification),
                 'operationsGroupedByTags' => $this->groupOperationsByTags($specification),
             ]
@@ -57,10 +53,10 @@ class ReadmeMdTemplate implements TemplateInterface
     {
         $operationsGroupedByTags = [];
         foreach ($specification->getOperations() as $operation) {
-            foreach ($operation->getTags() as $tag) {
+            foreach ($operation->tags as $tag) {
                 $operationsGroupedByTags[$tag][] = $operation;
             }
-            if (empty($operation->getTags())) {
+            if (empty($operation->tags)) {
                 $operationsGroupedByTags[self::NO_TAG_PLACEHOLDER][] = $operation;
             }
         }

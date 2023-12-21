@@ -11,17 +11,8 @@ use PhpParser\Node\Expr\Variable;
 
 class MaximumConstraint implements ConstraintInterface
 {
-    private ?float $maximum = null;
-
-    private ?bool $exclusiveMaximum = null;
-
-    private FieldType $fieldType;
-
-    public function __construct(?float $maximum, ?bool $exclusiveMaximum, FieldType $fieldType)
+    public function __construct(private ?float $maximum, private ?bool $exclusiveMaximum, private FieldType $fieldType)
     {
-        $this->maximum          = $maximum;
-        $this->exclusiveMaximum = $exclusiveMaximum;
-        $this->fieldType        = $fieldType;
     }
 
     public function isExclusiveMaximum(): ?bool

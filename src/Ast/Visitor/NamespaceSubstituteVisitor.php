@@ -13,13 +13,8 @@ use PhpParser\NodeVisitorAbstract;
 
 class NamespaceSubstituteVisitor extends NodeVisitorAbstract
 {
-    private string $original;
-    private string $substitute;
-
-    public function __construct(string $original, string $substitute)
+    public function __construct(private string $original, private string $substitute)
     {
-        $this->original = $original;
-        $this->substitute = $substitute;
     }
 
     public function leaveNode(Node $node)
@@ -39,7 +34,7 @@ class NamespaceSubstituteVisitor extends NodeVisitorAbstract
     private function renameNode($namespacedStatement): void
     {
         if ($namespacedStatement->name !== null) {
-            $newName = str_replace($this->original, $this->substitute, $namespacedStatement->name->toString());
+            $newName                   = str_replace($this->original, $this->substitute, $namespacedStatement->name->toString());
             $namespacedStatement->name = new Name($newName);
         }
     }

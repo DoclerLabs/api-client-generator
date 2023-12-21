@@ -14,10 +14,12 @@ use UnexpectedValueException;
 
 class ContainerImplementationStrategy implements ContainerImplementationInterface
 {
-    public const CONTAINER_PIMPLE          = 'pimple';
+    public const CONTAINER_PIMPLE = 'pimple';
+
     public const CONTAINER_IMPLEMENTATIONS = [
         self::CONTAINER_PIMPLE => PimpleContainer::class,
     ];
+
     private ContainerImplementationInterface $containerImplementation;
 
     public function __construct(string $container, string $baseNamespace, CodeBuilder $builder)

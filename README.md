@@ -13,7 +13,7 @@ API client generator is a console application capable of auto-generating a [PSR1
 ## Why using it?
 - With generated client you are always sure that your OpenAPI specification is up-to-date.
 - Work with objects instead of raw data, it is OOP friendly.
-- Saves your time. You don't need to write data mappers youself to populate those objects with the data from the response.
+- Saves your time. You don't need to write data mappers yourself to populate those objects with the data from the response.
 - All the basic type validations in the request and the response done automatically.
 - Despite the fact the code is generated it's clear and readable, simple to debug and to reason about.
 - Highly configurable and extensible.
@@ -27,7 +27,7 @@ API client generator is a console application capable of auto-generating a [PSR1
     * application/json
     * application/x-www-form-urlencoded
     * application/xml
-- Supports new PHP versions synthax features.
+- Supports new PHP versions syntax features.
 - It is base client independent, you are free to choose any [existing PSR-18 compliant client](https://packagist.org/providers/psr/http-client-implementation). Just choose the one which you already use, so generated client would not cause any conflicts with your dependencies. Although not recommended, you can also use or build your own PSR-18 implementation, as the generated client depends on PSR interfaces only.
 - Applies code style rules to generated code, you can specify your own.
 - Generates README and composer.json files with possibility to use your own template.
@@ -74,9 +74,9 @@ The following environment variables are available:
 | `PACKAGE` | yes | | | group/some-api-client |
 | `OPENAPI ` | yes | | | /api/openapi.yaml |
 | `OUTPUT_DIR` | yes | | | /client |
-| `CODE_STYLE` | no | {path-to-repository}/.php_cs.php | | /client/myCodeStyle.php |
+| `CODE_STYLE` | no | {path-to-repository}/.php-cs-fixer.php.dist | | /client/myCodeStyle.php |
 | `SOURCE_DIR` | no | src | | src |
-| `CLIENT_PHP_VERSION` | no | 7.4 | 7.0, 7.1, 7.2, 7.3, 7.4 | 7.4 |
+| `CLIENT_PHP_VERSION` | no | 7.4 | 7.0, 7.1, 7.2, 7.3, 7.4, 8.0 | 7.4 |
 | `COMPOSER_JSON_TEMPLATE_DIR` | no | {path-to-repository}/template/composer.json.twig | | /path/composer.json.twig |
 | `README_MD_TEMPLATE_DIR` | no | {path-to-repository}/template/README.md.twig | | /path/README.md.twig |
 | `HTTP_MESSAGE` | no | guzzle | guzzle, nyholm | nyholm |

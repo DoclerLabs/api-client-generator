@@ -21,21 +21,12 @@ use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\XmlContentT
 
 class Specification
 {
-    private OpenApi                     $openApi;
-    private OperationCollection         $operations;
-    private FieldCollection             $compositeRequestFields;
-    private FieldCollection             $compositeResponseFields;
-
     public function __construct(
-        OpenApi $openApi,
-        OperationCollection $operations,
-        FieldCollection $compositeRequestFields,
-        FieldCollection $compositeResponseFields
+        private OpenApi $openApi,
+        private OperationCollection $operations,
+        private FieldCollection $compositeRequestFields,
+        private FieldCollection $compositeResponseFields
     ) {
-        $this->openApi                 = $openApi;
-        $this->operations              = $operations;
-        $this->compositeRequestFields  = $compositeRequestFields;
-        $this->compositeResponseFields = $compositeResponseFields;
     }
 
     public function getTitle(): string
@@ -52,7 +43,7 @@ class Specification
 
     public function getLicenseName(): string
     {
-        return $this->openApi->info->license->name;
+        return (string)$this->openApi->info->license?->name;
     }
 
     public function getServerUrls(): array
@@ -95,6 +86,8 @@ class Specification
                 $securityScheme = $securityScheme->resolve();
             }
 
+            /** @var SecurityScheme $securityScheme */
+
             return $securityScheme;
         }, $this->openApi->components->securitySchemes ?? []);
     }
@@ -110,11 +103,13 @@ class Specification
 
         /** @var Operation $operation */
         foreach ($this->getOperations() as $operation) {
-            foreach ($operation->getRequest()->getBodyContentTypes() as $contentType) {
+            foreach ($operation->request->bodyContentTypes as $contentType) {
                 $allContentTypes[$contentType] = true;
             }
-            foreach ($operation->getSuccessfulResponse()->getBodyContentTypes() as $contentType) {
-                $allContentTypes[$contentType] = true;
+            foreach ($operation->successfulResponses as $response) {
+                foreach ($response->bodyContentTypes as $contentType) {
+                    $allContentTypes[$contentType] = true;
+                }
             }
         }
 
@@ -124,7 +119,7 @@ class Specification
     public function requiresIntlExtension(): bool
     {
         foreach ($this->getOperations() as $operation) {
-            foreach ($operation->getRequest()->getFields() as $field) {
+            foreach ($operation->request->fields as $field) {
                 if ($this->fieldRequiresIntlExtension($field)) {
                     return true;
                 }

@@ -9,11 +9,8 @@ use DoclerLabs\ApiClientGenerator\Ast\Builder\MethodBuilder;
 
 abstract class HttpMessageAbstract
 {
-    protected CodeBuilder $builder;
-
-    public function __construct(CodeBuilder $builder)
+    public function __construct(protected CodeBuilder $builder)
     {
-        $this->builder = $builder;
     }
 
     public function generateRequestMapMethod(): MethodBuilder
@@ -28,7 +25,7 @@ abstract class HttpMessageAbstract
 
         $bodyVariable = $this->builder->var('body');
 
-        $bodyEncodeMethodCall  = $this->builder->methodCall(
+        $bodyEncodeMethodCall = $this->builder->methodCall(
             $this->builder->localPropertyFetch('bodySerializer'),
             'serializeRequest',
             [
@@ -69,7 +66,7 @@ abstract class HttpMessageAbstract
                         $this->builder->methodCall($psr7RequestVariable, 'getUri'),
                         'withQuery',
                         [$query]
-                    )
+                    ),
                 ]
             )
         );

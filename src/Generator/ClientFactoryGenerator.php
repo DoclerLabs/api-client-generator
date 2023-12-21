@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
+use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\ClientNaming;
@@ -15,16 +16,13 @@ use Psr\Http\Client\ClientInterface;
 
 class ClientFactoryGenerator extends GeneratorAbstract
 {
-    private ContainerImplementationStrategy $containerImplementation;
-
     public function __construct(
         string $baseNamespace,
         CodeBuilder $builder,
-        ContainerImplementationStrategy $containerImplementation
+        PhpVersion $phpVersion,
+        private ContainerImplementationStrategy $containerImplementation
     ) {
-        parent::__construct($baseNamespace, $builder);
-
-        $this->containerImplementation = $containerImplementation;
+        parent::__construct($baseNamespace, $builder, $phpVersion);
     }
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void

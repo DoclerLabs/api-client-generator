@@ -51,9 +51,9 @@ class LoginUserRequest implements RequestInterface
 
     public function getQueryParameters(): array
     {
-        return \array_map(static function ($value) {
+        return array_map(static function ($value) {
             return $value instanceof SerializableInterface ? $value->toArray() : $value;
-        }, \array_filter(['username' => $this->username, 'password' => $this->password], static function ($value) {
+        }, array_filter(['username' => $this->username, 'password' => $this->password], static function ($value) {
             return null !== $value;
         }));
     }

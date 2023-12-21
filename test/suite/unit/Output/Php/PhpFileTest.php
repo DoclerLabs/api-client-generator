@@ -12,8 +12,10 @@ use PHPUnit\Framework\TestCase;
  */
 class PhpFileTest extends TestCase
 {
-    private const FILE_NAME  = 'test.php';
+    private const FILE_NAME = 'test.php';
+
     private const CLASS_NAME = 'Test\\Test';
+
     /** @var PhpFile */
     private $sut;
 
@@ -24,16 +26,16 @@ class PhpFileTest extends TestCase
 
     public function testGetFileName(): void
     {
-        self::assertEquals(self::FILE_NAME, $this->sut->getFileName());
+        self::assertEquals(self::FILE_NAME, $this->sut->fileName);
     }
 
     public function testGetFullyQualifiedClassName(): void
     {
-        self::assertEquals(self::CLASS_NAME, $this->sut->getFullyQualifiedClassName());
+        self::assertEquals(self::CLASS_NAME, $this->sut->fullyQualifiedClassName);
     }
 
     public function testGetNodes(): void
     {
-        self::assertEquals([], $this->sut->getNodes());
+        self::assertEquals([], $this->sut->nodes);
     }
 }

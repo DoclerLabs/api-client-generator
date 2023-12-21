@@ -13,7 +13,9 @@ use Psr\Http\Message\StreamInterface;
 class XmlContentTypeSerializer implements ContentTypeSerializerInterface
 {
     const MIME_TYPE = 'application/xml';
+
     const ATTRIBUTE_NAMESPACE = 'xmlns';
+
     const ATTRIBUTE_NAMESPACE_SEPARATOR = ':';
 
     /** @var array */
@@ -23,10 +25,9 @@ class XmlContentTypeSerializer implements ContentTypeSerializerInterface
         'attributesKey'    => '@attributes',
         'cdataKey'         => '@cdata',
         'valueKey'         => '@value',
-        'namespacesOnRoot' => true
+        'namespacesOnRoot' => true,
     ];
 
-    /** @var mixed */
     private $xml;
 
     /** @var array */
@@ -102,9 +103,9 @@ class XmlContentTypeSerializer implements ContentTypeSerializerInterface
     }
 
     /**
-     * @param string $inputXml
-     * @return void
      * @throws SerializeException
+     *
+     * @return void
      */
     private function loadXml(string $inputXml)
     {
@@ -118,8 +119,6 @@ class XmlContentTypeSerializer implements ContentTypeSerializerInterface
     }
 
     /**
-     * @param DOMNode $node
-     * @return mixed
      * @throws SerializeException
      */
     private function parseNode(DOMNode $node)
@@ -129,16 +128,19 @@ class XmlContentTypeSerializer implements ContentTypeSerializerInterface
         switch ($node->nodeType) {
             case XML_CDATA_SECTION_NODE:
                 $output[$this->config['cdataKey']] = $this->normalizeTextContent($node->textContent);
+
                 break;
 
             case XML_TEXT_NODE:
                 $output = $this->normalizeTextContent($node->textContent);
+
                 break;
 
             case XML_ELEMENT_NODE:
                 $output = $this->parseChildNodes($node, $output);
                 $output = $this->normalizeNodeValues($output);
                 $output = $this->collectAttributes($node, $output);
+
                 break;
         }
 
@@ -146,9 +148,6 @@ class XmlContentTypeSerializer implements ContentTypeSerializerInterface
     }
 
     /**
-     * @param DOMNode $node
-     * @param mixed $output
-     * @return mixed
      * @throws SerializeException
      */
     private function parseChildNodes(DOMNode $node, $output)
@@ -192,7 +191,7 @@ class XmlContentTypeSerializer implements ContentTypeSerializerInterface
 
     /**
      * @param string|string[] $textContent
-     * @return string
+     *
      * @throws SerializeException
      */
     private function normalizeTextContent($textContent): string
@@ -202,7 +201,7 @@ class XmlContentTypeSerializer implements ContentTypeSerializerInterface
                 '/\n+\s+/',
                 '/\r+\s+/',
                 '/\n+\t+/',
-                '/\r+\t+/'
+                '/\r+\t+/',
             ],
             ' ',
             $textContent
@@ -214,10 +213,6 @@ class XmlContentTypeSerializer implements ContentTypeSerializerInterface
         return trim($normalized);
     }
 
-    /**
-     * @param mixed $values
-     * @return mixed
-     */
     private function normalizeNodeValues($values)
     {
         if (!is_array($values)) {
@@ -241,11 +236,6 @@ class XmlContentTypeSerializer implements ContentTypeSerializerInterface
         return $values;
     }
 
-    /**
-     * @param DOMNode $node
-     * @param mixed $output
-     * @return mixed
-     */
     private function collectAttributes(DOMNode $node, $output)
     {
         if ($node->attributes === null || !$node->attributes->length) {
@@ -280,11 +270,6 @@ class XmlContentTypeSerializer implements ContentTypeSerializerInterface
         return $output;
     }
 
-    /**
-     * @param DOMNode $node
-     * @param array $output
-     * @return array
-     */
     private function collectNodeNamespaces(DOMNode $node, array $output): array
     {
         $namespaces = $this->collectNamespaces($node);
@@ -296,10 +281,6 @@ class XmlContentTypeSerializer implements ContentTypeSerializerInterface
         return $output;
     }
 
-    /**
-     * @param DOMNode $node
-     * @return array
-     */
     private function collectNamespaces(DOMNode $node): array
     {
         $namespaces = [];
@@ -325,9 +306,6 @@ class XmlContentTypeSerializer implements ContentTypeSerializerInterface
     }
 
     /**
-     * @param string $nodeName
-     * @param mixed $data
-     * @return DOMElement
      * @throws SerializeException
      */
     private function buildNode(string $nodeName, $data): DOMElement
@@ -352,10 +330,9 @@ class XmlContentTypeSerializer implements ContentTypeSerializerInterface
     }
 
     /**
-     * @param DOMElement $node
-     * @param array $array
-     * @return void
      * @throws SerializeException
+     *
+     * @return void
      */
     private function parseArray(DOMElement $node, array $array)
     {
@@ -391,9 +368,6 @@ class XmlContentTypeSerializer implements ContentTypeSerializerInterface
     }
 
     /**
-     * @param DOMElement $node
-     * @param array $array
-     * @return array
      * @throws SerializeException
      */
     private function parseAttributes(DOMElement $node, array $array): array
@@ -415,11 +389,6 @@ class XmlContentTypeSerializer implements ContentTypeSerializerInterface
         return $array;
     }
 
-    /**
-     * @param DOMElement $node
-     * @param array $array
-     * @return array
-     */
     private function parseValue(DOMElement $node, array $array): array
     {
         $valueKey = $this->config['valueKey'];
@@ -433,11 +402,6 @@ class XmlContentTypeSerializer implements ContentTypeSerializerInterface
         return $array;
     }
 
-    /**
-     * @param DOMElement $node
-     * @param array $array
-     * @return array
-     */
     private function parseCdata(DOMElement $node, array $array): array
     {
         $cdataKey = $this->config['cdataKey'];
@@ -451,10 +415,6 @@ class XmlContentTypeSerializer implements ContentTypeSerializerInterface
         return $array;
     }
 
-    /**
-     * @param mixed $value
-     * @return string
-     */
     private function normalizeValues($value): string
     {
         $value = $value === true ? 'true' : $value;

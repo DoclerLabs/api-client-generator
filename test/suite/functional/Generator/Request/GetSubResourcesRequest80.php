@@ -19,11 +19,8 @@ class GetSubResourcesRequest implements RequestInterface
 
     private string $contentType = '';
 
-    private string $bearerToken;
-
-    public function __construct(string $bearerToken)
+    public function __construct(private string $bearerToken)
     {
-        $this->bearerToken = $bearerToken;
     }
 
     public function getContentType(): string
@@ -50,9 +47,9 @@ class GetSubResourcesRequest implements RequestInterface
 
     public function getQueryParameters(): array
     {
-        return \array_map(static function ($value) {
+        return array_map(static function ($value) {
             return $value instanceof SerializableInterface ? $value->toArray() : $value;
-        }, \array_filter(['filter' => $this->filter], static function ($value) {
+        }, array_filter(['filter' => $this->filter], static function ($value) {
             return null !== $value;
         }));
     }
@@ -69,7 +66,7 @@ class GetSubResourcesRequest implements RequestInterface
 
     public function getHeaders(): array
     {
-        return ['Authorization' => \sprintf('Bearer %s', $this->bearerToken)];
+        return ['Authorization' => sprintf('Bearer %s', $this->bearerToken)];
     }
 
     public function getBody()

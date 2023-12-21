@@ -17,8 +17,10 @@ use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\JsonContent
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\VdnApiJsonContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\XmlContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\DirectoryPrinter;
+use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFile;
 use DoclerLabs\ApiClientGenerator\Output\Meta\MetaFileCollection;
 use DoclerLabs\ApiClientGenerator\Output\MetaFilePrinter;
+use DoclerLabs\ApiClientGenerator\Output\Php\PhpFile;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use DoclerLabs\ApiClientGenerator\Output\PhpFilePrinter;
 use DoclerLabs\ApiClientGenerator\Output\StaticPhpFileCopier;
@@ -35,46 +37,21 @@ use Throwable;
 
 class GenerateCommand extends Command
 {
-    private Configuration       $configuration;
-    private CodeGeneratorFacade $codeGenerator;
-    private FileReader          $fileReader;
-    private Parser              $parser;
-    private PhpFilePrinter      $phpPrinter;
-    private DirectoryPrinter    $directoryPrinter;
-    private MetaTemplateFacade  $metaTemplate;
-    private MetaFilePrinter     $templatePrinter;
-    private Finder              $fileFinder;
-    private StaticPhpFileCopier $staticPhpPrinter;
-    private Filesystem          $filesystem;
-    private WarningFormatter    $warningFormatter;
-
     public function __construct(
-        Configuration $configuration,
-        FileReader $fileReader,
-        Parser $parser,
-        CodeGeneratorFacade $codeGenerator,
-        PhpFilePrinter $phpPrinter,
-        DirectoryPrinter $directoryPrinter,
-        MetaTemplateFacade $metaTemplate,
-        MetaFilePrinter $templatePrinter,
-        Finder $fileFinder,
-        StaticPhpFileCopier $staticPhpCopier,
-        Filesystem $filesystem,
-        WarningFormatter $warningFormatter
+        private Configuration $configuration,
+        private FileReader $fileReader,
+        private Parser $parser,
+        private CodeGeneratorFacade $codeGenerator,
+        private PhpFilePrinter $phpPrinter,
+        private DirectoryPrinter $directoryPrinter,
+        private MetaTemplateFacade $metaTemplate,
+        private MetaFilePrinter $templatePrinter,
+        private Finder $fileFinder,
+        private StaticPhpFileCopier $staticPhpPrinter,
+        private Filesystem $filesystem,
+        private WarningFormatter $warningFormatter
     ) {
         parent::__construct();
-        $this->configuration    = $configuration;
-        $this->fileReader       = $fileReader;
-        $this->parser           = $parser;
-        $this->codeGenerator    = $codeGenerator;
-        $this->phpPrinter       = $phpPrinter;
-        $this->directoryPrinter = $directoryPrinter;
-        $this->metaTemplate     = $metaTemplate;
-        $this->templatePrinter  = $templatePrinter;
-        $this->fileFinder       = $fileFinder;
-        $this->staticPhpPrinter = $staticPhpCopier;
-        $this->filesystem       = $filesystem;
-        $this->warningFormatter = $warningFormatter;
     }
 
     public function configure(): void
@@ -82,14 +59,14 @@ class GenerateCommand extends Command
         $this->setName('generate');
         $this->setDescription('Generate an api client based on a given OpenApi specification');
         $this->addUsage(
-            'OPENAPI={path}/swagger.yaml NAMESPACE=Group\SomeApiClient PACKAGE=dh-group/some-api-client OUTPUT_DIR={path}/generated CODE_STYLE={path}/.php_cs.php ./bin/api-client-generator generate'
+            'OPENAPI={path}/swagger.yaml NAMESPACE=Group\SomeApiClient PACKAGE=dh-group/some-api-client OUTPUT_DIR={path}/generated CODE_STYLE={path}/.php-cs-fixer.php.dist ./bin/api-client-generator generate'
         );
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->initWarningPrinting($input);
-        $specificationFilePath = $this->configuration->getSpecificationFilePath();
+        $specificationFilePath = $this->configuration->specificationFilePath;
 
         $specification = $this->parser->parse(
             $this->fileReader->read($specificationFilePath),
@@ -123,16 +100,17 @@ class GenerateCommand extends Command
         $this->codeGenerator->generate($specification, $phpFiles);
 
         $ss->text(sprintf('<info>AST generated for %d PHP files.</info>', $phpFiles->count()));
-        $ss->text(sprintf('Write PHP files to %s:', $this->configuration->getOutputDirectory()));
+        $ss->text(sprintf('Write PHP files to %s:', $this->configuration->outputDirectory));
 
         $ss->progressStart($phpFiles->count());
         foreach ($phpFiles as $phpFile) {
+            /** @var PhpFile $phpFile */
             $this->phpPrinter->print(
                 sprintf(
                     '%s/%s/%s',
-                    $this->configuration->getOutputDirectory(),
-                    $this->configuration->getSourceDirectory(),
-                    $phpFile->getFileName()
+                    $this->configuration->outputDirectory,
+                    $this->configuration->sourceDirectory,
+                    $phpFile->fileName
                 ),
                 $phpFile
             );
@@ -147,12 +125,13 @@ class GenerateCommand extends Command
         $this->metaTemplate->render($specification, $metaFiles);
 
         $ss->text(sprintf('<info>Templates rendered for %d meta files.</info>', $metaFiles->count()));
-        $ss->text(sprintf('Write meta files to %s:', $this->configuration->getOutputDirectory()));
+        $ss->text(sprintf('Write meta files to %s:', $this->configuration->outputDirectory));
 
         $ss->progressStart($metaFiles->count());
         foreach ($metaFiles as $metaFile) {
+            /** @var MetaFile $metaFile */
             $this->templatePrinter->print(
-                sprintf('%s/%s', $this->configuration->getOutputDirectory(), $metaFile->getFilePath()),
+                sprintf('%s/%s', $this->configuration->outputDirectory, $metaFile->filePath),
                 $metaFile
             );
             $ss->progressAdvance();
@@ -169,15 +148,15 @@ class GenerateCommand extends Command
             ->in(Configuration::STATIC_PHP_FILE_DIRECTORY);
 
         $ss->text(sprintf('<info>Collected %d static PHP files.</info>', $originalFiles->count()));
-        $ss->text(sprintf('Copy static PHP files to %s:', $this->configuration->getOutputDirectory()));
+        $ss->text(sprintf('Copy static PHP files to %s:', $this->configuration->outputDirectory));
 
         $ss->progressStart($originalFiles->count());
         foreach ($originalFiles as $originalFile) {
             if (!in_array($originalFile->getBasename(), $blacklistedFiles, true)) {
                 $destinationPath = sprintf(
                     '%s/%s/%s',
-                    $this->configuration->getOutputDirectory(),
-                    $this->configuration->getSourceDirectory(),
+                    $this->configuration->outputDirectory,
+                    $this->configuration->sourceDirectory,
                     $originalFile->getRelativePathname()
                 );
 
@@ -196,14 +175,14 @@ class GenerateCommand extends Command
     {
         $destinationPath = sprintf(
             '%s/doc/%s',
-            $this->configuration->getOutputDirectory(),
-            basename($this->configuration->getSpecificationFilePath())
+            $this->configuration->outputDirectory,
+            basename($this->configuration->specificationFilePath)
         );
 
         $ss->text(sprintf('Copy specification file to %s.', $destinationPath));
 
         $this->filesystem->copy(
-            $this->configuration->getSpecificationFilePath(),
+            $this->configuration->specificationFilePath,
             $destinationPath,
             true
         );
@@ -215,8 +194,8 @@ class GenerateCommand extends Command
 
         $originalPath = sprintf(
             '%s/%s',
-            $this->configuration->getOutputDirectory(),
-            $this->configuration->getSourceDirectory()
+            $this->configuration->outputDirectory,
+            $this->configuration->sourceDirectory
         );
 
         $backupPath = $originalPath . '_old';
@@ -233,8 +212,8 @@ class GenerateCommand extends Command
 
         $originalPath = sprintf(
             '%s/%s',
-            $this->configuration->getOutputDirectory(),
-            $this->configuration->getSourceDirectory()
+            $this->configuration->outputDirectory,
+            $this->configuration->sourceDirectory
         );
 
         $backupPath = $originalPath . '_old';
@@ -251,8 +230,8 @@ class GenerateCommand extends Command
 
         $backupPath = sprintf(
             '%s/%s_old',
-            $this->configuration->getOutputDirectory(),
-            $this->configuration->getSourceDirectory()
+            $this->configuration->outputDirectory,
+            $this->configuration->sourceDirectory
         );
 
         $this->directoryPrinter->delete($backupPath);

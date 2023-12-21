@@ -53,7 +53,7 @@ class ItemCollection implements IteratorAggregate, SerializableInterface, Counta
 
     public function count(): int
     {
-        return \count($this->items);
+        return count($this->items);
     }
 
     /**
@@ -61,7 +61,7 @@ class ItemCollection implements IteratorAggregate, SerializableInterface, Counta
      */
     public function first()
     {
-        $first = \reset($this->items);
+        $first = reset($this->items);
         if ($first === false) {
             return null;
         }

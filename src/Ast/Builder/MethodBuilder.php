@@ -16,12 +16,9 @@ class MethodBuilder extends Method
 {
     public const RETURN_TYPE_VOID = 'void';
 
-    private PhpVersion $phpVersion;
-
-    public function __construct(string $name, PhpVersion $phpVersion)
+    public function __construct(string $name, private PhpVersion $phpVersion)
     {
         parent::__construct($name);
-        $this->phpVersion = $phpVersion;
     }
 
     public function composeDocBlock(

@@ -7,6 +7,7 @@ namespace DoclerLabs\ApiClientGenerator\Generator;
 use DoclerLabs\ApiClientException\Factory\ResponseExceptionFactory;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\MethodBuilder;
+use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
@@ -29,18 +30,14 @@ use PhpParser\Node\Stmt\ClassMethod;
 
 class ServiceProviderGenerator extends GeneratorAbstract
 {
-    private ContainerImplementationStrategy   $containerImplementation;
-    private HttpMessageImplementationStrategy $messageImplementation;
-
     public function __construct(
         string $baseNamespace,
         CodeBuilder $builder,
-        ContainerImplementationStrategy $containerImplementation,
-        HttpMessageImplementationStrategy $messageImplementation
+        PhpVersion $phpVersion,
+        private ContainerImplementationStrategy $containerImplementation,
+        private HttpMessageImplementationStrategy $messageImplementation
     ) {
-        parent::__construct($baseNamespace, $builder);
-        $this->containerImplementation = $containerImplementation;
-        $this->messageImplementation   = $messageImplementation;
+        parent::__construct($baseNamespace, $builder, $phpVersion);
     }
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
@@ -66,7 +63,8 @@ class ServiceProviderGenerator extends GeneratorAbstract
 
         $compositeFields = $specification->getCompositeResponseFields()->getUniqueByPhpClassName();
 
-        $classBuilder = $this->builder
+        $classBuilder = $this
+            ->builder
             ->class('ServiceProvider')
             ->addStmt($this->generateRegisterMethod($specification, $compositeFields));
 
@@ -83,7 +81,8 @@ class ServiceProviderGenerator extends GeneratorAbstract
     ): ClassMethod {
         $statements = [];
 
-        $param = $this->builder
+        $param = $this
+            ->builder
             ->param('container')
             ->setType('Container')
             ->getNode();
@@ -165,7 +164,8 @@ class ServiceProviderGenerator extends GeneratorAbstract
             );
         }
 
-        return $this->builder
+        return $this
+            ->builder
             ->method('register')
             ->makePublic()
             ->addParam($param)
@@ -179,7 +179,7 @@ class ServiceProviderGenerator extends GeneratorAbstract
     {
         return $this->builder->closure(
             [
-                $this->builder->return($this->builder->new('QuerySerializer'))
+                $this->builder->return($this->builder->new('QuerySerializer')),
             ],
             [],
             [],
@@ -189,12 +189,12 @@ class ServiceProviderGenerator extends GeneratorAbstract
 
     private function generateBodySerializerClosure(Specification $specification): Closure
     {
-        $initialStatement = $this->builder->new('BodySerializer');
-        $allContentTypes  = $specification->getAllContentTypes();
+        $serializer      = $this->builder->new('BodySerializer');
+        $allContentTypes = $specification->getAllContentTypes();
 
         if (in_array(JsonContentTypeSerializer::MIME_TYPE, $allContentTypes, true)) {
-            $jsonSerializerInit = $this->builder->methodCall(
-                $initialStatement,
+            $serializer = $this->builder->methodCall(
+                $serializer,
                 'add',
                 [
                     $this->builder->new('JsonContentTypeSerializer'),
@@ -203,8 +203,8 @@ class ServiceProviderGenerator extends GeneratorAbstract
         }
 
         if (in_array(FormUrlencodedContentTypeSerializer::MIME_TYPE, $allContentTypes, true)) {
-            $formEncodedSerializerInit = $this->builder->methodCall(
-                $jsonSerializerInit ?? $initialStatement,
+            $serializer = $this->builder->methodCall(
+                $serializer,
                 'add',
                 [
                     $this->builder->new('FormUrlencodedContentTypeSerializer'),
@@ -213,8 +213,8 @@ class ServiceProviderGenerator extends GeneratorAbstract
         }
 
         if (in_array(XmlContentTypeSerializer::MIME_TYPE, $allContentTypes, true)) {
-            $xmlSerializerInit = $this->builder->methodCall(
-                $formEncodedSerializerInit ?? $jsonSerializerInit ?? $initialStatement,
+            $serializer = $this->builder->methodCall(
+                $serializer,
                 'add',
                 [
                     $this->builder->new('XmlContentTypeSerializer'),
@@ -223,8 +223,8 @@ class ServiceProviderGenerator extends GeneratorAbstract
         }
 
         if (in_array(VdnApiJsonContentTypeSerializer::MIME_TYPE, $allContentTypes, true)) {
-            $vdnApiJsonSerializerInit = $this->builder->methodCall(
-                $xmlSerializerInit ?? $formEncodedSerializerInit ?? $jsonSerializerInit ?? $initialStatement,
+            $serializer = $this->builder->methodCall(
+                $serializer,
                 'add',
                 [
                     $this->builder->new('VdnApiJsonContentTypeSerializer'),
@@ -232,12 +232,8 @@ class ServiceProviderGenerator extends GeneratorAbstract
             );
         }
 
-        $registerBodySerializerClosureStatements[] = $this
-            ->builder
-            ->return($vdnApiJsonSerializerInit ?? $xmlSerializerInit ?? $formEncodedSerializerInit ?? $jsonSerializerInit ?? $initialStatement);
-
         return $this->builder->closure(
-            $registerBodySerializerClosureStatements,
+            [$this->builder->return($serializer)],
             [],
             [],
             'BodySerializer'
@@ -274,7 +270,7 @@ class ServiceProviderGenerator extends GeneratorAbstract
             $alreadyInjected = [];
             foreach ($field->getObjectProperties() as $subfield) {
                 if ($subfield->isComposite() && !isset($alreadyInjected[$subfield->getPhpClassName()])) {
-                    $getMethodArg   = $this->builder->classConstFetch(
+                    $getMethodArg = $this->builder->classConstFetch(
                         SchemaMapperNaming::getClassName($subfield),
                         'class'
                     );
@@ -284,7 +280,7 @@ class ServiceProviderGenerator extends GeneratorAbstract
                 }
             }
         } elseif ($field->isArrayOfObjects()) {
-            $getMethodArg   = $this->builder->classConstFetch(
+            $getMethodArg = $this->builder->classConstFetch(
                 SchemaMapperNaming::getClassName($field->getArrayItem()),
                 'class'
             );

@@ -10,16 +10,8 @@ use PhpParser\Node\Expr\Variable;
 
 class PatternConstraint implements ConstraintInterface
 {
-    private ?string $pattern;
-
-    public function __construct(?string $pattern)
+    public function __construct(private ?string $pattern)
     {
-        $this->pattern = $pattern;
-    }
-
-    public function getPattern(): ?string
-    {
-        return $this->pattern;
     }
 
     public function exists(): bool

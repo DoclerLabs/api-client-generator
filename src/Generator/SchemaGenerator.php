@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
+use DoclerLabs\ApiClientGenerator\Ast\Builder\ParameterBuilder;
+use DoclerLabs\ApiClientGenerator\Ast\ParameterNode;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\FieldType;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
@@ -17,7 +19,9 @@ use UnexpectedValueException;
 class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
 {
     public const SUBDIRECTORY = 'Schema/';
+
     public const NAMESPACE_SUBPATH = '\\Schema';
+
     private const OPTIONAL_CHANGED_FIELDS_PROPERTY_NAME = 'optionalPropertyChanged';
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
@@ -36,7 +40,8 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
 
         $className = $root->getPhpClassName();
 
-        $classBuilder = $this->builder
+        $classBuilder = $this
+            ->builder
             ->class($className)
             ->implement('SerializableInterface', 'JsonSerializable')
             ->addStmts($this->generateEnumConsts($root))
@@ -103,6 +108,13 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
     {
         $statements = [];
         foreach ($root->getObjectProperties() as $propertyField) {
+            if (
+                $propertyField->isRequired()
+                && $this->phpVersion->isConstructorPropertyPromotionSupported()
+            ) {
+                continue;
+            }
+
             $statements[] = $this->generateProperty($propertyField);
         }
 
@@ -112,6 +124,7 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
     protected function generateConstructor(Field $root): ?ClassMethod
     {
         $params             = [];
+        $validations        = [];
         $paramsInit         = [];
         $paramsDoc          = [];
         $thrownExceptionMap = [];
@@ -119,14 +132,13 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
         foreach ($root->getObjectProperties() as $propertyField) {
             if ($propertyField->isRequired()) {
                 $validationStmts = $this->generateValidationStmts($propertyField);
-                array_push($paramsInit, ...$validationStmts);
+                array_push($validations, ...$validationStmts);
                 if (!empty($validationStmts)) {
                     $thrownExceptionMap['RequestValidationException'] = true;
                 }
                 $params[] = $this->builder
                     ->param($propertyField->getPhpVariableName())
-                    ->setType($propertyField->getPhpTypeHint(), $propertyField->isNullable())
-                    ->getNode();
+                    ->setType($propertyField->getPhpTypeHint(), $propertyField->isNullable());
 
                 $paramsInit[] = $this->builder->assign(
                     $this->builder->localPropertyFetch($propertyField->getPhpVariableName()),
@@ -144,13 +156,30 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
             return null;
         }
 
-        return $this->builder
+        if ($this->phpVersion->isConstructorPropertyPromotionSupported()) {
+            foreach ($params as $param) {
+                $param->makePrivate();
+            }
+        }
+
+        $params = array_map(
+            static fn (ParameterBuilder $param): ParameterNode => $param->getNode(),
+            $params
+        );
+
+        $constructor = $this
+            ->builder
             ->method('__construct')
             ->makePublic()
             ->addParams($params)
-            ->addStmts($paramsInit)
-            ->composeDocBlock($paramsDoc, '', array_keys($thrownExceptionMap))
-            ->getNode();
+            ->addStmts($validations)
+            ->composeDocBlock($paramsDoc, '', array_keys($thrownExceptionMap));
+
+        if (!$this->phpVersion->isConstructorPropertyPromotionSupported()) {
+            $constructor->addStmts($paramsInit);
+        }
+
+        return $constructor->getNode();
     }
 
     protected function generateSetMethods(Field $root): array
@@ -207,7 +236,8 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
 
         $returnType = FieldType::PHP_TYPE_ARRAY;
 
-        return $this->builder
+        return $this
+            ->builder
             ->method('toArray')
             ->makePublic()
             ->addStmts($statements)
@@ -244,11 +274,15 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
             if ($propertyField->isComposite()) {
                 $methodCall = $this->builder->methodCall($value, 'toArray');
                 if ($propertyField->isNullable()) {
-                    $value = $this->builder->ternary(
-                        $this->builder->notEquals($value, $this->builder->val(null)),
-                        $methodCall,
-                        $this->builder->val(null)
-                    );
+                    if ($this->phpVersion->isNullSafeSupported()) {
+                        $value = $this->builder->nullsafeMethodCall($value, 'toArray');
+                    } else {
+                        $value = $this->builder->ternary(
+                            $this->builder->notEquals($value, $this->builder->val(null)),
+                            $methodCall,
+                            $this->builder->val(null)
+                        );
+                    }
                 } else {
                     $value = $methodCall;
                 }
@@ -260,17 +294,25 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
                 );
 
                 if ($propertyField->isNullable()) {
-                    $value = $this->builder->ternary(
-                        $this->builder->notEquals($value, $this->builder->val(null)),
-                        $methodCall,
-                        $this->builder->val(null)
-                    );
+                    if ($this->phpVersion->isNullSafeSupported()) {
+                        $value = $this->builder->nullsafeMethodCall(
+                            $value,
+                            'format',
+                            [$this->builder->constFetch('DATE_RFC3339')]
+                        );
+                    } else {
+                        $value = $this->builder->ternary(
+                            $this->builder->notEquals($value, $this->builder->val(null)),
+                            $methodCall,
+                            $this->builder->val(null)
+                        );
+                    }
                 } else {
                     $value = $methodCall;
                 }
             }
 
-            $fieldName       = $this->builder->val($propertyField->getName());
+            $fieldName = $this->builder->val($propertyField->getName());
             if ($root->hasOneOf()) {
                 $assignStatement = $this->builder->expr($this->builder->assign($arrayVariable, $value));
             } else {

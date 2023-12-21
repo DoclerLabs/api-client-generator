@@ -15,7 +15,7 @@ class PhpFileCollection implements IteratorAggregate, Countable
 
     public function add(PhpFile $file): void
     {
-        $this->files[$file->getFullyQualifiedClassName()] = $file;
+        $this->files[$file->fullyQualifiedClassName] = $file;
     }
 
     public function get(string $className): PhpFile

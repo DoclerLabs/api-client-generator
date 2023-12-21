@@ -9,7 +9,7 @@ use OpenApi\PetStoreClient\Serializer\ContentType\JsonContentTypeSerializer;
 use OpenApi\PetStoreClient\Serializer\ContentType\XmlContentTypeSerializer;
 use OpenApi\PetStoreMock\PetStoreMock;
 
-$mock = new PetStoreMock();
+$mock     = new PetStoreMock();
 $consumer = new PetStoreApiConsumer();
 
 $mock->mockFindPetsByStatus();

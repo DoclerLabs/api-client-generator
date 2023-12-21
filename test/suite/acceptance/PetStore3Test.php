@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DoclerLabs\ApiClientGenerator\Test\Acceptance;
 
 use Composer\Console\Application as ComposerApplication;
@@ -13,8 +15,11 @@ use Symfony\Component\Filesystem\Filesystem;
 class PetStore3Test extends TestCase
 {
     private const BASE_NAMESPACE = 'OpenApi\\PetStoreClient';
+
     private const PACKAGE = 'openapi/pet-store-client';
+
     private const EXAMPLE_DIR = __DIR__ . '/../../../example';
+
     private const OUTPUT_DIR = self::EXAMPLE_DIR . '/PetStoreClient';
 
     private Filesystem $filesystem;
@@ -56,7 +61,7 @@ class PetStore3Test extends TestCase
                 [
                     'command'       => 'install',
                     '--working-dir' => self::EXAMPLE_DIR,
-                    '--no-cache'    => true
+                    '--no-cache'    => true,
                 ]
             ),
             new BufferedOutput()

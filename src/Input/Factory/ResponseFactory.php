@@ -12,15 +12,14 @@ use Icecave\Parity\Parity;
 
 class ResponseFactory
 {
-    private FieldFactory $fieldMapper;
-
-    public function __construct(FieldFactory $fieldMapper)
+    public function __construct(private FieldFactory $fieldMapper)
     {
-        $this->fieldMapper = $fieldMapper;
     }
 
-    public function createSuccessful(string $operationName, array $openApiResponses): Response
+    public function createSuccessfulResponses(string $operationName, array $openApiResponses): array
     {
+        $responses = [];
+
         $body = null;
         foreach ($openApiResponses as $code => $response) {
             if ($response instanceof Reference) {
@@ -28,12 +27,16 @@ class ResponseFactory
             }
 
             if ($code === 204) {
-                return new Response(204, null);
+                $responses[] = new Response(204, null);
+
+                continue;
             }
 
             if (200 <= $code && $code < 300) {
                 if (empty($response->content) || current($response->content) === false) {
-                    return new Response((int)$code, null);
+                    $responses[] = new Response((int)$code, null);
+
+                    continue;
                 }
 
                 $contentTypes = [];
@@ -56,17 +59,21 @@ class ResponseFactory
                     $schemaName
                 );
 
-                return new Response((int)$code, $body, $contentTypes);
+                $responses[] = new Response((int)$code, $body, $contentTypes);
             }
         }
 
-        $warningMessage = sprintf(
-            'Successful response is not found for %s operation, 200 response assumed.',
-            $operationName
-        );
-        trigger_error($warningMessage, E_USER_WARNING);
+        if (empty($responses)) {
+            $warningMessage = sprintf(
+                'Successful response is not found for %s operation, 200 response assumed.',
+                $operationName
+            );
+            trigger_error($warningMessage, E_USER_WARNING);
 
-        return new Response(200, null);
+            $responses[] = new Response(200, null);
+        }
+
+        return $responses;
     }
 
     public function createPossibleErrors(array $openApiResponses): array

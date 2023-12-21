@@ -12,6 +12,6 @@ class RequestNaming
 
     public static function getClassName(Operation $operation): string
     {
-        return sprintf('%s%s', CaseCaster::toPascal($operation->getName()), self::FILE_SUFFIX);
+        return sprintf('%s%s', CaseCaster::toPascal($operation->name), self::FILE_SUFFIX);
     }
 }

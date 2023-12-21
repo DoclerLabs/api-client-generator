@@ -11,11 +11,11 @@ use IteratorAggregate;
 
 class MetaFileCollection implements IteratorAggregate, Countable
 {
-    private array  $files = [];
+    private array $files = [];
 
     public function add(MetaFile $metaFile): void
     {
-        $this->files[$metaFile->getFilePath()] = $metaFile;
+        $this->files[$metaFile->filePath] = $metaFile;
     }
 
     public function get(string $fileName): MetaFile

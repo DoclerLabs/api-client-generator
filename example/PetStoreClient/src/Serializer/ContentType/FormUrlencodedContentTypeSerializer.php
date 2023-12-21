@@ -19,13 +19,13 @@ class FormUrlencodedContentTypeSerializer implements ContentTypeSerializerInterf
 
     public function encode(SerializableInterface $body): string
     {
-        return \http_build_query($body->toArray());
+        return http_build_query($body->toArray());
     }
 
     public function decode(StreamInterface $body): array
     {
         $body->rewind();
-        \parse_str($body->getContents(), $decoded);
+        parse_str($body->getContents(), $decoded);
 
         return $decoded;
     }

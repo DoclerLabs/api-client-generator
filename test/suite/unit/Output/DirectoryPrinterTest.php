@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 class DirectoryPrinterTest extends TestCase
 {
     private DirectoryPrinter   $sut;
+
     private vfsStreamDirectory $directory;
 
     protected function setUp(): void

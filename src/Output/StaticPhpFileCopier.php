@@ -12,18 +12,11 @@ use Symfony\Component\Finder\SplFileInfo;
 
 class StaticPhpFileCopier
 {
-    private Php7           $parser;
-    private PhpFilePrinter $printer;
-    private NodeTraverser  $traverser;
-
     public function __construct(
-        Php7 $parser,
-        PhpFilePrinter $printer,
-        NodeTraverser $traverser
+        private Php7 $parser,
+        private PhpFilePrinter $printer,
+        private NodeTraverser $traverser
     ) {
-        $this->parser    = $parser;
-        $this->printer   = $printer;
-        $this->traverser = $traverser;
     }
 
     public function copy(string $destinationPath, SplFileInfo $originalFile): void

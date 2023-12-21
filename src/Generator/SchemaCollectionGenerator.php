@@ -17,8 +17,10 @@ use PhpParser\Node\Stmt\ClassMethod;
 
 class SchemaCollectionGenerator extends GeneratorAbstract
 {
-    public const  SUBDIRECTORY        = 'Schema/';
-    public const  NAMESPACE_SUBPATH   = '\\Schema';
+    public const  SUBDIRECTORY = 'Schema/';
+
+    public const  NAMESPACE_SUBPATH = '\\Schema';
+
     private const INTERNAL_ARRAY_NAME = 'items';
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
@@ -40,7 +42,8 @@ class SchemaCollectionGenerator extends GeneratorAbstract
             ->addImport(ArrayIterator::class);
 
         $className    = $field->getPhpClassName();
-        $classBuilder = $this->builder
+        $classBuilder = $this
+            ->builder
             ->class($className)
             ->implement('IteratorAggregate', 'SerializableInterface', 'Countable', 'JsonSerializable')
             ->addStmt(
@@ -51,7 +54,7 @@ class SchemaCollectionGenerator extends GeneratorAbstract
                 )
             )
             ->addStmt($this->generateConstructor($field->getArrayItem()))
-            ->addStmt($this->generateToArray($field))
+            ->addStmt($this->generateToArray())
             ->addStmt($this->generateJsonSerialize())
             ->addStmt($this->generateGetIterator($field))
             ->addStmt($this->generateCount())
@@ -62,7 +65,8 @@ class SchemaCollectionGenerator extends GeneratorAbstract
 
     protected function generateConstructor(Field $item): ClassMethod
     {
-        $param = $this->builder
+        $param = $this
+            ->builder
             ->param(self::INTERNAL_ARRAY_NAME)
             ->setType($item->getPhpTypeHint(), $item->isNullable())
             ->makeVariadic()
@@ -73,12 +77,14 @@ class SchemaCollectionGenerator extends GeneratorAbstract
             $this->builder->var(self::INTERNAL_ARRAY_NAME)
         );
 
-        $paramDoc = $this->builder
+        $paramDoc = $this
+            ->builder
             ->param(self::INTERNAL_ARRAY_NAME)
             ->setType($item->getPhpDocType() . '[]')
             ->getNode();
 
-        return $this->builder
+        return $this
+            ->builder
             ->method('__construct')
             ->makePublic()
             ->addParam($param)
@@ -87,7 +93,7 @@ class SchemaCollectionGenerator extends GeneratorAbstract
             ->getNode();
     }
 
-    protected function generateToArray(Field $field): ClassMethod
+    protected function generateToArray(): ClassMethod
     {
         $statements = [];
 
@@ -107,7 +113,8 @@ class SchemaCollectionGenerator extends GeneratorAbstract
 
         $statements[] = $this->builder->return($returnVar);
 
-        return $this->builder
+        return $this
+            ->builder
             ->method('toArray')
             ->makePublic()
             ->addStmts($statements)
@@ -121,7 +128,8 @@ class SchemaCollectionGenerator extends GeneratorAbstract
         $arg    = $this->builder->localPropertyFetch(self::INTERNAL_ARRAY_NAME);
         $return = $this->builder->return($this->builder->new('ArrayIterator', [$arg]));
 
-        return $this->builder
+        return $this
+            ->builder
             ->method('getIterator')
             ->makePublic()
             ->addStmt($return)
@@ -136,7 +144,8 @@ class SchemaCollectionGenerator extends GeneratorAbstract
             $this->builder->funcCall('count', [$this->builder->localPropertyFetch(self::INTERNAL_ARRAY_NAME)])
         );
 
-        return $this->builder
+        return $this
+            ->builder
             ->method('count')
             ->makePublic()
             ->addStmt($return)
@@ -157,7 +166,8 @@ class SchemaCollectionGenerator extends GeneratorAbstract
         $if          = $this->builder->if($ifCondition, [$this->builder->return($this->builder->val(null))]);
         $return      = $this->builder->return($firstVar);
 
-        return $this->builder
+        return $this
+            ->builder
             ->method('first')
             ->makePublic()
             ->addStmt($resetAssign)

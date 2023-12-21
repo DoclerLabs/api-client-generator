@@ -6,6 +6,7 @@ namespace DoclerLabs\ApiClientGenerator\Input\Factory;
 
 use cebe\openapi\spec\Reference;
 use cebe\openapi\spec\RequestBody;
+use cebe\openapi\SpecObjectInterface;
 use DoclerLabs\ApiClientGenerator\Entity\Request;
 use DoclerLabs\ApiClientGenerator\Entity\RequestFieldRegistry;
 use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
@@ -14,11 +15,8 @@ use Icecave\Parity\Parity;
 
 class RequestFactory
 {
-    private FieldFactory $fieldFactory;
-
-    public function __construct(FieldFactory $fieldFactory)
+    public function __construct(private FieldFactory $fieldFactory)
     {
-        $this->fieldFactory = $fieldFactory;
     }
 
     public function create(
@@ -58,6 +56,8 @@ class RequestFactory
                 $contentTypes[] = $contentType;
             }
 
+            /** @var SpecObjectInterface $schema */
+
             $schemaName = SchemaNaming::getClassName($schema, ucfirst($operationName) . 'RequestBody');
 
             $collection->add(
@@ -72,6 +72,11 @@ class RequestFactory
             );
         }
 
-        return new Request($path, $method, $collection, $contentTypes);
+        return new Request($this->toRelativePath($path), $method, $collection, $contentTypes);
+    }
+
+    private function toRelativePath(string $path): string
+    {
+        return ltrim($path, '/');
     }
 }

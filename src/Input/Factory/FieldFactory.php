@@ -7,6 +7,7 @@ namespace DoclerLabs\ApiClientGenerator\Input\Factory;
 use cebe\openapi\spec\Parameter;
 use cebe\openapi\spec\Reference;
 use cebe\openapi\SpecObjectInterface;
+use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Entity\Constraint\ConstraintCollection;
 use DoclerLabs\ApiClientGenerator\Entity\Constraint\MaximumConstraint;
 use DoclerLabs\ApiClientGenerator\Entity\Constraint\MaxItemsConstraint;
@@ -26,11 +27,8 @@ use UnexpectedValueException;
 
 class FieldFactory
 {
-    private PhpNameValidator $nameValidator;
-
-    public function __construct(PhpNameValidator $nameValidator)
+    public function __construct(private PhpNameValidator $nameValidator, private PhpVersion $phpVersion)
     {
-        $this->nameValidator = $nameValidator;
     }
 
     public function create(
@@ -67,7 +65,7 @@ class FieldFactory
                 /** @var Reference $oneOfSchema */
                 foreach ($schema->oneOf as $oneOfSchema) {
                     $explodedReference = explode('/', $oneOfSchema->getReference());
-                    $objectName = $explodedReference[count($explodedReference) - 1];
+                    $objectName        = $explodedReference[count($explodedReference) - 1];
 
                     $oneOf[] = $this->create($operationName, $objectName, $this->resolveReference($oneOfSchema), false);
                 }
@@ -121,7 +119,7 @@ class FieldFactory
                 }
             }
 
-            $fieldType = new FieldType($type);
+            $fieldType = new FieldType($type, $this->phpVersion);
             $field     = new Field(
                 $fieldName,
                 $fieldType,
@@ -136,7 +134,7 @@ class FieldFactory
                 ),
                 $referenceName,
                 $required,
-                $schema->nullable,
+                (bool)$schema->nullable,
                 $additionalProperties,
                 !empty($oneOf)
             );

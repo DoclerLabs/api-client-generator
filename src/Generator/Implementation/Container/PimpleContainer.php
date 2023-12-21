@@ -14,14 +14,8 @@ use Pimple\Container;
 
 class PimpleContainer implements ContainerImplementationInterface
 {
-    protected string      $baseNamespace;
-    protected CodeBuilder $builder;
-    protected array       $registerImports;
-
-    public function __construct(string $baseNamespace, CodeBuilder $builder)
+    public function __construct(protected string $baseNamespace, protected CodeBuilder $builder)
     {
-        $this->baseNamespace = $baseNamespace;
-        $this->builder       = $builder;
     }
 
     public function generateInitContainerMethod(): MethodBuilder

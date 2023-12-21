@@ -11,7 +11,11 @@
         "sort-packages": true
     },
     "require": {
+{% if phpVersion starts with '7' %}
         "php": "^{{ phpVersion }} || ^8.0",
+{% else %}
+        "php": "^{{ phpVersion }}",
+{% endif %}
         {% for package, version in packages -%}
 "{{ package }}": "{{ version }}"{%- if not loop.last -%},{% endif %}
 

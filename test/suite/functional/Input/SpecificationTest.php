@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace DoclerLabs\ApiClientGenerator\Test\Functional\Input;
 
 use DoclerLabs\ApiClientGenerator\Input\Parser;
-use DoclerLabs\ApiClientGenerator\ServiceProvider;
+use DoclerLabs\ApiClientGenerator\Test\Functional\ConfigurationAwareTrait;
+use DoclerLabs\ApiClientGenerator\Test\Functional\ConfigurationBuilder;
 use PHPUnit\Framework\TestCase;
-use Pimple\Container;
 
 /**
  * @covers \DoclerLabs\ApiClientGenerator\Input\Parser
  */
 class SpecificationTest extends TestCase
 {
+    use ConfigurationAwareTrait;
+
     protected Parser $sut;
 
     /**
@@ -29,14 +31,14 @@ class SpecificationTest extends TestCase
     public function contentTypesTestProvider(): array
     {
         return [
-            'No serializers required'         => [
+            'No serializers required' => [
                 [
                     'openapi' => '3.0.0',
                     'info'    => [
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'   => [
+                    'paths' => [
                         '/users/{userId}' => [
                             'parameters' => [
                                 [
@@ -48,7 +50,7 @@ class SpecificationTest extends TestCase
                                     ],
                                 ],
                             ],
-                            'delete'     => [
+                            'delete' => [
                                 'operationId' => 'deleteUser',
                                 'responses'   => [
                                     '204' => [
@@ -68,7 +70,7 @@ class SpecificationTest extends TestCase
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'   => [
+                    'paths' => [
                         '/users' => [
                             'post' => [
                                 'operationId' => 'createUser',
@@ -97,7 +99,7 @@ class SpecificationTest extends TestCase
                                         ],
                                     ],
                                 ],
-                                'responses'   => [
+                                'responses' => [
                                     '201' => [
                                         'description' => 'Created',
                                     ],
@@ -118,14 +120,14 @@ class SpecificationTest extends TestCase
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'   => [
+                    'paths' => [
                         '/users' => [
                             'get' => [
                                 'operationId' => 'createUser',
                                 'responses'   => [
                                     '200' => [
                                         'description' => 'Array of users',
-                                        'content' => [
+                                        'content'     => [
                                             'application/json' => [
                                                 'schema' => [
                                                     'type'       => 'object',
@@ -165,7 +167,7 @@ class SpecificationTest extends TestCase
                         'title'   => 'Sample API',
                         'version' => '1.0.0',
                     ],
-                    'paths'   => [
+                    'paths' => [
                         '/users/{userId}' => [
                             'parameters' => [
                                 [
@@ -204,10 +206,10 @@ class SpecificationTest extends TestCase
                                         ],
                                     ],
                                 ],
-                                'responses'   => [
+                                'responses' => [
                                     '200' => [
                                         'description' => 'Modified user',
-                                        'content' => [
+                                        'content'     => [
                                             'application/json' => [
                                                 'schema' => [
                                                     'type'       => 'object',
@@ -230,20 +232,13 @@ class SpecificationTest extends TestCase
                     'application/x-www-form-urlencoded',
                     'application/json',
                 ],
-            ]
+            ],
         ];
     }
 
     protected function setUp(): void
     {
-        $container = new Container();
-        $container->register(new ServiceProvider());
-
-        set_error_handler(
-            static function (int $code, string $message) {
-            },
-            E_USER_WARNING
-        );
+        $container = $this->getContainerWith(ConfigurationBuilder::fake()->build());
 
         $this->sut = $container[Parser::class];
     }

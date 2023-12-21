@@ -19,10 +19,13 @@ class PhpPrinterTest extends TestCase
 {
     /** @var PhpFilePrinter */
     private $sut;
+
     /** @var PrettyPrinterAbstract|MockObject */
     private $marshaler;
+
     /** @var TextFilePrinter|MockObject */
     private $printer;
+
     /** @var PhpCodeStyleFixer|MockObject */
     private $fixer;
 
@@ -37,9 +40,10 @@ class PhpPrinterTest extends TestCase
 
     public function testCreateFiles()
     {
-        $file = $this->createMock(PhpFile::class);
-        $file->expects(self::once())
-            ->method('getNodes');
+        $file = $this
+            ->getMockBuilder(PhpFile::class)
+            ->setConstructorArgs(['fileName', 'fullyQualifiedClassName', []])
+            ->getMock();
 
         $this->marshaler->expects(self::once())
             ->method('prettyPrintFile');

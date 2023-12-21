@@ -9,16 +9,27 @@ use DoclerLabs\ApiClientGenerator\Input\Configuration;
 class ConfigurationBuilder
 {
     private string $specificationFilePath;
+
     private string $baseNamespace;
+
     private string $outputDirectory;
+
     private string $sourceDirectory;
+
     private string $codeStyleConfig;
+
     private string $packageName;
-    private string $phpVersion;
+
+    private float $phpVersion;
+
     private string $generatorVersion;
+
     private string $composerJsonTemplateDir;
+
     private string $readmeMdTemplateDir;
+
     private string $httpMessage;
+
     private string $container;
 
     private function __construct()
@@ -27,7 +38,7 @@ class ConfigurationBuilder
         $this->baseNamespace           = 'Test';
         $this->outputDirectory         = '/dir/output';
         $this->sourceDirectory         = Configuration::DEFAULT_SOURCE_DIRECTORY;
-        $this->codeStyleConfig         = __DIR__ . '/../../../.php_cs.php';
+        $this->codeStyleConfig         = __DIR__ . '/../../../.php-cs-fixer.php.dist';
         $this->packageName             = 'test/test-api-client';
         $this->phpVersion              = Configuration::DEFAULT_PHP_VERSION;
         $this->generatorVersion        = '5.6.0';
@@ -84,7 +95,7 @@ class ConfigurationBuilder
         return $this;
     }
 
-    public function withPhpVersion(string $phpVersion): self
+    public function withPhpVersion(float $phpVersion): self
     {
         $this->phpVersion = $phpVersion;
 

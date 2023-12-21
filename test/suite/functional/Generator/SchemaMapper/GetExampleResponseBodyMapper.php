@@ -27,8 +27,8 @@ class GetExampleResponseBodyMapper implements SchemaMapperInterface
     public function toSchema(array $payload): GetExampleResponseBody
     {
         $schema = new GetExampleResponseBody();
-        if (\array_key_exists('objectType', $payload)) {
-            $methodName = 'set' . \ucfirst($payload['objectType']);
+        if (array_key_exists('objectType', $payload)) {
+            $methodName = 'set' . ucfirst($payload['objectType']);
             $mapperName = $payload['objectType'] . 'Mapper';
             $schema->$methodName($this->$mapperName->toSchema($payload));
         }

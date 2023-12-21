@@ -10,16 +10,8 @@ use PhpParser\Node\Expr\Variable;
 
 class MaxItemsConstraint implements ConstraintInterface
 {
-    private ?int $maxItems = null;
-
-    public function __construct(?int $maxItems)
+    public function __construct(private ?int $maxItems)
     {
-        $this->maxItems = $maxItems;
-    }
-
-    public function getMaxItems(): ?int
-    {
-        return $this->maxItems;
     }
 
     public function exists(): bool

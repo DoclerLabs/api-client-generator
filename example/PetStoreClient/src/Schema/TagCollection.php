@@ -52,12 +52,12 @@ class TagCollection implements IteratorAggregate, SerializableInterface, Countab
 
     public function count(): int
     {
-        return \count($this->items);
+        return count($this->items);
     }
 
     public function first(): ?Tag
     {
-        $first = \reset($this->items);
+        $first = reset($this->items);
         if ($first === false) {
             return null;
         }

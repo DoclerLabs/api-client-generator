@@ -22,9 +22,6 @@ class PhpNameValidatorTest extends TestCase
 
     /**
      * @dataProvider classNameProvider
-     *
-     * @param string $input
-     * @param bool   $expectedResult
      */
     public function testIsValidClassName(string $input, bool $expectedResult): void
     {
@@ -33,9 +30,6 @@ class PhpNameValidatorTest extends TestCase
 
     /**
      * @dataProvider variableNameProvider
-     *
-     * @param string $input
-     * @param bool   $expectedResult
      */
     public function testIsValidVariableName(string $input, bool $expectedResult): void
     {

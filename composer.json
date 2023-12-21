@@ -14,13 +14,13 @@
     "api-client-generator"
   ],
   "require": {
-    "php": ">=7.4",
+    "php": ">=8.2",
     "ext-dom": "*",
     "ext-json": "*",
     "ext-xml": "*",
     "cebe/php-openapi": "^1.4",
     "docler-labs/api-client-exception": "^1.0.1 || ^2.0",
-    "friendsofphp/php-cs-fixer": "^2.16",
+    "friendsofphp/php-cs-fixer": "^3.0",
     "guzzlehttp/psr7": "^1.6",
     "icecave/parity": "^3.0",
     "nikic/php-parser": "^4.10",
@@ -37,7 +37,7 @@
     "composer/composer": "^2.1",
     "mikey179/vfsstream": "^1.6",
     "php-coveralls/php-coveralls": "^2.2",
-    "phpstan/phpstan": "^0.12.32",
+    "phpstan/phpstan": "^1.10",
     "phpunit/phpunit": "^9.5",
     "roave/security-advisories": "dev-latest",
     "symfony/filesystem": "^5.1"

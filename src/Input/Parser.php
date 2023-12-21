@@ -13,11 +13,8 @@ use DoclerLabs\ApiClientGenerator\Input\Factory\OperationCollectionFactory;
 
 class Parser
 {
-    private OperationCollectionFactory $operationCollectionFactory;
-
-    public function __construct(OperationCollectionFactory $operationCollectionFactory)
+    public function __construct(private OperationCollectionFactory $operationCollectionFactory)
     {
-        $this->operationCollectionFactory = $operationCollectionFactory;
     }
 
     public function parse(array $data, string $contextUri): Specification
@@ -46,8 +43,8 @@ class Parser
     {
         $allFields = new FieldCollection();
         foreach ($operations as $operation) {
-            $request = $operation->getRequest();
-            foreach ($request->getFields() as $field) {
+            $request = $operation->request;
+            foreach ($request->fields as $field) {
                 $this->extractField($field, $allFields);
             }
         }
@@ -59,9 +56,11 @@ class Parser
     {
         $allFields = new FieldCollection();
         foreach ($operations as $operation) {
-            $responseRoot = $operation->getSuccessfulResponse()->getBody();
-            if ($responseRoot !== null) {
-                $this->extractField($responseRoot, $allFields);
+            foreach ($operation->successfulResponses as $response) {
+                $responseRoot = $response->body;
+                if ($responseRoot !== null) {
+                    $this->extractField($responseRoot, $allFields);
+                }
             }
         }
 

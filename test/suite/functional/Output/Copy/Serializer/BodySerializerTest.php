@@ -71,16 +71,16 @@ class BodySerializerTest extends TestCase
     public function applicationJsonContentTypeStringsProvider(): array
     {
         return [
-            'default'            => [
+            'default' => [
                 'application/json',
             ],
             'with extra symbols' => [
                 'application/json; ',
             ],
-            'upper case'         => [
+            'upper case' => [
                 'applicaTion/JSON',
             ],
-            'with charset'       => [
+            'with charset' => [
                 'application/json; charset=ISO-8859-4',
             ],
         ];

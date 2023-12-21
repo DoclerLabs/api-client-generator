@@ -35,7 +35,7 @@ $factory = new {{ static('\\DoclerLabs\\ApiClientGenerator\\Naming\\ClientNaming
 $client  = $factory->create($client);
 
 $request = new {{ requestClass }}();
-$result  = $client->{{ exampleOperation.getName() }}($request);
+$result  = $client->{{ exampleOperation.name }}($request);
 ```
 
 ## Operations
@@ -44,7 +44,7 @@ $result  = $client->{{ exampleOperation.getName() }}($request);
 ### {{ tag }}
 Endpoints:
 {% for operation in operations %}
-- **{{ operation.getName() }}**{% if operation.getDescription() is not empty %} - {{ operation.getDescription() }} {% endif %}
+- **{{ operation.name }}**{% if operation.description is not empty %} - {{ operation.description }} {% endif %}
 
 {% endfor %}
 
