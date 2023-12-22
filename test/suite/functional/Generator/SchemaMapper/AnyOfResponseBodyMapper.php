@@ -15,14 +15,8 @@ use Test\Schema\GetExampleResponseBody;
 
 class GetExampleResponseBodyMapper implements SchemaMapperInterface
 {
-    private AnimalMapper $animalMapper;
-
-    private MachineMapper $machineMapper;
-
-    public function __construct(AnimalMapper $animalMapper, MachineMapper $machineMapper)
+    public function __construct(private AnimalMapper $animalMapper, private MachineMapper $machineMapper)
     {
-        $this->animalMapper  = $animalMapper;
-        $this->machineMapper = $machineMapper;
     }
 
     /**
