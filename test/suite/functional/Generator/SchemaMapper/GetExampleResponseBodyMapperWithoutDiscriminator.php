@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Test\Schema\Mapper;
 
+use DoclerLabs\ApiClientException\UnexpectedResponseBodyException;
 use Test\Schema\GetExampleResponseBody;
 
 class GetExampleResponseBodyMapper implements SchemaMapperInterface
@@ -28,12 +29,12 @@ class GetExampleResponseBodyMapper implements SchemaMapperInterface
     {
         try {
             $schema->setAnimal($this->animalMapper->toSchema($payload));
-        } catch (\DoclerLabs\ApiClientException\UnexpectedResponseBodyException $exception) {
+        } catch (UnexpectedResponseBodyException $exception) {
         }
 
         try {
             $schema->setMachine($this->machineMapper->toSchema($payload));
-        } catch (\DoclerLabs\ApiClientException\UnexpectedResponseBodyException $exception) {
+        } catch (UnexpectedResponseBodyException $exception) {
         }
 
         return $schema;

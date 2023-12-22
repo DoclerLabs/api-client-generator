@@ -399,8 +399,9 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                         )
                     );
 
+                    $this->addImport(UnexpectedResponseBodyException::class);
                     $catchStatement = $this->builder->catch(
-                        [$this->builder->className('\\' . UnexpectedResponseBodyException::class)],
+                        [$this->builder->className('UnexpectedResponseBodyException')],
                         $this->builder->var('exception'),
                         []
                     );
