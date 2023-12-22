@@ -66,8 +66,8 @@ components:
         mandatoryMixed: {}
         mandatoryAnyOf:
           anyOf:
-            - type: number
-            - type: string
+            - $ref: '#/components/schemas/EmbeddedObject'
+            - $ref: '#/components/schemas/EmbeddedObject'
         mandatoryNullableStringWithMinMaxLength:
           type: string
           minLength: 1

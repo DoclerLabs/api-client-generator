@@ -37,7 +37,8 @@ class Field
         private bool $required,
         private bool $nullable,
         private bool $additionalProperties,
-        private bool $hasOneOf = false
+        private bool $hasOneOf = false,
+        private bool $hasAnyOf = false
     ) {
     }
 
@@ -137,6 +138,11 @@ class Field
     public function hasOneOf(): bool
     {
         return $this->hasOneOf;
+    }
+
+    public function hasAnyOf(): bool
+    {
+        return $this->hasAnyOf;
     }
 
     public function isDate(): bool

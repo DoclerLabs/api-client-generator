@@ -43,6 +43,7 @@ class FieldFactory
             $arrayItem            = null;
             $objectProperties     = [];
             $oneOf                = [];
+            $anyOf                = [];
             $additionalProperties = true;
             $schemaReference      = $schemaOrReference;
             $schema               = $this->resolveReference($schemaOrReference);
@@ -68,6 +69,19 @@ class FieldFactory
                     $objectName        = $explodedReference[count($explodedReference) - 1];
 
                     $oneOf[] = $this->create($operationName, $objectName, $this->resolveReference($oneOfSchema), false);
+                }
+            } elseif (isset($schema->anyOf)) {
+                $type = FieldType::SPEC_TYPE_OBJECT;
+                if ($referenceName === '') {
+                    $referenceName = SchemaNaming::getClassName($schemaReference, $fieldName);
+                }
+
+                /** @var Reference $anyOfSchema */
+                foreach ($schema->anyOf as $anyOfSchema) {
+                    $explodedReference = explode('/', $anyOfSchema->getReference());
+                    $objectName        = $explodedReference[count($explodedReference) - 1];
+
+                    $anyOf[] = $this->create($operationName, $objectName, $this->resolveReference($anyOfSchema), false);
                 }
             } elseif (isset($schema->allOf)) {
                 $type = FieldType::SPEC_TYPE_OBJECT;
@@ -136,7 +150,8 @@ class FieldFactory
                 $required,
                 (bool)$schema->nullable,
                 $additionalProperties,
-                !empty($oneOf)
+                !empty($oneOf),
+                !empty($anyOf)
             );
 
             if ($arrayItem !== null) {
@@ -147,6 +162,8 @@ class FieldFactory
                 $field->setEnumValues($schema->enum);
             } elseif (!empty($oneOf)) {
                 $field->setObjectProperties($oneOf);
+            } elseif (!empty($anyOf)) {
+                $field->setObjectProperties($anyOf);
             }
 
             if (isset($schema->format)) {

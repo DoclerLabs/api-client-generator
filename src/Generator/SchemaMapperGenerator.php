@@ -262,7 +262,7 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 $requiredResponseItems[] = $this->builder->getArrayItem($payloadVariable, $requiredItemName);
             } else {
                 $optionalFields[] = $property;
-                if ($root->hasOneOf()) {
+                if ($root->hasOneOf() || $root->hasAnyOf()) {
                     $optionalResponseItems[] = $payloadVariable;
                 } else {
                     $optionalResponseItems[] = $this->builder->getArrayItem(
@@ -354,7 +354,6 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             $statements[] = $this->builder->assign($schemaVar, $schemaInit);
 
             $tryCatchStatements = [];
-
             foreach ($optionalFields as $i => $field) {
                 if ($field->isComposite()) {
                     $mapper = $this->builder->localPropertyFetch(SchemaMapperNaming::getPropertyName($field));
@@ -390,14 +389,19 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                     $optionalVar = $optionalResponseItems[$i];
                 }
 
-                if ($root->hasOneOf()) {
-                    $tryStatement = $this->builder->expr(
-                        $this->builder->methodCall(
-                            $schemaVar,
-                            $this->getSetMethodName($field),
-                            [$optionalVar]
-                        )
-                    );
+                if ($root->hasOneOf() || $root->hasAnyOf()) {
+                    $tryStatements = [
+                        $this->builder->expr(
+                            $this->builder->methodCall(
+                                $schemaVar,
+                                $this->getSetMethodName($field),
+                                [$optionalVar]
+                            )
+                        ),
+                    ];
+                    if ($root->hasOneOf()) {
+                        $tryStatements[] = $this->builder->return($schemaVar);
+                    }
 
                     $this->addImport(UnexpectedResponseBodyException::class);
                     $catchStatement = $this->builder->catch(
@@ -405,7 +409,7 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                         $this->builder->var('exception'),
                         []
                     );
-                    $tryCatchStatements[] = $this->builder->tryCatch([$tryStatement], [$catchStatement]);
+                    $tryCatchStatements[] = $this->builder->tryCatch($tryStatements, [$catchStatement]);
                 } else {
                     $ifCondition = $field->isNullable()
                         ? $this->builder->funcCall('array_key_exists', [$field->getName(), $payloadVariable])
@@ -423,7 +427,7 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 }
             }
 
-            if ($root->hasOneOf()) {
+            if ($root->hasOneOf() || $root->hasAnyOf()) {
                 if ($root->getDiscriminator()) {
                     $ifCondition = $this->builder->funcCall('array_key_exists', [
                         /** @phpstan-ignore-next-line */
@@ -473,7 +477,17 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 
                     $statements[] = $this->builder->if($ifCondition, [$assignMethodName, $assignMapperName, $schemaMethodCall]);
                 } else {
-                    $statements = $tryCatchStatements;
+                    $statements = [...$statements, ...$tryCatchStatements];
+
+                    $statements[] = $this->builder->if(
+                        $this->builder->funcCall('empty', [$this->builder->methodCall($schemaVar, 'toArray')]),
+                        [
+                            $this->builder->throw(
+                                'UnexpectedResponseBodyException'
+                            ),
+                        ]
+                    );
+                    $this->mapMethodThrownExceptions['UnexpectedResponseBodyException'] = true;
                 }
             }
 

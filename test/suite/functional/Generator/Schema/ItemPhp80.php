@@ -74,7 +74,7 @@ class Item implements SerializableInterface, JsonSerializable
      *
      * @throws RequestValidationException
      */
-    public function __construct(private int $mandatoryInteger, private string $mandatoryString, private string $mandatoryEnum, private DateTimeInterface $mandatoryDate, private ?DateTimeInterface $mandatoryNullableDate, private float $mandatoryFloat, private bool $mandatoryBoolean, private array $mandatoryArray, private array $mandatoryArrayWithMinItems, private ItemMandatoryObject $mandatoryObject, private ?MandatoryNullableObjectWithAllOf $mandatoryNullableObjectWithAllOf, private mixed $mandatoryMixed, private mixed $mandatoryAnyOf, private ?string $mandatoryNullableStringWithMinMaxLength)
+    public function __construct(private int $mandatoryInteger, private string $mandatoryString, private string $mandatoryEnum, private DateTimeInterface $mandatoryDate, private ?DateTimeInterface $mandatoryNullableDate, private float $mandatoryFloat, private bool $mandatoryBoolean, private array $mandatoryArray, private array $mandatoryArrayWithMinItems, private ItemMandatoryObject $mandatoryObject, private ?MandatoryNullableObjectWithAllOf $mandatoryNullableObjectWithAllOf, private mixed $mandatoryMixed, private MandatoryAnyOf $mandatoryAnyOf, private ?string $mandatoryNullableStringWithMinMaxLength)
     {
         if (count($mandatoryArrayWithMinItems) < 1) {
             throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Expected min items: `1`.', 'mandatoryArrayWithMinItems', $mandatoryArrayWithMinItems));
@@ -506,7 +506,7 @@ class Item implements SerializableInterface, JsonSerializable
         return $this->mandatoryMixed;
     }
 
-    public function getMandatoryAnyOf(): mixed
+    public function getMandatoryAnyOf(): MandatoryAnyOf
     {
         return $this->mandatoryAnyOf;
     }
@@ -648,7 +648,7 @@ class Item implements SerializableInterface, JsonSerializable
         $fields['mandatoryObject']                         = $this->mandatoryObject->toArray();
         $fields['mandatoryNullableObjectWithAllOf']        = $this->mandatoryNullableObjectWithAllOf?->toArray();
         $fields['mandatoryMixed']                          = $this->mandatoryMixed;
-        $fields['mandatoryAnyOf']                          = $this->mandatoryAnyOf;
+        $fields['mandatoryAnyOf']                          = $this->mandatoryAnyOf->toArray();
         $fields['mandatoryNullableStringWithMinMaxLength'] = $this->mandatoryNullableStringWithMinMaxLength;
         if ($this->hasOptionalInteger()) {
             $fields['optionalInteger'] = $this->optionalInteger;
