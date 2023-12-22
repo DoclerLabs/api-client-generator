@@ -353,6 +353,8 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             $schemaVar    = $this->builder->var('schema');
             $statements[] = $this->builder->assign($schemaVar, $schemaInit);
 
+            $tryCatchStatements = [];
+
             foreach ($optionalFields as $i => $field) {
                 if ($field->isComposite()) {
                     $mapper = $this->builder->localPropertyFetch(SchemaMapperNaming::getPropertyName($field));
@@ -388,7 +390,22 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                     $optionalVar = $optionalResponseItems[$i];
                 }
 
-                if (!$root->hasOneOf()) {
+                if ($root->hasOneOf()) {
+                    $tryStatement = $this->builder->expr(
+                        $this->builder->methodCall(
+                            $schemaVar,
+                            $this->getSetMethodName($field),
+                            [$optionalVar]
+                        )
+                    );
+
+                    $catchStatement = $this->builder->catch(
+                        [$this->builder->className('\\' . UnexpectedResponseBodyException::class)],
+                        $this->builder->var('exception'),
+                        []
+                    );
+                    $tryCatchStatements[] = $this->builder->tryCatch([$tryStatement], [$catchStatement]);
+                } else {
                     $ifCondition = $field->isNullable()
                         ? $this->builder->funcCall('array_key_exists', [$field->getName(), $payloadVariable])
                         : $this->builder->funcCall('isset', [$optionalResponseItems[$i]]);
@@ -405,42 +422,71 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 }
             }
 
-            if ($root->getDiscriminator()) {
-                $ifCondition = $this->builder->funcCall('array_key_exists', [
-                    /** @phpstan-ignore-next-line */
-                    $root->getDiscriminator()->propertyName,
-                    $payloadVariable,
-                ]);
+            if ($root->hasOneOf()) {
+                if ($root->getDiscriminator()) {
+                    $ifCondition = $this->builder->funcCall('array_key_exists', [
+                        /** @phpstan-ignore-next-line */
+                        $root->getDiscriminator()->propertyName,
+                        $payloadVariable,
+                    ]);
 
-                $payloadDiscriminator = $this->builder->getArrayItem(
-                    $payloadVariable,
-                    /** @phpstan-ignore-next-line */
-                    $this->builder->val($root->getDiscriminator()->propertyName)
+                    $payloadDiscriminator = $this->builder->getArrayItem(
+                        $payloadVariable,
+                        /** @phpstan-ignore-next-line */
+                        $this->builder->val($root->getDiscriminator()->propertyName)
+                    );
+
+                    $assignMethodName = $this->builder->expr(
+                        $this->builder->assign(
+                            $this->builder->var('methodName'),
+                            $this->builder->concat(
+                                $this->builder->val('set'),
+                                $this->builder->funcCall('ucfirst', [$payloadDiscriminator])
+                            )
+                        )
+                    );
+
+                    $assignMapperName = $this->builder->expr(
+                        $this->builder->assign(
+                            $this->builder->var('mapperName'),
+                            $this->builder->concat(
+                                $payloadDiscriminator,
+                                $this->builder->val('Mapper')
+                            )
+                        )
+                    );
+
+                    $schemaMethodCall = $this->builder->expr(
+                        $this->builder->methodCall(
+                            $this->builder->var('schema'),
+                            '$methodName',
+                            [
+                                $this->builder->methodCall(
+                                    $this->builder->localPropertyFetch('$mapperName'),
+                                    'toSchema',
+                                    [$payloadVariable]
+                                ),
+                            ]
+                        )
+                    );
+
+                    $statements[] = $this->builder->if($ifCondition, [$assignMethodName, $assignMapperName, $schemaMethodCall]);
+                } else {
+                    $statements = $tryCatchStatements;
+                }
+            }
+
+            if (!$this->hasComposite($optionalFields)) {
+                $this->addImport(UnexpectedResponseBodyException::class);
+                $statements[] = $this->builder->if(
+                    $this->builder->funcCall('empty', [$this->builder->methodCall($schemaVar, 'toArray')]),
+                    [
+                        $this->builder->throw(
+                            'UnexpectedResponseBodyException'
+                        ),
+                    ]
                 );
-
-                $assignMethodName = $this->builder->expr(
-                    $this->builder->assign($this->builder->var('methodName'), $this->builder->concat($this->builder->val('set'), $this->builder->funcCall('ucfirst', [$payloadDiscriminator])))
-                );
-
-                $assignMapperName = $this->builder->expr(
-                    $this->builder->assign($this->builder->var('mapperName'), $this->builder->concat($payloadDiscriminator, $this->builder->val('Mapper')))
-                );
-
-                $schemaMethodCall = $this->builder->expr(
-                    $this->builder->methodCall(
-                        $this->builder->var('schema'),
-                        '$methodName',
-                        [
-                            $this->builder->methodCall(
-                                $this->builder->localPropertyFetch('$mapperName'),
-                                'toSchema',
-                                [$payloadVariable]
-                            ),
-                        ]
-                    )
-                );
-
-                $statements[] = $this->builder->if($ifCondition, [$assignMethodName, $assignMapperName, $schemaMethodCall]);
+                $this->mapMethodThrownExceptions['UnexpectedResponseBodyException'] = true;
             }
 
             $statements[] = $this->builder->return($schemaVar);
