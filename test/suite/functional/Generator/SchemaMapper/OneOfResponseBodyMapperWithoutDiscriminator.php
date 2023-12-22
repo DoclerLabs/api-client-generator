@@ -30,22 +30,21 @@ class GetExampleResponseBodyMapper implements SchemaMapperInterface
      */
     public function toSchema(array $payload): GetExampleResponseBody
     {
-        $schema = new GetExampleResponseBody();
+        $schema  = new GetExampleResponseBody();
+        $matches = 0;
 
         try {
             $schema->setAnimal($this->animalMapper->toSchema($payload));
-
-            return $schema;
+            $matches = $matches + 1;
         } catch (UnexpectedResponseBodyException $exception) {
         }
 
         try {
             $schema->setMachine($this->machineMapper->toSchema($payload));
-
-            return $schema;
+            $matches = $matches + 1;
         } catch (UnexpectedResponseBodyException $exception) {
         }
-        if (empty($schema->toArray())) {
+        if ($matches !== 1) {
             throw new UnexpectedResponseBodyException();
         }
 

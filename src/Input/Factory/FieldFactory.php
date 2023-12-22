@@ -59,30 +59,10 @@ class FieldFactory
             $type = $schema->type;
             if (isset($schema->oneOf)) {
                 $type = FieldType::SPEC_TYPE_OBJECT;
-                if ($referenceName === '') {
-                    $referenceName = SchemaNaming::getClassName($schemaReference, $fieldName);
-                }
-
-                /** @var Reference $oneOfSchema */
-                foreach ($schema->oneOf as $oneOfSchema) {
-                    $explodedReference = explode('/', $oneOfSchema->getReference());
-                    $objectName        = $explodedReference[count($explodedReference) - 1];
-
-                    $oneOf[] = $this->create($operationName, $objectName, $this->resolveReference($oneOfSchema), false);
-                }
+                $this->processSchemaOptions($schema->oneOf, $operationName, $fieldName, $referenceName, $oneOf, $schema);
             } elseif (isset($schema->anyOf)) {
                 $type = FieldType::SPEC_TYPE_OBJECT;
-                if ($referenceName === '') {
-                    $referenceName = SchemaNaming::getClassName($schemaReference, $fieldName);
-                }
-
-                /** @var Reference $anyOfSchema */
-                foreach ($schema->anyOf as $anyOfSchema) {
-                    $explodedReference = explode('/', $anyOfSchema->getReference());
-                    $objectName        = $explodedReference[count($explodedReference) - 1];
-
-                    $anyOf[] = $this->create($operationName, $objectName, $this->resolveReference($anyOfSchema), false);
-                }
+                $this->processSchemaOptions($schema->anyOf, $operationName, $fieldName, $referenceName, $anyOf, $schema);
             } elseif (isset($schema->allOf)) {
                 $type = FieldType::SPEC_TYPE_OBJECT;
                 if ($referenceName === '') {
@@ -205,6 +185,26 @@ class FieldFactory
         }
 
         return $fields;
+    }
+
+    private function processSchemaOptions(
+        array $schemaOptions,
+        string $operationName,
+        string $fieldName,
+        string &$referenceName,
+        array &$options,
+        SpecObjectInterface $schemaReference
+    ): void {
+        if ($referenceName === '') {
+            $referenceName = SchemaNaming::getClassName($schemaReference, $fieldName);
+        }
+
+        /** @var Reference $schemaOption */
+        foreach ($schemaOptions as $schemaOption) {
+            $explodedReference = explode('/', $schemaOption->getReference());
+            $objectName        = $explodedReference[count($explodedReference) - 1];
+            $options[]         = $this->create($operationName, $objectName, $this->resolveReference($schemaOption), false);
+        }
     }
 
     private function resolveReference(SpecObjectInterface $schema): SpecObjectInterface

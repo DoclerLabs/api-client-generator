@@ -67,7 +67,7 @@ components:
         mandatoryAnyOf:
           anyOf:
             - $ref: '#/components/schemas/EmbeddedObject'
-            - $ref: '#/components/schemas/EmbeddedObject'
+            - $ref: '#/components/schemas/EmbeddedObject1'
         mandatoryNullableStringWithMinMaxLength:
           type: string
           minLength: 1
@@ -172,6 +172,11 @@ components:
         - mandatoryAnyOf
         - mandatoryNullableStringWithMinMaxLength
     EmbeddedObject:
+      type: object
+      properties:
+        string:
+          type: string
+    EmbeddedObject1:
       type: object
       properties:
         string:

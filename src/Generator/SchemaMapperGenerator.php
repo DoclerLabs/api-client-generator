@@ -351,6 +351,7 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 
         if (!empty($optionalFields)) {
             $schemaVar    = $this->builder->var('schema');
+            $matchesVar   = $this->builder->var('matches');
             $statements[] = $this->builder->assign($schemaVar, $schemaInit);
 
             $tryCatchStatements = [];
@@ -399,9 +400,11 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                             )
                         ),
                     ];
-                    if ($root->hasOneOf()) {
-                        $tryStatements[] = $this->builder->return($schemaVar);
-                    }
+
+                    $tryStatements[] = $this->builder->expr($this->builder->assign(
+                        $this->builder->var('matches'),
+                        $this->builder->operation($this->builder->var('matches'), '+', $this->builder->val(1))
+                    ));
 
                     $this->addImport(UnexpectedResponseBodyException::class);
                     $catchStatement = $this->builder->catch(
@@ -477,16 +480,30 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 
                     $statements[] = $this->builder->if($ifCondition, [$assignMethodName, $assignMapperName, $schemaMethodCall]);
                 } else {
+                    $statements[] = $this->builder->assign($matchesVar, $this->builder->val(0));
+
                     $statements = [...$statements, ...$tryCatchStatements];
 
-                    $statements[] = $this->builder->if(
-                        $this->builder->funcCall('empty', [$this->builder->methodCall($schemaVar, 'toArray')]),
-                        [
-                            $this->builder->throw(
-                                'UnexpectedResponseBodyException'
-                            ),
-                        ]
-                    );
+                    if ($root->hasAnyOf()) {
+                        $statements[] = $this->builder->if(
+                            $this->builder->equals($matchesVar, $this->builder->val(0)),
+                            [
+                                $this->builder->throw(
+                                    'UnexpectedResponseBodyException'
+                                ),
+                            ]
+                        );
+                    }
+                    if ($root->hasOneOf()) {
+                        $statements[] = $this->builder->if(
+                            $this->builder->notEquals($matchesVar, $this->builder->val(1)),
+                            [
+                                $this->builder->throw(
+                                    'UnexpectedResponseBodyException'
+                                ),
+                            ]
+                        );
+                    }
                     $this->mapMethodThrownExceptions['UnexpectedResponseBodyException'] = true;
                 }
             }
