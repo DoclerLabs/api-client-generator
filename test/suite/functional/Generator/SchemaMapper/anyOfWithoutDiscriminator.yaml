@@ -15,11 +15,6 @@ paths:
                 anyOf:
                   - $ref: '#/components/schemas/Animal'
                   - $ref: '#/components/schemas/Machine'
-                discriminator:
-                  propertyName: objectType
-                  mapping:
-                    animal: '#/components/schemas/Animal'
-                    machine: '#/components/schemas/Machine'
 
 components:
   schemas:

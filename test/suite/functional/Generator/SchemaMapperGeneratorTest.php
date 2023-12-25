@@ -64,21 +64,51 @@ class SchemaMapperGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\FreeFormItemMapper',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
             ],
-            'OneOf response' => [
+            'OneOf response with php 7.4' => [
                 '/SchemaMapper/oneOf.yaml',
-                '/SchemaMapper/OneOfResponseBodyMapper.php',
+                '/SchemaMapper/OneOfResponseBodyMapper74.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\GetExampleResponseBodyMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'OneOf response with php 8.0' => [
+                '/SchemaMapper/oneOf.yaml',
+                '/SchemaMapper/OneOfResponseBodyMapper80.php',
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\GetExampleResponseBodyMapper',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
             ],
-            'OneOf response without discriminator' => [
+            'OneOf response without discriminator with php 7.4' => [
                 '/SchemaMapper/oneOfWithoutDiscriminator.yaml',
-                '/SchemaMapper/OneOfResponseBodyMapperWithoutDiscriminator.php',
+                '/SchemaMapper/OneOfResponseBodyMapperWithoutDiscriminator74.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\GetExampleResponseBodyMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'OneOf response without discriminator with php 8.0' => [
+                '/SchemaMapper/oneOfWithoutDiscriminator.yaml',
+                '/SchemaMapper/OneOfResponseBodyMapperWithoutDiscriminator80.php',
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\GetExampleResponseBodyMapper',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
             ],
-            'AnyOf response' => [
+            'AnyOf response with php 7.4' => [
                 '/SchemaMapper/anyOf.yaml',
-                '/SchemaMapper/AnyOfResponseBodyMapper.php',
+                '/SchemaMapper/AnyOfResponseBodyMapper74.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\GetExampleResponseBodyMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'AnyOf response with php 8.0' => [
+                '/SchemaMapper/anyOf.yaml',
+                '/SchemaMapper/AnyOfResponseBodyMapper80.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\GetExampleResponseBodyMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
+            ],
+            'AnyOf response with php 7.4' => [
+                '/SchemaMapper/anyOfWithoutDiscriminator.yaml',
+                '/SchemaMapper/AnyOfResponseBodyMapperWithoutDiscriminator74.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\GetExampleResponseBodyMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'AnyOf response with php 8.0' => [
+                '/SchemaMapper/anyOfWithoutDiscriminator.yaml',
+                '/SchemaMapper/AnyOfResponseBodyMapperWithoutDiscriminator80.php',
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\GetExampleResponseBodyMapper',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
             ],
