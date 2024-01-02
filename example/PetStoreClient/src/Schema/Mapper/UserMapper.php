@@ -10,10 +10,14 @@ declare(strict_types=1);
 
 namespace OpenApi\PetStoreClient\Schema\Mapper;
 
+use DoclerLabs\ApiClientException\UnexpectedResponseBodyException;
 use OpenApi\PetStoreClient\Schema\User;
 
 class UserMapper implements SchemaMapperInterface
 {
+    /**
+     * @throws UnexpectedResponseBodyException
+     */
     public function toSchema(array $payload): User
     {
         $schema = new User();
@@ -40,6 +44,9 @@ class UserMapper implements SchemaMapperInterface
         }
         if (isset($payload['userStatus'])) {
             $schema->setUserStatus($payload['userStatus']);
+        }
+        if (empty($schema->toArray())) {
+            throw new UnexpectedResponseBodyException();
         }
 
         return $schema;

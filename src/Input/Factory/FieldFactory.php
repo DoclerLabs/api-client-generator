@@ -42,6 +42,8 @@ class FieldFactory
         try {
             $arrayItem            = null;
             $objectProperties     = [];
+            $oneOf                = [];
+            $anyOf                = [];
             $additionalProperties = true;
             $schemaReference      = $schemaOrReference;
             $schema               = $this->resolveReference($schemaOrReference);
@@ -56,7 +58,11 @@ class FieldFactory
 
             $type = $schema->type;
             if (isset($schema->oneOf)) {
-                throw new InvalidSpecificationException('oneOf keyword is not currently supported.');
+                $type = FieldType::SPEC_TYPE_OBJECT;
+                $this->processSchemaOptions($schema->oneOf, $operationName, $fieldName, $referenceName, $oneOf, $schema);
+            } elseif (isset($schema->anyOf)) {
+                $type = FieldType::SPEC_TYPE_OBJECT;
+                $this->processSchemaOptions($schema->anyOf, $operationName, $fieldName, $referenceName, $anyOf, $schema);
             } elseif (isset($schema->allOf)) {
                 $type = FieldType::SPEC_TYPE_OBJECT;
                 if ($referenceName === '') {
@@ -123,7 +129,9 @@ class FieldFactory
                 $referenceName,
                 $required,
                 (bool)$schema->nullable,
-                $additionalProperties
+                $additionalProperties,
+                !empty($oneOf),
+                !empty($anyOf)
             );
 
             if ($arrayItem !== null) {
@@ -132,6 +140,10 @@ class FieldFactory
                 $field->setObjectProperties($objectProperties);
             } elseif (isset($schema->enum)) {
                 $field->setEnumValues($schema->enum);
+            } elseif (!empty($oneOf)) {
+                $field->setObjectProperties($oneOf);
+            } elseif (!empty($anyOf)) {
+                $field->setObjectProperties($anyOf);
             }
 
             if (isset($schema->format)) {
@@ -140,6 +152,10 @@ class FieldFactory
 
             if (isset($schema->default)) {
                 $field->setDefault($schema->default);
+            }
+
+            if (isset($schema->discriminator)) {
+                $field->setDiscriminator($schema->discriminator);
             }
 
             return $field;
@@ -169,6 +185,26 @@ class FieldFactory
         }
 
         return $fields;
+    }
+
+    private function processSchemaOptions(
+        array $schemaOptions,
+        string $operationName,
+        string $fieldName,
+        string &$referenceName,
+        array &$options,
+        SpecObjectInterface $schemaReference
+    ): void {
+        if ($referenceName === '') {
+            $referenceName = SchemaNaming::getClassName($schemaReference, $fieldName);
+        }
+
+        /** @var Reference $schemaOption */
+        foreach ($schemaOptions as $schemaOption) {
+            $explodedReference = explode('/', $schemaOption->getReference());
+            $objectName        = $explodedReference[count($explodedReference) - 1];
+            $options[]         = $this->create($operationName, $objectName, $this->resolveReference($schemaOption), false);
+        }
     }
 
     private function resolveReference(SpecObjectInterface $schema): SpecObjectInterface

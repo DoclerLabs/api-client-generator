@@ -11,10 +11,14 @@ declare(strict_types=1);
 namespace OpenApi\PetStoreClient\Schema\Mapper;
 
 use DateTimeImmutable;
+use DoclerLabs\ApiClientException\UnexpectedResponseBodyException;
 use OpenApi\PetStoreClient\Schema\Order;
 
 class OrderMapper implements SchemaMapperInterface
 {
+    /**
+     * @throws UnexpectedResponseBodyException
+     */
     public function toSchema(array $payload): Order
     {
         $schema = new Order();
@@ -35,6 +39,9 @@ class OrderMapper implements SchemaMapperInterface
         }
         if (isset($payload['complete'])) {
             $schema->setComplete($payload['complete']);
+        }
+        if (empty($schema->toArray())) {
+            throw new UnexpectedResponseBodyException();
         }
 
         return $schema;

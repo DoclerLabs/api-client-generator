@@ -27,6 +27,8 @@ class Field
 
     private mixed $default = null;
 
+    private mixed $discriminator = null;
+
     public function __construct(
         private string $name,
         private FieldType $type,
@@ -34,7 +36,9 @@ class Field
         private string $referenceName,
         private bool $required,
         private bool $nullable,
-        private bool $additionalProperties
+        private bool $additionalProperties,
+        private bool $hasOneOf = false,
+        private bool $hasAnyOf = false
     ) {
     }
 
@@ -62,6 +66,9 @@ class Field
         return $this->objectProperties;
     }
 
+    /**
+     * @param Field[] $objectProperties
+     */
     public function setObjectProperties(array $objectProperties): self
     {
         $this->objectProperties = $objectProperties;
@@ -128,6 +135,16 @@ class Field
         return $this->nullable;
     }
 
+    public function hasOneOf(): bool
+    {
+        return $this->hasOneOf;
+    }
+
+    public function hasAnyOf(): bool
+    {
+        return $this->hasAnyOf;
+    }
+
     public function isDate(): bool
     {
         $isDateFormat = $this->getFormat() === self::FORMAT_DATE || $this->getFormat() === self::FORMAT_DATE_TIME;
@@ -165,6 +182,18 @@ class Field
     public function setDefault(mixed $default): self
     {
         $this->default = $default;
+
+        return $this;
+    }
+
+    public function getDiscriminator(): mixed
+    {
+        return $this->discriminator;
+    }
+
+    public function setDiscriminator(mixed $discriminator): self
+    {
+        $this->discriminator = $discriminator;
 
         return $this;
     }

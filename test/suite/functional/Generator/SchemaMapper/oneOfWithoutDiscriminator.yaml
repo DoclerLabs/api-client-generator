@@ -1,0 +1,72 @@
+openapi: 3.0.0
+info:
+  title: OneOf with Nested Structures
+  version: 1.0.0
+
+paths:
+  /example:
+    get:
+      responses:
+        '200':
+          description: An example of an oneOf structure
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Animal'
+                  - $ref: '#/components/schemas/Machine'
+
+components:
+  schemas:
+    Animal:
+      type: object
+      required:
+        - objectType
+        - name
+      properties:
+        objectType:
+          type: string
+        name:
+          type: string
+        characteristics:
+          oneOf:
+            - $ref: '#/components/schemas/Mammal'
+            - $ref: '#/components/schemas/Bird'
+    Mammal:
+      type: object
+      required:
+        - type
+        - furColor
+      properties:
+        type:
+          type: string
+        furColor:
+          type: string
+    Bird:
+      type: object
+      required:
+        - type
+        - wingSpan
+      properties:
+        type:
+          type: string
+          enum: [bird]
+        wingSpan:
+          type: integer
+    Machine:
+      type: object
+      required:
+        - objectType
+        - model
+      properties:
+        objectType:
+          type: string
+        model:
+          type: string
+        specifications:
+          type: object
+          properties:
+            power:
+              type: integer
+            year:
+              type: integer

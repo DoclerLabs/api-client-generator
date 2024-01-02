@@ -41,6 +41,9 @@ class FieldCollection implements IteratorAggregate
         return (new self())->set(array_values($unique));
     }
 
+    /**
+     * @return Field[]
+     */
     public function getUniqueByPhpClassName(): array
     {
         $unique = [];

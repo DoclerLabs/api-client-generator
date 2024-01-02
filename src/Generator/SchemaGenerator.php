@@ -312,8 +312,12 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
                 }
             }
 
-            $fieldName       = $this->builder->val($propertyField->getName());
-            $assignStatement = $this->builder->appendToAssociativeArray($arrayVariable, $fieldName, $value);
+            $fieldName = $this->builder->val($propertyField->getName());
+            if ($root->hasOneOf()) {
+                $assignStatement = $this->builder->expr($this->builder->assign($arrayVariable, $value));
+            } else {
+                $assignStatement = $this->builder->appendToAssociativeArray($arrayVariable, $fieldName, $value);
+            }
 
             if ($propertyField->isOptional()) {
                 $ifCondition = $this->builder->localMethodCall(
