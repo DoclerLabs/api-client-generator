@@ -6,6 +6,8 @@ paths:
   '/v1/resources/{resourceId}':
     patch:
       description: Update resource
+      security:
+        - ApiKeyHeader: []
       operationId: patchResource
       parameters:
         - in: header
@@ -22,7 +24,55 @@ paths:
       responses:
         '201':
           description: Successful operation.
+  '/v1/resources/sub-resource/{resourceId}':
+    patch:
+      description: Update sub resource
+      security:
+        - ApiKeyQuery: []
+      operationId: patchSubResource
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateResourceBody'
+      responses:
+        '201':
+          description: Successful operation.
+  '/v1/resources/sub/resource/{resourceId}':
+    patch:
+      description: Update another sub resource
+      security:
+        - ApiKeyCookie: []
+      operationId: patchAnotherSubResource
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateResourceBody'
+      responses:
+        '201':
+          description: Successful operation.
+  '/v1/resources/sub/sub-resource/{resourceId}':
+    patch:
+      description: Update yet another resource
+      security:
+        - ApiKeyQuery: []
+      parameters:
+        - $ref: '#/components/parameters/SubResourceFilter'
+      operationId: patchYetAnotherSubResource
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateResourceBody'
+      responses:
+        '201':
+          description: Successful operation.
 components:
+  securitySchemes:
+    ApiKeyHeader:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+    ApiKeyQuery:
+      type: apiKey
+      in: query
+      name: apikey
+    ApiKeyCookie:
+      type: apiKey
+      in: cookie
+      name: api_key
   requestBodies:
     UpdateResourceBody:
       description: Updated values.
@@ -40,3 +90,12 @@ components:
                 type: integer
             required:
               - value
+  parameters:
+    SubResourceFilter:
+      name: filter
+      in: query
+      schema:
+        type: object
+        properties:
+          prop1:
+            type: integer

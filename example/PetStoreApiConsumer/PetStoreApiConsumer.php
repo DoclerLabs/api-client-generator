@@ -35,9 +35,9 @@ class PetStoreApiConsumer
         return $result->first();
     }
 
-    public function getPetById(int $petId): Pet
+    public function getPetById(int $petId, string $apiKey): Pet
     {
-        $request = new GetPetByIdRequest($petId);
+        $request = new GetPetByIdRequest($petId, $apiKey);
         $result  = $this->petClient->getPetById($request);
         if ($result === null) {
             throw new UnexpectedValueException('getPetById should not be null');

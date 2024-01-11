@@ -11,13 +11,11 @@ use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\AuthenticationCredentials;
 use PhpParser\Node\Expr;
 
-class BasicAuthenticationSecurityStrategy extends SecurityStrategyAbstract
+class BasicAuthenticationSecurityStrategy extends HttpBasedSecurityStrategyAbstract
 {
     public const SCHEME = 'basic';
 
     private const PROPERTY_CREDENTIALS = 'credentials';
-
-    private const TYPE = 'http';
 
     public function getImports(string $baseNamespace): ImportCollection
     {
@@ -78,11 +76,6 @@ class BasicAuthenticationSecurityStrategy extends SecurityStrategyAbstract
     protected function getScheme(): string
     {
         return self::SCHEME;
-    }
-
-    protected function getType(): string
-    {
-        return self::TYPE;
     }
 
     protected function getAuthorizationHeader(): Expr

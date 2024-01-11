@@ -18,8 +18,12 @@ use DoclerLabs\ApiClientGenerator\Generator\RequestMapperGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\SchemaCollectionGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\SchemaGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\SchemaMapperGenerator;
+use DoclerLabs\ApiClientGenerator\Generator\Security\ApiKeyInCookieSecurityStrategy;
+use DoclerLabs\ApiClientGenerator\Generator\Security\ApiKeyInHeaderSecurityStrategy;
+use DoclerLabs\ApiClientGenerator\Generator\Security\ApiKeyInQuerySecurityStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\Security\BasicAuthenticationSecurityStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\Security\BearerAuthenticationSecurityStrategy;
+use DoclerLabs\ApiClientGenerator\Generator\Security\XWSSESecurityStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\ServiceProviderGenerator;
 use DoclerLabs\ApiClientGenerator\Input\Configuration;
 use DoclerLabs\ApiClientGenerator\Input\Factory\FieldFactory;
@@ -155,6 +159,22 @@ class ServiceProvider implements ServiceProviderInterface
                 $container[PhpVersion::class]
             ),
             new BasicAuthenticationSecurityStrategy(
+                $container[CodeBuilder::class],
+                $container[PhpVersion::class]
+            ),
+            new XWSSESecurityStrategy(
+                $container[CodeBuilder::class],
+                $container[PhpVersion::class]
+            ),
+            new ApiKeyInHeaderSecurityStrategy(
+                $container[CodeBuilder::class],
+                $container[PhpVersion::class]
+            ),
+            new ApiKeyInQuerySecurityStrategy(
+                $container[CodeBuilder::class],
+                $container[PhpVersion::class]
+            ),
+            new ApiKeyInCookieSecurityStrategy(
                 $container[CodeBuilder::class],
                 $container[PhpVersion::class]
             )

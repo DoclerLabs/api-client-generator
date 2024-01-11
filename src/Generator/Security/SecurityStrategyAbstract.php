@@ -11,58 +11,75 @@ use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Entity\ImportCollection;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
-use PhpParser\Node\Expr;
+use SplObjectStorage;
 
-abstract class SecurityStrategyAbstract
+abstract class SecurityStrategyAbstract implements SecurityStrategyInterface
 {
+    private static ?SplObjectStorage $securitySchemePerStrategy = null;
+
     public function __construct(protected CodeBuilder $builder, protected PhpVersion $phpVersion)
     {
+        if (self::$securitySchemePerStrategy === null) {
+            self::$securitySchemePerStrategy = new SplObjectStorage();
+        }
     }
-
-    abstract public function getProperties(Operation $operation, Specification $specification): array;
-
-    abstract public function getConstructorParams(Operation $operation, Specification $specification): array;
-
-    abstract public function getConstructorParamInits(Operation $operation, Specification $specification): array;
-
-    abstract protected function getScheme(): string;
-
-    abstract protected function getType(): string;
-
-    abstract protected function getAuthorizationHeader(): Expr;
 
     public function getImports(string $baseNamespace): ImportCollection
     {
         return new ImportCollection();
     }
 
+    public function getSecurityHeadersStmts(Operation $operation, Specification $specification): array
+    {
+        return [];
+    }
+
     public function getSecurityHeaders(Operation $operation, Specification $specification): array
     {
-        $headers = [];
+        return [];
+    }
 
-        if ($this->isAuthenticationAvailable($operation, $specification)) {
-            $headers['Authorization'] = $this->getAuthorizationHeader();
-        }
+    public function getSecurityCookies(Operation $operation, Specification $specification): array
+    {
+        return [];
+    }
 
-        return $headers;
+    public function getSecurityQueryParameters(Operation $operation, Specification $specification): array
+    {
+        return [];
     }
 
     protected function isAuthenticationAvailable(Operation $operation, Specification $specification): bool
     {
+        return $this->getSecurityScheme($operation, $specification) !== null;
+    }
+
+    protected function matches(SecurityScheme $securityScheme): bool
+    {
+        return $securityScheme->type === $this->getType();
+    }
+
+    protected function getSecurityScheme(Operation $operation, Specification $specification): ?SecurityScheme
+    {
         foreach ($this->loopSecuritySchemes($operation, $specification) as $securityScheme) {
             /** @var SecurityScheme $securityScheme */
-            if (
-                $securityScheme->scheme === $this->getScheme()
-                && $securityScheme->type === $this->getType()
-            ) {
-                return true;
+            if ($this->matches($securityScheme)) {
+                if (!self::$securitySchemePerStrategy->contains($securityScheme)) {
+                    self::$securitySchemePerStrategy->attach($securityScheme, static::class);
+
+                    return $securityScheme;
+                }
+
+                if (self::$securitySchemePerStrategy->offsetGet($securityScheme) === static::class) {
+                    return $securityScheme;
+                }
             }
         }
 
-        return false;
+        return null;
     }
 
-    private function loopSecuritySchemes(Operation $operation, Specification $specification): iterable
+    protected function loopSecuritySchemes(Operation $operation, Specification $specification): iterable
     {
         if (
             !empty($specification->getSecuritySchemes())

@@ -8,20 +8,16 @@ declare(strict_types=1);
  * Do not edit it manually.
  */
 
-namespace OpenApi\PetStoreClient\Request;
+namespace Test\Request;
 
-class GetPetByIdRequest implements RequestInterface
+use Test\Schema\PatchAnotherSubResourceRequestBody;
+
+class PatchAnotherSubResourceRequest implements RequestInterface
 {
-    private int $petId;
+    private string $contentType = 'application/json';
 
-    private string $contentType = '';
-
-    private string $apiKey;
-
-    public function __construct(int $petId, string $apiKey)
+    public function __construct(private PatchAnotherSubResourceRequestBody $patchAnotherSubResourceRequestBody, private string $apiKey)
     {
-        $this->petId  = $petId;
-        $this->apiKey = $apiKey;
     }
 
     public function getContentType(): string
@@ -31,12 +27,12 @@ class GetPetByIdRequest implements RequestInterface
 
     public function getMethod(): string
     {
-        return 'GET';
+        return 'PATCH';
     }
 
     public function getRoute(): string
     {
-        return strtr('pet/{petId}', ['{petId}' => $this->petId]);
+        return 'v1/resources/sub/resource/{resourceId}';
     }
 
     public function getQueryParameters(): array
@@ -51,16 +47,19 @@ class GetPetByIdRequest implements RequestInterface
 
     public function getCookies(): array
     {
-        return [];
+        return ['api_key' => $this->apiKey];
     }
 
     public function getHeaders(): array
     {
-        return ['api_key' => $this->apiKey];
+        return ['Content-Type' => $this->contentType];
     }
 
+    /**
+     * @return PatchAnotherSubResourceRequestBody
+     */
     public function getBody()
     {
-        return null;
+        return $this->patchAnotherSubResourceRequestBody;
     }
 }

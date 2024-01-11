@@ -50,7 +50,7 @@ class PutResourceByIdRequest implements RequestInterface
 
     private string $contentType = 'application/json';
 
-    public function __construct(private int $resourceId, private int $mandatoryIntegerParameter, private string $mandatoryStringParameter, private string $mandatoryEnumParameter, private DateTimeInterface $mandatoryDateParameter, private float $mandatoryFloatParameter, private bool $mandatoryBooleanParameter, private array $mandatoryArrayParameter, private EmbeddedObject $mandatoryObjectParameter, private string $xRequestId, private PutResourceByIdRequestBody $putResourceByIdRequestBody)
+    public function __construct(private int $resourceId, private int $mandatoryIntegerParameter, private string $mandatoryStringParameter, private string $mandatoryEnumParameter, private DateTimeInterface $mandatoryDateParameter, private float $mandatoryFloatParameter, private bool $mandatoryBooleanParameter, private array $mandatoryArrayParameter, private EmbeddedObject $mandatoryObjectParameter, private string $xRequestId, private PutResourceByIdRequestBody $putResourceByIdRequestBody, private string $xwsseUsername, private string $xwsseSecret)
     {
         if ($resourceId < 0) {
             throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Cannot be less than 0.', 'resourceId', $resourceId));
@@ -163,7 +163,11 @@ class PutResourceByIdRequest implements RequestInterface
 
     public function getHeaders(): array
     {
-        return array_merge(['Content-Type' => $this->contentType], array_map(static function ($value) {
+        $nonce     = bin2hex(random_bytes(16));
+        $timestamp = gmdate('c');
+        $xwsse     = sprintf('UsernameToken Username="%s", PasswordDigest="%s", Nonce="%s", Created="%s"', $this->xwsseUsername, base64_encode(sha1($nonce . $timestamp . $this->xwsseSecret)), $nonce, $timestamp);
+
+        return array_merge(['X-WSSE' => $xwsse, 'Content-Type' => $this->contentType], array_map(static function ($value) {
             return $value instanceof SerializableInterface ? $value->toArray() : $value;
         }, array_filter(['X-Request-ID' => $this->xRequestId], static function ($value) {
             return null !== $value;

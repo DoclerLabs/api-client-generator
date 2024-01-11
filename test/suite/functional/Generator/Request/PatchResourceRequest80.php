@@ -21,7 +21,7 @@ class PatchResourceRequest implements RequestInterface
 
     private string $contentType = 'application/json';
 
-    public function __construct(private PatchResourceRequestBody $patchResourceRequestBody, private string $accept = 'application/json')
+    public function __construct(private PatchResourceRequestBody $patchResourceRequestBody, private string $apiKey, private string $accept = 'application/json')
     {
     }
 
@@ -57,7 +57,7 @@ class PatchResourceRequest implements RequestInterface
 
     public function getHeaders(): array
     {
-        return array_merge(['Content-Type' => $this->contentType], array_map(static function ($value) {
+        return array_merge(['X-API-KEY' => $this->apiKey, 'Content-Type' => $this->contentType], array_map(static function ($value) {
             return $value instanceof SerializableInterface ? $value->toArray() : $value;
         }, array_filter(['Accept' => $this->accept], static function ($value) {
             return null !== $value;
