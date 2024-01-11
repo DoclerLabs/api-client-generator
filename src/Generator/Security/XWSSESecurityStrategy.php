@@ -110,13 +110,13 @@ class XWSSESecurityStrategy extends ApiKeyInHeaderSecurityStrategy
                                             $nonce,
                                             $timestamp,
                                             $this->builder->localPropertyFetch(self::PROPERTY_SECRET),
-                                        )
+                                        ),
                                     ]
                                 ),
                             ]
                         ),
                         $nonce,
-                        $timestamp
+                        $timestamp,
                     ]
                 )
             );

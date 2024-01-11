@@ -324,7 +324,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                     'array_merge',
                     [
                         $this->generateParametersFromFields($fieldsArr),
-                        $securityFields
+                        $securityFields,
                     ]
                 );
             }
