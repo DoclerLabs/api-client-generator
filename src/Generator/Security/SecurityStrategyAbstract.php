@@ -15,11 +15,11 @@ use SplObjectStorage;
 
 abstract class SecurityStrategyAbstract implements SecurityStrategyInterface
 {
-    private static ?SplObjectStorage $securitySchemePerStrategy = null;
+    private static SplObjectStorage $securitySchemePerStrategy;
 
     public function __construct(protected CodeBuilder $builder, protected PhpVersion $phpVersion)
     {
-        if (self::$securitySchemePerStrategy === null) {
+        if (!isset(self::$securitySchemePerStrategy)) {
             self::$securitySchemePerStrategy = new SplObjectStorage();
         }
     }

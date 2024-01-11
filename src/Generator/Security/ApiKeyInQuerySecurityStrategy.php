@@ -15,7 +15,7 @@ class ApiKeyInQuerySecurityStrategy extends ApiKeyBasedSecurityStrategyAbstract
         $queryParameters = [];
 
         if ($this->isAuthenticationAvailable($operation, $specification)) {
-            $queryParameterName = $this->getSecurityScheme($operation, $specification)->name;
+            $queryParameterName = $this->getSecurityScheme($operation, $specification)?->name;
 
             $queryParameters[$queryParameterName] = $this->builder->localPropertyFetch(self::PROPERTY_API_KEY);
         }

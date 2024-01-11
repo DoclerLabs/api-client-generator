@@ -15,7 +15,7 @@ class ApiKeyInCookieSecurityStrategy extends ApiKeyBasedSecurityStrategyAbstract
         $cookies = [];
 
         if ($this->isAuthenticationAvailable($operation, $specification)) {
-            $cookieName = $this->getSecurityScheme($operation, $specification)->name;
+            $cookieName = $this->getSecurityScheme($operation, $specification)?->name;
 
             $cookies[$cookieName] = $this->builder->localPropertyFetch(self::PROPERTY_API_KEY);
         }

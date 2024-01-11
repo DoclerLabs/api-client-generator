@@ -15,7 +15,7 @@ class ApiKeyInHeaderSecurityStrategy extends ApiKeyBasedSecurityStrategyAbstract
         $headers = [];
 
         if ($this->isAuthenticationAvailable($operation, $specification)) {
-            $headerName = $this->getSecurityScheme($operation, $specification)->name;
+            $headerName = $this->getSecurityScheme($operation, $specification)?->name;
 
             $headers[$headerName] = $this->builder->localPropertyFetch(self::PROPERTY_API_KEY);
         }
