@@ -11,7 +11,7 @@ use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Entity\Request;
-use DoclerLabs\ApiClientGenerator\Generator\Security\SecurityStrategyAbstract;
+use DoclerLabs\ApiClientGenerator\Generator\Security\SecurityStrategyInterface;
 use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
@@ -27,14 +27,14 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
 
     public const SUBDIRECTORY = 'Request/';
 
-    /** @var SecurityStrategyAbstract[] */
+    /** @var SecurityStrategyInterface[] */
     private array $securityStrategies;
 
     public function __construct(
         string $baseNamespace,
         CodeBuilder $builder,
         PhpVersion $phpVersion,
-        SecurityStrategyAbstract ...$securityStrategies
+        SecurityStrategyInterface ...$securityStrategies
     ) {
         parent::__construct($baseNamespace, $builder, $phpVersion);
 
@@ -292,27 +292,22 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         Operation $operation,
         Specification $specification
     ): array {
-        $methods   = [];
-        $fields    = $request->fields;
-        $methods[] = $this->generateGetParametersMethod(
-            'getQueryParameters',
-            $fields->getQueryFields()
-        );
-        $methods[] = $this->generateGetRawParametersMethod(
-            'getRawQueryParameters',
-            $fields->getQueryFields()
-        );
-        $methods[] = $this->generateGetParametersMethod(
-            'getCookies',
-            $fields->getCookieFields()
-        );
+        $methods = [];
+        $fields  = $request->fields;
+
+        $securityQueryFields = $this->getSecurityQueryParameters($operation, $specification);
+        $securityCookies     = $this->getSecurityCookies($operation, $specification);
+
+        $methods[] = $this->generateGetParametersMethod('getQueryParameters', $fields->getQueryFields(), $securityQueryFields);
+        $methods[] = $this->generateGetRawParametersMethod('getRawQueryParameters', $fields->getQueryFields(), $securityQueryFields);
+        $methods[] = $this->generateGetParametersMethod('getCookies', $fields->getCookieFields(), $securityCookies);
         $methods[] = $this->generateGetHeadersMethod($request, $fields->getHeaderFields(), $operation, $specification);
         $methods[] = $this->generateGetBody($fields->getBody());
 
         return $methods;
     }
 
-    private function generateGetParametersMethod(string $methodName, array $fields): ClassMethod
+    private function generateGetParametersMethod(string $methodName, array $fields, array $securityFields): ClassMethod
     {
         $returnVal  = $this->builder->array([]);
         $fieldsArr  = [];
@@ -322,7 +317,19 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         }
 
         if (!empty($fieldsArr)) {
-            $returnVal = $this->generateParametersFromFields($fieldsArr);
+            if (empty($securityFields)) {
+                $returnVal = $this->generateParametersFromFields($fieldsArr);
+            } else {
+                $returnVal = $this->builder->funcCall(
+                    'array_merge',
+                    [
+                        $this->generateParametersFromFields($fieldsArr),
+                        $securityFields,
+                    ]
+                );
+            }
+        } else {
+            $returnVal = $this->builder->array($securityFields);
         }
 
         return $this
@@ -335,7 +342,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->getNode();
     }
 
-    private function generateGetRawParametersMethod(string $methodName, array $fields): ClassMethod
+    private function generateGetRawParametersMethod(string $methodName, array $fields, array $securityFields): ClassMethod
     {
         $fieldsArr  = [];
         $returnType = 'array';
@@ -347,7 +354,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->builder
             ->method($methodName)
             ->makePublic()
-            ->addStmt($this->builder->return($this->builder->array($fieldsArr)))
+            ->addStmt($this->builder->return($this->builder->array(array_merge($fieldsArr, $securityFields))))
             ->setReturnType($returnType)
             ->composeDocBlock([], $returnType)
             ->getNode();
@@ -381,6 +388,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         Operation $operation,
         Specification $specification
     ): ClassMethod {
+        $stmts   = $this->getSecurityHeadersStmts($operation, $specification);
         $headers = $this->getSecurityHeaders($operation, $specification);
         if (!empty($request->bodyContentTypes)) {
             $headers['Content-Type'] = $this->builder->localPropertyFetch('contentType');
@@ -403,10 +411,22 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->builder
             ->method('getHeaders')
             ->makePublic()
+            ->addStmts($stmts)
             ->addStmt($this->builder->return($returnVal))
             ->setReturnType($returnType)
             ->composeDocBlock([], $returnType)
             ->getNode();
+    }
+
+    private function getSecurityHeadersStmts(Operation $operation, Specification $specification): array
+    {
+        $stmts = [];
+
+        foreach ($this->securityStrategies as $securityStrategy) {
+            $stmts = array_merge($stmts, $securityStrategy->getSecurityHeadersStmts($operation, $specification));
+        }
+
+        return $stmts;
     }
 
     private function getSecurityHeaders(Operation $operation, Specification $specification): array
@@ -418,6 +438,28 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         }
 
         return $headers;
+    }
+
+    private function getSecurityCookies(Operation $operation, Specification $specification): array
+    {
+        $cookies = [];
+
+        foreach ($this->securityStrategies as $securityStrategy) {
+            $cookies += $securityStrategy->getSecurityCookies($operation, $specification);
+        }
+
+        return $cookies;
+    }
+
+    private function getSecurityQueryParameters(Operation $operation, Specification $specification): array
+    {
+        $queryParameters = [];
+
+        foreach ($this->securityStrategies as $securityStrategy) {
+            $queryParameters += $securityStrategy->getSecurityQueryParameters($operation, $specification);
+        }
+
+        return $queryParameters;
     }
 
     private function generateParametersFromFields(array $fields): FuncCall

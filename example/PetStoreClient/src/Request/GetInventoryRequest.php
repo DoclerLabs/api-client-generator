@@ -14,6 +14,13 @@ class GetInventoryRequest implements RequestInterface
 {
     private string $contentType = '';
 
+    private string $apiKey;
+
+    public function __construct(string $apiKey)
+    {
+        $this->apiKey = $apiKey;
+    }
+
     public function getContentType(): string
     {
         return $this->contentType;
@@ -46,7 +53,7 @@ class GetInventoryRequest implements RequestInterface
 
     public function getHeaders(): array
     {
-        return [];
+        return ['api_key' => $this->apiKey];
     }
 
     public function getBody()

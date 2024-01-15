@@ -16,7 +16,7 @@ $mock->mockFindPetsByStatus();
 $firstPet = $consumer->findPetsByStatus();
 
 $mock->mockGetPetById();
-$pet = $consumer->getPetById($firstPet->getId());
+$pet = $consumer->getPetById($firstPet->getId(), 'some-api-key');
 
 $mock->mockUpdatePet();
 $consumer->updatePet($pet, XmlContentTypeSerializer::MIME_TYPE);

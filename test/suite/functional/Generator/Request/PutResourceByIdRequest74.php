@@ -72,7 +72,11 @@ class PutResourceByIdRequest implements RequestInterface
 
     private string $contentType = 'application/json';
 
-    public function __construct(int $resourceId, int $mandatoryIntegerParameter, string $mandatoryStringParameter, string $mandatoryEnumParameter, DateTimeInterface $mandatoryDateParameter, float $mandatoryFloatParameter, bool $mandatoryBooleanParameter, array $mandatoryArrayParameter, EmbeddedObject $mandatoryObjectParameter, string $xRequestId, PutResourceByIdRequestBody $putResourceByIdRequestBody)
+    private string $xwsseUsername;
+
+    private string $xwsseSecret;
+
+    public function __construct(int $resourceId, int $mandatoryIntegerParameter, string $mandatoryStringParameter, string $mandatoryEnumParameter, DateTimeInterface $mandatoryDateParameter, float $mandatoryFloatParameter, bool $mandatoryBooleanParameter, array $mandatoryArrayParameter, EmbeddedObject $mandatoryObjectParameter, string $xRequestId, PutResourceByIdRequestBody $putResourceByIdRequestBody, string $xwsseUsername, string $xwsseSecret)
     {
         if ($resourceId < 0) {
             throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Cannot be less than 0.', 'resourceId', $resourceId));
@@ -88,6 +92,8 @@ class PutResourceByIdRequest implements RequestInterface
         $this->mandatoryObjectParameter   = $mandatoryObjectParameter;
         $this->xRequestId                 = $xRequestId;
         $this->putResourceByIdRequestBody = $putResourceByIdRequestBody;
+        $this->xwsseUsername              = $xwsseUsername;
+        $this->xwsseSecret                = $xwsseSecret;
     }
 
     public function getContentType(): string
@@ -196,7 +202,11 @@ class PutResourceByIdRequest implements RequestInterface
 
     public function getHeaders(): array
     {
-        return array_merge(['Content-Type' => $this->contentType], array_map(static function ($value) {
+        $nonce     = bin2hex(random_bytes(16));
+        $timestamp = gmdate('c');
+        $xwsse     = sprintf('UsernameToken Username="%s", PasswordDigest="%s", Nonce="%s", Created="%s"', $this->xwsseUsername, base64_encode(sha1($nonce . $timestamp . $this->xwsseSecret)), $nonce, $timestamp);
+
+        return array_merge(['X-WSSE' => $xwsse, 'Content-Type' => $this->contentType], array_map(static function ($value) {
             return $value instanceof SerializableInterface ? $value->toArray() : $value;
         }, array_filter(['X-Request-ID' => $this->xRequestId], static function ($value) {
             return null !== $value;

@@ -75,7 +75,7 @@ class PetStore3Test extends TestCase
         $exitCode = 0;
         exec('cd example && php test-example.php', $output, $exitCode);
 
-        self::assertEmpty($output);
+        self::assertEmpty($output, implode(PHP_EOL, $output));
         self::assertEquals(0, $exitCode);
     }
 }

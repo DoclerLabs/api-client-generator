@@ -6,13 +6,15 @@ namespace DoclerLabs\ApiClientGenerator\Generator\Security;
 
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
-use PhpParser\Node\Expr;
 
-class BearerAuthenticationSecurityStrategy extends HttpBasedSecurityStrategyAbstract
+abstract class ApiKeyBasedSecurityStrategyAbstract extends SecurityStrategyAbstract
 {
-    private const PROPERTY_NAME = 'bearerToken';
+    protected const PROPERTY_API_KEY = 'apiKey';
 
-    private const SCHEME = 'bearer';
+    public function getType(): string
+    {
+        return 'apiKey';
+    }
 
     public function getProperties(Operation $operation, Specification $specification): array
     {
@@ -23,7 +25,11 @@ class BearerAuthenticationSecurityStrategy extends HttpBasedSecurityStrategyAbst
         $statements = [];
 
         if ($this->isAuthenticationAvailable($operation, $specification)) {
-            $statements[] = $this->builder->localProperty(self::PROPERTY_NAME, 'string', 'string');
+            $statements[] = $this->builder->localProperty(
+                self::PROPERTY_API_KEY,
+                'string',
+                'string'
+            );
         }
 
         return $statements;
@@ -35,7 +41,7 @@ class BearerAuthenticationSecurityStrategy extends HttpBasedSecurityStrategyAbst
 
         if ($this->isAuthenticationAvailable($operation, $specification)) {
             $params[] = $this->builder
-                ->param(self::PROPERTY_NAME)
+                ->param(self::PROPERTY_API_KEY)
                 ->setType('string');
         }
 
@@ -52,24 +58,11 @@ class BearerAuthenticationSecurityStrategy extends HttpBasedSecurityStrategyAbst
 
         if ($this->isAuthenticationAvailable($operation, $specification)) {
             $paramInits[] = $this->builder->assign(
-                $this->builder->localPropertyFetch(self::PROPERTY_NAME),
-                $this->builder->var(self::PROPERTY_NAME)
+                $this->builder->localPropertyFetch(self::PROPERTY_API_KEY),
+                $this->builder->var(self::PROPERTY_API_KEY)
             );
         }
 
         return $paramInits;
-    }
-
-    protected function getScheme(): string
-    {
-        return self::SCHEME;
-    }
-
-    protected function getAuthorizationHeader(): Expr
-    {
-        return $this->builder->funcCall(
-            'sprintf',
-            ['Bearer %s', $this->builder->localPropertyFetch(self::PROPERTY_NAME)]
-        );
     }
 }
