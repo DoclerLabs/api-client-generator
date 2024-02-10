@@ -8,7 +8,7 @@ servers:
 paths:
   /pets:
     get:
-      operationId: findPets
+      operationId: find-pets
       parameters:
         - name: tags
           in: query
@@ -106,6 +106,13 @@ paths:
         - name: id
           in: path
           description: ID of pet to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: food_id
+          in: path
+          description: ID of food to delete
           required: true
           schema:
             type: integer
