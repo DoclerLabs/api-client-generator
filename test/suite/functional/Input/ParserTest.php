@@ -68,6 +68,27 @@ class ParserTest extends TestCase
                     ],
                 ],
             ],
+            'operationId with dashes is supported' => [
+                [
+                    'openapi' => '3.0.0',
+                    'info'    => [
+                        'title'   => 'Sample API',
+                        'version' => '1.0.0',
+                    ],
+                    'paths' => [
+                        '/users' => [
+                            'get' => [
+                                'operationId' => 'get-users',
+                                'responses'   => [
+                                    '200' => [
+                                        'description' => 'OK',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
     }
 
