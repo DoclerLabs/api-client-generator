@@ -40,6 +40,8 @@ class OperationFactory
                 $operationId
             );
             trigger_error($warningMessage, E_USER_WARNING);
+        } elseif (str_contains($operationId, '-')) {
+            $operationId = CaseCaster::toCamel($operationId);
         }
 
         $parameters  = array_merge($commonParameters, $operation->parameters ?? []);
