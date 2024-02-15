@@ -37,6 +37,12 @@ class ComposerJsonTemplateTest extends AbstractTemplateTest
                 'composer.json',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
             ],
+            'Default composer.json + PHP 8.1' => [
+                '/ComposerJson/petstore.yaml',
+                '/ComposerJson/composer_default81.json',
+                'composer.json',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
             'composer.json with intl + PHP 7.4' => [
                 '/ComposerJson/petstore_with_intl_requirement.yaml',
                 '/ComposerJson/composer_with_intl_requirement74.json',
