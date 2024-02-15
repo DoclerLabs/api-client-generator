@@ -16,7 +16,7 @@ class PhpVersionTest extends TestCase
     public function testInvalidVersion()
     {
         $this->expectException(UnexpectedValueException::class);
-        new PhpVersion(8.3);
+        new PhpVersion(8.4);
     }
 
     public function testIsParameterTypeHintSupported()

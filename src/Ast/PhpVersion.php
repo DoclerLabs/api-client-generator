@@ -20,6 +20,12 @@ class PhpVersion
 
     public const VERSION_PHP80 = 8.0;
 
+    public const VERSION_PHP81 = 8.1;
+
+    public const VERSION_PHP82 = 8.2;
+
+    public const VERSION_PHP83 = 8.3;
+
     private const SUPPORTED_VERSIONS = [
         self::VERSION_PHP70,
         self::VERSION_PHP71,
@@ -27,6 +33,9 @@ class PhpVersion
         self::VERSION_PHP73,
         self::VERSION_PHP74,
         self::VERSION_PHP80,
+        self::VERSION_PHP81,
+        self::VERSION_PHP82,
+        self::VERSION_PHP83,
     ];
 
     public function __construct(private float $phpVersion)
