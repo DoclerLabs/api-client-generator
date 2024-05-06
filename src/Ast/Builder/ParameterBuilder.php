@@ -8,10 +8,13 @@ use DoclerLabs\ApiClientGenerator\Ast\ParameterNode;
 use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use PhpParser\Builder\Param;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Stmt\Class_;
 
 class ParameterBuilder extends Param
 {
     protected string $docBlockType = '';
+
+    protected int $flags = 0;
 
     public function __construct(string $name, private PhpVersion $phpVersion)
     {
@@ -53,6 +56,11 @@ class ParameterBuilder extends Param
     {
         $this->docBlockType = $docBlockType;
 
+        return $this;
+    }
+
+    public function makePrivate(): self {
+        $this->flags += Class_::MODIFIER_PRIVATE;
         return $this;
     }
 }

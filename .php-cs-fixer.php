@@ -39,7 +39,6 @@ $rules = [
     ],
     'single_quote'                              => true,
     'ternary_operator_spaces'                   => true,
-    'trailing_comma_in_multiline'               => ['elements' => ['arrays']],
     'trim_array_spaces'                         => true,
     'no_leading_import_slash'                   => true,
     'declare_strict_types'                      => true,
