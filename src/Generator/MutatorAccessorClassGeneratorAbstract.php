@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
-use DateTimeInterface;
 use DoclerLabs\ApiClientException\RequestValidationException;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Entity\Constraint\ConstraintInterface;
@@ -81,10 +80,6 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
 
     protected function generateProperty(Field $field): Property
     {
-        if ($field->isDate()) {
-            $this->addImport(DateTimeInterface::class);
-        }
-
         return $this->builder->localProperty(
             $field->getPhpVariableName(),
             $field->getPhpTypeHint(),

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
+use DateTimeInterface;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\ParameterBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\ParameterNode;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
@@ -108,6 +109,9 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
     {
         $statements = [];
         foreach ($root->getObjectProperties() as $propertyField) {
+            if ($propertyField->isDate()) {
+                $this->addImport(DateTimeInterface::class);
+            }
             if (
                 $propertyField->isRequired()
                 && $this->phpVersion->isConstructorPropertyPromotionSupported()
