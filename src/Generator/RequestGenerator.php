@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
+use DateTimeInterface;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\ParameterBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\ParameterNode;
@@ -102,6 +103,9 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                         $field->getPhpClassName()
                     )
                 );
+            }
+            if ($field->isDate()) {
+                $this->addImport(DateTimeInterface::class);
             }
             if (
                 $field->isRequired()
