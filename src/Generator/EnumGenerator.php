@@ -22,7 +22,7 @@ class EnumGenerator extends MutatorAccessorClassGeneratorAbstract
             return 'V_' . $sanitized;
         }
 
-        return $sanitized;
+        return (string)$sanitized;
     }
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
@@ -66,6 +66,10 @@ class EnumGenerator extends MutatorAccessorClassGeneratorAbstract
 
     private function generateEnumConsts(Field $root): array
     {
+        if ($root->getEnumValues() === null) {
+            return [];
+        }
+
         $statements = [];
         foreach ($root->getEnumValues() as $value) {
             $statements[] = $this

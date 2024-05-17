@@ -149,9 +149,15 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                     ->param($field->getPhpVariableName())
                     ->setType($field->getPhpTypeHint(), $field->isNullable());
 
-                if ($field->getDefault() !== null) {
-                    if ($field->isEnum() && $this->phpVersion->isEnumSupported()) {
-                        $param->setDefault($this->builder->classConstFetch($field->getPhpClassName(), EnumGenerator::getCaseName($field->getDefault())));
+                if (($default = $field->getDefault()) !== null) {
+                    if ($field->isEnum() && $this->phpVersion->isEnumSupported() && (
+                        is_string($default)
+                        || is_integer($default)
+                    )) {
+                        $param->setDefault($this->builder->classConstFetch(
+                            $field->getPhpClassName(),
+                            EnumGenerator::getCaseName((string)$default)
+                        ));
                     } else {
                         $param->setDefault($field->getDefault());
                     }
