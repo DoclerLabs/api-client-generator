@@ -10,6 +10,7 @@ use DoclerLabs\ApiClientGenerator\Ast\Visitor\NamespaceSubstituteVisitor;
 use DoclerLabs\ApiClientGenerator\Command\GenerateCommand;
 use DoclerLabs\ApiClientGenerator\Generator\ClientFactoryGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\ClientGenerator;
+use DoclerLabs\ApiClientGenerator\Generator\EnumGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\FreeFormSchemaGenerator;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
@@ -124,6 +125,7 @@ class ServiceProvider implements ServiceProviderInterface
         $pimple[CodeGeneratorFacade::class] = static fn (Container $container) => (new CodeGeneratorFacade())
             ->add($container[ClientFactoryGenerator::class])
             ->add($container[ClientGenerator::class])
+            ->add($container[EnumGenerator::class])
             ->add($container[RequestGenerator::class])
             ->add($container[RequestMapperGenerator::class])
             ->add($container[SchemaMapperGenerator::class])
@@ -206,6 +208,12 @@ class ServiceProvider implements ServiceProviderInterface
         );
 
         $pimple[SchemaGenerator::class] = static fn (Container $container) => new SchemaGenerator(
+            $container[Configuration::class]->baseNamespace,
+            $container[CodeBuilder::class],
+            $container[PhpVersion::class]
+        );
+
+        $pimple[EnumGenerator::class] = static fn (Container $container) => new EnumGenerator(
             $container[Configuration::class]->baseNamespace,
             $container[CodeBuilder::class],
             $container[PhpVersion::class]

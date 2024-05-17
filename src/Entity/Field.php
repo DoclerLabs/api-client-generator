@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Entity;
 
+use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Entity\Constraint\ConstraintCollection;
 use DoclerLabs\ApiClientGenerator\Naming\CaseCaster;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaCollectionNaming;
@@ -30,6 +31,7 @@ class Field
     private mixed $discriminator = null;
 
     public function __construct(
+        private PhpVersion $phpVersion,
         private string $name,
         private FieldType $type,
         private ConstraintCollection $constraints,
@@ -152,6 +154,11 @@ class Field
         return $this->type->isString() && $isDateFormat;
     }
 
+    public function isEnum(): bool
+    {
+        return !empty($this->enumValues);
+    }
+
     public function isObject(): bool
     {
         return $this->type->isObject();
@@ -172,6 +179,13 @@ class Field
         return $this->isArray()
                && $this->getArrayItem() !== null
                && $this->getArrayItem()->isObject();
+    }
+
+    public function isArrayOfEnums(): bool
+    {
+        return $this->isArray()
+               && $this->getArrayItem() !== null
+               && $this->getArrayItem()->isEnum();
     }
 
     public function getDefault(): mixed
@@ -220,12 +234,23 @@ class Field
             return 'DateTimeInterface';
         }
 
+        if ($this->isEnum() && $this->phpVersion->isEnumSupported()) {
+            return $this->referenceName . (str_ends_with($this->referenceName, 'Enum') ? '' : 'Enum');
+        }
+
         throw new RuntimeException('Call of getPhpClassName on the non-composite field.');
     }
 
     public function getPhpTypeHint(): string
     {
-        if ($this->isComposite() || $this->isDate()) {
+        if (
+            $this->isComposite()
+            || $this->isDate()
+            || (
+                $this->isEnum()
+                && $this->phpVersion->isEnumSupported()
+            )
+        ) {
             return $this->getPhpClassName();
         }
 
@@ -240,7 +265,14 @@ class Field
 
         $nullableSuffix = '';
         $arraySuffix    = '';
-        if ($this->isComposite() || $this->isDate()) {
+        if (
+            $this->isComposite()
+            || $this->isDate()
+            || (
+                $this->isEnum()
+                && $this->phpVersion->isEnumSupported()
+            )
+        ) {
             $typeHint = $this->getPhpClassName();
         } else {
             $typeHint = $this->type->toPhpType();

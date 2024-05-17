@@ -89,6 +89,16 @@ class PhpVersion
         return $this->isVersionGreaterThanOrEqualTo80();
     }
 
+    public function isEnumSupported(): bool
+    {
+        return $this->isVersionGreaterThanOrEqualTo81();
+    }
+
+    public function isReadonlyPropertiesSupported(): bool
+    {
+        return $this->isVersionGreaterThanOrEqualTo81();
+    }
+
     private function isVersionGreaterThanOrEqualTo71(): bool
     {
         return $this->phpVersion >= self::VERSION_PHP71;
@@ -102,5 +112,10 @@ class PhpVersion
     private function isVersionGreaterThanOrEqualTo80(): bool
     {
         return $this->phpVersion >= self::VERSION_PHP80;
+    }
+
+    private function isVersionGreaterThanOrEqualTo81(): bool
+    {
+        return $this->phpVersion >= self::VERSION_PHP81;
     }
 }

@@ -35,7 +35,8 @@ class BasicAuthenticationSecurityStrategy extends HttpBasedSecurityStrategyAbstr
             $statements[] = $this->builder->localProperty(
                 self::PROPERTY_CREDENTIALS,
                 'AuthenticationCredentials',
-                'AuthenticationCredentials'
+                'AuthenticationCredentials',
+                readonly: true
             );
         }
 

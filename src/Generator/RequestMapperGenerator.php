@@ -52,12 +52,14 @@ class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         $properties[] = $this->builder->localProperty(
             $bodySerializerPropertyName,
             'BodySerializer',
-            'BodySerializer'
+            'BodySerializer',
+            readonly: true
         );
         $properties[] = $this->builder->localProperty(
             $querySerializerPropertyName,
             'QuerySerializer',
-            'QuerySerializer'
+            'QuerySerializer',
+            readonly: true
         );
 
         /** @var ParameterBuilder[] $parameters */
@@ -68,6 +70,11 @@ class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         if ($this->phpVersion->isConstructorPropertyPromotionSupported()) {
             foreach ($parameters as $parameter) {
                 $parameter->makePrivate();
+            }
+        }
+        if ($this->phpVersion->isReadonlyPropertiesSupported()) {
+            foreach ($parameters as $parameter) {
+                $parameter->makeReadonly();
             }
         }
 

@@ -41,28 +41,28 @@ $result  = $client->updatePet($request);
 
 ### pet
 Endpoints:
-- **updatePet** - Update an existing pet by Id 
-- **addPet** - Add a new pet to the store 
-- **findPetsByStatus** - Multiple status values can be provided with comma separated strings 
-- **findPetsByTags** - Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing. 
-- **getPetById** - Returns a single pet 
+- **updatePet** - Update an existing pet by Id
+- **addPet** - Add a new pet to the store
+- **findPetsByStatus** - Multiple status values can be provided with comma separated strings
+- **findPetsByTags** - Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.
+- **getPetById** - Returns a single pet
 - **updatePetWithForm**
 - **deletePet**
 
 ### store
 Endpoints:
-- **getInventory** - Returns a map of status codes to quantities 
-- **placeOrder** - Place a new order in the store 
-- **getOrderById** - For valid response try integer IDs with value &lt;= 5 or &gt; 10. Other values will generated exceptions 
-- **deleteOrder** - For valid response try integer IDs with value &lt; 1000. Anything above 1000 or nonintegers will generate API errors 
+- **getInventory** - Returns a map of status codes to quantities
+- **placeOrder** - Place a new order in the store
+- **getOrderById** - For valid response try integer IDs with value &lt;= 5 or &gt; 10. Other values will generated exceptions
+- **deleteOrder** - For valid response try integer IDs with value &lt; 1000. Anything above 1000 or nonintegers will generate API errors
 
 ### user
 Endpoints:
-- **createUser** - This can only be done by the logged in user. 
-- **createUsersWithListInput** - Creates list of users with given input array 
+- **createUser** - This can only be done by the logged in user.
+- **createUsersWithListInput** - Creates list of users with given input array
 - **loginUser**
 - **logoutUser**
 - **getUserByName**
-- **updateUser** - This can only be done by the logged in user. 
-- **deleteUser** - This can only be done by the logged in user. 
+- **updateUser** - This can only be done by the logged in user.
+- **deleteUser** - This can only be done by the logged in user.
 

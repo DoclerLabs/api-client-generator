@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DoclerLabs\ApiClientGenerator\Ast\Builder;
 
 use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
+use DoclerLabs\ApiClientGenerator\Entity\FieldType;
 use PhpParser\Builder;
 use PhpParser\Builder\Method;
 use PhpParser\Comment\Doc;
@@ -73,7 +74,11 @@ class MethodBuilder extends Method
         }
 
         if ($isNullable) {
-            if ($this->phpVersion->isNullableTypeHintSupported() && is_string($type)) {
+            if (
+                $this->phpVersion->isNullableTypeHintSupported()
+                && is_string($type)
+                && $type !== FieldType::PHP_TYPE_MIXED
+            ) {
                 return parent::setReturnType(sprintf('?%s', $type));
             }
 

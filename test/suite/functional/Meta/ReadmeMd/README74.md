@@ -52,5 +52,5 @@ Endpoints:
 
 ### [No tag]
 Endpoints:
-- **deletePet** - deletes a single pet based on the ID supplied 
+- **deletePet** - deletes a single pet based on the ID supplied
 

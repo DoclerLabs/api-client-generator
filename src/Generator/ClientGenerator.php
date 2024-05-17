@@ -120,8 +120,8 @@ class ClientGenerator extends GeneratorAbstract
         }
 
         return [
-            $this->builder->localProperty('client', 'ClientInterface', 'ClientInterface'),
-            $this->builder->localProperty('container', 'ContainerInterface', 'ContainerInterface'),
+            $this->builder->localProperty('client', 'ClientInterface', 'ClientInterface', readonly: true),
+            $this->builder->localProperty('container', 'ContainerInterface', 'ContainerInterface', readonly: true),
         ];
     }
 
@@ -143,6 +143,11 @@ class ClientGenerator extends GeneratorAbstract
         if ($this->phpVersion->isConstructorPropertyPromotionSupported()) {
             foreach ($parameters as $parameter) {
                 $parameter->makePrivate();
+            }
+        }
+        if ($this->phpVersion->isReadonlyPropertiesSupported()) {
+            foreach ($parameters as $parameter) {
+                $parameter->makeReadonly();
             }
         }
 

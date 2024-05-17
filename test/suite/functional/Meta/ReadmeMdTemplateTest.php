@@ -33,6 +33,12 @@ class ReadmeMdTemplateTest extends AbstractTemplateTest
                 'README.md',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
             ],
+            'Basic README.md + PHP 8.1' => [
+                '/ReadmeMd/petstore.yaml',
+                '/ReadmeMd/README81.md',
+                'README.md',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
         ];
     }
 

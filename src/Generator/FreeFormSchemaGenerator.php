@@ -73,6 +73,7 @@ class FreeFormSchemaGenerator extends MutatorAccessorClassGeneratorAbstract
     private function generateFreeFormField(): Field
     {
         return new Field(
+            $this->phpVersion,
             self::FREE_FORM_SCHEMA_VARIABLE,
             new FieldType(FieldType::PHP_TYPE_OBJECT, $this->phpVersion),
             new ConstraintCollection(),

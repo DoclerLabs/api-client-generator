@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DoclerLabs\ApiClientGenerator\Ast\Builder;
 
 use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
+use DoclerLabs\ApiClientGenerator\Entity\FieldType;
 use DoclerLabs\ApiClientGenerator\Entity\ImportCollection;
 use InvalidArgumentException;
 use PhpParser\BuilderFactory;
@@ -16,6 +17,7 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\ArrayItem;
+use PhpParser\Node\Expr\ArrowFunction;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\BinaryOp;
 use PhpParser\Node\Expr\BinaryOp\BooleanAnd;
@@ -102,9 +104,27 @@ class CodeBuilder extends BuilderFactory
         return new Closure($subNodes);
     }
 
+    public function arrowFunction(Expr $expr, array $params, string $returnType, bool $isStatic = true): ArrowFunction
+    {
+        if (!empty($params)) {
+            $subNodes['params'] = $params;
+        }
+
+        $subNodes['expr'] = $expr;
+        $subNodes['returnType'] = $returnType;
+        $subNodes['static']     = $isStatic;
+
+        return new ArrowFunction($subNodes);
+    }
+
     public function class(string $name): ClassBuilder
     {
         return new ClassBuilder($name);
+    }
+
+    public function enum(string $name): EnumBuilder
+    {
+        return new EnumBuilder($name);
     }
 
     public function array(array $items): Array_
@@ -141,14 +161,15 @@ class CodeBuilder extends BuilderFactory
         string $type,
         string $docType,
         bool $nullable = false,
-        Expr $default = null
+        Expr $default = null,
+        bool $readonly = false
     ): Property {
         $property = $this
             ->property($name)
             ->makePrivate();
 
         if (!empty($type) && $this->phpVersion->isPropertyTypeHintSupported()) {
-            if ($nullable) {
+            if ($nullable && $type !== FieldType::PHP_TYPE_MIXED) {
                 $property->setDefault(null);
                 $type = '?' . $type;
             }
@@ -163,6 +184,13 @@ class CodeBuilder extends BuilderFactory
             $property->setDefault($default);
         }
 
+        if (
+            $readonly
+            && $this->phpVersion->isReadonlyPropertiesSupported()
+        ) {
+            $property->makeReadonly();
+        }
+
         return $property->getNode();
     }
 
@@ -174,6 +202,11 @@ class CodeBuilder extends BuilderFactory
     public function localNullsafePropertyFetch(string $propertyName): NullsafePropertyFetch
     {
         return new NullsafePropertyFetch($this->var('this'), BuilderHelpers::normalizeIdentifierOrExpr($propertyName));
+    }
+
+    public function nullsafePropertyFetch(Expr $var, string $propertyName): NullsafePropertyFetch
+    {
+        return new NullsafePropertyFetch($var, BuilderHelpers::normalizeIdentifierOrExpr($propertyName));
     }
 
     public function localMethodCall(string $methodName, array $args = []): MethodCall

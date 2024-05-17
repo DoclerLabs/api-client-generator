@@ -165,6 +165,11 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
                 $param->makePrivate();
             }
         }
+        if ($this->phpVersion->isReadonlyPropertiesSupported()) {
+            foreach ($params as $param) {
+                $param->makeReadonly();
+            }
+        }
 
         $params = array_map(
             static fn (ParameterBuilder $param): ParameterNode => $param->getNode(),
@@ -313,6 +318,12 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
                     }
                 } else {
                     $value = $methodCall;
+                }
+            } elseif ($propertyField->isEnum() && $this->phpVersion->isEnumSupported()) {
+                $value = $this->builder->propertyFetch($value, 'value');
+
+                if ($propertyField->isNullable()) {
+                    $value = $this->builder->nullsafePropertyFetch($value, 'value');
                 }
             }
 

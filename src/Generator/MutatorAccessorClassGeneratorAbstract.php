@@ -84,7 +84,8 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
             $field->getPhpVariableName(),
             $field->getPhpTypeHint(),
             $field->getPhpDocType(),
-            $field->isOptional() || $field->isNullable()
+            nullable: $field->isOptional() || $field->isNullable(),
+            readonly: $field->isRequired()
         );
     }
 
@@ -105,6 +106,10 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
 
     protected function generateEnumStatements(Field $field): array
     {
+        if ($this->phpVersion->isEnumSupported()) {
+            return [];
+        }
+
         $statements = [];
         $enumValues = $field->getEnumValues();
         if (!empty($enumValues)) {

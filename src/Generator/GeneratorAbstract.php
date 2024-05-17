@@ -6,6 +6,7 @@ namespace DoclerLabs\ApiClientGenerator\Generator;
 
 use DoclerLabs\ApiClientGenerator\Ast\Builder\ClassBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
+use DoclerLabs\ApiClientGenerator\Ast\Builder\EnumBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Entity\FieldType;
 use DoclerLabs\ApiClientGenerator\Entity\ImportCollection;
@@ -30,20 +31,30 @@ abstract class GeneratorAbstract implements GeneratorInterface
 
     protected function registerFile(
         PhpFileCollection $fileRegistry,
-        ClassBuilder $class,
+        ClassBuilder|EnumBuilder $classOrEnum,
         string $subDirectory = '',
         string $namespaceSubPath = ''
     ): void {
-        $namespace = sprintf('%s%s', $this->baseNamespace, $namespaceSubPath);
+        $namespace = $this->withSubNamespace($namespaceSubPath);
         $fileRegistry->add(
             new PhpFile(
-                sprintf('%s%s.php', $subDirectory, $class->getName()),
-                sprintf('%s\\%s', $namespace, $class->getName()),
-                $this->builder->buildClass($namespace, $this->getImports(), $class->getNode())
+                sprintf('%s%s.php', $subDirectory, $classOrEnum->getName()),
+                $this->fqdn($namespace, $classOrEnum->getName()),
+                $this->builder->buildClass($namespace, $this->getImports(), $classOrEnum->getNode())
             )
         );
 
         $this->resetImports();
+    }
+
+    protected function withSubNamespace(string $namespaceSubPath): string
+    {
+        return sprintf('%s%s', $this->baseNamespace, $namespaceSubPath);
+    }
+
+    protected function fqdn(string $namespace, string $classOrEnum): string
+    {
+        return sprintf('%s\\%s', $namespace, $classOrEnum);
     }
 
     protected function addImport(string $fqdn, string $alias = ''): self

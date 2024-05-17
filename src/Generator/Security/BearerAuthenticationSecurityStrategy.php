@@ -23,7 +23,7 @@ class BearerAuthenticationSecurityStrategy extends HttpBasedSecurityStrategyAbst
         $statements = [];
 
         if ($this->isAuthenticationAvailable($operation, $specification)) {
-            $statements[] = $this->builder->localProperty(self::PROPERTY_NAME, 'string', 'string');
+            $statements[] = $this->builder->localProperty(self::PROPERTY_NAME, 'string', 'string', readonly: true);
         }
 
         return $statements;
