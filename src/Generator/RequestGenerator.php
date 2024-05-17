@@ -394,7 +394,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                                 [$this->builder->param('enum')->setType($enumField->getPhpClassName())->getNode()],
                                 $enumField->getType()->toPhpType()
                             ),
-                            $fieldsArr[$field->getName()]
+                            $fieldsArr[$field->getName()],
                         ]
                     );
                 }

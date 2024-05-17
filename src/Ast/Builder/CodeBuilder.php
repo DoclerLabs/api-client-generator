@@ -110,7 +110,7 @@ class CodeBuilder extends BuilderFactory
             $subNodes['params'] = $params;
         }
 
-        $subNodes['expr'] = $expr;
+        $subNodes['expr']       = $expr;
         $subNodes['returnType'] = $returnType;
         $subNodes['static']     = $isStatic;
 
