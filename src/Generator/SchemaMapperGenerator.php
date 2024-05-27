@@ -61,7 +61,7 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                     $childClassName = SchemaMapperNaming::getClassName($child);
                     if (!isset($alreadyInjected[$childClassName])) {
                         $propertyName = SchemaMapperNaming::getPropertyName($child);
-                        $properties[] = $this->builder->localProperty($propertyName, $childClassName, $childClassName);
+                        $properties[] = $this->builder->localProperty($propertyName, $childClassName, $childClassName, readonly: true);
 
                         $alreadyInjected[$childClassName] = true;
                     }
@@ -77,7 +77,8 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 $properties[]   = $this->builder->localProperty(
                     $propertyName,
                     $childClassName,
-                    $childClassName
+                    $childClassName,
+                    readonly: true
                 );
             }
         }
@@ -133,6 +134,11 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         if ($this->phpVersion->isConstructorPropertyPromotionSupported()) {
             foreach ($params as $param) {
                 $param->makePrivate();
+            }
+        }
+        if ($this->phpVersion->isReadonlyPropertySupported()) {
+            foreach ($params as $param) {
+                $param->makeReadonly();
             }
         }
 
@@ -334,14 +340,27 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 }
             } elseif ($field->isDate()) {
                 $this->addImport(DateTimeImmutable::class);
+                $newDateTime = $this->builder->new('DateTimeImmutable', [$requiredResponseItems[$i]]);
                 if ($field->isNullable()) {
                     $requiredVars[] = $this->builder->ternary(
                         $this->builder->notEquals($requiredResponseItems[$i], $this->builder->val(null)),
-                        $this->builder->new('DateTimeImmutable', [$requiredResponseItems[$i]]),
+                        $newDateTime,
                         $this->builder->val(null)
                     );
                 } else {
-                    $requiredVars[] = $this->builder->new('DateTimeImmutable', [$requiredResponseItems[$i]]);
+                    $requiredVars[] = $newDateTime;
+                }
+            } elseif ($field->isEnum() && $this->phpVersion->isEnumSupported()) {
+                $this->addImport($this->fqdn($this->withSubNamespace(SchemaGenerator::NAMESPACE_SUBPATH), $field->getPhpClassName()));
+                $newEnum = $this->builder->staticCall($field->getPhpClassName(), 'from', [$requiredResponseItems[$i]]);
+                if ($field->isNullable()) {
+                    $requiredVars[] = $this->builder->ternary(
+                        $this->builder->notEquals($requiredResponseItems[$i], $this->builder->val(null)),
+                        $newEnum,
+                        $this->builder->val(null)
+                    );
+                } else {
+                    $requiredVars[] = $newEnum;
                 }
             } else {
                 $requiredVars[] = $requiredResponseItems[$i];
@@ -356,6 +375,7 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 
             $tryCatchStatements = [];
             foreach ($optionalFields as $i => $field) {
+                /** @var Field $field */
                 if ($field->isComposite()) {
                     $mapper = $this->builder->localPropertyFetch(SchemaMapperNaming::getPropertyName($field));
                     if ($field->isNullable()) {
@@ -386,6 +406,9 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                     } else {
                         $optionalVar = $this->builder->new('DateTimeImmutable', [$optionalResponseItems[$i]]);
                     }
+                } elseif ($field->isEnum() && $this->phpVersion->isEnumSupported()) {
+                    $this->addImport($this->fqdn($this->withSubNamespace(SchemaGenerator::NAMESPACE_SUBPATH), $field->getPhpClassName()));
+                    $optionalVar = $this->builder->staticCall($field->getPhpClassName(), 'from', [$optionalResponseItems[$i]]);
                 } else {
                     $optionalVar = $optionalResponseItems[$i];
                 }

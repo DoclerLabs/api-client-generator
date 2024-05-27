@@ -28,12 +28,14 @@ class XWSSESecurityStrategy extends ApiKeyInHeaderSecurityStrategy
             $statements[] = $this->builder->localProperty(
                 self::PROPERTY_USERNAME,
                 'string',
-                'string'
+                'string',
+                readonly: true
             );
             $statements[] = $this->builder->localProperty(
                 self::PROPERTY_SECRET,
                 'string',
-                'string'
+                'string',
+                readonly: true
             );
         }
 

@@ -40,6 +40,12 @@ class SchemaGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Item',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
             ],
+            'With PHP 8.1' => [
+                '/Schema/item.yaml',
+                '/Schema/ItemPhp81.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Item',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
             'Embedded schema' => [
                 '/Schema/item.yaml',
                 '/Schema/ItemMandatoryObject.php',

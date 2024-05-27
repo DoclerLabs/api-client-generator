@@ -28,7 +28,8 @@ abstract class ApiKeyBasedSecurityStrategyAbstract extends SecurityStrategyAbstr
             $statements[] = $this->builder->localProperty(
                 self::PROPERTY_API_KEY,
                 'string',
-                'string'
+                'string',
+                readonly: true
             );
         }
 

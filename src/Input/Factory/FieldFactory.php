@@ -48,6 +48,10 @@ class FieldFactory
             $schemaReference      = $schemaOrReference;
             $schema               = $this->resolveReference($schemaOrReference);
 
+            if ($schemaOrReference instanceof Reference) {
+                $referenceName = SchemaNaming::getClassName($schemaOrReference);
+            }
+
             if ($referenceName !== '' && !$this->nameValidator->isValidClassName($referenceName)) {
                 throw new InvalidSpecificationException('Invalid field reference name: ' . $referenceName);
             }
@@ -83,6 +87,8 @@ class FieldFactory
                         $itemsReference,
                         $operationName . ucfirst($fieldName) . 'Item'
                     );
+                } elseif ($itemsReference instanceof Reference) {
+                    $itemReferenceName = SchemaNaming::getClassName($itemsReference);
                 }
                 $arrayItem = $this->create(
                     $operationName,
@@ -100,6 +106,13 @@ class FieldFactory
                 }
 
                 $objectProperties = $this->mapProperties($operationName, $schema, $referenceName);
+            } elseif (!empty($schema->enum)) {
+                if ($referenceName === '') {
+                    $referenceName = SchemaNaming::getClassName(
+                        $schemaReference,
+                        sprintf('%s%s', ucfirst($parentReferenceName), ucfirst($fieldName))
+                    );
+                }
             }
             if (isset($schema->additionalProperties)) {
                 if (is_bool($schema->additionalProperties)) {
@@ -115,6 +128,7 @@ class FieldFactory
 
             $fieldType = new FieldType($type, $this->phpVersion);
             $field     = new Field(
+                $this->phpVersion,
                 $fieldName,
                 $fieldType,
                 new ConstraintCollection(

@@ -106,6 +106,8 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             }
             if ($field->isDate()) {
                 $this->addImport(DateTimeInterface::class);
+            } elseif ($field->isEnum() && $this->phpVersion->isEnumSupported()) {
+                $this->addImport($this->fqdn($this->withSubNamespace(SchemaGenerator::NAMESPACE_SUBPATH), $field->getPhpClassName()));
             }
             if (
                 $field->isRequired()
@@ -147,8 +149,18 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                     ->param($field->getPhpVariableName())
                     ->setType($field->getPhpTypeHint(), $field->isNullable());
 
-                if (null !== $field->getDefault()) {
-                    $param->setDefault($field->getDefault());
+                if (($default = $field->getDefault()) !== null) {
+                    if ($field->isEnum() && $this->phpVersion->isEnumSupported() && (
+                        is_string($default)
+                        || is_integer($default)
+                    )) {
+                        $param->setDefault($this->builder->classConstFetch(
+                            $field->getPhpClassName(),
+                            EnumGenerator::getCaseName((string)$default)
+                        ));
+                    } else {
+                        $param->setDefault($field->getDefault());
+                    }
                 }
 
                 $params[] = $param;
@@ -183,6 +195,11 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         if ($this->phpVersion->isConstructorPropertyPromotionSupported()) {
             foreach ($params as $param) {
                 $param->makePrivate();
+            }
+        }
+        if ($this->phpVersion->isReadonlyPropertySupported()) {
+            foreach ($params as $param) {
+                $param->makeReadonly();
             }
         }
 
@@ -314,11 +331,8 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
     private function generateGetParametersMethod(string $methodName, array $fields, array $securityFields): ClassMethod
     {
         $returnVal  = $this->builder->array([]);
-        $fieldsArr  = [];
+        $fieldsArr  = $this->generateFieldsArray($fields);
         $returnType = 'array';
-        foreach ($fields as $field) {
-            $fieldsArr[$field->getName()] = $this->builder->localPropertyFetch($field->getPhpVariableName());
-        }
 
         if (!empty($fieldsArr)) {
             if (empty($securityFields)) {
@@ -348,11 +362,8 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
 
     private function generateGetRawParametersMethod(string $methodName, array $fields, array $securityFields): ClassMethod
     {
-        $fieldsArr  = [];
+        $fieldsArr  = $this->generateFieldsArray($fields);
         $returnType = 'array';
-        foreach ($fields as $field) {
-            $fieldsArr[$field->getName()] = $this->builder->localPropertyFetch($field->getPhpVariableName());
-        }
 
         return $this
             ->builder
@@ -362,6 +373,41 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->setReturnType($returnType)
             ->composeDocBlock([], $returnType)
             ->getNode();
+    }
+
+    private function generateFieldsArray(array $fields): array
+    {
+        $fieldsArr = [];
+        foreach ($fields as $field) {
+            /** @var Field $field */
+            $fieldsArr[$field->getName()] = $this->builder->localPropertyFetch($field->getPhpVariableName());
+
+            if ($this->phpVersion->isEnumSupported()) {
+                if ($field->isEnum()) {
+                    if ($field->isNullable() || $field->isOptional()) {
+                        $fieldsArr[$field->getName()] = $this->builder->nullsafePropertyFetch($fieldsArr[$field->getName()], 'value');
+                    } else {
+                        $fieldsArr[$field->getName()] = $this->builder->propertyFetch($fieldsArr[$field->getName()], 'value');
+                    }
+                } elseif ($field->isArrayOfEnums()) {
+                    $enumField = $field->getArrayItem();
+                    $this->addImport($this->fqdn($this->withSubNamespace(SchemaGenerator::NAMESPACE_SUBPATH), $enumField->getPhpClassName()));
+                    $fieldsArr[$field->getName()] = $this->builder->funcCall(
+                        'array_map',
+                        [
+                            $this->builder->arrowFunction(
+                                $this->builder->propertyFetch($this->builder->var('enum'), 'value'),
+                                [$this->builder->param('enum')->setType($enumField->getPhpClassName())->getNode()],
+                                $enumField->getType()->toPhpType()
+                            ),
+                            $fieldsArr[$field->getName()],
+                        ]
+                    );
+                }
+            }
+        }
+
+        return $fieldsArr;
     }
 
     private function generateGetBody(?Field $body): ClassMethod

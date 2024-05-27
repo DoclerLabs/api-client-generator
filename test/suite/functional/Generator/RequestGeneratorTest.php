@@ -64,6 +64,30 @@ class RequestGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\PatchAnotherSubResourceRequest',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
             ],
+            'Request with body with php 8.1 + api key in header' => [
+                '/Request/patchResource.yaml',
+                '/Request/PatchResourceRequest81.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\PatchResourceRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Request with body with php 8.1 + api key in query' => [
+                '/Request/patchResource.yaml',
+                '/Request/PatchSubResourceRequest81.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\PatchSubResourceRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Request with body with php 8.1 + query params + api key in query' => [
+                '/Request/patchResource.yaml',
+                '/Request/PatchYetAnotherSubResourceRequest81.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\PatchYetAnotherSubResourceRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Request with body with php 8.1 + api key in cookie' => [
+                '/Request/patchResource.yaml',
+                '/Request/PatchAnotherSubResourceRequest81.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\PatchAnotherSubResourceRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
             'Request with mandatory parameters and body with php 7.4' => [
                 '/Request/putResourceById.yaml',
                 '/Request/PutResourceByIdRequest74.php',
@@ -75,6 +99,12 @@ class RequestGeneratorTest extends AbstractGeneratorTest
                 '/Request/PutResourceByIdRequest80.php',
                 self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\PutResourceByIdRequest',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
+            ],
+            'Request with mandatory parameters and body with php 8.1' => [
+                '/Request/putResourceById.yaml',
+                '/Request/PutResourceByIdRequest81.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\PutResourceByIdRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
             ],
             'Request without mandatory parameters and body with php 7.4' => [
                 '/Request/getResources.yaml',
@@ -88,6 +118,12 @@ class RequestGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetResourcesRequest',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
             ],
+            'Request without mandatory parameters and body with php 8.1' => [
+                '/Request/getResources.yaml',
+                '/Request/GetResourcesRequest81.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetResourcesRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
             'Request with same parameter name but different parameters with php 7.4' => [
                 '/Request/getResources.yaml',
                 '/Request/GetSubResourcesRequest74.php',
@@ -99,6 +135,12 @@ class RequestGeneratorTest extends AbstractGeneratorTest
                 '/Request/GetSubResourcesRequest80.php',
                 self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetSubResourcesRequest',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
+            ],
+            'Request with same parameter name but different parameters with php 8.1' => [
+                '/Request/getResources.yaml',
+                '/Request/GetSubResourcesRequest81.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetSubResourcesRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
             ],
         ];
     }

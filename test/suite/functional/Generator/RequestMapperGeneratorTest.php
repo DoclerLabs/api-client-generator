@@ -34,6 +34,15 @@ class RequestMapperGeneratorTest extends AbstractGeneratorTest
                     ->withPhpVersion(PhpVersion::VERSION_PHP80)
                     ->build(),
             ],
+            'With Guzzle message + PHP 8.1' => [
+                '/RequestMapper/petstore.yaml',
+                '/RequestMapper/GuzzleRequestMapper81.php',
+                self::BASE_NAMESPACE . RequestMapperGenerator::NAMESPACE_SUBPATH . '\\GuzzleRequestMapper',
+                ConfigurationBuilder::fake()
+                    ->withHttpMessage(HttpMessageImplementationStrategy::HTTP_MESSAGE_GUZZLE)
+                    ->withPhpVersion(PhpVersion::VERSION_PHP81)
+                    ->build(),
+            ],
             'With Nyholm message + PHP 7.4' => [
                 '/RequestMapper/petstore.yaml',
                 '/RequestMapper/NyholmRequestMapper74.php',
@@ -49,6 +58,15 @@ class RequestMapperGeneratorTest extends AbstractGeneratorTest
                 ConfigurationBuilder::fake()
                     ->withHttpMessage(HttpMessageImplementationStrategy::HTTP_MESSAGE_NYHOLM)
                     ->withPhpVersion(PhpVersion::VERSION_PHP80)
+                    ->build(),
+            ],
+            'With Nyholm message + PHP 8.1' => [
+                '/RequestMapper/petstore.yaml',
+                '/RequestMapper/NyholmRequestMapper81.php',
+                self::BASE_NAMESPACE . RequestMapperGenerator::NAMESPACE_SUBPATH . '\\NyholmRequestMapper',
+                ConfigurationBuilder::fake()
+                    ->withHttpMessage(HttpMessageImplementationStrategy::HTTP_MESSAGE_NYHOLM)
+                    ->withPhpVersion(PhpVersion::VERSION_PHP81)
                     ->build(),
             ],
         ];

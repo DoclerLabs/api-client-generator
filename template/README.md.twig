@@ -44,7 +44,7 @@ $result  = $client->{{ exampleOperation.name }}($request);
 ### {{ tag }}
 Endpoints:
 {% for operation in operations %}
-- **{{ operation.name }}**{% if operation.description is not empty %} - {{ operation.description }} {% endif %}
+- **{{ operation.name }}**{% if operation.description is not empty %} - {{ operation.description }}{% endif %}
 
 {% endfor %}
 

@@ -41,6 +41,12 @@ class SchemaCollectionGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ItemCollection',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
             ],
+            'With PHP 8.1' => [
+                '/SchemaCollection/itemCollection.yaml',
+                '/SchemaCollection/ItemCollectionPhp81.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ItemCollection',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
         ];
     }
 
