@@ -94,7 +94,7 @@ class PhpVersion
         return $this->isVersionGreaterThanOrEqualTo81();
     }
 
-    public function isReadonlyPropertiesSupported(): bool
+    public function isReadonlyPropertySupported(): bool
     {
         return $this->isVersionGreaterThanOrEqualTo81();
     }

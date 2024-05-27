@@ -186,7 +186,7 @@ class CodeBuilder extends BuilderFactory
 
         if (
             $readonly
-            && $this->phpVersion->isReadonlyPropertiesSupported()
+            && $this->phpVersion->isReadonlyPropertySupported()
         ) {
             $property->makeReadonly();
         }

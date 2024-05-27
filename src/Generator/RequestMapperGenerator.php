@@ -72,7 +72,7 @@ class RequestMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 $parameter->makePrivate();
             }
         }
-        if ($this->phpVersion->isReadonlyPropertiesSupported()) {
+        if ($this->phpVersion->isReadonlyPropertySupported()) {
             foreach ($parameters as $parameter) {
                 $parameter->makeReadonly();
             }

@@ -165,7 +165,7 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
                 $param->makePrivate();
             }
         }
-        if ($this->phpVersion->isReadonlyPropertiesSupported()) {
+        if ($this->phpVersion->isReadonlyPropertySupported()) {
             foreach ($params as $param) {
                 $param->makeReadonly();
             }
