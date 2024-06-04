@@ -142,6 +142,24 @@ class RequestGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetSubResourcesRequest',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
             ],
+            'Request with enum path parameter and php 7.4' => [
+                '/Request/getResourceByType.yaml',
+                '/Request/GetResourceByTypeRequest74.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetResourceByTypeRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Request with enum path parameter and php 8.0' => [
+                '/Request/getResourceByType.yaml',
+                '/Request/GetResourceByTypeRequest80.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetResourceByTypeRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
+            ],
+            'Request with enum path parameter and php 8.1' => [
+                '/Request/getResourceByType.yaml',
+                '/Request/GetResourceByTypeRequest81.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetResourceByTypeRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
         ];
     }
 

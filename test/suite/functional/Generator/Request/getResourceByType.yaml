@@ -1,0 +1,39 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Example API
+paths:
+  '/v1/{resource-type}/resource':
+    get:
+      description: Get a list of resources by type
+      operationId: getResourceByType
+      parameters:
+        - $ref: '#/components/parameters/ResourceType'
+      responses:
+        '200':
+          description: list of resources
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Resource'
+        '400':
+          description: Invalid request parameters.
+components:
+  schemas:
+    Resource:
+      type: object
+      properties:
+        id:
+          type: integer
+  parameters:
+    ResourceType:
+      name: resource-type
+      in: path
+      required: true
+      schema:
+        type: string
+        enum:
+          - one
+          - two
