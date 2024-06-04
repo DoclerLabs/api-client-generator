@@ -276,8 +276,19 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         $returnType = 'string';
 
         foreach ($request->fields->getPathFields() as $field) {
-            $key          = sprintf('{%s}', $field->getName());
-            $values[$key] = $this->builder->localPropertyFetch($field->getPhpVariableName());
+            /** @var Field $field */
+            $key = sprintf('{%s}', $field->getName());
+            if (
+                $this->phpVersion->isEnumSupported()
+                && $field->isEnum()
+            ) {
+                $values[$key] = $this->builder->propertyFetch(
+                    $this->builder->localPropertyFetch($field->getPhpVariableName()),
+                    'value'
+                );
+            } else {
+                $values[$key] = $this->builder->localPropertyFetch($field->getPhpVariableName());
+            }
         }
 
         if (empty($values)) {
