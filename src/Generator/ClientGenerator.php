@@ -36,9 +36,9 @@ use RuntimeException;
 class ClientGenerator extends GeneratorAbstract
 {
     public function __construct(
-        protected string $baseNamespace,
-        protected CodeBuilder $builder,
-        protected PhpVersion $phpVersion,
+        string $baseNamespace,
+        CodeBuilder $builder,
+        PhpVersion $phpVersion,
         private array $includeTags,
         private array $excludeTags
     ) {
