@@ -32,6 +32,10 @@ class ConfigurationBuilder
 
     private string $container;
 
+    private array $includeTags;
+
+    private array $excludeTags;
+
     private function __construct()
     {
         $this->specificationFilePath   = '/dir/path/openapi.yaml';
@@ -46,6 +50,8 @@ class ConfigurationBuilder
         $this->readmeMdTemplateDir     = Configuration::DEFAULT_TEMPLATE_DIRECTORY;
         $this->httpMessage             = Configuration::DEFAULT_HTTP_MESSAGE;
         $this->container               = Configuration::DEFAULT_CONTAINER;
+        $this->includeTags             = [];
+        $this->excludeTags             = [];
     }
 
     public static function fake(): self
@@ -130,6 +136,20 @@ class ConfigurationBuilder
         return $this;
     }
 
+    public function withIncludeTags(array $includeTags): self
+    {
+        $this->includeTags = $includeTags;
+
+        return $this;
+    }
+
+    public function withExcludeTags(array $excludeTags): self
+    {
+        $this->excludeTags = $excludeTags;
+
+        return $this;
+    }
+
     public function build(): Configuration
     {
         return new Configuration(
@@ -144,7 +164,9 @@ class ConfigurationBuilder
             $this->composerJsonTemplateDir,
             $this->readmeMdTemplateDir,
             $this->httpMessage,
-            $this->container
+            $this->container,
+            $this->includeTags,
+            $this->excludeTags
         );
     }
 }

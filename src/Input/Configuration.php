@@ -27,6 +27,10 @@ class Configuration
 
     public const STATIC_PHP_FILE_DIRECTORY = __DIR__ . '/../Output/Copy';
 
+    /**
+     * @param string[] $includeTags
+     * @param string[] $excludeTags
+     */
     public function __construct(
         public readonly string $specificationFilePath,
         public readonly string $baseNamespace,
@@ -39,7 +43,9 @@ class Configuration
         public readonly string $composerJsonTemplateDir,
         public readonly string $readmeMdTemplateDir,
         public readonly string $httpMessage,
-        public readonly string $container
+        public readonly string $container,
+        public readonly array $includeTags,
+        public readonly array $excludeTags
     ) {
         Assert::notEmpty($specificationFilePath, 'Specification file path is not provided.');
         Assert::notEmpty($baseNamespace, 'Namespace for generated code is not provided.');
