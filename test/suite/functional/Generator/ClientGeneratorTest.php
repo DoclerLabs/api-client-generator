@@ -52,6 +52,18 @@ class ClientGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . '\\MultipleResponsesClient',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
             ],
+            'Basic schema with php 8.1 and include tags' => [
+                '/Client/petstore.yaml',
+                '/Client/SwaggerPetstoreClientWithTags.php',
+                self::BASE_NAMESPACE . '\\SwaggerPetstoreClient',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->withIncludeTags(['tag1', 'tag2'])->build(),
+            ],
+            'Basic schema with php 8.1 and exclude tags' => [
+                '/Client/petstore.yaml',
+                '/Client/SwaggerPetstoreClientWithTags.php',
+                self::BASE_NAMESPACE . '\\SwaggerPetstoreClient',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->withExcludeTags(['tag3', 'tag4'])->build(),
+            ],
         ];
     }
 

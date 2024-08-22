@@ -94,6 +94,8 @@ class ServiceProvider implements ServiceProviderInterface
             getenv('README_MD_TEMPLATE_DIR') ?: Configuration::DEFAULT_TEMPLATE_DIRECTORY,
             getenv('HTTP_MESSAGE') ?: Configuration::DEFAULT_HTTP_MESSAGE,
             getenv('CONTAINER') ?: Configuration::DEFAULT_CONTAINER,
+            array_filter(explode(',', (string)getenv('INCLUDE_TAGS'))),
+            array_filter(explode(',', (string)getenv('EXCLUDE_TAGS')))
         );
 
         $pimple[GenerateCommand::class] = static fn (Container $container) => new GenerateCommand(
@@ -204,7 +206,9 @@ class ServiceProvider implements ServiceProviderInterface
         $pimple[ClientGenerator::class] = static fn (Container $container) => new ClientGenerator(
             $container[Configuration::class]->baseNamespace,
             $container[CodeBuilder::class],
-            $container[PhpVersion::class]
+            $container[PhpVersion::class],
+            $container[Configuration::class]->includeTags,
+            $container[Configuration::class]->excludeTags
         );
 
         $pimple[SchemaGenerator::class] = static fn (Container $container) => new SchemaGenerator(

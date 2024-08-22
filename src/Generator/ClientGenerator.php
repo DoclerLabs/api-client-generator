@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
+use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\MethodBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\ParameterBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\ParameterNode;
+use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Entity\Response;
@@ -33,6 +35,16 @@ use RuntimeException;
 
 class ClientGenerator extends GeneratorAbstract
 {
+    public function __construct(
+        string $baseNamespace,
+        CodeBuilder $builder,
+        PhpVersion $phpVersion,
+        private array $includeTags,
+        private array $excludeTags
+    ) {
+        parent::__construct($baseNamespace, $builder, $phpVersion);
+    }
+
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
     {
         $classBuilder = $this->builder
@@ -42,6 +54,19 @@ class ClientGenerator extends GeneratorAbstract
             ->addStmt($this->generateSendRequestMethod());
 
         foreach ($specification->getOperations() as $operation) {
+            if (
+                (
+                    !empty($this->includeTags)
+                    && empty(array_intersect($operation->tags, $this->includeTags))
+                )
+                || (
+                    !empty($this->excludeTags)
+                    && !empty(array_intersect($operation->tags, $this->excludeTags))
+                )
+            ) {
+                continue;
+            }
+
             $classBuilder->addStmt($this->generateAction($operation));
         }
 

@@ -31,7 +31,7 @@ API client generator is a console application capable of auto-generating a [PSR1
 - It is base client independent, you are free to choose any [existing PSR-18 compliant client](https://packagist.org/providers/psr/http-client-implementation). Just choose the one which you already use, so generated client would not cause any conflicts with your dependencies. Although not recommended, you can also use or build your own PSR-18 implementation, as the generated client depends on PSR interfaces only.
 - Applies code style rules to generated code, you can specify your own.
 - Generates README and composer.json files with possibility to use your own template.
-- Supports `allOf` OpenAPI parameter.
+- Supports `allOf`, `oneOf`, `anyOf` OpenAPI parameters.
 - Supports nullable optional scheme property.
 
 ## Example
@@ -68,8 +68,8 @@ OPENAPI={path-to-specification}/openapi.yaml NAMESPACE=Group\SomeApiClient PACKA
 ## Configuration
 The following environment variables are available:
 
-| Variable | Required | Default                             | Enum | Example                    |
-|------------|---------|------------------|---------|---------------------------|
+| Variable | Required | Default                             | Enum | Example                    | Description |
+|------------|---------|------------------|---------|---------------------------|----------------------------|
 | `NAMESPACE` | yes | | | Group\\SomeApiClient |
 | `PACKAGE` | yes | | | group/some-api-client |
 | `OPENAPI ` | yes | | | /api/openapi.yaml |
@@ -81,6 +81,8 @@ The following environment variables are available:
 | `README_MD_TEMPLATE_DIR` | no | {path-to-repository}/template/README.md.twig | | /path/README.md.twig |
 | `HTTP_MESSAGE` | no | guzzle | guzzle, nyholm | nyholm |
 | `CONTAINER` | no | pimple | pimple | pimple |
+| `INCLUDE_TAGS` | no | | | tag1,tag2,tag3 | tag whitelist to select generated operations |
+| `EXCLUDE_TAGS` | no | | | tag1,tag2,tag3 | tag blacklist to select generated operations |
 
 ## Running tests
 

@@ -9,6 +9,8 @@ paths:
   /pets:
     get:
       operationId: find-pets
+      tags:
+        - tag1
       parameters:
         - name: tags
           in: query
@@ -43,6 +45,8 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       operationId: addPet
+      tags:
+        - tag1
       requestBody:
         description: Pet to add to the store
         required: true
@@ -66,7 +70,7 @@ paths:
     head:
       operationId: countPets
       tags:
-        - Pet
+        - tag2
       responses:
         200:
           description: Count pets
@@ -78,6 +82,8 @@ paths:
   /pets/{id}:
     get:
       operationId: findPetById
+      tags:
+        - tag3
       parameters:
         - name: id
           in: path
@@ -102,6 +108,8 @@ paths:
   /pets/{id}/pet-food/{food_id}:
     delete:
       description: no operation id provided
+      tags:
+        - tag4
       parameters:
         - name: id
           in: path
