@@ -57,6 +57,8 @@ $ docker run -it \
 dhlabs/api-client-generator
 ```
 
+> if you're running this command on Windows you might need to use single backslash instead in -e NAMESPACE
+
 ### Without Docker
 Preconditions: PHP 7.4
 
