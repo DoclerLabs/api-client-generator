@@ -7,6 +7,8 @@ namespace DoclerLabs\ApiClientGenerator\Generator;
 use DoclerLabs\ApiClientException\RequestValidationException;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Entity\Constraint\ConstraintInterface;
+use DoclerLabs\ApiClientGenerator\Entity\Constraint\MaxItemsConstraint;
+use DoclerLabs\ApiClientGenerator\Entity\Constraint\MinItemsConstraint;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaNaming;
@@ -137,15 +139,29 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
                 continue;
             }
 
-            $propertyVar      = $this->builder->var($root->getPhpVariableName());
-            $exceptionMessage = $this->builder->funcCall(
-                'sprintf',
-                [
-                    'Invalid %s value. Given: `%s`. ' . $constraint->getExceptionMessage(),
-                    $root->getName(),
-                    $propertyVar,
-                ]
-            );
+            $propertyVar = $this->builder->var($root->getPhpVariableName());
+
+            if (
+                $constraint instanceof MaxItemsConstraint
+                || $constraint instanceof MinItemsConstraint
+            ) {
+                $exceptionMessage = $this->builder->funcCall(
+                    'sprintf',
+                    [
+                        'Invalid %s value. ' . $constraint->getExceptionMessage(),
+                        $root->getName(),
+                    ]
+                );
+            } else {
+                $exceptionMessage = $this->builder->funcCall(
+                    'sprintf',
+                    [
+                        'Invalid %s value. Given: `%s`. ' . $constraint->getExceptionMessage(),
+                        $root->getName(),
+                        $propertyVar,
+                    ]
+                );
+            }
 
             $ifConditionExpr = $constraint->getIfCondition($propertyVar, $this->builder);
 

@@ -69,7 +69,7 @@ class Item implements SerializableInterface, JsonSerializable
     public function __construct(private readonly int $mandatoryInteger, private readonly string $mandatoryString, private readonly ItemMandatoryEnum $mandatoryEnum, private readonly DateTimeInterface $mandatoryDate, private readonly ?DateTimeInterface $mandatoryNullableDate, private readonly float $mandatoryFloat, private readonly bool $mandatoryBoolean, private readonly array $mandatoryArray, private readonly array $mandatoryArrayWithMinItems, private readonly ItemMandatoryObject $mandatoryObject, private readonly ?MandatoryNullableObjectWithAllOf $mandatoryNullableObjectWithAllOf, private readonly mixed $mandatoryMixed, private readonly MandatoryAnyOf $mandatoryAnyOf, private readonly ?string $mandatoryNullableStringWithMinMaxLength)
     {
         if (count($mandatoryArrayWithMinItems) < 1) {
-            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Expected min items: `1`.', 'mandatoryArrayWithMinItems', $mandatoryArrayWithMinItems));
+            throw new RequestValidationException(sprintf('Invalid %s value. Expected min items: `1`.', 'mandatoryArrayWithMinItems'));
         }
         if ($mandatoryNullableStringWithMinMaxLength !== null && grapheme_strlen($mandatoryNullableStringWithMinMaxLength) < 1) {
             throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Length should be greater than 1.', 'mandatoryNullableStringWithMinMaxLength', $mandatoryNullableStringWithMinMaxLength));
@@ -192,10 +192,10 @@ class Item implements SerializableInterface, JsonSerializable
     public function setOptionalArrayWithMinMaxItems(array $optionalArrayWithMinMaxItems): self
     {
         if (count($optionalArrayWithMinMaxItems) < 1) {
-            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Expected min items: `1`.', 'optionalArrayWithMinMaxItems', $optionalArrayWithMinMaxItems));
+            throw new RequestValidationException(sprintf('Invalid %s value. Expected min items: `1`.', 'optionalArrayWithMinMaxItems'));
         }
         if (count($optionalArrayWithMinMaxItems) > 5) {
-            throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Expected max items: `5`.', 'optionalArrayWithMinMaxItems', $optionalArrayWithMinMaxItems));
+            throw new RequestValidationException(sprintf('Invalid %s value. Expected max items: `5`.', 'optionalArrayWithMinMaxItems'));
         }
         $this->optionalArrayWithMinMaxItems                            = $optionalArrayWithMinMaxItems;
         $this->optionalPropertyChanged['optionalArrayWithMinMaxItems'] = true;
