@@ -236,6 +236,39 @@ class SpecificationTest extends TestCase
         ];
     }
 
+    public function testGetFromInfo(): void
+    {
+        $data = [
+            'openapi' => '3.0.0',
+            'info'    => [
+                'title'   => 'Sample API',
+                'version' => '1.2.3',
+            ],
+            'paths' => [
+                '/foo/bar' => [
+                    'get' => [
+                        'operationId' => 'getFooBar',
+                        'responses'   => [
+                            '200' => [
+                                'description' => 'Ge',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+        $specification = $this->sut->parse($data, '/openapi.yaml');
+        static::assertSame('1.2.3', $specification->getVersion());
+        static::assertSame('Sample API', $specification->getTitle());
+        static::assertSame(false, $specification->hasLicense());
+
+        $data['info']['license']['name'] = 'License name';
+
+        $specificationWithLicense = $this->sut->parse($data, '/openapi.yaml');
+        static::assertSame(true, $specificationWithLicense->hasLicense());
+        static::assertSame('License name', $specificationWithLicense->getLicenseName());
+    }
+
     protected function setUp(): void
     {
         $container = $this->getContainerWith(ConfigurationBuilder::fake()->build());
