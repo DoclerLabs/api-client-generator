@@ -34,6 +34,11 @@ class Specification
         return $this->openApi->info->title;
     }
 
+    public function getVersion(): string
+    {
+        return $this->openApi->info->version;
+    }
+
     public function hasLicense(): bool
     {
         $license = $this->openApi->info->license;
