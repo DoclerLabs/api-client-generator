@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [10.10.1] - 2025.02.19
+### Fixed
+- avoid having `&amp;` in request body when using `application/x-www-form-urlencoded`
+
 ## [10.10.0] - 2025.02.12
 ### Added
 - `Specification::getVersion()` method, which optionally might be used in a composer.json.twig `"version": "{{ specification.getVersion() }}"`
