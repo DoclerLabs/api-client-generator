@@ -47,6 +47,7 @@ class FieldFactory
             $additionalProperties = true;
             $schemaReference      = $schemaOrReference;
             $schema               = $this->resolveReference($schemaOrReference);
+            $nullable             = (bool)$schema->nullable;
 
             if ($schemaOrReference instanceof Reference) {
                 $referenceName = SchemaNaming::getClassName($schemaOrReference);
@@ -61,7 +62,31 @@ class FieldFactory
             }
 
             $type = $schema->type;
-            if (isset($schema->oneOf)) {
+            if (
+                is_array($type)
+                && count($type) === 2
+                && in_array('null', $type, true)
+            ) {
+                // 3.1 schema nullable does not exist anymore, rather it's done via type
+                $nullable = true;
+                $type     = array_filter($type, static fn ($type) => $type !== 'null')[0];
+            }
+
+            if (
+                // if 3.1 and still array, we fallback to mixed type
+                is_array($type)
+                // same goes for oneOf and anyOf without references
+                || (
+                    isset($schema->oneOf)
+                    && array_filter($schema->oneOf, static fn ($schemaOption) => !($schemaOption instanceof Reference)) !== []
+                )
+                || (
+                    isset($schema->anyOf)
+                    && array_filter($schema->anyOf, static fn ($schemaOption) => !($schemaOption instanceof Reference)) !== []
+                )
+            ) {
+                $type = null;
+            } elseif (isset($schema->oneOf)) {
                 $type = FieldType::SPEC_TYPE_OBJECT;
                 $this->processSchemaOptions($schema->oneOf, $operationName, $fieldName, $referenceName, $oneOf, $schema);
             } elseif (isset($schema->anyOf)) {
@@ -74,7 +99,7 @@ class FieldFactory
                 }
 
                 $objectProperties = $this->mergeAllOfProperties($operationName, $schema);
-                $schema           = $this->mergeAllOfAttributes($schema);
+                $schema           = $this->mergeAllOfAttributes($schema, $nullable);
             } elseif (FieldType::isSpecificationTypeArray($type)) {
                 $itemReferenceName = '';
                 if ($schema->items === null) {
@@ -142,7 +167,7 @@ class FieldFactory
                 ),
                 $referenceName,
                 $required,
-                (bool)$schema->nullable,
+                $nullable,
                 $additionalProperties,
                 !empty($oneOf),
                 !empty($anyOf)
@@ -252,15 +277,18 @@ class FieldFactory
         return array_merge([], ...$allOfProperties);
     }
 
-    private function mergeAllOfAttributes(SpecObjectInterface $schema): SpecObjectInterface
+    private function mergeAllOfAttributes(SpecObjectInterface $schema, bool &$nullable): SpecObjectInterface
     {
         foreach ($schema->allOf as $allOfSchema) {
             if ($allOfSchema instanceof Reference) {
                 $allOfSchema = $allOfSchema->resolve();
             }
 
-            if (isset($allOfSchema->nullable)) {
-                $schema->nullable = $allOfSchema->nullable;
+            if (in_array('null', (array)$allOfSchema->type, true)) {
+                // 3.1 schema nullable does not exist anymore, rather it's done via type
+                $nullable = true;
+            } elseif (isset($allOfSchema->nullable)) {
+                $nullable = $allOfSchema->nullable;
             }
 
             // @TODO add more attributes here later if needed

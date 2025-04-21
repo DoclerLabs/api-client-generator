@@ -1,0 +1,184 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Example API
+paths:
+  '/v1/resource':
+    get:
+      operationId: getResource
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+components:
+  schemas:
+    Item:
+      type: object
+      properties:
+        mandatoryInteger:
+          type: integer
+        mandatoryString:
+          type: string
+        mandatoryEnum:
+          type: string
+          enum:
+            - 'one option'
+            - 'another option'
+        mandatoryDate:
+          type: string
+          format: 'date-time'
+        mandatoryNullableDate:
+          type:
+            - string
+            - "null"
+          format: 'date-time'
+        mandatoryFloat:
+          type: number
+          format: float
+        mandatoryBoolean:
+          type: boolean
+        mandatoryArray:
+          type: array
+          items:
+            type: string
+        mandatoryArrayWithMinItems:
+          type: array
+          minItems: 1
+          items:
+            type: string
+        mandatoryObject:
+          type: object
+          properties:
+            string:
+              type: string
+            nullableObject:
+              type: object
+              properties:
+                string:
+                  type: string
+        mandatoryNullableObjectWithAllOf:
+          allOf:
+            - $ref: '#/components/schemas/EmbeddedObject'
+            - type: "null"
+        mandatoryMixed: {}
+        mandatoryAnyOf:
+          anyOf:
+            - $ref: '#/components/schemas/EmbeddedObject'
+            - $ref: '#/components/schemas/EmbeddedObject1'
+        mandatoryNullableStringWithMinMaxLength:
+          type:
+            - string
+            - "null"
+          minLength: 1
+          maxLength: 5
+        optionalInteger:
+          type: integer
+        optionalString:
+          type: string
+        optionalEnum:
+          type: string
+          enum:
+            - 'one option'
+            - 'another option'
+        optionalIntEnum:
+          type: integer
+          enum:
+            - 0
+            - 1
+            - 2
+        optionalDate:
+          type: string
+          format: 'date-time'
+        optionalNullableDate:
+          type:
+            - string
+            - "null"
+          format: 'date-time'
+        optionalFloat:
+          type: number
+          format: float
+        optionalBoolean:
+          type: boolean
+        optionalNullableBoolean:
+          type:
+            - boolean
+            - "null"
+        optionalArray:
+          type: array
+          items:
+            type: string
+        optionalNullableArray:
+          type:
+            - array
+            - "null"
+          items:
+            type: string
+        optionalMixedArray:
+          type: array
+          items: {}
+        optionalArrayWithMinMaxItems:
+          type: array
+          minItems: 1
+          maxItems: 5
+          items:
+            type: string
+        optionalStringWithMinMaxLength:
+          type: string
+          minLength: 1
+          maxLength: 5
+        optionalStringWithPattern:
+          type: string
+          pattern: ^\d{3}-\d{2}-\d{4}$
+          example: 123-45-6789
+        optionalIntegerBetweenIncluded:
+          type: integer
+          minimum: 0
+          maximum: 5
+        optionalIntegerBetweenExcluded:
+          type: integer
+          exclusiveMinimum: 0
+          exclusiveMaximum: 5
+        optionalNumberBetweenIncluded:
+          type: number
+          minimum: 0
+          maximum: 5
+        optionalNumberBetweenExcluded:
+          type: number
+          exclusiveMinimum: 0
+          exclusiveMaximum: 5
+        optionalObject:
+          $ref: '#/components/schemas/EmbeddedObject'
+        optionalNullableStringWithMinMaxLength:
+          type:
+            - string
+            - "null"
+          minLength: 1
+          maxLength: 5
+      required:
+        - mandatoryInteger
+        - mandatoryString
+        - mandatoryEnum
+        - mandatoryDate
+        - mandatoryNullableDate
+        - mandatoryFloat
+        - mandatoryBoolean
+        - mandatoryArray
+        - mandatoryArrayWithMinItems
+        - mandatoryObject
+        - mandatoryNullableObjectWithAllOf
+        - mandatoryMixed
+        - mandatoryAnyOf
+        - mandatoryNullableStringWithMinMaxLength
+    EmbeddedObject:
+      type: object
+      properties:
+        string:
+          type: string
+    EmbeddedObject1:
+      type: object
+      properties:
+        string:
+          type: string

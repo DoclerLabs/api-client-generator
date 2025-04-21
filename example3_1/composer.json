@@ -1,0 +1,22 @@
+{
+  "name": "example/petstore3",
+  "repositories": [
+    {
+      "type": "path",
+      "url": "PetStoreClient"
+    }
+  ],
+  "require": {
+    "php": ">=7.4",
+    "ext-json": "*",
+    "openapi/pet-store-client": "@dev",
+    "guzzlehttp/guzzle": "^7.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "OpenApi\\PetStoreClient\\": "PetStoreClient/src",
+      "OpenApi\\PetStoreMock\\": "PetStoreMock",
+      "OpenApi\\PetStoreApiConsumer\\": "PetStoreApiConsumer"
+    }
+  }
+}

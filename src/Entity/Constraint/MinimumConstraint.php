@@ -11,8 +11,13 @@ use PhpParser\Node\Expr\Variable;
 
 class MinimumConstraint implements ConstraintInterface
 {
-    public function __construct(private ?float $minimum, private ?bool $exclusiveMinimum, private FieldType $fieldType)
+    public function __construct(private ?float $minimum, private bool|float|null $exclusiveMinimum, private FieldType $fieldType)
     {
+        // openapi 3.1 exclusiveMinimum is no longer a boolean
+        if (is_float($exclusiveMinimum)) {
+            $this->minimum          = $exclusiveMinimum;
+            $this->exclusiveMinimum = true;
+        }
     }
 
     public function exists(): bool

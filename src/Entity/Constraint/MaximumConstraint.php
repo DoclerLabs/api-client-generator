@@ -11,13 +11,13 @@ use PhpParser\Node\Expr\Variable;
 
 class MaximumConstraint implements ConstraintInterface
 {
-    public function __construct(private ?float $maximum, private ?bool $exclusiveMaximum, private FieldType $fieldType)
+    public function __construct(private ?float $maximum, private bool|float|null $exclusiveMaximum, private FieldType $fieldType)
     {
-    }
-
-    public function isExclusiveMaximum(): ?bool
-    {
-        return $this->exclusiveMaximum;
+        // openapi 3.1 exclusiveMaximum is no longer a boolean
+        if (is_float($exclusiveMaximum)) {
+            $this->maximum          = $exclusiveMaximum;
+            $this->exclusiveMaximum = true;
+        }
     }
 
     public function exists(): bool
