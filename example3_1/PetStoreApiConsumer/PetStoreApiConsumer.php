@@ -10,7 +10,7 @@ use OpenApi\PetStoreClient\Request\FindPetsByStatusRequest;
 use OpenApi\PetStoreClient\Request\GetPetByIdRequest;
 use OpenApi\PetStoreClient\Request\UpdatePetRequest;
 use OpenApi\PetStoreClient\Schema\Pet;
-use OpenApi\PetStoreClient\SwaggerPetstoreOpenAPI3ClientFactory;
+use OpenApi\PetStoreClient\SwaggerPetstoreOpenAPI31ClientFactory;
 use UnexpectedValueException;
 
 class PetStoreApiConsumer
@@ -19,7 +19,7 @@ class PetStoreApiConsumer
 
     public function __construct()
     {
-        $this->petClient = (new SwaggerPetstoreOpenAPI3ClientFactory())
+        $this->petClient = (new SwaggerPetstoreOpenAPI31ClientFactory())
             ->create(new Client(['base_uri' => 'http://pet.wiremock:8080']));
     }
 
