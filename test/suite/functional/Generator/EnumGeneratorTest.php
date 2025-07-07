@@ -35,6 +35,18 @@ class EnumGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ItemMandatoryEnum',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
             ],
+            'Array of Enums - String Enum' => [
+                '/Schema/arrayOfEnums.yaml',
+                '/Schema/StringParamOneEnum.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\StringParamOneEnum',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Array of Enums - Integer Enum' => [
+                '/Schema/arrayOfEnums.yaml',
+                '/Schema/IntParamEnum.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\IntParamEnum',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
         ];
     }
 

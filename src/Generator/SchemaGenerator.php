@@ -325,6 +325,27 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
                 if ($propertyField->isNullable()) {
                     $value = $this->builder->nullsafePropertyFetch($value, 'value');
                 }
+            } elseif ($propertyField->isArrayOfEnums() && $this->phpVersion->isEnumSupported()) {
+                $enumField    = $propertyField->getArrayItem();
+                $arrayMapCall = $this->builder->funcCall(
+                    'array_map',
+                    [
+                        $this->builder->arrowFunction(
+                            $this->builder->propertyFetch($this->builder->var('item'), 'value'),
+                            [$this->builder->param('item')->setType($enumField->getPhpClassName())->getNode()],
+                            $enumField->getType()->toPhpType(),
+                        ),
+                        $value,
+                    ]
+                );
+
+                $value = $propertyField->isNullable()
+                    ? $this->builder->ternary(
+                        $this->builder->notEquals($value, $this->builder->val(null)),
+                        $arrayMapCall,
+                        $this->builder->val(null)
+                    )
+                    : $arrayMapCall;
             }
 
             $fieldName = $this->builder->val($propertyField->getName());

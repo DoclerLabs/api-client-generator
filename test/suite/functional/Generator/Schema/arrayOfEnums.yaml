@@ -1,0 +1,64 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Array of Enums Test API
+paths:
+  '/v1/array-enums':
+    get:
+      operationId: getArrayEnums
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemWithArraysOfEnumProperties'
+components:
+  schemas:
+    IntParam:
+      type: integer
+      enum:
+        - 2
+        - 4
+        - 6
+    StringParamOne:
+      type: string
+      enum:
+        - 'option1'
+        - 'option2'
+        - 'option3'
+    StringParamTwo:
+      type: string
+      enum:
+          - 'optionA'
+          - 'optionB'
+          - 'optionC'
+    ItemWithArraysOfEnumProperties:
+      type: object
+      properties:
+        mandatoryStringEnumArray:
+          type: array
+          items:
+            $ref: '#/components/schemas/StringParamOne'
+        mandatoryNullableStringEnumArray:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/StringParamOne'
+        optionalStringEnumArray:
+          type: array
+          items:
+            $ref: '#/components/schemas/StringParamTwo'
+        mandatoryIntegerEnumArray:
+          type: array
+          items:
+            $ref: '#/components/schemas/IntParam'
+        nullableStringEnumArray:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/StringParamTwo'
+      required:
+        - mandatoryStringEnumArray
+        - mandatoryNullableStringEnumArray
+        - mandatoryIntegerEnumArray

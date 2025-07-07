@@ -143,7 +143,8 @@ class ServiceProvider implements ServiceProviderInterface
         $pimple[FileReader::class] = static fn () => new FileReader();
 
         $pimple[OpenApiParser::class] = static fn (Container $container) => new OpenApiParser(
-            $container[OperationCollectionFactory::class]
+            $container[OperationCollectionFactory::class],
+            $container[PhpVersion::class]
         );
 
         $pimple[CodeBuilder::class] = static fn (Container $container) => new CodeBuilder(
