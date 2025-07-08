@@ -362,6 +362,29 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 } else {
                     $requiredVars[] = $newEnum;
                 }
+            } elseif ($field->isArrayOfEnums() && $this->phpVersion->isEnumSupported()) {
+                $enumField = $field->getArrayItem();
+                $this->addImport($this->fqdn($this->withSubNamespace(SchemaGenerator::NAMESPACE_SUBPATH), $enumField->getPhpClassName()));
+
+                $arrowFunctionParam = $this->builder->param('item')->setType($enumField->getType()->toPhpType())->getNode();
+                $arrayMapCall       = $this->builder->funcCall(
+                    'array_map',
+                    [
+                        $this->builder->arrowFunction(
+                            $this->builder->staticCall($enumField->getPhpClassName(), 'from', [$this->builder->var('item')]),
+                            [$arrowFunctionParam],
+                            $enumField->getPhpClassName(),
+                        ),
+                        $requiredResponseItems[$i],
+                    ]
+                );
+                $requiredVars[] = $field->isNullable()
+                    ? $this->builder->ternary(
+                        $this->builder->notEquals($requiredResponseItems[$i], $this->builder->val(null)),
+                        $arrayMapCall,
+                        $this->builder->val(null)
+                    )
+                    : $arrayMapCall;
             } else {
                 $requiredVars[] = $requiredResponseItems[$i];
             }
@@ -409,6 +432,29 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                 } elseif ($field->isEnum() && $this->phpVersion->isEnumSupported()) {
                     $this->addImport($this->fqdn($this->withSubNamespace(SchemaGenerator::NAMESPACE_SUBPATH), $field->getPhpClassName()));
                     $optionalVar = $this->builder->staticCall($field->getPhpClassName(), 'from', [$optionalResponseItems[$i]]);
+                } elseif ($field->isArrayOfEnums() && $this->phpVersion->isEnumSupported()) {
+                    $enumField = $field->getArrayItem();
+                    $this->addImport($this->fqdn($this->withSubNamespace(SchemaGenerator::NAMESPACE_SUBPATH), $enumField->getPhpClassName()));
+
+                    $arrowFunctionParam = $this->builder->param('item')->setType($enumField->getType()->toPhpType())->getNode();
+                    $arrayMapCall       = $this->builder->funcCall(
+                        'array_map',
+                        [
+                            $this->builder->arrowFunction(
+                                $this->builder->staticCall($enumField->getPhpClassName(), 'from', [$this->builder->var('item')]),
+                                [$arrowFunctionParam],
+                                $enumField->getPhpClassName(),
+                            ),
+                            $optionalResponseItems[$i],
+                        ]
+                    );
+                    $optionalVar = $field->isNullable()
+                        ? $this->builder->ternary(
+                            $this->builder->notEquals($optionalResponseItems[$i], $this->builder->val(null)),
+                            $arrayMapCall,
+                            $this->builder->val(null)
+                        )
+                        : $arrayMapCall;
                 } else {
                     $optionalVar = $optionalResponseItems[$i];
                 }

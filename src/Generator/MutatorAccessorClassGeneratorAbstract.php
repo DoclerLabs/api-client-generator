@@ -113,7 +113,7 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
         }
 
         $statements = [];
-        $enumValues = $field->getEnumValues();
+        $enumValues = $field->isArrayOfEnums() ? $field->getArrayItem()->getEnumValues() : $field->getEnumValues();
         if (!empty($enumValues)) {
             foreach ($enumValues as $enumValue) {
                 if (is_string($enumValue)) {

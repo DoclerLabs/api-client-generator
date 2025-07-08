@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [11.1.0] - 2025.07.08
+### Added
+- Support for array of enum elements in Schemas
+
 ## [11.0.0] - 2025.04.21
 ### Added
 - Support for OpenAPI 3.1

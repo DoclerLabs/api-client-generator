@@ -6,6 +6,7 @@ namespace DoclerLabs\ApiClientGenerator\Input;
 
 use cebe\openapi\ReferenceContext;
 use cebe\openapi\spec\OpenApi;
+use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\FieldCollection;
 use DoclerLabs\ApiClientGenerator\Entity\OperationCollection;
@@ -13,8 +14,10 @@ use DoclerLabs\ApiClientGenerator\Input\Factory\OperationCollectionFactory;
 
 class Parser
 {
-    public function __construct(private OperationCollectionFactory $operationCollectionFactory)
-    {
+    public function __construct(
+        private OperationCollectionFactory $operationCollectionFactory,
+        private PhpVersion $phpVersion
+    ) {
     }
 
     public function parse(array $data, string $contextUri): Specification
@@ -78,6 +81,10 @@ class Parser
             $allFields->add($field);
             $allFields->add($field->getArrayItem());
             $this->extractPropertyFields($field->getArrayItem(), $allFields);
+        }
+
+        if ($field->isArrayOfEnums() && $this->phpVersion->isEnumSupported()) {
+            $allFields->add($field->getArrayItem());
         }
     }
 

@@ -160,6 +160,18 @@ class SchemaMapperGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\GetExampleResponseBodyMapper',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
             ],
+            'Array of Enums with php 8.1' => [
+                '/Schema/arrayOfEnums.yaml',
+                '/SchemaMapper/ItemWithArraysOfEnumPropertiesMapper81.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ItemWithArraysOfEnumPropertiesMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Array of Enums with php 7.4' => [
+                '/Schema/arrayOfEnums.yaml',
+                '/SchemaMapper/ItemWithArraysOfEnumPropertiesMapper74.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ItemWithArraysOfEnumPropertiesMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
         ];
     }
 

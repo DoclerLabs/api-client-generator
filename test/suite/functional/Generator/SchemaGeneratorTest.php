@@ -58,6 +58,18 @@ class SchemaGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ExtendedItem',
                 ConfigurationBuilder::fake()->build(),
             ],
+            'Array of Enums with PHP 8.1' => [
+                '/Schema/arrayOfEnums.yaml',
+                '/Schema/ItemWithArraysOfEnumProperties81.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ItemWithArraysOfEnumProperties',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Array of Enums with PHP 7.4' => [
+                '/Schema/arrayOfEnums.yaml',
+                '/Schema/ItemWithArraysOfEnumProperties74.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ItemWithArraysOfEnumProperties',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
         ];
     }
 
