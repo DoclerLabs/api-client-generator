@@ -27,6 +27,25 @@ components:
           enum:
             - 'one option'
             - 'another option'
+        mandatoryIntEnum:
+          type: integer
+          enum:
+            - 0
+            - 1
+            - 2
+        mandatoryNullableEnum:
+          type: string
+          nullable: true
+          enum:
+            - 'one option'
+            - 'another option'
+        mandatoryNullableIntEnum:
+          type: integer
+          nullable: true
+          enum:
+            - 0
+            - 1
+            - 2
         mandatoryDate:
           type: string
           format: 'date-time'
@@ -84,6 +103,19 @@ components:
             - 'another option'
         optionalIntEnum:
           type: integer
+          enum:
+            - 0
+            - 1
+            - 2
+        optionalNullableEnum:
+          type: string
+          nullable: true
+          enum:
+            - 'one option'
+            - 'another option'
+        optionalNullableIntEnum:
+          type: integer
+          nullable: true
           enum:
             - 0
             - 1
@@ -160,6 +192,9 @@ components:
         - mandatoryInteger
         - mandatoryString
         - mandatoryEnum
+        - mandatoryIntEnum
+        - mandatoryNullableEnum
+        - mandatoryNullableIntEnum
         - mandatoryDate
         - mandatoryNullableDate
         - mandatoryFloat
