@@ -20,9 +20,17 @@ class Item implements SerializableInterface, JsonSerializable
 
     const MANDATORY_ENUM_ANOTHER_OPTION = 'another option';
 
+    const MANDATORY_NULLABLE_ENUM_ONE_OPTION = 'one option';
+
+    const MANDATORY_NULLABLE_ENUM_ANOTHER_OPTION = 'another option';
+
     const OPTIONAL_ENUM_ONE_OPTION = 'one option';
 
     const OPTIONAL_ENUM_ANOTHER_OPTION = 'another option';
+
+    const OPTIONAL_NULLABLE_ENUM_ONE_OPTION = 'one option';
+
+    const OPTIONAL_NULLABLE_ENUM_ANOTHER_OPTION = 'another option';
 
     /** @var int */
     private $mandatoryInteger;
@@ -32,6 +40,15 @@ class Item implements SerializableInterface, JsonSerializable
 
     /** @var string */
     private $mandatoryEnum;
+
+    /** @var int */
+    private $mandatoryIntEnum;
+
+    /** @var string|null */
+    private $mandatoryNullableEnum;
+
+    /** @var int|null */
+    private $mandatoryNullableIntEnum;
 
     /** @var DateTimeInterface */
     private $mandatoryDate;
@@ -76,6 +93,12 @@ class Item implements SerializableInterface, JsonSerializable
 
     /** @var int|null */
     private $optionalIntEnum;
+
+    /** @var string|null */
+    private $optionalNullableEnum;
+
+    /** @var int|null */
+    private $optionalNullableIntEnum;
 
     /** @var DateTimeInterface|null */
     private $optionalDate;
@@ -129,9 +152,11 @@ class Item implements SerializableInterface, JsonSerializable
     private $optionalNullableStringWithMinMaxLength;
 
     /** @var array */
-    private $optionalPropertyChanged = ['optionalInteger' => false, 'optionalString' => false, 'optionalEnum' => false, 'optionalIntEnum' => false, 'optionalDate' => false, 'optionalNullableDate' => false, 'optionalFloat' => false, 'optionalBoolean' => false, 'optionalNullableBoolean' => false, 'optionalArray' => false, 'optionalNullableArray' => false, 'optionalMixedArray' => false, 'optionalArrayWithMinMaxItems' => false, 'optionalStringWithMinMaxLength' => false, 'optionalStringWithPattern' => false, 'optionalIntegerBetweenIncluded' => false, 'optionalIntegerBetweenExcluded' => false, 'optionalNumberBetweenIncluded' => false, 'optionalNumberBetweenExcluded' => false, 'optionalObject' => false, 'optionalNullableStringWithMinMaxLength' => false];
+    private $optionalPropertyChanged = ['optionalInteger' => false, 'optionalString' => false, 'optionalEnum' => false, 'optionalIntEnum' => false, 'optionalNullableEnum' => false, 'optionalNullableIntEnum' => false, 'optionalDate' => false, 'optionalNullableDate' => false, 'optionalFloat' => false, 'optionalBoolean' => false, 'optionalNullableBoolean' => false, 'optionalArray' => false, 'optionalNullableArray' => false, 'optionalMixedArray' => false, 'optionalArrayWithMinMaxItems' => false, 'optionalStringWithMinMaxLength' => false, 'optionalStringWithPattern' => false, 'optionalIntegerBetweenIncluded' => false, 'optionalIntegerBetweenExcluded' => false, 'optionalNumberBetweenIncluded' => false, 'optionalNumberBetweenExcluded' => false, 'optionalObject' => false, 'optionalNullableStringWithMinMaxLength' => false];
 
     /**
+     * @param string|null                           $mandatoryNullableEnum
+     * @param int|null                              $mandatoryNullableIntEnum
      * @param DateTimeInterface|null                $mandatoryNullableDate
      * @param string[]                              $mandatoryArray
      * @param string[]                              $mandatoryArrayWithMinItems
@@ -140,7 +165,7 @@ class Item implements SerializableInterface, JsonSerializable
      *
      * @throws RequestValidationException
      */
-    public function __construct(int $mandatoryInteger, string $mandatoryString, string $mandatoryEnum, DateTimeInterface $mandatoryDate, $mandatoryNullableDate, float $mandatoryFloat, bool $mandatoryBoolean, array $mandatoryArray, array $mandatoryArrayWithMinItems, ItemMandatoryObject $mandatoryObject, $mandatoryNullableObjectWithAllOf, $mandatoryMixed, MandatoryAnyOf $mandatoryAnyOf, $mandatoryNullableStringWithMinMaxLength)
+    public function __construct(int $mandatoryInteger, string $mandatoryString, string $mandatoryEnum, int $mandatoryIntEnum, $mandatoryNullableEnum, $mandatoryNullableIntEnum, DateTimeInterface $mandatoryDate, $mandatoryNullableDate, float $mandatoryFloat, bool $mandatoryBoolean, array $mandatoryArray, array $mandatoryArrayWithMinItems, ItemMandatoryObject $mandatoryObject, $mandatoryNullableObjectWithAllOf, $mandatoryMixed, MandatoryAnyOf $mandatoryAnyOf, $mandatoryNullableStringWithMinMaxLength)
     {
         if (count($mandatoryArrayWithMinItems) < 1) {
             throw new RequestValidationException(sprintf('Invalid %s value. Expected min items: `1`.', 'mandatoryArrayWithMinItems'));
@@ -154,6 +179,9 @@ class Item implements SerializableInterface, JsonSerializable
         $this->mandatoryInteger                        = $mandatoryInteger;
         $this->mandatoryString                         = $mandatoryString;
         $this->mandatoryEnum                           = $mandatoryEnum;
+        $this->mandatoryIntEnum                        = $mandatoryIntEnum;
+        $this->mandatoryNullableEnum                   = $mandatoryNullableEnum;
+        $this->mandatoryNullableIntEnum                = $mandatoryNullableIntEnum;
         $this->mandatoryDate                           = $mandatoryDate;
         $this->mandatoryNullableDate                   = $mandatoryNullableDate;
         $this->mandatoryFloat                          = $mandatoryFloat;
@@ -195,6 +223,28 @@ class Item implements SerializableInterface, JsonSerializable
     {
         $this->optionalIntEnum                            = $optionalIntEnum;
         $this->optionalPropertyChanged['optionalIntEnum'] = true;
+
+        return $this;
+    }
+
+    /**
+     * @param string|null $optionalNullableEnum
+     */
+    public function setOptionalNullableEnum($optionalNullableEnum): self
+    {
+        $this->optionalNullableEnum                            = $optionalNullableEnum;
+        $this->optionalPropertyChanged['optionalNullableEnum'] = true;
+
+        return $this;
+    }
+
+    /**
+     * @param int|null $optionalNullableIntEnum
+     */
+    public function setOptionalNullableIntEnum($optionalNullableIntEnum): self
+    {
+        $this->optionalNullableIntEnum                            = $optionalNullableIntEnum;
+        $this->optionalPropertyChanged['optionalNullableIntEnum'] = true;
 
         return $this;
     }
@@ -443,6 +493,16 @@ class Item implements SerializableInterface, JsonSerializable
         return $this->optionalPropertyChanged['optionalIntEnum'];
     }
 
+    public function hasOptionalNullableEnum(): bool
+    {
+        return $this->optionalPropertyChanged['optionalNullableEnum'];
+    }
+
+    public function hasOptionalNullableIntEnum(): bool
+    {
+        return $this->optionalPropertyChanged['optionalNullableIntEnum'];
+    }
+
     public function hasOptionalDate(): bool
     {
         return $this->optionalPropertyChanged['optionalDate'];
@@ -541,6 +601,27 @@ class Item implements SerializableInterface, JsonSerializable
     public function getMandatoryEnum(): string
     {
         return $this->mandatoryEnum;
+    }
+
+    public function getMandatoryIntEnum(): int
+    {
+        return $this->mandatoryIntEnum;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMandatoryNullableEnum()
+    {
+        return $this->mandatoryNullableEnum;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getMandatoryNullableIntEnum()
+    {
+        return $this->mandatoryNullableIntEnum;
     }
 
     public function getMandatoryDate(): DateTimeInterface
@@ -643,6 +724,22 @@ class Item implements SerializableInterface, JsonSerializable
     public function getOptionalIntEnum()
     {
         return $this->optionalIntEnum;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getOptionalNullableEnum()
+    {
+        return $this->optionalNullableEnum;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getOptionalNullableIntEnum()
+    {
+        return $this->optionalNullableIntEnum;
     }
 
     /**
@@ -787,6 +884,9 @@ class Item implements SerializableInterface, JsonSerializable
         $fields['mandatoryInteger']                        = $this->mandatoryInteger;
         $fields['mandatoryString']                         = $this->mandatoryString;
         $fields['mandatoryEnum']                           = $this->mandatoryEnum;
+        $fields['mandatoryIntEnum']                        = $this->mandatoryIntEnum;
+        $fields['mandatoryNullableEnum']                   = $this->mandatoryNullableEnum;
+        $fields['mandatoryNullableIntEnum']                = $this->mandatoryNullableIntEnum;
         $fields['mandatoryDate']                           = $this->mandatoryDate->format(DATE_RFC3339);
         $fields['mandatoryNullableDate']                   = $this->mandatoryNullableDate !== null ? $this->mandatoryNullableDate->format(DATE_RFC3339) : null;
         $fields['mandatoryFloat']                          = $this->mandatoryFloat;
@@ -809,6 +909,12 @@ class Item implements SerializableInterface, JsonSerializable
         }
         if ($this->hasOptionalIntEnum()) {
             $fields['optionalIntEnum'] = $this->optionalIntEnum;
+        }
+        if ($this->hasOptionalNullableEnum()) {
+            $fields['optionalNullableEnum'] = $this->optionalNullableEnum;
+        }
+        if ($this->hasOptionalNullableIntEnum()) {
+            $fields['optionalNullableIntEnum'] = $this->optionalNullableIntEnum;
         }
         if ($this->hasOptionalDate()) {
             $fields['optionalDate'] = $this->optionalDate->format(DATE_RFC3339);

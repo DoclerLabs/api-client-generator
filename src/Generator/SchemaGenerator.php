@@ -320,11 +320,9 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
                     $value = $methodCall;
                 }
             } elseif ($propertyField->isEnum() && $this->phpVersion->isEnumSupported()) {
-                $value = $this->builder->propertyFetch($value, 'value');
-
-                if ($propertyField->isNullable()) {
-                    $value = $this->builder->nullsafePropertyFetch($value, 'value');
-                }
+                $value = $propertyField->isNullable()
+                    ? $this->builder->nullsafePropertyFetch($value, 'value')
+                    : $this->builder->propertyFetch($value, 'value');
             } elseif ($propertyField->isArrayOfEnums() && $this->phpVersion->isEnumSupported()) {
                 $enumField    = $propertyField->getArrayItem();
                 $arrayMapCall = $this->builder->funcCall(
