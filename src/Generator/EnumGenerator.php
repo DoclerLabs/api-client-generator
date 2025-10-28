@@ -16,7 +16,7 @@ class EnumGenerator extends MutatorAccessorClassGeneratorAbstract
 
     public static function getCaseName(string $value): string
     {
-        $sanitized = preg_replace('[^A-Z0-9_]', '', strtoupper(str_replace([' ', '-', '/', '.'], '_', $value)));
+        $sanitized = preg_replace('/[^A-Z0-9_]/', '', strtoupper(str_replace([' ', '-', '/', '.'], '_', $value)));
 
         if (is_numeric($sanitized)) {
             return 'V_' . $sanitized;
@@ -76,9 +76,14 @@ class EnumGenerator extends MutatorAccessorClassGeneratorAbstract
 
         $statements = [];
         foreach ($root->getEnumValues() as $value) {
+            $caseName = self::getCaseName((string)$value);
+            if (empty($caseName)) {
+                continue;
+            }
+
             $statements[] = $this
                 ->builder
-                ->enumCase(self::getCaseName((string)$value))
+                ->enumCase($caseName)
                 ->setValue($value);
         }
 

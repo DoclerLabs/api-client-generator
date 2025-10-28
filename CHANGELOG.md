@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [11.1.2] - 2025.10.28
+### Fixed
+- Enum with invalid PHP constant value
+- README.md with multiline description in operations
+
 ## [11.1.1] - 2025.09.23
 ### Fixed
 - Acessing nullable enum with `?->value` instead of `->value?->value`
