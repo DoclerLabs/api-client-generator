@@ -117,11 +117,13 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
         if (!empty($enumValues)) {
             foreach ($enumValues as $enumValue) {
                 if (is_string($enumValue)) {
-                    $constName    = SchemaNaming::getEnumConstName($field, $enumValue);
-                    $statements[] = $this->builder->constant(
-                        $constName,
-                        $this->builder->val($enumValue)
-                    );
+                    $constName = SchemaNaming::getEnumConstName($field, $enumValue);
+                    if (preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $constName)) {
+                        $statements[] = $this->builder->constant(
+                            $constName,
+                            $this->builder->val($enumValue)
+                        );
+                    }
                 }
             }
         }
