@@ -116,6 +116,20 @@
         "summary": "Add a new pet to the store",
         "description": "Add a new pet to the store",
         "operationId": "addPet",
+        "parameters": [
+          {
+              "in" : "header",
+              "name": "Content-Type",
+              "required": true,
+              "schema": {
+                  "type": "string",
+                  "enum": [
+                      "application/json",
+                      "application/xml"
+                  ]
+              }
+          }
+        ],
         "requestBody": {
           "description": "Create a new pet in the store",
           "content": {

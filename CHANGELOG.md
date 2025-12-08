@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [11.1.3] - 2025.12.08
+### Fixed
+- Fixed content type construction parameter generation - issue #128, fixed
+    - with multiple content type values
+    - with content type value received from parameters
+
 ## [11.1.2] - 2025.10.28
 ### Fixed
 - Enum with invalid PHP constant value

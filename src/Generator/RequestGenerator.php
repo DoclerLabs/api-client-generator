@@ -28,8 +28,12 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
 
     public const SUBDIRECTORY = 'Request/';
 
+    private const CONTENT_TYPE_PARAMETER_NAME = 'contentType';
+
     /** @var SecurityStrategyInterface[] */
     private array $securityStrategies;
+
+    private bool $isContentTypeEnum = false;
 
     public function __construct(
         string $baseNamespace,
@@ -45,6 +49,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
     {
         foreach ($specification->getOperations() as $operation) {
+            $this->isContentTypeEnum = false;
             $this->generateRequest($fileRegistry, $operation, $specification);
         }
     }
@@ -92,6 +97,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
     protected function generateProperties(Request $request, Operation $operation, Specification $specification): array
     {
         $statements = [];
+        $fieldNames = [];
 
         foreach ($request->fields as $field) {
             if ($field->isComposite()) {
@@ -117,13 +123,21 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             }
 
             $statements[] = $this->generateProperty($field);
+            $fieldNames[] = $field->getPhpVariableName();
         }
 
-        $default = null;
-        if (count($request->bodyContentTypes) < 2) {
+        $default               = null;
+        $bodyContentTypesCount = count($request->bodyContentTypes);
+        if ($bodyContentTypesCount < 2) {
             $default = $this->builder->val($request->bodyContentTypes[0] ?? '');
         }
-        $statements[] = $this->builder->localProperty('contentType', 'string', 'string', false, $default);
+
+        if (
+            ($bodyContentTypesCount < 2 || !$this->phpVersion->isConstructorPropertyPromotionSupported())
+            && !in_array(self::CONTENT_TYPE_PARAMETER_NAME, $fieldNames, true)
+        ) {
+            $statements[] = $this->builder->localProperty(self::CONTENT_TYPE_PARAMETER_NAME, 'string', 'string', false, $default);
+        }
 
         foreach ($this->securityStrategies as $securityStrategy) {
             array_push($statements, ...$securityStrategy->getProperties($operation, $specification));
@@ -137,6 +151,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         Operation $operation,
         Specification $specification
     ): ?ClassMethod {
+        $paramNames  = [];
         $params      = [];
         $paramInits  = [];
         $validations = [];
@@ -163,7 +178,16 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                     }
                 }
 
-                $params[] = $param;
+                $params[]     = $param;
+                $paramNames[] = $field->getPhpVariableName();
+
+                if (
+                    $field->isEnum()
+                    && $this->phpVersion->isEnumSupported()
+                    && $field->getPhpVariableName() === self::CONTENT_TYPE_PARAMETER_NAME
+                ) {
+                    $this->isContentTypeEnum = true;
+                }
 
                 $paramInits[] = $this->builder->assign(
                     $this->builder->localPropertyFetch($field->getPhpVariableName()),
@@ -177,14 +201,12 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             array_push($paramInits, ...$securityStrategy->getConstructorParamInits($operation, $specification));
         }
 
-        if (count($request->bodyContentTypes) > 1) {
-            $contentTypeVariableName = 'contentType';
-
-            $params[] = $this->builder->param($contentTypeVariableName)->setType('string');
+        if (count($request->bodyContentTypes) > 1 && !in_array(self::CONTENT_TYPE_PARAMETER_NAME, $paramNames, true)) {
+            $params[] = $this->builder->param(self::CONTENT_TYPE_PARAMETER_NAME)->setType('string');
 
             $paramInits[] = $this->builder->assign(
-                $this->builder->localPropertyFetch($contentTypeVariableName),
-                $this->builder->var($contentTypeVariableName)
+                $this->builder->localPropertyFetch(self::CONTENT_TYPE_PARAMETER_NAME),
+                $this->builder->var(self::CONTENT_TYPE_PARAMETER_NAME)
             );
         }
 
@@ -242,8 +264,14 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
 
     private function generateGetContentType(): ClassMethod
     {
-        $return     = $this->builder->return($this->builder->localPropertyFetch('contentType'));
-        $returnType = 'string';
+        $localProperty = $this->builder->localPropertyFetch(self::CONTENT_TYPE_PARAMETER_NAME);
+        $returnType    = 'string';
+
+        if ($this->isContentTypeEnum) {
+            $localProperty = $this->builder->propertyFetch($localProperty, 'value');
+        }
+
+        $return = $this->builder->return($localProperty);
 
         return $this
             ->builder
