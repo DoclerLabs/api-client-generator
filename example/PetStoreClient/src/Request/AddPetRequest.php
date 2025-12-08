@@ -11,17 +11,22 @@ declare(strict_types=1);
 namespace OpenApi\PetStoreClient\Request;
 
 use OpenApi\PetStoreClient\Schema\Pet;
+use OpenApi\PetStoreClient\Schema\SerializableInterface;
 
 class AddPetRequest implements RequestInterface
 {
-    private Pet $pet;
+    public const CONTENT_TYPE_APPLICATION_JSON = 'application/json';
+
+    public const CONTENT_TYPE_APPLICATION_XML = 'application/xml';
 
     private string $contentType;
 
-    public function __construct(Pet $pet, string $contentType)
+    private Pet $pet;
+
+    public function __construct(string $contentType, Pet $pet)
     {
-        $this->pet         = $pet;
         $this->contentType = $contentType;
+        $this->pet         = $pet;
     }
 
     public function getContentType(): string
@@ -56,7 +61,11 @@ class AddPetRequest implements RequestInterface
 
     public function getHeaders(): array
     {
-        return ['Content-Type' => $this->contentType];
+        return array_merge(['Content-Type' => $this->contentType], array_map(static function ($value) {
+            return $value instanceof SerializableInterface ? $value->toArray() : $value;
+        }, array_filter(['Content-Type' => $this->contentType], static function ($value) {
+            return null !== $value;
+        })));
     }
 
     /**
