@@ -12,14 +12,13 @@ namespace Test\Request;
 
 use DateTimeInterface;
 use DoclerLabs\ApiClientException\RequestValidationException;
-use Test\Schema\ContentTypeEnum;
 use Test\Schema\EmbeddedObject;
 use Test\Schema\EnumParameterEnum;
 use Test\Schema\MandatoryEnumParameterEnum;
-use Test\Schema\PostResourceByIdRequestBody;
+use Test\Schema\PutResourceByIdRequestBody;
 use Test\Schema\SerializableInterface;
 
-class PostResourceByIdRequest implements RequestInterface
+class PutResourceByIdRequest implements RequestInterface
 {
     private ?int $integerParameter = null;
 
@@ -39,7 +38,9 @@ class PostResourceByIdRequest implements RequestInterface
 
     private ?string $csrfToken = null;
 
-    public function __construct(private readonly int $resourceId, private readonly ContentTypeEnum $contentType, private readonly string $xRequestId, private readonly int $mandatoryIntegerParameter, private readonly string $mandatoryStringParameter, private readonly MandatoryEnumParameterEnum $mandatoryEnumParameter, private readonly DateTimeInterface $mandatoryDateParameter, private readonly float $mandatoryFloatParameter, private readonly bool $mandatoryBooleanParameter, private readonly array $mandatoryArrayParameter, private readonly EmbeddedObject $mandatoryObjectParameter, private readonly PostResourceByIdRequestBody $postResourceByIdRequestBody, private readonly string $xwsseUsername, private readonly string $xwsseSecret)
+    private string $contentType = 'application/json';
+
+    public function __construct(private readonly int $resourceId, private readonly int $mandatoryIntegerParameter, private readonly string $mandatoryStringParameter, private readonly MandatoryEnumParameterEnum $mandatoryEnumParameter, private readonly DateTimeInterface $mandatoryDateParameter, private readonly float $mandatoryFloatParameter, private readonly bool $mandatoryBooleanParameter, private readonly array $mandatoryArrayParameter, private readonly EmbeddedObject $mandatoryObjectParameter, private readonly string $xRequestId, private readonly PutResourceByIdRequestBody $putResourceByIdRequestBody, private readonly string $xwsseUsername, private readonly string $xwsseSecret)
     {
         if ($resourceId < 0) {
             throw new RequestValidationException(sprintf('Invalid %s value. Given: `%s`. Cannot be less than 0.', 'resourceId', $resourceId));
@@ -48,7 +49,7 @@ class PostResourceByIdRequest implements RequestInterface
 
     public function getContentType(): string
     {
-        return $this->contentType->value;
+        return $this->contentType;
     }
 
     public function setIntegerParameter(int $integerParameter): self
@@ -119,7 +120,7 @@ class PostResourceByIdRequest implements RequestInterface
 
     public function getMethod(): string
     {
-        return 'POST';
+        return 'PUT';
     }
 
     public function getRoute(): string
@@ -156,18 +157,18 @@ class PostResourceByIdRequest implements RequestInterface
         $timestamp = gmdate('c');
         $xwsse     = sprintf('UsernameToken Username="%s", PasswordDigest="%s", Nonce="%s", Created="%s"', $this->xwsseUsername, base64_encode(sha1($nonce . $timestamp . $this->xwsseSecret)), $nonce, $timestamp);
 
-        return array_merge(['X-WSSE' => $xwsse, 'Content-Type' => $this->contentType->value], array_map(static function ($value) {
+        return array_merge(['X-WSSE' => $xwsse, 'Content-Type' => $this->contentType], array_map(static function ($value) {
             return $value instanceof SerializableInterface ? $value->toArray() : $value;
-        }, array_filter(['contentType' => $this->contentType, 'X-Request-ID' => $this->xRequestId], static function ($value) {
+        }, array_filter(['X-Request-ID' => $this->xRequestId], static function ($value) {
             return null !== $value;
         })));
     }
 
     /**
-     * @return PostResourceByIdRequestBody
+     * @return PutResourceByIdRequestBody
      */
     public function getBody()
     {
-        return $this->postResourceByIdRequestBody;
+        return $this->putResourceByIdRequestBody;
     }
 }

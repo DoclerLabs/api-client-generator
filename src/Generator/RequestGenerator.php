@@ -480,8 +480,15 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         $stmts   = $this->getSecurityHeadersStmts($operation, $specification);
         $headers = $this->getSecurityHeaders($operation, $specification);
         if (!empty($request->bodyContentTypes)) {
-            $headers['Content-Type'] = $this->builder->localPropertyFetch('contentType');
+            $contentType = $this->builder->localPropertyFetch('contentType');
+
+            if ($this->isContentTypeEnum) {
+                $contentType = $this->builder->propertyFetch($contentType, 'value');
+            }
+
+            $headers['Content-Type'] = $contentType;
         }
+
         $returnVal  = $this->builder->array($headers);
         $fieldsArr  = [];
         $returnType = 'array';
