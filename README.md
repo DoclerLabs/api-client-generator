@@ -27,6 +27,7 @@ API client generator is a console application capable of auto-generating a [PSR1
     * application/json
     * application/x-www-form-urlencoded
     * application/xml
+    * Any content type with `+json` suffix ([RFC 6839](https://datatracker.ietf.org/doc/html/rfc6839)), e.g., `application/hal+json`, `application/problem+json`, `application/vnd.sdmx.data+json`
 - Supports new PHP versions syntax features.
 - It is base client independent, you are free to choose any [existing PSR-18 compliant client](https://packagist.org/providers/psr/http-client-implementation). Just choose the one which you already use, so generated client would not cause any conflicts with your dependencies. Although not recommended, you can also use or build your own PSR-18 implementation, as the generated client depends on PSR interfaces only.
 - Applies code style rules to generated code, you can specify your own.
