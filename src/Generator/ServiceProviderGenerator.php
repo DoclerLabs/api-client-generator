@@ -8,6 +8,7 @@ use DoclerLabs\ApiClientException\Factory\ResponseExceptionFactory;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\MethodBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
+use DoclerLabs\ApiClientGenerator\Entity\ContentType;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\ContainerImplementationStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\Implementation\HttpMessageImplementationStrategy;
@@ -192,7 +193,14 @@ class ServiceProviderGenerator extends GeneratorAbstract
         $serializer      = $this->builder->new('BodySerializer');
         $allContentTypes = $specification->getAllContentTypes();
 
-        if (in_array(JsonContentTypeSerializer::MIME_TYPE, $allContentTypes, true)) {
+        // Register JSON serializer if any JSON-based content type is used (RFC 6839)
+        $needsJsonSerializer = array_reduce(
+            $allContentTypes,
+            static fn (bool $carry, string $ct): bool => $carry || ContentType::isJsonBased($ct),
+            false
+        );
+
+        if ($needsJsonSerializer) {
             $serializer = $this->builder->methodCall(
                 $serializer,
                 'add',

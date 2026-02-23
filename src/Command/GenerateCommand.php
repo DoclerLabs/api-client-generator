@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DoclerLabs\ApiClientGenerator\Command;
 
 use DoclerLabs\ApiClientGenerator\CodeGeneratorFacade;
+use DoclerLabs\ApiClientGenerator\Entity\ContentType;
 use DoclerLabs\ApiClientGenerator\Generator\Security\BasicAuthenticationSecurityStrategy;
 use DoclerLabs\ApiClientGenerator\Input\Configuration;
 use DoclerLabs\ApiClientGenerator\Input\FileReader;
@@ -253,22 +254,33 @@ class GenerateCommand extends Command
 
     private function getUnusedSerializers(Specification $specification): array
     {
-        $contentTypeMapping = [
-            XmlContentTypeSerializer::MIME_TYPE            => XmlContentTypeSerializer::class,
-            FormUrlencodedContentTypeSerializer::MIME_TYPE => FormUrlencodedContentTypeSerializer::class,
-            JsonContentTypeSerializer::MIME_TYPE           => JsonContentTypeSerializer::class,
-            VdnApiJsonContentTypeSerializer::MIME_TYPE     => VdnApiJsonContentTypeSerializer::class,
-        ];
+        $allContentTypes   = $specification->getAllContentTypes();
+        $unusedSerializers = [];
 
-        $allContentTypes = $specification->getAllContentTypes();
-
-        return array_values(
-            array_filter(
-                $contentTypeMapping,
-                static fn (string $key) => !in_array($key, $allContentTypes, true),
-                ARRAY_FILTER_USE_KEY
-            )
+        // JSON serializer is needed if any JSON-based content type is used (RFC 6839)
+        $needsJsonSerializer = array_reduce(
+            $allContentTypes,
+            static fn (bool $carry, string $ct): bool => $carry || ContentType::isJsonBased($ct),
+            false
         );
+
+        if (!$needsJsonSerializer) {
+            $unusedSerializers[] = JsonContentTypeSerializer::class;
+        }
+
+        if (!in_array(VdnApiJsonContentTypeSerializer::MIME_TYPE, $allContentTypes, true)) {
+            $unusedSerializers[] = VdnApiJsonContentTypeSerializer::class;
+        }
+
+        if (!in_array(FormUrlencodedContentTypeSerializer::MIME_TYPE, $allContentTypes, true)) {
+            $unusedSerializers[] = FormUrlencodedContentTypeSerializer::class;
+        }
+
+        if (!in_array(XmlContentTypeSerializer::MIME_TYPE, $allContentTypes, true)) {
+            $unusedSerializers[] = XmlContentTypeSerializer::class;
+        }
+
+        return $unusedSerializers;
     }
 
     /**

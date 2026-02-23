@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [11.2.0] - 2026-02-19
+### Added
+- RFC 6839 support: Content types with `+json` suffix (e.g., `application/vnd.api+json`, `application/hal+json`, `application/problem+json`) are now recognized as JSON-based formats
+
 ## [11.1.3] - 2025.12.08
 ### Fixed
 - Fixed content type construction parameter generation - issue #128, fixed
