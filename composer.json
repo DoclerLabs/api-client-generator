@@ -21,7 +21,7 @@
     "devizzent/cebe-php-openapi": "^1.1",
     "docler-labs/api-client-exception": "^1.0.1 || ^2.0",
     "friendsofphp/php-cs-fixer": "^3.0",
-    "guzzlehttp/psr7": "^1.6",
+    "guzzlehttp/psr7": "^1.6 || ^2.0",
     "icecave/parity": "^3.0",
     "nikic/php-parser": "^4.10",
     "nyholm/psr7": "^1.3",
