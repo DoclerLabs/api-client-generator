@@ -13,17 +13,17 @@ paths:
             application/json:
               schema:
                 oneOf:
-                  - $ref: '#/components/schemas/Animal'
-                  - $ref: '#/components/schemas/Machine'
+                  - $ref: '#/components/schemas/AnimalResponse'
+                  - $ref: '#/components/schemas/MachineResponse'
                 discriminator:
                   propertyName: objectType
                   mapping:
-                    animal: '#/components/schemas/Animal'
-                    machine: '#/components/schemas/Machine'
+                    animal: '#/components/schemas/AnimalResponse'
+                    machine: '#/components/schemas/MachineResponse'
 
 components:
   schemas:
-    Animal:
+    AnimalResponse:
       type: object
       required:
         - objectType
@@ -63,7 +63,7 @@ components:
           enum: [bird]
         wingSpan:
           type: integer
-    Machine:
+    MachineResponse:
       type: object
       required:
         - objectType

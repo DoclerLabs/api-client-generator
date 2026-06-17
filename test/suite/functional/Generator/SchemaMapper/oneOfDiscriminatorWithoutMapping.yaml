@@ -1,0 +1,42 @@
+openapi: 3.0.0
+info:
+  title: OneOf with a discriminator but without an explicit mapping
+  version: 1.0.0
+
+paths:
+  /example:
+    get:
+      responses:
+        '200':
+          description: An example of an oneOf structure
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Animal'
+                  - $ref: '#/components/schemas/Machine'
+                discriminator:
+                  propertyName: objectType
+
+components:
+  schemas:
+    Animal:
+      type: object
+      required:
+        - objectType
+        - name
+      properties:
+        objectType:
+          type: string
+        name:
+          type: string
+    Machine:
+      type: object
+      required:
+        - objectType
+        - model
+      properties:
+        objectType:
+          type: string
+        model:
+          type: string

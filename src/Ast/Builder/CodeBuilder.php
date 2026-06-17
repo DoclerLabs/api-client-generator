@@ -50,6 +50,7 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\Name\Relative;
 use PhpParser\Node\Stmt;
+use PhpParser\Node\Stmt\Break_;
 use PhpParser\Node\Stmt\Case_;
 use PhpParser\Node\Stmt\Catch_;
 use PhpParser\Node\Stmt\Class_;
@@ -287,6 +288,16 @@ class CodeBuilder extends BuilderFactory
     public function case(Expr $condition, Stmt ...$stmts): Case_
     {
         return new Case_($condition, $stmts);
+    }
+
+    public function default(Stmt ...$stmts): Case_
+    {
+        return new Case_(null, $stmts);
+    }
+
+    public function break(): Break_
+    {
+        return new Break_();
     }
 
     public function if(Expr $condition, array $stmts, array $elseIfs = [], Else_ $else = null): If_
