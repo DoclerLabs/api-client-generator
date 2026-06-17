@@ -106,6 +106,12 @@ class SchemaMapperGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\GetExampleResponseBodyMapper',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
             ],
+            'OneOf response with a discriminator but without mapping with php 8.1' => [
+                '/SchemaMapper/oneOfDiscriminatorWithoutMapping.yaml',
+                '/SchemaMapper/OneOfDiscriminatorWithoutMappingMapper81.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\GetExampleResponseBodyMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
             'OneOf response without discriminator with php 7.4' => [
                 '/SchemaMapper/oneOfWithoutDiscriminator.yaml',
                 '/SchemaMapper/OneOfResponseBodyMapperWithoutDiscriminator74.php',

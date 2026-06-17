@@ -12,8 +12,10 @@ use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaMapperNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt;
+use PhpParser\Node\Stmt\Case_;
 use PhpParser\Node\Stmt\ClassMethod;
 
 class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
@@ -501,53 +503,7 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 
             if ($root->hasOneOf() || $root->hasAnyOf()) {
                 if ($root->getDiscriminator()) {
-                    $ifCondition = $this->builder->funcCall('array_key_exists', [
-                        /** @phpstan-ignore-next-line */
-                        $root->getDiscriminator()->propertyName,
-                        $payloadVariable,
-                    ]);
-
-                    $payloadDiscriminator = $this->builder->getArrayItem(
-                        $payloadVariable,
-                        /** @phpstan-ignore-next-line */
-                        $this->builder->val($root->getDiscriminator()->propertyName)
-                    );
-
-                    $assignMethodName = $this->builder->expr(
-                        $this->builder->assign(
-                            $this->builder->var('methodName'),
-                            $this->builder->concat(
-                                $this->builder->val('set'),
-                                $this->builder->funcCall('ucfirst', [$payloadDiscriminator])
-                            )
-                        )
-                    );
-
-                    $assignMapperName = $this->builder->expr(
-                        $this->builder->assign(
-                            $this->builder->var('mapperName'),
-                            $this->builder->concat(
-                                $payloadDiscriminator,
-                                $this->builder->val('Mapper')
-                            )
-                        )
-                    );
-
-                    $schemaMethodCall = $this->builder->expr(
-                        $this->builder->methodCall(
-                            $this->builder->var('schema'),
-                            '$methodName',
-                            [
-                                $this->builder->methodCall(
-                                    $this->builder->localPropertyFetch('$mapperName'),
-                                    'toSchema',
-                                    [$payloadVariable]
-                                ),
-                            ]
-                        )
-                    );
-
-                    $statements[] = $this->builder->if($ifCondition, [$assignMethodName, $assignMapperName, $schemaMethodCall]);
+                    $statements[] = $this->generateDiscriminatorStatement($root, $payloadVariable);
                 } else {
                     $statements[] = $this->builder->assign($matchesVar, $this->builder->val(0));
 
@@ -596,5 +552,131 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         }
 
         return $statements;
+    }
+
+    private function generateDiscriminatorStatement(Field $root, Variable $payloadVariable): Stmt
+    {
+        $discriminator = $root->getDiscriminator();
+
+        /** @phpstan-ignore-next-line */
+        $propertyName = $discriminator->propertyName;
+
+        $ifCondition = $this->builder->funcCall('array_key_exists', [
+            $propertyName,
+            $payloadVariable,
+        ]);
+
+        $payloadDiscriminator = $this->builder->getArrayItem(
+            $payloadVariable,
+            $this->builder->val($propertyName)
+        );
+
+        $fallbackStatements = $this->generateDiscriminatorFallbackStatements($payloadDiscriminator, $payloadVariable);
+
+        /** @phpstan-ignore-next-line */
+        $mapping = $discriminator->mapping ?? [];
+        $cases   = $this->generateDiscriminatorMappingCases($root, $mapping, $payloadVariable);
+
+        if ($cases === []) {
+            return $this->builder->if($ifCondition, $fallbackStatements);
+        }
+
+        $defaultStatements = [...$fallbackStatements, $this->builder->break()];
+        $cases[]           = $this->builder->default(...$defaultStatements);
+
+        return $this->builder->if($ifCondition, [$this->builder->switch($payloadDiscriminator, ...$cases)]);
+    }
+
+    /**
+     * @return Stmt[]
+     */
+    private function generateDiscriminatorFallbackStatements(Expr $payloadDiscriminator, Variable $payloadVariable): array
+    {
+        $assignMethodName = $this->builder->expr(
+            $this->builder->assign(
+                $this->builder->var('methodName'),
+                $this->builder->concat(
+                    $this->builder->val('set'),
+                    $this->builder->funcCall('ucfirst', [$payloadDiscriminator])
+                )
+            )
+        );
+
+        $assignMapperName = $this->builder->expr(
+            $this->builder->assign(
+                $this->builder->var('mapperName'),
+                $this->builder->concat(
+                    $payloadDiscriminator,
+                    $this->builder->val('Mapper')
+                )
+            )
+        );
+
+        $schemaMethodCall = $this->builder->expr(
+            $this->builder->methodCall(
+                $this->builder->var('schema'),
+                '$methodName',
+                [
+                    $this->builder->methodCall(
+                        $this->builder->localPropertyFetch('$mapperName'),
+                        'toSchema',
+                        [$payloadVariable]
+                    ),
+                ]
+            )
+        );
+
+        return [$assignMethodName, $assignMapperName, $schemaMethodCall];
+    }
+
+    /**
+     * @param string[] $mapping
+     *
+     * @return Case_[]
+     */
+    private function generateDiscriminatorMappingCases(Field $root, array $mapping, Variable $payloadVariable): array
+    {
+        $childrenByClassName = [];
+        foreach ($root->getObjectProperties() as $child) {
+            if ($child->isComposite()) {
+                $childrenByClassName[$child->getPhpClassName()] = $child;
+            }
+        }
+
+        $cases = [];
+        foreach ($mapping as $discriminatorValue => $reference) {
+            $schemaName = $this->resolveSchemaNameFromReference($reference);
+            if (!isset($childrenByClassName[$schemaName])) {
+                continue;
+            }
+
+            $child   = $childrenByClassName[$schemaName];
+            $cases[] = $this->builder->case(
+                $this->builder->val((string)$discriminatorValue),
+                $this->builder->expr(
+                    $this->builder->methodCall(
+                        $this->builder->var('schema'),
+                        $this->getSetMethodName($child),
+                        [
+                            $this->builder->methodCall(
+                                $this->builder->localPropertyFetch(SchemaMapperNaming::getPropertyName($child)),
+                                'toSchema',
+                                [$payloadVariable]
+                            ),
+                        ]
+                    )
+                ),
+                $this->builder->break()
+            );
+        }
+
+        return $cases;
+    }
+
+    private function resolveSchemaNameFromReference(string $reference): string
+    {
+        $segments = explode('/', $reference);
+
+        return (string)end($segments);
     }
 }

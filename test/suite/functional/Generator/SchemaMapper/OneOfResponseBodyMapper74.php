@@ -14,23 +14,36 @@ use Test\Schema\GetExampleResponseBody;
 
 class GetExampleResponseBodyMapper implements SchemaMapperInterface
 {
-    private AnimalMapper $animalMapper;
+    private AnimalResponseMapper $animalResponseMapper;
 
-    private MachineMapper $machineMapper;
+    private MachineResponseMapper $machineResponseMapper;
 
-    public function __construct(AnimalMapper $animalMapper, MachineMapper $machineMapper)
+    public function __construct(AnimalResponseMapper $animalResponseMapper, MachineResponseMapper $machineResponseMapper)
     {
-        $this->animalMapper  = $animalMapper;
-        $this->machineMapper = $machineMapper;
+        $this->animalResponseMapper  = $animalResponseMapper;
+        $this->machineResponseMapper = $machineResponseMapper;
     }
 
     public function toSchema(array $payload): GetExampleResponseBody
     {
         $schema = new GetExampleResponseBody();
         if (array_key_exists('objectType', $payload)) {
-            $methodName = 'set' . ucfirst($payload['objectType']);
-            $mapperName = $payload['objectType'] . 'Mapper';
-            $schema->$methodName($this->$mapperName->toSchema($payload));
+            switch ($payload['objectType']) {
+                case 'animal':
+                    $schema->setAnimalResponse($this->animalResponseMapper->toSchema($payload));
+
+                    break;
+                case 'machine':
+                    $schema->setMachineResponse($this->machineResponseMapper->toSchema($payload));
+
+                    break;
+                default:
+                    $methodName = 'set' . ucfirst($payload['objectType']);
+                    $mapperName = $payload['objectType'] . 'Mapper';
+                    $schema->$methodName($this->$mapperName->toSchema($payload));
+
+                    break;
+            }
         }
 
         return $schema;

@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [11.2.1] - 2026-06-17
+### Fixed
+- Response body mappers now honor the `oneOf`/`anyOf` discriminator `mapping`, dispatching to the correct setter and mapper instead of deriving them from the raw discriminator value (which broke when a mapping value differed from its schema name)
+
 ## [11.2.0] - 2026-02-19
 ### Added
 - RFC 6839 support: Content types with `+json` suffix (e.g., `application/vnd.api+json`, `application/hal+json`, `application/problem+json`) are now recognized as JSON-based formats
