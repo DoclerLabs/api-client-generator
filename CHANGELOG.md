@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [11.2.2] - 2026-08-07
+### Security
+- Updated `guzzlehttp/guzzle` to 7.15.2, resolving CVE-2026-69246 (a noncanonical host can bypass host-based checks) along with the earlier 7.12.x–7.15.x advisories
+- Updated `guzzlehttp/psr7` to 2.13.0
+- Updated `composer/composer` to 2.2.29 (development dependency), resolving GHSA-499r-g7pc-vmp9 (arbitrary file write outside vendor via a malicious transitive package name)
+
+### Changed
+- Updated `guzzlehttp/promises` to 2.5.1, `psr/http-client` to 1.0.3 and `symfony/polyfill-intl-normalizer` to v1.38.0
+- Applied the same Guzzle updates to the `example` and `example3_1` lockfiles
+
+No generator behaviour changed in this release; it updates locked dependencies only.
+
 ## [11.2.1] - 2026-06-17
 ### Fixed
 - Response body mappers now honor the `oneOf`/`anyOf` discriminator `mapping`, dispatching to the correct setter and mapper instead of deriving them from the raw discriminator value (which broke when a mapping value differed from its schema name)
