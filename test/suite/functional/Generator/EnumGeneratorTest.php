@@ -53,6 +53,18 @@ class EnumGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\GetResourcesByStatusesStatusesItemEnum',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
             ],
+            'Request parameter enum with a value consisting of symbols only' => [
+                '/Request/getResourcesBySymbols.yaml',
+                '/Schema/OperatorEnum.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\OperatorEnum',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Inline array of enums request parameter with a value consisting of symbols only' => [
+                '/Request/getResourcesBySymbols.yaml',
+                '/Schema/GetResourcesBySymbolsEmbedItemEnum.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\GetResourcesBySymbolsEmbedItemEnum',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
         ];
     }
 

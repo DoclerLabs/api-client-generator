@@ -19,6 +19,8 @@ use PhpParser\NodeAbstract;
 
 abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
 {
+    private const CONSTANT_NAME_PATTERN = '/^[a-zA-Z_][a-zA-Z0-9_]*$/';
+
     protected CodeBuilder $builder;
 
     abstract public function generate(Specification $specification, PhpFileCollection $fileRegistry): void;
@@ -112,19 +114,34 @@ abstract class MutatorAccessorClassGeneratorAbstract extends GeneratorAbstract
             return [];
         }
 
-        $statements = [];
         $enumValues = $field->isArrayOfEnums() ? $field->getArrayItem()->getEnumValues() : $field->getEnumValues();
-        if (!empty($enumValues)) {
-            foreach ($enumValues as $enumValue) {
-                if (is_string($enumValue)) {
-                    $constName = SchemaNaming::getEnumConstName($field, $enumValue);
-                    if (preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $constName)) {
-                        $statements[] = $this->builder->constant(
-                            $constName,
-                            $this->builder->val($enumValue)
-                        );
-                    }
+        $enumValues = array_filter($enumValues ?? [], 'is_string');
+
+        $constNames = [];
+        foreach ($enumValues as $key => $enumValue) {
+            $constName = SchemaNaming::getEnumConstName($field, $enumValue);
+            if (preg_match(self::CONSTANT_NAME_PATTERN, $constName)) {
+                $constNames[$key] = $constName;
+            }
+        }
+
+        // a value that yields no valid name from its letters and digits (e.g. `*`) gets a symbolic one
+        foreach ($enumValues as $key => $enumValue) {
+            if (!isset($constNames[$key])) {
+                $constName = SchemaNaming::getSymbolicEnumConstName($field, $enumValue);
+                if (preg_match(self::CONSTANT_NAME_PATTERN, $constName)) {
+                    $constNames[$key] = SchemaNaming::getUniqueName($constName, $constNames);
                 }
+            }
+        }
+
+        $statements = [];
+        foreach ($enumValues as $key => $enumValue) {
+            if (isset($constNames[$key])) {
+                $statements[] = $this->builder->constant(
+                    $constNames[$key],
+                    $this->builder->val($enumValue)
+                );
             }
         }
 
