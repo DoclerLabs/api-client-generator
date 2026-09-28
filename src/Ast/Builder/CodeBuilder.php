@@ -381,7 +381,7 @@ class CodeBuilder extends BuilderFactory
         return new Throw_($this->new($exceptionClassName, $args));
     }
 
-    public function throwExpression(string $exceptionClassName, Expr $message = null): ThrowExpression
+    public function throwExpression(string $exceptionClassName, ?Expr $message = null): ThrowExpression
     {
         $args = [];
         if ($message !== null) {
