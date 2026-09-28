@@ -1,0 +1,26 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Literal Responses
+paths:
+  /clock:
+    get:
+      operationId: getClock
+      responses:
+        '200':
+          description: Server time
+          content:
+            application/json:
+              schema:
+                type: string
+  /last-seen:
+    get:
+      operationId: getLastSeen
+      responses:
+        '200':
+          description: Last seen time, if any
+          content:
+            application/json:
+              schema:
+                type: string
+                nullable: true

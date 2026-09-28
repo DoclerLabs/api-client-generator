@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DoclerLabs\ApiClientGenerator\Generator;
 
+use DoclerLabs\ApiClientException\UnexpectedResponseBodyException;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\CodeBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\MethodBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\ParameterBuilder;
@@ -23,9 +24,11 @@ use DoclerLabs\ApiClientGenerator\Output\Copy\Response\ResponseHandler;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\ContentTypeSerializerInterface;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Scalar\LNumber;
+use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
 use Psr\Container\ContainerInterface;
@@ -36,6 +39,8 @@ use RuntimeException;
 class ClientGenerator extends GeneratorAbstract
 {
     private const UNMAPPED_STATUS_CODE_MESSAGE = 'Response status code not properly mapped in schema.';
+
+    private const MISSING_LITERAL_VALUE_MESSAGE = 'Response body does not contain the expected non-null value.';
 
     public function __construct(
         string $baseNamespace,
@@ -265,13 +270,69 @@ class ClientGenerator extends GeneratorAbstract
             return $this->builder->methodCall($getMethod, 'toSchema', [$unserializedResponseVar]);
         }
 
+        $literalValue = $this->getLiteralResponseValue($unserializedResponseVar);
+
+        // An empty response body carries no literal value: a nullable response maps it to null, any other throws
+        // (inline where throw expressions are supported, otherwise via generateLiteralResponseGuard()).
+        if ($responseBody->isNullable()) {
+            return $this->builder->coalesce($literalValue, $this->builder->val(null));
+        }
+
+        if ($this->phpVersion->isThrowExpressionSupported()) {
+            $this->addImport(UnexpectedResponseBodyException::class);
+
+            return $this->builder->coalesce(
+                $literalValue,
+                $this->builder->throwExpression(
+                    'UnexpectedResponseBodyException',
+                    $this->builder->val(self::MISSING_LITERAL_VALUE_MESSAGE)
+                )
+            );
+        }
+
+        return $literalValue;
+    }
+
+    /**
+     * Guards a non-nullable literal response against an empty body on targets without throw expressions.
+     *
+     * @return Stmt[]
+     */
+    private function generateLiteralResponseGuard(Variable $unserializedResponseVar, Field $responseBody): array
+    {
+        if (
+            $responseBody->isComposite()
+            || $responseBody->isNullable()
+            || $this->phpVersion->isThrowExpressionSupported()
+        ) {
+            return [];
+        }
+
+        $this->addImport(UnexpectedResponseBodyException::class);
+
+        return [
+            $this->builder->if(
+                $this->builder->not(
+                    $this->builder->funcCall('isset', [$this->getLiteralResponseValue($unserializedResponseVar)])
+                ),
+                [
+                    $this->builder->throw(
+                        'UnexpectedResponseBodyException',
+                        $this->builder->val(self::MISSING_LITERAL_VALUE_MESSAGE)
+                    ),
+                ]
+            ),
+        ];
+    }
+
+    private function getLiteralResponseValue(Variable $unserializedResponseVar): ArrayDimFetch
+    {
         $this->addImport(CopiedNamespace::getImport($this->baseNamespace, ContentTypeSerializerInterface::class));
-        $literalValue = $this->builder->getArrayItem(
+
+        return $this->builder->getArrayItem(
             $unserializedResponseVar,
             $this->builder->classConstFetch('ContentTypeSerializerInterface', 'LITERAL_VALUE_KEY')
         );
-
-        return $literalValue;
     }
 
     private function emptyBodyAction(
@@ -300,6 +361,7 @@ class ClientGenerator extends GeneratorAbstract
         $handleResponseStmt = $this->builder->localMethodCall('handleResponse', $this->builder->args([$sendRequestStmt]));
         $stmts              = [
             $this->builder->assign($responseVar, $handleResponseStmt),
+            ...$this->generateLiteralResponseGuard($responseVar, $responseBody),
             $this->builder->return($this->processResponse($responseVar, $responseBody)),
         ];
 
@@ -357,7 +419,10 @@ class ClientGenerator extends GeneratorAbstract
                     if ($this->phpVersion->isMatchSupported()) {
                         $matchBodies[$phpClassName] = $response;
                     } else {
-                        $caseBodies[$phpClassName] = $this->builder->return($response);
+                        $caseBodies[$phpClassName] = [
+                            ...$this->generateLiteralResponseGuard($unserializedResponseVar, $responseBody),
+                            $this->builder->return($response),
+                        ];
                     }
                 }
             }
@@ -394,7 +459,7 @@ class ClientGenerator extends GeneratorAbstract
                 for ($i = 0, $l = count($caseConditions[$phpClassName]) - 1; $i < $l; ++$i) {
                     $cases[] = $this->builder->case($caseConditions[$phpClassName][$i]);
                 }
-                $cases[] = $this->builder->case($caseConditions[$phpClassName][$l], $caseBody);
+                $cases[] = $this->builder->case($caseConditions[$phpClassName][$l], ...$caseBody);
             }
             $stmts[] = $this->builder->switch(
                 $this->builder->methodCall($responseVar, 'getStatusCode'),
