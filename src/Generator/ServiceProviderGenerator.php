@@ -62,7 +62,11 @@ class ServiceProviderGenerator extends GeneratorAbstract
                 )
             );
 
-        $compositeFields = $specification->getCompositeResponseFields()->getUniqueByPhpClassName();
+        $compositeFields = array_filter(
+            $specification->getCompositeResponseFields()->getUniqueByPhpClassName(),
+            // array-of-enum items have no mapper to register
+            static fn (Field $field): bool => !$field->isEnum()
+        );
 
         $classBuilder = $this
             ->builder

@@ -30,6 +30,11 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
     {
         foreach ($specification->getCompositeResponseFields() as $field) {
             /** @var Field $field */
+            if ($field->isEnum()) {
+                // array-of-enum items are mapped by the parent with from(), they need no mapper
+                continue;
+            }
+
             $this->generateMapper($fileRegistry, $field);
         }
     }

@@ -181,6 +181,23 @@ class SchemaMapperGeneratorTest extends AbstractGeneratorTest
         ];
     }
 
+    public function testArrayOfEnumsItemsGetNoMapper(): void
+    {
+        $this->setUpContainer(ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build());
+        $specificationPath = __DIR__ . '/Schema/arrayOfEnums.yaml';
+        $specification     = $this->specificationParser->parse(
+            $this->specificationReader->read($specificationPath),
+            $specificationPath
+        );
+
+        $this->sut->generate($specification, $this->fileRegistry);
+
+        self::assertSame(
+            [self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ItemWithArraysOfEnumPropertiesMapper'],
+            array_keys(iterator_to_array($this->fileRegistry))
+        );
+    }
+
     protected function generatorClassName(): string
     {
         return SchemaMapperGenerator::class;
