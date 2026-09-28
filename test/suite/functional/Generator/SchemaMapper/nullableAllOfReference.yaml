@@ -1,0 +1,43 @@
+openapi: 3.0.0
+info:
+  title: Nullable references expressed with allOf
+  version: 1.0.0
+
+paths:
+  /profile:
+    get:
+      operationId: getProfile
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+
+components:
+  schemas:
+    Profile:
+      type: object
+      required:
+        - membership
+        - subscription
+      properties:
+        membership:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/Membership'
+        subscription:
+          allOf:
+            - $ref: '#/components/schemas/Membership'
+        failedCondition:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/Membership'
+    Membership:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: integer

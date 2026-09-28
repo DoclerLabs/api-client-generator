@@ -178,6 +178,18 @@ class SchemaMapperGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ItemWithArraysOfEnumPropertiesMapper',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
             ],
+            'Nullable allOf reference with php 7.4' => [
+                '/SchemaMapper/nullableAllOfReference.yaml',
+                '/SchemaMapper/NullableAllOfReferenceMapper74.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ProfileMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Nullable allOf reference with php 8.1' => [
+                '/SchemaMapper/nullableAllOfReference.yaml',
+                '/SchemaMapper/NullableAllOfReferenceMapper81.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ProfileMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
         ];
     }
 

@@ -283,6 +283,9 @@ class FieldFactory
 
     private function mergeAllOfAttributes(SpecObjectInterface $schema, bool &$nullable): SpecObjectInterface
     {
+        // `nullable: true` next to `allOf` (the OAS 3.0 nullable reference idiom) must survive the merge:
+        // the referenced schemas carry `nullable: false` by default, which would otherwise override it.
+        $explicitlyNullable = $nullable;
         foreach ($schema->allOf as $allOfSchema) {
             if ($allOfSchema instanceof Reference) {
                 $allOfSchema = $allOfSchema->resolve();
@@ -291,7 +294,7 @@ class FieldFactory
             if (in_array('null', (array)$allOfSchema->type, true)) {
                 // 3.1 schema nullable does not exist anymore, rather it's done via type
                 $nullable = true;
-            } elseif (isset($allOfSchema->nullable)) {
+            } elseif (!$explicitlyNullable && isset($allOfSchema->nullable)) {
                 $nullable = $allOfSchema->nullable;
             }
 
