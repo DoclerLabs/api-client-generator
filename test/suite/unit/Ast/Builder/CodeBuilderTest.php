@@ -314,6 +314,12 @@ EOD,
         );
     }
 
+    public function testCastToString(): void
+    {
+        $cast = $this->sut->castToString($this->sut->var('value'));
+        self::assertEquals('(string) $value', $this->printer->prettyPrintExpr($cast));
+    }
+
     public function testNotEquals(): void
     {
         $left  = $this->sut->var('left');

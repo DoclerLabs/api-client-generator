@@ -1,0 +1,56 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Example API
+paths:
+  '/v1/messages':
+    get:
+      description: Get messages, with non-string header parameters
+      operationId: getMessages
+      parameters:
+        - name: X-Account-Id
+          in: header
+          required: true
+          schema:
+            type: integer
+        - name: X-User-Id
+          in: header
+          schema:
+            type: integer
+        - name: X-Score
+          in: header
+          schema:
+            type: number
+            format: float
+            nullable: true
+        - name: X-Debug
+          in: header
+          required: true
+          schema:
+            type: boolean
+        - name: X-Preview
+          in: header
+          schema:
+            type: boolean
+        - name: X-Priority
+          in: header
+          schema:
+            type: integer
+            enum:
+              - 1
+              - 2
+        - name: X-User-Type
+          in: header
+          schema:
+            type: string
+            enum:
+              - member
+              - performer
+        - name: X-Trace-Id
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Messages found.

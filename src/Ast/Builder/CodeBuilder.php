@@ -261,6 +261,11 @@ class CodeBuilder extends BuilderFactory
         return new Cast\Array_($expr);
     }
 
+    public function castToString(Expr $expr): Cast\String_
+    {
+        return new Cast\String_($expr);
+    }
+
     public function expr(Expr $expr): Expression
     {
         return new Expression($expr);
