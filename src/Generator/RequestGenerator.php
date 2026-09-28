@@ -431,7 +431,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                 } elseif ($field->isArrayOfEnums()) {
                     $enumField = $field->getArrayItem();
                     $this->addImport($this->fqdn($this->withSubNamespace(SchemaGenerator::NAMESPACE_SUBPATH), $enumField->getPhpClassName()));
-                    $fieldsArr[$field->getName()] = $this->builder->funcCall(
+                    $enumValues = $this->builder->funcCall(
                         'array_map',
                         [
                             $this->builder->arrowFunction(
@@ -442,6 +442,16 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                             $fieldsArr[$field->getName()],
                         ]
                     );
+
+                    if ($field->isNullable() || $field->isOptional()) {
+                        $enumValues = $this->builder->ternary(
+                            $this->builder->equals($fieldsArr[$field->getName()], $this->builder->val(null)),
+                            $this->builder->val(null),
+                            $enumValues
+                        );
+                    }
+
+                    $fieldsArr[$field->getName()] = $enumValues;
                 }
             }
         }
@@ -490,11 +500,8 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         }
 
         $returnVal  = $this->builder->array($headers);
-        $fieldsArr  = [];
+        $fieldsArr  = $this->generateFieldsArray($fields);
         $returnType = 'array';
-        foreach ($fields as $field) {
-            $fieldsArr[$field->getName()] = $this->builder->localPropertyFetch($field->getPhpVariableName());
-        }
 
         if (!empty($fieldsArr)) {
             $returnVal = $this->builder->funcCall(

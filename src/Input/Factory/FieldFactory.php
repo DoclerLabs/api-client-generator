@@ -107,7 +107,11 @@ class FieldFactory
                 }
                 $sibling        = $this->resolveReference($schema->items);
                 $itemsReference = $schema->items;
-                if (isset($sibling->allOf) || FieldType::isSpecificationTypeObject($sibling->type)) {
+                if (
+                    isset($sibling->allOf)
+                    || FieldType::isSpecificationTypeObject($sibling->type)
+                    || (!($itemsReference instanceof Reference) && !empty($sibling->enum))
+                ) {
                     $itemReferenceName = SchemaNaming::getClassName(
                         $itemsReference,
                         $operationName . ucfirst($fieldName) . 'Item'

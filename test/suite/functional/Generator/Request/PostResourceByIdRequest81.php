@@ -158,7 +158,7 @@ class PostResourceByIdRequest implements RequestInterface
 
         return array_merge(['X-WSSE' => $xwsse, 'Content-Type' => $this->contentType->value], array_map(static function ($value) {
             return $value instanceof SerializableInterface ? $value->toArray() : $value;
-        }, array_filter(['contentType' => $this->contentType, 'X-Request-ID' => $this->xRequestId], static function ($value) {
+        }, array_filter(['contentType' => $this->contentType->value, 'X-Request-ID' => $this->xRequestId], static function ($value) {
             return null !== $value;
         })));
     }

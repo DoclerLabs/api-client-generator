@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [11.3.0] - 2026-09-28
+### Fixed
+These affect `CLIENT_PHP_VERSION` 8.1 and later, where enums are generated as native PHP enums.
+- Enum case names that start with a digit (e.g. the value `+7 days`) are now prefixed with `V_`, as numeric values already were (`case V_7_DAYS`). They used to produce an invalid `case 7_DAYS` that aborted the generation
+- Optional and nullable array-of-enum request parameters are now only mapped to their values when set. Leaving one unset used to throw a `TypeError` from `array_map()` when the request was sent
+- Enum header parameters are now sent as their values, like query, path and cookie parameters. The enum object itself used to reach the PSR-7 message, which threw an `InvalidArgumentException`
+
+### Changed
+- Inline array-of-enum items now get their own enum per operation and field, `{Operation}{Field}ItemEnum` (e.g. `FindServicesCriterionStatusInItemEnum`), following the naming of inline array-of-object items. They used to share a single `Schema\Enum` class, which held the values of only one of them. Regenerating a client that already contains `Schema\Enum` renames that class
+
 ## [11.2.3] - 2026-09-28
 ### Fixed
 - Generated clients can no longer resolve dependency versions that raise PHP 8.4+ deprecations: the generated `composer.json` now requires `docler-labs/api-client-exception` `^1.0 || ^2.3.1` (was `^1.0 || ^2.0`) and, for the Guzzle HTTP message implementation, `guzzlehttp/psr7` `^1.6 || ^2.7` (was `^1.6 || ^2.6`). The 1.x lines stay allowed, so every `CLIENT_PHP_VERSION` target keeps resolving; on PHP 7.4+ Composer now picks only releases that run deprecation-free on PHP 8.5

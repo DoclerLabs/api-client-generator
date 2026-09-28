@@ -56,7 +56,7 @@ class PatchResourceRequest implements RequestInterface
     {
         return array_merge(['X-API-KEY' => $this->apiKey, 'Content-Type' => $this->contentType], array_map(static function ($value) {
             return $value instanceof SerializableInterface ? $value->toArray() : $value;
-        }, array_filter(['Accept' => $this->accept], static function ($value) {
+        }, array_filter(['Accept' => $this->accept->value], static function ($value) {
             return null !== $value;
         })));
     }

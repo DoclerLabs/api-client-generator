@@ -16,13 +16,13 @@ class EnumGenerator extends MutatorAccessorClassGeneratorAbstract
 
     public static function getCaseName(string $value): string
     {
-        $sanitized = preg_replace('/[^A-Z0-9_]/', '', strtoupper(str_replace([' ', '-', '/', '.'], '_', $value)));
+        $sanitized = (string)preg_replace('/[^A-Z0-9_]/', '', strtoupper(str_replace([' ', '-', '/', '.'], '_', $value)));
 
-        if (is_numeric($sanitized)) {
+        if (preg_match('/^[0-9]/', $sanitized) === 1) {
             return 'V_' . $sanitized;
         }
 
-        return (string)$sanitized;
+        return $sanitized;
     }
 
     public function generate(Specification $specification, PhpFileCollection $fileRegistry): void
