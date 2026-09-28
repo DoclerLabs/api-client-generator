@@ -35,6 +35,8 @@ use RuntimeException;
 
 class ClientGenerator extends GeneratorAbstract
 {
+    private const UNMAPPED_STATUS_CODE_MESSAGE = 'Response status code not properly mapped in schema.';
+
     public function __construct(
         string $baseNamespace,
         CodeBuilder $builder,
@@ -369,6 +371,14 @@ class ClientGenerator extends GeneratorAbstract
             foreach ($matchBodies as $phpClassName => $matchBody) {
                 $matchArms[] = $this->builder->matchArm($caseConditions[$phpClassName], $matchBody);
             }
+
+            $this->addImport(RuntimeException::class);
+            $matchArms[] = $this->builder->defaultMatchArm(
+                $this->builder->throwExpression(
+                    'RuntimeException',
+                    $this->builder->val(self::UNMAPPED_STATUS_CODE_MESSAGE)
+                )
+            );
             $stmts[] = $this->builder->return(
                 $this->builder->match(
                     $this->builder->methodCall($responseVar, 'getStatusCode'),
@@ -394,7 +404,7 @@ class ClientGenerator extends GeneratorAbstract
             $this->addImport(RuntimeException::class);
             $stmts[] = $this->builder->throw(
                 'RuntimeException',
-                $this->builder->val('Response status code not properly mapped in schema.')
+                $this->builder->val(self::UNMAPPED_STATUS_CODE_MESSAGE)
             );
         }
 

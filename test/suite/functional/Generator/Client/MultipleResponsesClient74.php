@@ -15,6 +15,7 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 use Test\Request\AddPetTaskRequest;
+use Test\Request\ImportPetsRequest;
 use Test\Request\Mapper\RequestMapperInterface;
 use Test\Request\RequestInterface;
 use Test\Request\SavePetRequest;
@@ -66,6 +67,19 @@ class MultipleResponsesClient
                 return $this->container->get(PetMapper::class)->toSchema($unserializedResponse);
             case 202:
                 return $this->container->get(PetTaskMapper::class)->toSchema($unserializedResponse);
+        }
+        throw new RuntimeException('Response status code not properly mapped in schema.');
+    }
+
+    public function importPets(ImportPetsRequest $request)
+    {
+        $response             = $this->sendRequest($request);
+        $unserializedResponse = $this->handleResponse($response);
+        switch ($response->getStatusCode()) {
+            case 201:
+                return null;
+            case 202:
+                return null;
         }
         throw new RuntimeException('Response status code not properly mapped in schema.');
     }
