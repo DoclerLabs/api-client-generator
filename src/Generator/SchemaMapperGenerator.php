@@ -641,21 +641,24 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
      */
     private function generateDiscriminatorMappingCases(Field $root, array $mapping, Variable $payloadVariable): array
     {
-        $childrenByClassName = [];
+        $childrenByClassName  = [];
+        $childrenBySchemaName = [];
         foreach ($root->getObjectProperties() as $child) {
             if ($child->isComposite()) {
                 $childrenByClassName[$child->getPhpClassName()] = $child;
+                // the class name can differ from the schema name, e.g. for a reserved word
+                $childrenBySchemaName[$child->getName()] = $child;
             }
         }
 
         $cases = [];
         foreach ($mapping as $discriminatorValue => $reference) {
             $schemaName = $this->resolveSchemaNameFromReference($reference);
-            if (!isset($childrenByClassName[$schemaName])) {
+            $child      = $childrenByClassName[$schemaName] ?? $childrenBySchemaName[$schemaName] ?? null;
+            if ($child === null) {
                 continue;
             }
 
-            $child   = $childrenByClassName[$schemaName];
             $cases[] = $this->builder->case(
                 $this->builder->val((string)$discriminatorValue),
                 $this->builder->expr(

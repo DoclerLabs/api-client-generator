@@ -8,6 +8,7 @@ use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Entity\Constraint\ConstraintCollection;
 use DoclerLabs\ApiClientGenerator\Naming\CaseCaster;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaCollectionNaming;
+use DoclerLabs\ApiClientGenerator\Naming\SchemaNaming;
 use RuntimeException;
 
 class Field
@@ -220,7 +221,7 @@ class Field
     public function getPhpClassName(): string
     {
         if ($this->type->isObject()) {
-            return $this->referenceName;
+            return SchemaNaming::getSchemaClassName($this->referenceName);
         }
 
         if (

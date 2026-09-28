@@ -24,7 +24,8 @@ class EnumGenerator extends MutatorAccessorClassGeneratorAbstract
             return SchemaNaming::getSymbolicEnumValueName($value);
         }
 
-        if (preg_match('/^[0-9]/', $sanitized) === 1) {
+        // a case name cannot start with a digit, and `class` is reserved for the class name constant
+        if (preg_match('/^[0-9]/', $sanitized) === 1 || $sanitized === 'CLASS') {
             return 'V_' . $sanitized;
         }
 

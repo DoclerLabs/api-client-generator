@@ -17,6 +17,6 @@ class SchemaCollectionNaming
 
     public static function getArrayDocType(Field $arrayItem): string
     {
-        return sprintf('%s[]', $arrayItem->getReferenceName());
+        return sprintf('%s[]', $arrayItem->getPhpClassName());
     }
 }

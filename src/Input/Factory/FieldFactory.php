@@ -27,6 +27,9 @@ use UnexpectedValueException;
 
 class FieldFactory
 {
+    /** @var string[] reserved words already reported as schema names */
+    private array $reservedSchemaNames = [];
+
     public function __construct(private PhpNameValidator $nameValidator, private PhpVersion $phpVersion)
     {
     }
@@ -153,6 +156,20 @@ class FieldFactory
                     );
                     trigger_error($warningMessage, E_USER_WARNING);
                 }
+            }
+
+            if (
+                FieldType::isSpecificationTypeObject($type)
+                && SchemaNaming::isReservedClassName($referenceName)
+                && !in_array($referenceName, $this->reservedSchemaNames, true)
+            ) {
+                $this->reservedSchemaNames[] = $referenceName;
+                $warningMessage              = sprintf(
+                    'Schema name %s is a reserved word in PHP, %s is used as class name instead.',
+                    $referenceName,
+                    SchemaNaming::getSchemaClassName($referenceName)
+                );
+                trigger_error($warningMessage, E_USER_WARNING);
             }
 
             $fieldType = new FieldType($type, $this->phpVersion);

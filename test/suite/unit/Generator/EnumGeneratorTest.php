@@ -36,6 +36,7 @@ class EnumGeneratorTest extends TestCase
             'several symbols'             => ['>=', 'GREATER_THAN_EQUALS'],
             'non-ASCII character only'    => ['€', 'U20AC'],
             'empty string'                => ['', 'EMPTY'],
+            'reserved constant name'      => ['class', 'V_CLASS'],
         ];
     }
 

@@ -13,6 +13,23 @@ class SchemaNaming
 {
     private const OPENAPI_COMPONENT_TYPES = ['schemas', 'parameters'];
 
+    private const RESERVED_CLASS_NAME_SUFFIX = 'Schema';
+
+    /**
+     * Words that cannot be used as a class name (keywords and reserved type names) in at least one PHP version.
+     * The soft reserved words (enum, resource, numeric) are still valid class names, so they are not listed.
+     */
+    private const RESERVED_CLASS_NAMES = [
+        'abstract', 'and', 'array', 'as', 'bool', 'break', 'callable', 'case', 'catch', 'class', 'clone', 'const',
+        'continue', 'declare', 'default', 'die', 'do', 'echo', 'else', 'elseif', 'empty', 'enddeclare', 'endfor',
+        'endforeach', 'endif', 'endswitch', 'endwhile', 'eval', 'exit', 'extends', 'false', 'final', 'finally',
+        'float', 'fn', 'for', 'foreach', 'function', 'global', 'goto', 'if', 'implements', 'include', 'include_once',
+        'instanceof', 'insteadof', 'int', 'interface', 'isset', 'iterable', 'list', 'match', 'mixed', 'namespace',
+        'never', 'new', 'null', 'object', 'or', 'parent', 'print', 'private', 'protected', 'public', 'readonly',
+        'require', 'require_once', 'return', 'self', 'static', 'string', 'switch', 'throw', 'trait', 'true', 'try',
+        'unset', 'use', 'var', 'void', 'while', 'xor', 'yield',
+    ];
+
     private const EMPTY_ENUM_VALUE_NAME = 'EMPTY';
 
     private const SYMBOL_NAMES = [
@@ -72,6 +89,20 @@ class SchemaNaming
         }
 
         return CaseCaster::toPascal($referencePath[0]);
+    }
+
+    /**
+     * Class name of an object schema. A schema name that is a reserved word in PHP (e.g. `Match`) gets a `Schema`
+     * suffix; the names derived from the schema name (e.g. `MatchCollection`) are valid and stay unchanged.
+     */
+    public static function getSchemaClassName(string $schemaName): string
+    {
+        return self::isReservedClassName($schemaName) ? $schemaName . self::RESERVED_CLASS_NAME_SUFFIX : $schemaName;
+    }
+
+    public static function isReservedClassName(string $name): bool
+    {
+        return in_array(strtolower($name), self::RESERVED_CLASS_NAMES, true);
     }
 
     public static function getEnumConstName(Field $field, string $enum): string

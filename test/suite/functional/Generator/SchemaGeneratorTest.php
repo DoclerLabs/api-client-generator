@@ -100,6 +100,30 @@ class SchemaGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ItemWithMixed',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
             ],
+            'Schema named after a reserved word with PHP 7.4' => [
+                '/Schema/reservedWords.yaml',
+                '/Schema/MatchSchemaPhp74.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\MatchSchema',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Schema named after a reserved word with PHP 8.1' => [
+                '/Schema/reservedWords.yaml',
+                '/Schema/MatchSchemaPhp81.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\MatchSchema',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Schema referencing schemas named after reserved words' => [
+                '/Schema/reservedWords.yaml',
+                '/Schema/Tournament.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Tournament',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Inline schema with a reserved word fallback name' => [
+                '/Schema/reservedWords.yaml',
+                '/Schema/ClassSchema.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ClassSchema',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
         ];
     }
 
