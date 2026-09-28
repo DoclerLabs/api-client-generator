@@ -232,6 +232,24 @@ class RequestGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\PostResourceByIdRequest',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP83)->build(),
             ],
+            'Request with mandatory and optional array of enums query parameters with php 7.4' => [
+                '/Request/getResourcesByStatuses.yaml',
+                '/Request/GetResourcesByStatusesRequest74.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetResourcesByStatusesRequest',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'Request with mandatory and optional array of enums query parameters with php 8.1' => [
+                '/Request/getResourcesByStatuses.yaml',
+                '/Request/GetResourcesByStatusesRequest81.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetResourcesByStatusesRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Request with mandatory and optional array of enums query parameters with php 8.3' => [
+                '/Request/getResourcesByStatuses.yaml',
+                '/Request/GetResourcesByStatusesRequest83.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetResourcesByStatusesRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP83)->build(),
+            ],
         ];
     }
 
