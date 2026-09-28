@@ -322,6 +322,30 @@ class RequestGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\CreateNoteRequest',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP83)->build(),
             ],
+            'Request with integer, number and boolean header parameters with php 7.2' => [
+                '/Request/getMessages.yaml',
+                '/Request/GetMessagesRequest72.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetMessagesRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP72)->build(),
+            ],
+            'Request with integer, number and boolean header parameters with php 7.4' => [
+                '/Request/getMessages.yaml',
+                '/Request/GetMessagesRequest74.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetMessagesRequest',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'Request with integer, number and boolean header parameters with php 8.1' => [
+                '/Request/getMessages.yaml',
+                '/Request/GetMessagesRequest81.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetMessagesRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Request with integer, number and boolean header parameters with php 8.3' => [
+                '/Request/getMessages.yaml',
+                '/Request/GetMessagesRequest83.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetMessagesRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP83)->build(),
+            ],
         ];
     }
 

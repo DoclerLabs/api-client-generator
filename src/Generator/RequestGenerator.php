@@ -18,6 +18,7 @@ use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Naming\RequestNaming;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Schema\SerializableInterface;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Stmt\ClassMethod;
 
@@ -501,6 +502,14 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         $fieldsArr  = $this->generateFieldsArray($fields);
         $returnType = 'array';
 
+        foreach ($fields as $field) {
+            /** @var Field $field */
+            $headerValue = $this->generateHeaderStringValue($field);
+            if ($headerValue !== null) {
+                $fieldsArr[$field->getName()] = $headerValue;
+            }
+        }
+
         if (!empty($fieldsArr)) {
             $returnVal = $this->builder->funcCall(
                 'array_merge',
@@ -517,6 +526,43 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->setReturnType($returnType)
             ->composeDocBlock([], $returnType)
             ->getNode();
+    }
+
+    /**
+     * PSR-7 header values are strings (guzzlehttp/psr7 >= 2.11 deprecates anything else, nyholm/psr7 rejects booleans),
+     * so integer, number and boolean header parameters (including integer backed enums) are cast to string.
+     * Booleans are sent as '1' and '0', the same way the query and cookie parameters serialize them.
+     * A null value (unset optional or nullable parameter) stays null, so it is still filtered out.
+     * Returns null when the header value needs no conversion.
+     */
+    private function generateHeaderStringValue(Field $field): ?Expr
+    {
+        $type = $field->getType();
+        if (!$type->isInteger() && !$type->isFloat() && !$type->isBoolean()) {
+            return null;
+        }
+
+        $property = $this->builder->localPropertyFetch($field->getPhpVariableName());
+        $value    = $property;
+        if ($field->isEnum() && $this->phpVersion->isEnumSupported()) {
+            $value = $this->builder->propertyFetch($property, 'value');
+        }
+
+        if ($type->isBoolean()) {
+            $stringValue = $this->builder->ternary($value, $this->builder->val('1'), $this->builder->val('0'));
+        } else {
+            $stringValue = $this->builder->castToString($value);
+        }
+
+        if ($field->isNullable() || $field->isOptional()) {
+            $stringValue = $this->builder->ternary(
+                $this->builder->equals($property, $this->builder->val(null)),
+                $this->builder->val(null),
+                $stringValue
+            );
+        }
+
+        return $stringValue;
     }
 
     private function getSecurityHeadersStmts(Operation $operation, Specification $specification): array
