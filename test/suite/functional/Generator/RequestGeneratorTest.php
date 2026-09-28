@@ -274,6 +274,54 @@ class RequestGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\FindItemsRequest',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP83)->build(),
             ],
+            'Request with a body media type without schema with php 7.2' => [
+                '/Request/checkEmailStatus.yaml',
+                '/Request/CheckEmailStatusRequest72.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\CheckEmailStatusRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP72)->build(),
+            ],
+            'Request with a body media type without schema with php 7.4' => [
+                '/Request/checkEmailStatus.yaml',
+                '/Request/CheckEmailStatusRequest74.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\CheckEmailStatusRequest',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'Request with a body media type without schema with php 8.1' => [
+                '/Request/checkEmailStatus.yaml',
+                '/Request/CheckEmailStatusRequest81.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\CheckEmailStatusRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Request with a body media type without schema with php 8.3' => [
+                '/Request/checkEmailStatus.yaml',
+                '/Request/CheckEmailStatusRequest83.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\CheckEmailStatusRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP83)->build(),
+            ],
+            'Request with a body media type without schema next to one with schema with php 7.2' => [
+                '/Request/checkEmailStatus.yaml',
+                '/Request/CreateNoteRequest72.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\CreateNoteRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP72)->build(),
+            ],
+            'Request with a body media type without schema next to one with schema with php 7.4' => [
+                '/Request/checkEmailStatus.yaml',
+                '/Request/CreateNoteRequest74.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\CreateNoteRequest',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'Request with a body media type without schema next to one with schema with php 8.1' => [
+                '/Request/checkEmailStatus.yaml',
+                '/Request/CreateNoteRequest81.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\CreateNoteRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Request with a body media type without schema next to one with schema with php 8.3' => [
+                '/Request/checkEmailStatus.yaml',
+                '/Request/CreateNoteRequest83.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\CreateNoteRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP83)->build(),
+            ],
         ];
     }
 
