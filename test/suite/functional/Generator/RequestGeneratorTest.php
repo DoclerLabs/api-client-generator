@@ -250,6 +250,30 @@ class RequestGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetResourcesByStatusesRequest',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP83)->build(),
             ],
+            'Request with nullable optional parameters with php 7.2' => [
+                '/Request/findItems.yaml',
+                '/Request/FindItemsRequest72.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\FindItemsRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP72)->build(),
+            ],
+            'Request with nullable optional parameters with php 7.4' => [
+                '/Request/findItems.yaml',
+                '/Request/FindItemsRequest74.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\FindItemsRequest',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'Request with nullable optional parameters with php 8.1' => [
+                '/Request/findItems.yaml',
+                '/Request/FindItemsRequest81.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\FindItemsRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Request with nullable optional parameters with php 8.3' => [
+                '/Request/findItems.yaml',
+                '/Request/FindItemsRequest83.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\FindItemsRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP83)->build(),
+            ],
         ];
     }
 

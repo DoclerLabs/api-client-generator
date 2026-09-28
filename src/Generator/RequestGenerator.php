@@ -13,7 +13,6 @@ use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Entity\Request;
 use DoclerLabs\ApiClientGenerator\Generator\Security\SecurityStrategyInterface;
-use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Naming\RequestNaming;
@@ -253,9 +252,8 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             if ($field->isRequired()) {
                 continue;
             }
-            if ($field->isNullable()) {
-                throw new InvalidSpecificationException('Nullable optional parameter is not supported');
-            }
+            // A nullable optional parameter accepts an explicit null. It is treated like an unset parameter:
+            // null values are left out of the query, header and cookie parameters, as they are for required ones.
             $statements[] = $this->generateSet($field);
         }
 

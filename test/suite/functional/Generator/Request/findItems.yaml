@@ -1,0 +1,56 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Example API
+paths:
+  '/v1/items':
+    get:
+      description: Find items with nullable optional parameters
+      operationId: findItems
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - name: name
+          in: query
+          schema:
+            type: string
+            nullable: true
+            minLength: 1
+        - name: status
+          in: query
+          schema:
+            type: string
+            nullable: true
+            enum:
+              - active
+              - inactive
+        - name: createdAfter
+          in: query
+          schema:
+            type: string
+            format: date-time
+            nullable: true
+        - name: X-Request-Source
+          in: header
+          schema:
+            type: string
+            nullable: true
+        - name: session
+          in: cookie
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '204':
+          description: Items found.
+components:
+  schemas:
+    Limit:
+      type: integer
+      nullable: true
+      minimum: 1
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      schema:
+        $ref: '#/components/schemas/Limit'
