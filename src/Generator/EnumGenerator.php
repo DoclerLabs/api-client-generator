@@ -54,6 +54,11 @@ class EnumGenerator extends MutatorAccessorClassGeneratorAbstract
                     $this->generateEnum($field, $fileRegistry);
                 }
             }
+            foreach ($operation->successfulResponses as $response) {
+                if ($response->body !== null && $response->body->isEnum()) {
+                    $this->generateEnum($response->body, $fileRegistry);
+                }
+            }
         }
     }
 

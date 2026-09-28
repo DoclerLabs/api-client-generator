@@ -53,6 +53,18 @@ class EnumGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\GetResourcesByStatusesStatusesItemEnum',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
             ],
+            'Inline enum response body' => [
+                '/Client/literal-responses.yaml',
+                '/Schema/GetHealthResponseBodyEnum.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\GetHealthResponseBodyEnum',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Inline nullable enum response body' => [
+                '/Client/literal-responses.yaml',
+                '/Schema/GetModeResponseBodyEnum.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\GetModeResponseBodyEnum',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
         ];
     }
 

@@ -21,11 +21,13 @@ use Test\Request\GetModeRequest;
 use Test\Request\Mapper\RequestMapperInterface;
 use Test\Request\RequestInterface;
 use Test\Response\ResponseHandler;
+use Test\Schema\GetHealthResponseBodyEnum;
+use Test\Schema\GetModeResponseBodyEnum;
 use Test\Serializer\ContentType\ContentTypeSerializerInterface;
 
 class LiteralResponsesClient
 {
-    public function __construct(private ClientInterface $client, private ContainerInterface $container)
+    public function __construct(private readonly ClientInterface $client, private readonly ContainerInterface $container)
     {
     }
 
@@ -48,18 +50,18 @@ class LiteralResponsesClient
         return $response[ContentTypeSerializerInterface::LITERAL_VALUE_KEY] ?? null;
     }
 
-    public function getHealth(GetHealthRequest $request): string
+    public function getHealth(GetHealthRequest $request): GetHealthResponseBodyEnum
     {
         $response = $this->handleResponse($this->sendRequest($request));
 
-        return $response[ContentTypeSerializerInterface::LITERAL_VALUE_KEY] ?? throw new UnexpectedResponseBodyException('Response body does not contain the expected non-null value.');
+        return GetHealthResponseBodyEnum::from($response[ContentTypeSerializerInterface::LITERAL_VALUE_KEY] ?? throw new UnexpectedResponseBodyException('Response body does not contain the expected non-null value.'));
     }
 
-    public function getMode(GetModeRequest $request): ?string
+    public function getMode(GetModeRequest $request): ?GetModeResponseBodyEnum
     {
         $response = $this->handleResponse($this->sendRequest($request));
 
-        return $response[ContentTypeSerializerInterface::LITERAL_VALUE_KEY] ?? null;
+        return isset($response[ContentTypeSerializerInterface::LITERAL_VALUE_KEY]) ? GetModeResponseBodyEnum::from($response[ContentTypeSerializerInterface::LITERAL_VALUE_KEY]) : null;
     }
 
     protected function handleResponse(ResponseInterface $response)

@@ -15,7 +15,9 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 use Test\Request\GetClockRequest;
+use Test\Request\GetHealthRequest;
 use Test\Request\GetLastSeenRequest;
+use Test\Request\GetModeRequest;
 use Test\Request\Mapper\RequestMapperInterface;
 use Test\Request\RequestInterface;
 use Test\Response\ResponseHandler;
@@ -49,6 +51,23 @@ class LiteralResponsesClient
     }
 
     public function getLastSeen(GetLastSeenRequest $request): ?string
+    {
+        $response = $this->handleResponse($this->sendRequest($request));
+
+        return $response[ContentTypeSerializerInterface::LITERAL_VALUE_KEY] ?? null;
+    }
+
+    public function getHealth(GetHealthRequest $request): string
+    {
+        $response = $this->handleResponse($this->sendRequest($request));
+        if (!isset($response[ContentTypeSerializerInterface::LITERAL_VALUE_KEY])) {
+            throw new UnexpectedResponseBodyException('Response body does not contain the expected non-null value.');
+        }
+
+        return $response[ContentTypeSerializerInterface::LITERAL_VALUE_KEY];
+    }
+
+    public function getMode(GetModeRequest $request): ?string
     {
         $response = $this->handleResponse($this->sendRequest($request));
 

@@ -24,3 +24,29 @@ paths:
               schema:
                 type: string
                 nullable: true
+  /health:
+    get:
+      operationId: getHealth
+      responses:
+        '200':
+          description: Health check
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - OK
+  /mode:
+    get:
+      operationId: getMode
+      responses:
+        '200':
+          description: Mode, if set
+          content:
+            application/json:
+              schema:
+                type: string
+                nullable: true
+                enum:
+                  - auto
+                  - manual

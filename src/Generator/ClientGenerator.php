@@ -271,17 +271,36 @@ class ClientGenerator extends GeneratorAbstract
         }
 
         $literalValue = $this->getLiteralResponseValue($unserializedResponseVar);
+        $isEnum       = $responseBody->isEnum() && $this->phpVersion->isEnumSupported();
+        if ($isEnum) {
+            $this->addImport(
+                sprintf(
+                    '%s%s\\%s',
+                    $this->baseNamespace,
+                    EnumGenerator::NAMESPACE_SUBPATH,
+                    $responseBody->getPhpClassName()
+                )
+            );
+        }
 
         // An empty response body carries no literal value: a nullable response maps it to null, any other throws
         // (inline where throw expressions are supported, otherwise via generateLiteralResponseGuard()).
         if ($responseBody->isNullable()) {
+            if ($isEnum) {
+                return $this->builder->ternary(
+                    $this->builder->funcCall('isset', [$literalValue]),
+                    $this->builder->staticCall($responseBody->getPhpClassName(), 'from', [$literalValue]),
+                    $this->builder->val(null)
+                );
+            }
+
             return $this->builder->coalesce($literalValue, $this->builder->val(null));
         }
 
+        $value = $literalValue;
         if ($this->phpVersion->isThrowExpressionSupported()) {
             $this->addImport(UnexpectedResponseBodyException::class);
-
-            return $this->builder->coalesce(
+            $value = $this->builder->coalesce(
                 $literalValue,
                 $this->builder->throwExpression(
                     'UnexpectedResponseBodyException',
@@ -290,7 +309,11 @@ class ClientGenerator extends GeneratorAbstract
             );
         }
 
-        return $literalValue;
+        if ($isEnum) {
+            return $this->builder->staticCall($responseBody->getPhpClassName(), 'from', [$value]);
+        }
+
+        return $value;
     }
 
     /**
