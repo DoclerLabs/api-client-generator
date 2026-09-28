@@ -31,6 +31,8 @@ class Field
 
     private mixed $discriminator = null;
 
+    private bool $explicitReferenceName = false;
+
     public function __construct(
         private PhpVersion $phpVersion,
         private string $name,
@@ -121,6 +123,28 @@ class Field
     public function getReferenceName(): string
     {
         return $this->referenceName;
+    }
+
+    public function setReferenceName(string $referenceName): self
+    {
+        $this->referenceName = $referenceName;
+
+        return $this;
+    }
+
+    /**
+     * Whether the reference name is the name of the referenced component, rather than a fallback name.
+     */
+    public function hasExplicitReferenceName(): bool
+    {
+        return $this->explicitReferenceName;
+    }
+
+    public function setExplicitReferenceName(bool $explicitReferenceName): self
+    {
+        $this->explicitReferenceName = $explicitReferenceName;
+
+        return $this;
     }
 
     public function isRequired(): bool

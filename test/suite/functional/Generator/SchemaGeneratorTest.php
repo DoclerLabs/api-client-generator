@@ -124,6 +124,30 @@ class SchemaGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ClassSchema',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
             ],
+            'Schema with an enum property whose class name collides' => [
+                '/Schema/classNameCollisions.yaml',
+                '/Schema/CallWithCollidingEnum.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Call',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Component schema keeps its name when an inline schema collides with it' => [
+                '/Schema/classNameCollisions.yaml',
+                '/Schema/HotDeal.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\HotDeal',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Inline schema colliding with a component schema gets a numeric suffix' => [
+                '/Schema/classNameCollisions.yaml',
+                '/Schema/HotDeal2.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\HotDeal2',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Schema with an inline property whose class name collides' => [
+                '/Schema/classNameCollisions.yaml',
+                '/Schema/PageItem.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\PageItem',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
         ];
     }
 

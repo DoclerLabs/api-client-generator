@@ -125,7 +125,7 @@ class FieldFactory
                 $arrayItem = $this->create(
                     $operationName,
                     lcfirst($itemReferenceName),
-                    $sibling,
+                    $itemsReference,
                     true,
                     $itemReferenceName
                 );
@@ -193,6 +193,8 @@ class FieldFactory
                 !empty($oneOf),
                 !empty($anyOf)
             );
+
+            $field->setExplicitReferenceName($schemaOrReference instanceof Reference);
 
             if ($arrayItem !== null) {
                 $field->setArrayItem($arrayItem);
