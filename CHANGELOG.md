@@ -4,6 +4,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [11.4.0] - 2026-09-28
+### Fixed
+Generation failures:
+- A nullable optional path, query or header parameter no longer aborts generation with "Nullable optional parameter is not supported". Setting it to `null` leaves it out, the same as leaving it unset
+- A request body media type without a `schema` (e.g. `application/x-www-form-urlencoded: {}`) no longer crashes the generator. The request sends that `Content-Type` with no body. With several media types, the body is now taken from the one that has a schema, whatever their order
+- A schema named after a PHP reserved word (`Match`, `List`, `Class`, ...) now gets a `Schema` suffix (`MatchSchema`, with a warning) instead of producing a class that doesn't parse on PHP 8. The enum value `class` becomes `V_CLASS`
+- A literal (scalar) body among several 2xx responses no longer aborts generation
+
+Generated code that threw or misbehaved at runtime:
+- Integer, number and boolean header parameters (including integer-backed enums) are now sent as strings; `guzzlehttp/psr7` 2.11+ raised `E_USER_DEPRECATED` for them. Booleans are sent as `1`/`0`, like query and cookie parameters
+- Request bodies whose schema is a primitive or an array of non-objects are now serialized, through the new copied `Request\LiteralRequestBody`. They used to fail on every call
+- A `nullable: true` property defined as `allOf: [$ref]` (the OpenAPI 3.0 nullable-reference idiom) now keeps its nullability instead of throwing a `TypeError` on `null`
+- Optional nullable enum properties map `null` to `null` instead of calling `Enum::from(null)` (8.1+)
+- oneOf/anyOf alternatives without a discriminator that differ only by an enum value are matched correctly: the enum `ValueError` is caught like `UnexpectedResponseBodyException` (8.1+)
+- A discriminator value that the mapping (or implicit schema-name mapping) doesn't cover now throws `UnexpectedResponseBodyException` instead of a PHP `Error` from a dynamic mapper call
+- Arrays of arrays of objects are mapped to arrays of their collections, as the docblocks already declared, instead of staying raw arrays
+- A 2xx status code not listed in the specification now throws `RuntimeException` on 8.0+ targets too, as the pre-8.0 `switch` already did, instead of `UnhandledMatchError`
+- An empty or `null` body for a non-nullable literal (scalar) response throws `UnexpectedResponseBodyException` instead of an "Undefined array key" warning followed by a `TypeError`; a nullable one returns `null`
+- Inline enum response bodies get their enum class generated (8.1+). The return type used to name a class that did not exist
+- Optional untyped (`mixed`) properties are initialised with `null` (8.0+) instead of failing with "must not be accessed before initialization"; `nullable: true` without a type no longer produces the invalid `?mixed`
+- Enum values made only of symbols (`*`, `=`, `>=`, ...) get names such as `ASTERISK` and `EQUALS` instead of being dropped, which could leave an enum with no cases
+- Different schemas that derive the same class name, such as an enum property and an enum parameter, or an inline schema and a component, get distinct classes with a numeric suffix (`CallStatus2Enum`, `HotDeal2`) and a warning, instead of silently merging into one. Identical definitions still share a class
+
+### Changed
+These are the changes regenerated clients can notice:
+- The copied `AbstractJsonContentTypeSerializer` unwraps `LiteralRequestBody` values, so it changes in every generated client that uses JSON
+- A `false` boolean header is sent as `0` instead of an empty value
+- Properties using the nullable `allOf` idiom become nullable in their constructor, getter and property type
+- Arrays of arrays of objects now return collections (`FooCollection[]`) instead of raw arrays
+- In a specification with a discriminator mapping, a value that is not a mapping key no longer maps by accident when it equals the lcfirst class name of a mapped alternative; it throws `UnexpectedResponseBodyException`
+- Array-of-enum response items no longer get an `{X}EnumMapper` class and service entry (8.1+); it had an empty `toSchema()` and was never used
+- Schemas named after reserved words and colliding schemas get new class names as described above. Existing, working class names are kept
+
 ## [11.3.0] - 2026-09-28
 ### Fixed
 These affect `CLIENT_PHP_VERSION` 8.1 and later, where enums are generated as native PHP enums.
