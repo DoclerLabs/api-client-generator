@@ -26,6 +26,7 @@ use DoclerLabs\ApiClientGenerator\Generator\Security\BasicAuthenticationSecurity
 use DoclerLabs\ApiClientGenerator\Generator\Security\BearerAuthenticationSecurityStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\Security\XWSSESecurityStrategy;
 use DoclerLabs\ApiClientGenerator\Generator\ServiceProviderGenerator;
+use DoclerLabs\ApiClientGenerator\Input\ClassNameCollisionResolver;
 use DoclerLabs\ApiClientGenerator\Input\Configuration;
 use DoclerLabs\ApiClientGenerator\Input\Factory\FieldFactory;
 use DoclerLabs\ApiClientGenerator\Input\Factory\OperationCollectionFactory;
@@ -144,6 +145,11 @@ class ServiceProvider implements ServiceProviderInterface
 
         $pimple[OpenApiParser::class] = static fn (Container $container) => new OpenApiParser(
             $container[OperationCollectionFactory::class],
+            $container[PhpVersion::class],
+            $container[ClassNameCollisionResolver::class]
+        );
+
+        $pimple[ClassNameCollisionResolver::class] = static fn (Container $container) => new ClassNameCollisionResolver(
             $container[PhpVersion::class]
         );
 

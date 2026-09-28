@@ -1,0 +1,41 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Example API
+paths:
+  '/v1/resources-by-symbols':
+    get:
+      description: Get resources filtered by enum values that consist of symbols only
+      operationId: getResourcesBySymbols
+      parameters:
+        - name: operator
+          in: query
+          required: true
+          schema:
+            type: string
+            default: '='
+            enum:
+              - '='
+              - BETWEEN
+              - IN
+        - name: embed
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - '*'
+      responses:
+        '200':
+          description: list of resources
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer

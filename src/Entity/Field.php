@@ -8,6 +8,7 @@ use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Entity\Constraint\ConstraintCollection;
 use DoclerLabs\ApiClientGenerator\Naming\CaseCaster;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaCollectionNaming;
+use DoclerLabs\ApiClientGenerator\Naming\SchemaNaming;
 use RuntimeException;
 
 class Field
@@ -29,6 +30,8 @@ class Field
     private mixed $default = null;
 
     private mixed $discriminator = null;
+
+    private bool $explicitReferenceName = false;
 
     public function __construct(
         private PhpVersion $phpVersion,
@@ -120,6 +123,28 @@ class Field
     public function getReferenceName(): string
     {
         return $this->referenceName;
+    }
+
+    public function setReferenceName(string $referenceName): self
+    {
+        $this->referenceName = $referenceName;
+
+        return $this;
+    }
+
+    /**
+     * Whether the reference name is the name of the referenced component, rather than a fallback name.
+     */
+    public function hasExplicitReferenceName(): bool
+    {
+        return $this->explicitReferenceName;
+    }
+
+    public function setExplicitReferenceName(bool $explicitReferenceName): self
+    {
+        $this->explicitReferenceName = $explicitReferenceName;
+
+        return $this;
     }
 
     public function isRequired(): bool
@@ -244,7 +269,7 @@ class Field
     public function getPhpClassName(): string
     {
         if ($this->type->isObject()) {
-            return $this->referenceName;
+            return SchemaNaming::getSchemaClassName($this->referenceName);
         }
 
         if (

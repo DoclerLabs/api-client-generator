@@ -171,7 +171,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                     )) {
                         $param->setDefault($this->builder->classConstFetch(
                             $field->getPhpClassName(),
-                            EnumGenerator::getCaseName((string)$default)
+                            EnumGenerator::getCaseNameOfValue($field->getEnumValues() ?? [], $default)
                         ));
                     } else {
                         $param->setDefault($field->getDefault());

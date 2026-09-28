@@ -16,7 +16,8 @@ class Parser
 {
     public function __construct(
         private OperationCollectionFactory $operationCollectionFactory,
-        private PhpVersion $phpVersion
+        private PhpVersion $phpVersion,
+        private ClassNameCollisionResolver $classNameCollisionResolver
     ) {
     }
 
@@ -34,12 +35,16 @@ class Parser
         $compositeRequestFields  = $this->extractCompositeRequestFields($operations);
         $compositeResponseFields = $this->extractCompositeResponseFields($operations);
 
-        return new Specification(
+        $specification = new Specification(
             $openApi,
             $operations,
             $compositeRequestFields,
             $compositeResponseFields,
         );
+
+        $this->classNameCollisionResolver->resolve($specification);
+
+        return $specification;
     }
 
     private function extractCompositeRequestFields(OperationCollection $operations): FieldCollection

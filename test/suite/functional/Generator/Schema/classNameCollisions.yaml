@@ -1,0 +1,144 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Class name collisions Test API
+paths:
+  '/v1/hosts':
+    get:
+      operationId: findHosts
+      parameters:
+        - name: callStatus
+          in: query
+          schema:
+            type: string
+            enum:
+              - in_progress
+              - none
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum:
+              - online
+              - offline
+        - name: criterion_status_eq
+          in: query
+          schema:
+            type: string
+            enum:
+              - pending
+              - activated
+      responses:
+        '204':
+          description: No content
+  '/v1/calls/{callId}':
+    get:
+      operationId: getCall
+      parameters:
+        - name: callId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Call'
+  '/v1/host-stats':
+    get:
+      operationId: findHostStats
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum:
+              - online
+              - offline
+        - name: criterion_status_eq
+          in: query
+          schema:
+            type: string
+            enum:
+              - expiring
+              - expired
+      responses:
+        '204':
+          description: No content
+  '/v1/sections/{sectionId}':
+    get:
+      operationId: getSection
+      parameters:
+        - name: sectionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Section'
+  '/v1/pages/{pageId}':
+    get:
+      operationId: getPage
+      parameters:
+        - name: pageId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageItem'
+components:
+  schemas:
+    Call:
+      type: object
+      required:
+        - callId
+        - status
+      properties:
+        callId:
+          type: integer
+        status:
+          type: string
+          enum:
+            - created
+            - started
+            - finished
+    HotDeal:
+      type: object
+      required:
+        - isActive
+      properties:
+        isActive:
+          type: boolean
+        discountedPrice:
+          type: number
+          nullable: true
+    Section:
+      type: object
+      properties:
+        hotDeal:
+          $ref: '#/components/schemas/HotDeal'
+    PageItem:
+      allOf:
+        - type: object
+          properties:
+            hotDeal:
+              type: object
+              required:
+                - discountedPrice
+              properties:
+                discountedPrice:
+                  type: number

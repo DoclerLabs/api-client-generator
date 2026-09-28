@@ -256,7 +256,42 @@ class SchemaMapperGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ShowSubscriberCollectionMapper',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
             ],
+            'Mapper referencing schemas named after reserved words' => [
+                '/Schema/reservedWords.yaml',
+                '/SchemaMapper/TournamentMapper81.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\TournamentMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Discriminator mapping to a schema named after a reserved word' => [
+                '/Schema/reservedWords.yaml',
+                '/SchemaMapper/GameMapper81.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\GameMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Mapper of a schema with an inline property whose class name collides' => [
+                '/Schema/classNameCollisions.yaml',
+                '/SchemaMapper/PageItemMapper74.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\PageItemMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
         ];
+    }
+
+    public function testArrayOfEnumsItemsGetNoMapper(): void
+    {
+        $this->setUpContainer(ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build());
+        $specificationPath = __DIR__ . '/Schema/arrayOfEnums.yaml';
+        $specification     = $this->specificationParser->parse(
+            $this->specificationReader->read($specificationPath),
+            $specificationPath
+        );
+
+        $this->sut->generate($specification, $this->fileRegistry);
+
+        self::assertSame(
+            [self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ItemWithArraysOfEnumPropertiesMapper'],
+            array_keys(iterator_to_array($this->fileRegistry))
+        );
     }
 
     protected function generatorClassName(): string

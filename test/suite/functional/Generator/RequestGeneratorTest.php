@@ -406,6 +406,36 @@ class RequestGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\SetExpiryRequest',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP83)->build(),
             ],
+            'Request with optional untyped (mixed) query parameter with php 7.4' => [
+                '/Request/getResourcesByUntypedFilter.yaml',
+                '/Request/GetResourcesByUntypedFilterRequest74.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetResourcesByUntypedFilterRequest',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'Request with optional untyped (mixed) query parameter with php 8.0' => [
+                '/Request/getResourcesByUntypedFilter.yaml',
+                '/Request/GetResourcesByUntypedFilterRequest80.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetResourcesByUntypedFilterRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
+            ],
+            'Request with enum values consisting of symbols only with php 7.4' => [
+                '/Request/getResourcesBySymbols.yaml',
+                '/Request/GetResourcesBySymbolsRequest74.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetResourcesBySymbolsRequest',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'Request with enum values consisting of symbols only with php 8.1' => [
+                '/Request/getResourcesBySymbols.yaml',
+                '/Request/GetResourcesBySymbolsRequest81.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetResourcesBySymbolsRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Request with enum query parameters whose class names collide with php 8.1' => [
+                '/Schema/classNameCollisions.yaml',
+                '/Request/FindHostsRequest81.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\FindHostsRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
         ];
     }
 
