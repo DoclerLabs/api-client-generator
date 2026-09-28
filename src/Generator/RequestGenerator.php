@@ -361,7 +361,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         $methods[] = $this->generateGetRawParametersMethod('getRawQueryParameters', $fields->getQueryFields(), $securityQueryFields);
         $methods[] = $this->generateGetParametersMethod('getCookies', $fields->getCookieFields(), $securityCookies);
         $methods[] = $this->generateGetHeadersMethod($request, $fields->getHeaderFields(), $operation, $specification);
-        $methods[] = $this->generateGetBody($fields->getBody());
+        $methods[] = $this->generateGetBody($fields->getBody(), $fields->hasLiteralBody());
 
         return $methods;
     }
@@ -458,8 +458,25 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         return $fieldsArr;
     }
 
-    private function generateGetBody(?Field $body): ClassMethod
+    private function generateGetBody(?Field $body, bool $isLiteral): ClassMethod
     {
+        if ($body !== null && $isLiteral) {
+            // The body serializers can only encode SerializableInterface, so a literal body gets wrapped.
+            $returnType = 'LiteralRequestBody';
+            $return     = $this->builder->new(
+                $returnType,
+                [$this->builder->localPropertyFetch($body->getPhpVariableName())]
+            );
+
+            return $this
+                ->builder
+                ->method('getBody')
+                ->makePublic()
+                ->addStmt($this->builder->return($return))
+                ->composeDocBlock([], $returnType)
+                ->getNode();
+        }
+
         if ($body !== null) {
             $returnType = $body->getPhpTypeHint();
 

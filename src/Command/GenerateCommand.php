@@ -13,6 +13,7 @@ use DoclerLabs\ApiClientGenerator\Input\Parser;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\MetaTemplateFacade;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Request\AuthenticationCredentials;
+use DoclerLabs\ApiClientGenerator\Output\Copy\Request\LiteralRequestBody;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\FormUrlencodedContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\JsonContentTypeSerializer;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Serializer\ContentType\VdnApiJsonContentTypeSerializer;
@@ -292,6 +293,10 @@ class GenerateCommand extends Command
 
         if (!$specification->isSecuritySchemeEnabled(BasicAuthenticationSecurityStrategy::SCHEME)) {
             $unusedClasses[] = AuthenticationCredentials::class;
+        }
+
+        if (!$specification->hasLiteralRequestBody()) {
+            $unusedClasses[] = LiteralRequestBody::class;
         }
 
         return $unusedClasses;

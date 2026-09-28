@@ -346,6 +346,66 @@ class RequestGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetMessagesRequest',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP83)->build(),
             ],
+            'Request with literal integer body with php 7.2' => [
+                '/Request/addMember.yaml',
+                '/Request/AddMemberRequest72.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\AddMemberRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP72)->build(),
+            ],
+            'Request with literal integer body with php 7.4' => [
+                '/Request/addMember.yaml',
+                '/Request/AddMemberRequest74.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\AddMemberRequest',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'Request with literal integer body with php 8.1' => [
+                '/Request/addMember.yaml',
+                '/Request/AddMemberRequest81.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\AddMemberRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Request with literal integer body with php 8.3' => [
+                '/Request/addMember.yaml',
+                '/Request/AddMemberRequest83.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\AddMemberRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP83)->build(),
+            ],
+            'Request with literal nullable string body with php 7.4' => [
+                '/Request/addMember.yaml',
+                '/Request/SetNicknameRequest74.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\SetNicknameRequest',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'Request with literal nullable string body with php 8.3' => [
+                '/Request/addMember.yaml',
+                '/Request/SetNicknameRequest83.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\SetNicknameRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP83)->build(),
+            ],
+            'Request with array of strings body with php 7.4' => [
+                '/Request/addMember.yaml',
+                '/Request/SetTagsRequest74.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\SetTagsRequest',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'Request with array of strings body with php 8.3' => [
+                '/Request/addMember.yaml',
+                '/Request/SetTagsRequest83.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\SetTagsRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP83)->build(),
+            ],
+            'Request with literal date-time body with php 7.4' => [
+                '/Request/addMember.yaml',
+                '/Request/SetExpiryRequest74.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\SetExpiryRequest',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'Request with literal date-time body with php 8.3' => [
+                '/Request/addMember.yaml',
+                '/Request/SetExpiryRequest83.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\SetExpiryRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP83)->build(),
+            ],
         ];
     }
 

@@ -23,6 +23,8 @@ class VdnApiJsonContentTypeSerializerTest extends TestCase
 
     /**
      * @dataProvider validCasesProvider
+     * @dataProvider literalCasesProvider
+     * @dataProvider literalEncodeCasesProvider
      */
     public function testEncode(array $input, string $expectedResult): void
     {
@@ -85,6 +87,31 @@ class VdnApiJsonContentTypeSerializerTest extends TestCase
             [
                 [1, 2, 3],
                 '[1,2,3]',
+            ],
+        ];
+    }
+
+    public function literalEncodeCasesProvider(): array
+    {
+        return [
+            'literal float keeps its zero fraction' => [
+                [
+                    '__literalResponseValue' => 1.0,
+                ],
+                '1.0',
+            ],
+            'literal list' => [
+                [
+                    '__literalResponseValue' => ['a', 'b'],
+                ],
+                '["a","b"]',
+            ],
+            'literal key next to other keys is a regular property' => [
+                [
+                    '__literalResponseValue' => 1,
+                    'other'                  => 2,
+                ],
+                '{"__literalResponseValue":1,"other":2}',
             ],
         ];
     }

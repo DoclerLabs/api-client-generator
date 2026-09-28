@@ -18,7 +18,14 @@ abstract class AbstractJsonContentTypeSerializer implements ContentTypeSerialize
      */
     public function encode(SerializableInterface $body): string
     {
-        $encodedData = json_encode($body->toArray(), self::JSON_OPTIONS);
+        $data = $body->toArray();
+
+        // A literal (non-object) body is wrapped the same way decode() wraps a literal response.
+        if (array_keys($data) === [ContentTypeSerializerInterface::LITERAL_VALUE_KEY]) {
+            $data = $data[ContentTypeSerializerInterface::LITERAL_VALUE_KEY];
+        }
+
+        $encodedData = json_encode($data, self::JSON_OPTIONS);
 
         $lastErrorCode = json_last_error();
         if ($lastErrorCode === JSON_ERROR_NONE && $encodedData !== false) {
