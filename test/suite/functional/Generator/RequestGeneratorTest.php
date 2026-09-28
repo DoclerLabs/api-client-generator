@@ -250,6 +250,18 @@ class RequestGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetResourcesByStatusesRequest',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP83)->build(),
             ],
+            'Request with optional untyped (mixed) query parameter with php 7.4' => [
+                '/Request/getResourcesByUntypedFilter.yaml',
+                '/Request/GetResourcesByUntypedFilterRequest74.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetResourcesByUntypedFilterRequest',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'Request with optional untyped (mixed) query parameter with php 8.0' => [
+                '/Request/getResourcesByUntypedFilter.yaml',
+                '/Request/GetResourcesByUntypedFilterRequest80.php',
+                self::BASE_NAMESPACE . RequestGenerator::NAMESPACE_SUBPATH . '\\GetResourcesByUntypedFilterRequest',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
+            ],
         ];
     }
 

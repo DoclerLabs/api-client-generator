@@ -6,6 +6,7 @@ namespace DoclerLabs\ApiClientGenerator\Ast\Builder;
 
 use DoclerLabs\ApiClientGenerator\Ast\ParameterNode;
 use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
+use DoclerLabs\ApiClientGenerator\Entity\FieldType;
 use PhpParser\Builder\Param;
 use PhpParser\Node\Expr\Variable;
 
@@ -26,7 +27,8 @@ class ParameterBuilder extends Param
 
         if ($isNullable) {
             if ($this->phpVersion->isNullableTypeHintSupported() && is_string($type)) {
-                return parent::setType(sprintf('?%s', $type));
+                // mixed already includes null and cannot be marked nullable
+                return parent::setType($type === FieldType::PHP_TYPE_MIXED ? $type : sprintf('?%s', $type));
             }
 
             return $this;

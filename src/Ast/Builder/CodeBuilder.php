@@ -170,9 +170,12 @@ class CodeBuilder extends BuilderFactory
             ->makePrivate();
 
         if (!empty($type) && $this->phpVersion->isPropertyTypeHintSupported()) {
-            if ($nullable && $type !== FieldType::PHP_TYPE_MIXED) {
+            if ($nullable) {
                 $property->setDefault(null);
-                $type = '?' . $type;
+                // mixed already includes null and cannot be marked nullable
+                if ($type !== FieldType::PHP_TYPE_MIXED) {
+                    $type = '?' . $type;
+                }
             }
 
             $property->setType($type);

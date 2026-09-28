@@ -82,6 +82,24 @@ class SchemaGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ItemWithArraysOfEnumProperties',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
             ],
+            'Untyped (mixed) properties with PHP 7.4' => [
+                '/Schema/itemWithMixed.yaml',
+                '/Schema/ItemWithMixedPhp74.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ItemWithMixed',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Untyped (mixed) properties with PHP 8.0' => [
+                '/Schema/itemWithMixed.yaml',
+                '/Schema/ItemWithMixedPhp80.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ItemWithMixed',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
+            ],
+            'Untyped (mixed) properties with PHP 8.1' => [
+                '/Schema/itemWithMixed.yaml',
+                '/Schema/ItemWithMixedPhp81.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ItemWithMixed',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
         ];
     }
 
