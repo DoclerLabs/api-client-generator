@@ -15,8 +15,14 @@ use Test\Schema\GetExampleResponseBody;
 
 class GetExampleResponseBodyMapper implements SchemaMapperInterface
 {
-    public function __construct(private readonly AnimalResponseMapper $animalResponseMapper, private readonly MachineResponseMapper $machineResponseMapper)
+    private AnimalMapper $animalMapper;
+
+    private MachineMapper $machineMapper;
+
+    public function __construct(AnimalMapper $animalMapper, MachineMapper $machineMapper)
     {
+        $this->animalMapper  = $animalMapper;
+        $this->machineMapper = $machineMapper;
     }
 
     /**
@@ -27,12 +33,14 @@ class GetExampleResponseBodyMapper implements SchemaMapperInterface
         $schema = new GetExampleResponseBody();
         if (array_key_exists('objectType', $payload)) {
             switch ($payload['objectType']) {
+                case 'Animal':
                 case 'animal':
-                    $schema->setAnimalResponse($this->animalResponseMapper->toSchema($payload));
+                    $schema->setAnimal($this->animalMapper->toSchema($payload));
 
                     break;
+                case 'Machine':
                 case 'machine':
-                    $schema->setMachineResponse($this->machineResponseMapper->toSchema($payload));
+                    $schema->setMachine($this->machineMapper->toSchema($payload));
 
                     break;
                 default:

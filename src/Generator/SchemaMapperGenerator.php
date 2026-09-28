@@ -12,7 +12,6 @@ use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaMapperNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
-use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Case_;
@@ -585,104 +584,113 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             $this->builder->val($propertyName)
         );
 
-        $fallbackStatements = $this->generateDiscriminatorFallbackStatements($payloadDiscriminator, $payloadVariable);
-
         /** @phpstan-ignore-next-line */
         $mapping = $discriminator->mapping ?? [];
-        $cases   = $this->generateDiscriminatorMappingCases($root, $mapping, $payloadVariable);
+        $cases   = $this->generateDiscriminatorCases($root, $mapping, $payloadVariable);
 
-        if ($cases === []) {
-            return $this->builder->if($ifCondition, $fallbackStatements);
-        }
-
-        $defaultStatements = [...$fallbackStatements, $this->builder->break()];
-        $cases[]           = $this->builder->default(...$defaultStatements);
+        $this->addImport(UnexpectedResponseBodyException::class);
+        $cases[] = $this->builder->default(
+            $this->builder->throw(
+                'UnexpectedResponseBodyException',
+                $this->builder->val(
+                    sprintf(
+                        'Unknown `%s` discriminator value for `%s` in the response body',
+                        $propertyName,
+                        $root->getPhpClassName()
+                    )
+                )
+            )
+        );
+        $this->mapMethodThrownExceptions['UnexpectedResponseBodyException'] = true;
 
         return $this->builder->if($ifCondition, [$this->builder->switch($payloadDiscriminator, ...$cases)]);
     }
 
     /**
-     * @return Stmt[]
-     */
-    private function generateDiscriminatorFallbackStatements(Expr $payloadDiscriminator, Variable $payloadVariable): array
-    {
-        $assignMethodName = $this->builder->expr(
-            $this->builder->assign(
-                $this->builder->var('methodName'),
-                $this->builder->concat(
-                    $this->builder->val('set'),
-                    $this->builder->funcCall('ucfirst', [$payloadDiscriminator])
-                )
-            )
-        );
-
-        $assignMapperName = $this->builder->expr(
-            $this->builder->assign(
-                $this->builder->var('mapperName'),
-                $this->builder->concat(
-                    $payloadDiscriminator,
-                    $this->builder->val('Mapper')
-                )
-            )
-        );
-
-        $schemaMethodCall = $this->builder->expr(
-            $this->builder->methodCall(
-                $this->builder->var('schema'),
-                '$methodName',
-                [
-                    $this->builder->methodCall(
-                        $this->builder->localPropertyFetch('$mapperName'),
-                        'toSchema',
-                        [$payloadVariable]
-                    ),
-                ]
-            )
-        );
-
-        return [$assignMethodName, $assignMapperName, $schemaMethodCall];
-    }
-
-    /**
+     * One case per discriminator value: the explicit mapping first, then the implicit mapping (the schema name)
+     * of every alternative the explicit mapping does not cover. The latter also accepts the lcfirst class name,
+     * which the previous value based dispatch (`$this->{$value . 'Mapper'}`) resolved.
+     *
      * @param string[] $mapping
      *
      * @return Case_[]
      */
-    private function generateDiscriminatorMappingCases(Field $root, array $mapping, Variable $payloadVariable): array
+    private function generateDiscriminatorCases(Field $root, array $mapping, Variable $payloadVariable): array
     {
-        $childrenByClassName = [];
+        $childrenBySchemaName = [];
         foreach ($root->getObjectProperties() as $child) {
             if ($child->isComposite()) {
-                $childrenByClassName[$child->getPhpClassName()] = $child;
+                $childrenBySchemaName[$child->getName()] = $child;
             }
         }
 
-        $cases = [];
+        $cases            = [];
+        $usedValues       = [];
+        $explicitlyMapped = [];
         foreach ($mapping as $discriminatorValue => $reference) {
             $schemaName = $this->resolveSchemaNameFromReference($reference);
-            if (!isset($childrenByClassName[$schemaName])) {
+            if (!isset($childrenBySchemaName[$schemaName])) {
                 continue;
             }
 
-            $child   = $childrenByClassName[$schemaName];
-            $cases[] = $this->builder->case(
-                $this->builder->val((string)$discriminatorValue),
-                $this->builder->expr(
-                    $this->builder->methodCall(
-                        $this->builder->var('schema'),
-                        $this->getSetMethodName($child),
-                        [
-                            $this->builder->methodCall(
-                                $this->builder->localPropertyFetch(SchemaMapperNaming::getPropertyName($child)),
-                                'toSchema',
-                                [$payloadVariable]
-                            ),
-                        ]
-                    )
-                ),
-                $this->builder->break()
+            $cases[] = $this->generateDiscriminatorCase(
+                [(string)$discriminatorValue],
+                $childrenBySchemaName[$schemaName],
+                $payloadVariable
             );
+            $usedValues[]                  = (string)$discriminatorValue;
+            $explicitlyMapped[$schemaName] = true;
         }
+
+        foreach ($childrenBySchemaName as $schemaName => $child) {
+            if (isset($explicitlyMapped[$schemaName])) {
+                continue;
+            }
+
+            $implicitValues = array_values(
+                array_diff(array_unique([(string)$schemaName, lcfirst($child->getPhpClassName())]), $usedValues)
+            );
+            if ($implicitValues === []) {
+                continue;
+            }
+
+            $cases[]    = $this->generateDiscriminatorCase($implicitValues, $child, $payloadVariable);
+            $usedValues = [...$usedValues, ...$implicitValues];
+        }
+
+        return array_merge([], ...$cases);
+    }
+
+    /**
+     * @param string[] $discriminatorValues
+     *
+     * @return Case_[]
+     */
+    private function generateDiscriminatorCase(array $discriminatorValues, Field $child, Variable $payloadVariable): array
+    {
+        $cases     = [];
+        $lastValue = array_pop($discriminatorValues);
+        foreach ($discriminatorValues as $discriminatorValue) {
+            $cases[] = $this->builder->case($this->builder->val($discriminatorValue));
+        }
+
+        $cases[] = $this->builder->case(
+            $this->builder->val($lastValue),
+            $this->builder->expr(
+                $this->builder->methodCall(
+                    $this->builder->var('schema'),
+                    $this->getSetMethodName($child),
+                    [
+                        $this->builder->methodCall(
+                            $this->builder->localPropertyFetch(SchemaMapperNaming::getPropertyName($child)),
+                            'toSchema',
+                            [$payloadVariable]
+                        ),
+                    ]
+                )
+            ),
+            $this->builder->break()
+        );
 
         return $cases;
     }
