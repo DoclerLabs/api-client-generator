@@ -9,9 +9,12 @@ use DoclerLabs\ApiClientException\UnexpectedResponseBodyException;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\ParameterBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\ParameterNode;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
+use DoclerLabs\ApiClientGenerator\Entity\FieldType;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaMapperNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Case_;
@@ -59,6 +62,9 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         if ($root->isObject()) {
             $alreadyInjected = [];
             foreach ($root->getObjectProperties() as $child) {
+                if ($child->isArrayOfArraysOfObjects()) {
+                    $child = $child->getInnermostArrayOfObjects();
+                }
                 if ($child->isComposite()) {
                     $childClassName = SchemaMapperNaming::getClassName($child);
                     if (!isset($alreadyInjected[$childClassName])) {
@@ -96,6 +102,9 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         if ($root->isObject()) {
             $alreadyInjected = [];
             foreach ($root->getObjectProperties() as $child) {
+                if ($child->isArrayOfArraysOfObjects()) {
+                    $child = $child->getInnermostArrayOfObjects();
+                }
                 if ($child->isComposite()) {
                     $childClassName = SchemaMapperNaming::getClassName($child);
                     if (!isset($alreadyInjected[$childClassName])) {
@@ -387,6 +396,15 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                         $this->builder->val(null)
                     )
                     : $arrayMapCall;
+            } elseif ($field->isArrayOfArraysOfObjects()) {
+                $collectionsMapping = $this->generateArrayOfArraysOfObjectsMapping($field, $requiredResponseItems[$i]);
+                $requiredVars[]     = $field->isNullable()
+                    ? $this->builder->ternary(
+                        $this->builder->notEquals($requiredResponseItems[$i], $this->builder->val(null)),
+                        $collectionsMapping,
+                        $this->builder->val(null)
+                    )
+                    : $collectionsMapping;
             } else {
                 $requiredVars[] = $requiredResponseItems[$i];
             }
@@ -464,6 +482,15 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                             $this->builder->val(null)
                         )
                         : $arrayMapCall;
+                } elseif ($field->isArrayOfArraysOfObjects()) {
+                    $collectionsMapping = $this->generateArrayOfArraysOfObjectsMapping($field, $optionalResponseItems[$i]);
+                    $optionalVar        = $field->isNullable()
+                        ? $this->builder->ternary(
+                            $this->builder->notEquals($optionalResponseItems[$i], $this->builder->val(null)),
+                            $collectionsMapping,
+                            $this->builder->val(null)
+                        )
+                        : $collectionsMapping;
                 } else {
                     $optionalVar = $optionalResponseItems[$i];
                 }
@@ -565,6 +592,41 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         }
 
         return $statements;
+    }
+
+    /**
+     * Maps every innermost array of an array of arrays of objects to its collection.
+     */
+    private function generateArrayOfArraysOfObjectsMapping(Field $field, Expr $payloadItem): FuncCall
+    {
+        $item    = $field->getArrayItem();
+        $itemVar = $this->builder->var('item');
+        if ($item->isArrayOfObjects()) {
+            $this->addImport($this->fqdn($this->withSubNamespace(SchemaGenerator::NAMESPACE_SUBPATH), $item->getPhpClassName()));
+            $itemMapping = $this->builder->methodCall(
+                $this->builder->localPropertyFetch(SchemaMapperNaming::getPropertyName($item)),
+                'toSchema',
+                [$itemVar]
+            );
+            $itemType = $item->getPhpClassName();
+        } else {
+            $itemMapping = $this->generateArrayOfArraysOfObjectsMapping($item, $itemVar);
+            $itemType    = FieldType::PHP_TYPE_ARRAY;
+        }
+
+        return $this->builder->funcCall(
+            'array_map',
+            [
+                $this->builder->closure(
+                    [$this->builder->return($itemMapping)],
+                    [$this->builder->param('item')->setType(FieldType::PHP_TYPE_ARRAY)->getNode()],
+                    [],
+                    $itemType,
+                    false
+                ),
+                $payloadItem,
+            ]
+        );
     }
 
     private function generateDiscriminatorStatement(Field $root, Variable $payloadVariable): Stmt

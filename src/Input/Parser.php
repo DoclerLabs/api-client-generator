@@ -86,6 +86,10 @@ class Parser
         if ($field->isArrayOfEnums() && $this->phpVersion->isEnumSupported()) {
             $allFields->add($field->getArrayItem());
         }
+
+        if ($field->isArrayOfArraysOfObjects()) {
+            $this->extractField($field->getArrayItem(), $allFields);
+        }
     }
 
     private function extractPropertyFields(Field $rootObject, FieldCollection $allFields): void

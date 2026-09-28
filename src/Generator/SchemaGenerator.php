@@ -12,6 +12,8 @@ use DoclerLabs\ApiClientGenerator\Entity\FieldType;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use JsonSerializable;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -344,6 +346,16 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
                         $this->builder->val(null)
                     )
                     : $arrayMapCall;
+            } elseif ($propertyField->isArrayOfArraysOfObjects()) {
+                $collectionsToArray = $this->generateArrayOfArraysOfObjectsToArray($propertyField, $value);
+
+                $value = $propertyField->isNullable()
+                    ? $this->builder->ternary(
+                        $this->builder->notEquals($value, $this->builder->val(null)),
+                        $collectionsToArray,
+                        $this->builder->val(null)
+                    )
+                    : $collectionsToArray;
             }
 
             $fieldName = $this->builder->val($propertyField->getName());
@@ -365,5 +377,34 @@ class SchemaGenerator extends MutatorAccessorClassGeneratorAbstract
         }
 
         return $statements;
+    }
+
+    /**
+     * Serializes every collection of an array of arrays of objects.
+     */
+    private function generateArrayOfArraysOfObjectsToArray(Field $field, Expr $value): FuncCall
+    {
+        $item    = $field->getArrayItem();
+        $itemVar = $this->builder->var('item');
+        if ($item->isArrayOfObjects()) {
+            $itemToArray = $this->builder->methodCall($itemVar, 'toArray');
+            $itemType    = $item->getPhpClassName();
+        } else {
+            $itemToArray = $this->generateArrayOfArraysOfObjectsToArray($item, $itemVar);
+            $itemType    = FieldType::PHP_TYPE_ARRAY;
+        }
+
+        return $this->builder->funcCall(
+            'array_map',
+            [
+                $this->builder->closure(
+                    [$this->builder->return($itemToArray)],
+                    [$this->builder->param('item')->setType($itemType)->getNode()],
+                    [],
+                    FieldType::PHP_TYPE_ARRAY
+                ),
+                $value,
+            ]
+        );
     }
 }

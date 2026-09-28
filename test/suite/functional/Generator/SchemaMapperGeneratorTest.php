@@ -232,6 +232,30 @@ class SchemaMapperGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\UploaderMapper',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
             ],
+            'Array of arrays of objects with php 7.0' => [
+                '/SchemaMapper/arrayOfArraysOfObjects.yaml',
+                '/SchemaMapper/ArrayOfArraysOfObjectsMapper70.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ShowSubscribersMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP70)->build(),
+            ],
+            'Array of arrays of objects with php 7.4' => [
+                '/SchemaMapper/arrayOfArraysOfObjects.yaml',
+                '/SchemaMapper/ArrayOfArraysOfObjectsMapper74.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ShowSubscribersMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Array of arrays of objects with php 8.1' => [
+                '/SchemaMapper/arrayOfArraysOfObjects.yaml',
+                '/SchemaMapper/ArrayOfArraysOfObjectsMapper81.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ShowSubscribersMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Collection nested in an array of arrays of objects with php 7.4' => [
+                '/SchemaMapper/arrayOfArraysOfObjects.yaml',
+                '/SchemaMapper/ShowSubscriberCollectionMapper74.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ShowSubscriberCollectionMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
         ];
     }
 

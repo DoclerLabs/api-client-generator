@@ -277,6 +277,9 @@ class ServiceProviderGenerator extends GeneratorAbstract
         if ($field->isObject()) {
             $alreadyInjected = [];
             foreach ($field->getObjectProperties() as $subfield) {
+                if ($subfield->isArrayOfArraysOfObjects()) {
+                    $subfield = $subfield->getInnermostArrayOfObjects();
+                }
                 if ($subfield->isComposite() && !isset($alreadyInjected[$subfield->getPhpClassName()])) {
                     $getMethodArg = $this->builder->classConstFetch(
                         SchemaMapperNaming::getClassName($subfield),
