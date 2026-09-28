@@ -106,10 +106,28 @@ class SchemaMapperGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\GetExampleResponseBodyMapper',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
             ],
+            'OneOf response with a discriminator but without mapping with php 7.4' => [
+                '/SchemaMapper/oneOfDiscriminatorWithoutMapping.yaml',
+                '/SchemaMapper/OneOfDiscriminatorWithoutMappingMapper74.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\GetExampleResponseBodyMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
             'OneOf response with a discriminator but without mapping with php 8.1' => [
                 '/SchemaMapper/oneOfDiscriminatorWithoutMapping.yaml',
                 '/SchemaMapper/OneOfDiscriminatorWithoutMappingMapper81.php',
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\GetExampleResponseBodyMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'OneOf response with a discriminator mapping covering some alternatives with php 7.4' => [
+                '/SchemaMapper/oneOfDiscriminatorPartialMapping.yaml',
+                '/SchemaMapper/OneOfDiscriminatorPartialMappingMapper74.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\PetMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'OneOf response with a discriminator mapping covering some alternatives with php 8.1' => [
+                '/SchemaMapper/oneOfDiscriminatorPartialMapping.yaml',
+                '/SchemaMapper/OneOfDiscriminatorPartialMappingMapper81.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\PetMapper',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
             ],
             'OneOf response without discriminator with php 7.4' => [
@@ -148,19 +166,19 @@ class SchemaMapperGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\GetExampleResponseBodyMapper',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
             ],
-            'AnyOf response with php 7.4' => [
+            'AnyOf response without discriminator with php 7.4' => [
                 '/SchemaMapper/anyOfWithoutDiscriminator.yaml',
                 '/SchemaMapper/AnyOfResponseBodyMapperWithoutDiscriminator74.php',
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\GetExampleResponseBodyMapper',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
             ],
-            'AnyOf response with php 8.0' => [
+            'AnyOf response without discriminator with php 8.0' => [
                 '/SchemaMapper/anyOfWithoutDiscriminator.yaml',
                 '/SchemaMapper/AnyOfResponseBodyMapperWithoutDiscriminator80.php',
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\GetExampleResponseBodyMapper',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
             ],
-            'AnyOf response with php 8.1' => [
+            'AnyOf response without discriminator with php 8.1' => [
                 '/SchemaMapper/anyOfWithoutDiscriminator.yaml',
                 '/SchemaMapper/AnyOfResponseBodyMapperWithoutDiscriminator81.php',
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\GetExampleResponseBodyMapper',
@@ -176,6 +194,66 @@ class SchemaMapperGeneratorTest extends AbstractGeneratorTest
                 '/Schema/arrayOfEnums.yaml',
                 '/SchemaMapper/ItemWithArraysOfEnumPropertiesMapper74.php',
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ItemWithArraysOfEnumPropertiesMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Nullable allOf reference with php 7.4' => [
+                '/SchemaMapper/nullableAllOfReference.yaml',
+                '/SchemaMapper/NullableAllOfReferenceMapper74.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ProfileMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Nullable allOf reference with php 8.1' => [
+                '/SchemaMapper/nullableAllOfReference.yaml',
+                '/SchemaMapper/NullableAllOfReferenceMapper81.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ProfileMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Nullable enums with php 7.4' => [
+                '/SchemaMapper/nullableEnum.yaml',
+                '/SchemaMapper/NullableEnumMapper74.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\CookieMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Nullable enums with php 8.1' => [
+                '/SchemaMapper/nullableEnum.yaml',
+                '/SchemaMapper/NullableEnumMapper81.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\CookieMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'OneOf response without discriminator told apart by enums with php 7.4' => [
+                '/SchemaMapper/oneOfWithoutDiscriminatorEnum.yaml',
+                '/SchemaMapper/OneOfWithoutDiscriminatorEnumMapper74.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\UploaderMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'OneOf response without discriminator told apart by enums with php 8.1' => [
+                '/SchemaMapper/oneOfWithoutDiscriminatorEnum.yaml',
+                '/SchemaMapper/OneOfWithoutDiscriminatorEnumMapper81.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\UploaderMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Array of arrays of objects with php 7.0' => [
+                '/SchemaMapper/arrayOfArraysOfObjects.yaml',
+                '/SchemaMapper/ArrayOfArraysOfObjectsMapper70.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ShowSubscribersMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP70)->build(),
+            ],
+            'Array of arrays of objects with php 7.4' => [
+                '/SchemaMapper/arrayOfArraysOfObjects.yaml',
+                '/SchemaMapper/ArrayOfArraysOfObjectsMapper74.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ShowSubscribersMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Array of arrays of objects with php 8.1' => [
+                '/SchemaMapper/arrayOfArraysOfObjects.yaml',
+                '/SchemaMapper/ArrayOfArraysOfObjectsMapper81.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ShowSubscribersMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Collection nested in an array of arrays of objects with php 7.4' => [
+                '/SchemaMapper/arrayOfArraysOfObjects.yaml',
+                '/SchemaMapper/ShowSubscriberCollectionMapper74.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ShowSubscriberCollectionMapper',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
             ],
         ];

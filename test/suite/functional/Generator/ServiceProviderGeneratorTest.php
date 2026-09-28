@@ -27,6 +27,12 @@ class ServiceProviderGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . '\\ServiceProvider',
                 ConfigurationBuilder::fake()->build(),
             ],
+            'Array of arrays of objects' => [
+                '/SchemaMapper/arrayOfArraysOfObjects.yaml',
+                '/ServiceProvider/ArrayOfArraysOfObjectsServiceProvider74.php',
+                self::BASE_NAMESPACE . '\\ServiceProvider',
+                ConfigurationBuilder::fake()->build(),
+            ],
         ];
     }
 

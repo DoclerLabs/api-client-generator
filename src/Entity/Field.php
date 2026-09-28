@@ -188,6 +188,30 @@ class Field
                && $this->getArrayItem()->isEnum();
     }
 
+    /**
+     * An array of arrays (at any depth) of objects, e.g. array<array<Item>>: its innermost arrays are collections.
+     */
+    public function isArrayOfArraysOfObjects(): bool
+    {
+        if (!$this->isArray()) {
+            return false;
+        }
+
+        $item = $this->getArrayItem();
+
+        return !$item->isNullable() && ($item->isArrayOfObjects() || $item->isArrayOfArraysOfObjects());
+    }
+
+    /**
+     * The innermost array of objects (the collection) of an array of arrays of objects.
+     */
+    public function getInnermostArrayOfObjects(): Field
+    {
+        $item = $this->getArrayItem();
+
+        return $item->isArrayOfObjects() ? $item : $item->getInnermostArrayOfObjects();
+    }
+
     public function getDefault(): mixed
     {
         return $this->default;

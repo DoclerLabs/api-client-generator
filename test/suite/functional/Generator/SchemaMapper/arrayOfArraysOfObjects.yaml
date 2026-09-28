@@ -1,0 +1,58 @@
+openapi: 3.0.0
+info:
+  title: Arrays of arrays of objects
+  version: 1.0.0
+
+paths:
+  /shows/{showId}/subscribers:
+    get:
+      operationId: findShowSubscribers
+      parameters:
+        - in: path
+          name: showId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShowSubscribers'
+
+components:
+  schemas:
+    ShowSubscribers:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/ShowSubscriber'
+        previousData:
+          type: array
+          nullable: true
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/ShowSubscriber'
+        groups:
+          type: array
+          items:
+            type: array
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/ShowSubscriber'
+    ShowSubscriber:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: integer

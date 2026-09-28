@@ -82,6 +82,36 @@ class SchemaGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ItemWithArraysOfEnumProperties',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
             ],
+            'Nullable allOf reference with PHP 7.4' => [
+                '/SchemaMapper/nullableAllOfReference.yaml',
+                '/Schema/NullableAllOfReference74.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Profile',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Nullable allOf reference with PHP 8.1' => [
+                '/SchemaMapper/nullableAllOfReference.yaml',
+                '/Schema/NullableAllOfReference81.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Profile',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Array of arrays of objects with PHP 7.0' => [
+                '/SchemaMapper/arrayOfArraysOfObjects.yaml',
+                '/Schema/ArrayOfArraysOfObjects70.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ShowSubscribers',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP70)->build(),
+            ],
+            'Array of arrays of objects with PHP 7.4' => [
+                '/SchemaMapper/arrayOfArraysOfObjects.yaml',
+                '/Schema/ArrayOfArraysOfObjects74.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ShowSubscribers',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Array of arrays of objects with PHP 8.1' => [
+                '/SchemaMapper/arrayOfArraysOfObjects.yaml',
+                '/Schema/ArrayOfArraysOfObjects81.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ShowSubscribers',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
         ];
     }
 

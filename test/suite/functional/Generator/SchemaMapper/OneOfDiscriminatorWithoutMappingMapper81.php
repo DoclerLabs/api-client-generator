@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Test\Schema\Mapper;
 
+use DoclerLabs\ApiClientException\UnexpectedResponseBodyException;
 use Test\Schema\GetExampleResponseBody;
 
 class GetExampleResponseBodyMapper implements SchemaMapperInterface
@@ -18,13 +19,27 @@ class GetExampleResponseBodyMapper implements SchemaMapperInterface
     {
     }
 
+    /**
+     * @throws UnexpectedResponseBodyException
+     */
     public function toSchema(array $payload): GetExampleResponseBody
     {
         $schema = new GetExampleResponseBody();
         if (array_key_exists('objectType', $payload)) {
-            $methodName = 'set' . ucfirst($payload['objectType']);
-            $mapperName = $payload['objectType'] . 'Mapper';
-            $schema->$methodName($this->$mapperName->toSchema($payload));
+            switch ($payload['objectType']) {
+                case 'Animal':
+                case 'animal':
+                    $schema->setAnimal($this->animalMapper->toSchema($payload));
+
+                    break;
+                case 'Machine':
+                case 'machine':
+                    $schema->setMachine($this->machineMapper->toSchema($payload));
+
+                    break;
+                default:
+                    throw new UnexpectedResponseBodyException('Unknown `objectType` discriminator value for `GetExampleResponseBody` in the response body');
+            }
         }
 
         return $schema;
