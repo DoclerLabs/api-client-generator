@@ -287,6 +287,33 @@ EOD,
         self::assertEquals('true ? $left : null', $this->printer->prettyPrint([$ternary]));
     }
 
+    public function testThrowExpression(): void
+    {
+        $throw = $this->sut->throwExpression('RuntimeException', $this->sut->val('message'));
+        self::assertEquals(
+            '$var ?? throw new RuntimeException(\'message\')',
+            $this->printer->prettyPrintExpr($this->sut->coalesce($this->sut->var('var'), $throw))
+        );
+    }
+
+    public function testMatchWithDefaultArm(): void
+    {
+        $match = $this->sut->match(
+            $this->sut->var('code'),
+            $this->sut->matchArm([$this->sut->val(200)], $this->sut->val(null)),
+            $this->sut->defaultMatchArm($this->sut->throwExpression('RuntimeException'))
+        );
+        self::assertEquals(
+            <<<'EOD'
+match ($code) {
+    200 => null,
+    default => throw new RuntimeException(),
+}
+EOD,
+            $this->printer->prettyPrintExpr($match)
+        );
+    }
+
     public function testNotEquals(): void
     {
         $left  = $this->sut->var('left');

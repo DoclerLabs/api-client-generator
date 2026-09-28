@@ -10,11 +10,14 @@ declare(strict_types=1);
 
 namespace Test;
 
+use DoclerLabs\ApiClientException\UnexpectedResponseBodyException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 use Test\Request\AddPetTaskRequest;
+use Test\Request\GetPetsStatusRequest;
+use Test\Request\ImportPetsRequest;
 use Test\Request\Mapper\RequestMapperInterface;
 use Test\Request\RequestInterface;
 use Test\Request\SavePetRequest;
@@ -22,6 +25,7 @@ use Test\Response\ResponseHandler;
 use Test\Schema\Mapper\PetMapper;
 use Test\Schema\Mapper\PetTaskMapper;
 use Test\Schema\Pet;
+use Test\Serializer\ContentType\ContentTypeSerializerInterface;
 
 class MultipleResponsesClient
 {
@@ -66,6 +70,36 @@ class MultipleResponsesClient
                 return $this->container->get(PetMapper::class)->toSchema($unserializedResponse);
             case 202:
                 return $this->container->get(PetTaskMapper::class)->toSchema($unserializedResponse);
+        }
+        throw new RuntimeException('Response status code not properly mapped in schema.');
+    }
+
+    public function importPets(ImportPetsRequest $request)
+    {
+        $response             = $this->sendRequest($request);
+        $unserializedResponse = $this->handleResponse($response);
+        switch ($response->getStatusCode()) {
+            case 201:
+                return null;
+            case 202:
+                return null;
+        }
+        throw new RuntimeException('Response status code not properly mapped in schema.');
+    }
+
+    public function getPetsStatus(GetPetsStatusRequest $request): ?string
+    {
+        $response             = $this->sendRequest($request);
+        $unserializedResponse = $this->handleResponse($response);
+        switch ($response->getStatusCode()) {
+            case 204:
+                return null;
+            case 200:
+                if (!isset($unserializedResponse[ContentTypeSerializerInterface::LITERAL_VALUE_KEY])) {
+                    throw new UnexpectedResponseBodyException('Response body does not contain the expected non-null value.');
+                }
+
+                return $unserializedResponse[ContentTypeSerializerInterface::LITERAL_VALUE_KEY];
         }
         throw new RuntimeException('Response status code not properly mapped in schema.');
     }

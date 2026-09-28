@@ -44,6 +44,7 @@ use PhpParser\Node\Expr\NullsafeMethodCall;
 use PhpParser\Node\Expr\NullsafePropertyFetch;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Ternary;
+use PhpParser\Node\Expr\Throw_ as ThrowExpression;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\MatchArm;
 use PhpParser\Node\Name;
@@ -280,6 +281,11 @@ class CodeBuilder extends BuilderFactory
         return new MatchArm($conditions, $body);
     }
 
+    public function defaultMatchArm(Expr $body): MatchArm
+    {
+        return new MatchArm(null, $body);
+    }
+
     public function switch(Expr $condition, Case_ ...$cases): Switch_
     {
         return new Switch_($condition, $cases);
@@ -368,6 +374,16 @@ class CodeBuilder extends BuilderFactory
         }
 
         return new Throw_($this->new($exceptionClassName, $args));
+    }
+
+    public function throwExpression(string $exceptionClassName, Expr $message = null): ThrowExpression
+    {
+        $args = [];
+        if ($message !== null) {
+            $args = [$message];
+        }
+
+        return new ThrowExpression($this->new($exceptionClassName, $args));
     }
 
     public function foreach(Expr $array, Variable $asValue, array $stmts, Variable $asKey = null): Foreach_
