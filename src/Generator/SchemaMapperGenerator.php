@@ -17,6 +17,7 @@ use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Case_;
 use PhpParser\Node\Stmt\ClassMethod;
+use ValueError;
 
 class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 {
@@ -485,8 +486,14 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                     ));
 
                     $this->addImport(UnexpectedResponseBodyException::class);
+                    $caughtExceptions = [$this->builder->className('UnexpectedResponseBodyException')];
+                    if ($this->phpVersion->isEnumSupported() && $this->isMappedWithEnums($field)) {
+                        // <Enum>::from() throws a ValueError for a value of another alternative
+                        $this->addImport(ValueError::class);
+                        $caughtExceptions[] = $this->builder->className('ValueError');
+                    }
                     $catchStatement = $this->builder->catch(
-                        [$this->builder->className('UnexpectedResponseBodyException')],
+                        $caughtExceptions,
                         $this->builder->var('exception'),
                         []
                     );
@@ -685,5 +692,32 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         $segments = explode('/', $reference);
 
         return (string)end($segments);
+    }
+
+    /**
+     * Whether mapping the field (or anything nested in it) can throw the ValueError of an enum.
+     */
+    private function isMappedWithEnums(Field $field): bool
+    {
+        if ($field->isEnum()) {
+            return true;
+        }
+
+        if ($field->isArray()) {
+            return $this->isMappedWithEnums($field->getArrayItem());
+        }
+
+        if (($field->hasOneOf() || $field->hasAnyOf()) && !$field->getDiscriminator()) {
+            // its own mapper catches the ValueError of its alternatives
+            return false;
+        }
+
+        foreach ($field->getObjectProperties() as $property) {
+            if ($this->isMappedWithEnums($property)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

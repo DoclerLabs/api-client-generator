@@ -202,6 +202,18 @@ class SchemaMapperGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\CookieMapper',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
             ],
+            'OneOf response without discriminator told apart by enums with php 7.4' => [
+                '/SchemaMapper/oneOfWithoutDiscriminatorEnum.yaml',
+                '/SchemaMapper/OneOfWithoutDiscriminatorEnumMapper74.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\UploaderMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'OneOf response without discriminator told apart by enums with php 8.1' => [
+                '/SchemaMapper/oneOfWithoutDiscriminatorEnum.yaml',
+                '/SchemaMapper/OneOfWithoutDiscriminatorEnumMapper81.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\UploaderMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
         ];
     }
 
