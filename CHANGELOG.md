@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [11.2.3] - 2026-09-28
+### Fixed
+- Generated clients can no longer resolve dependency versions that raise PHP 8.4+ deprecations: the generated `composer.json` now requires `docler-labs/api-client-exception` `^1.0 || ^2.3.1` (was `^1.0 || ^2.0`) and, for the Guzzle HTTP message implementation, `guzzlehttp/psr7` `^1.6 || ^2.7` (was `^1.6 || ^2.6`). The 1.x lines stay allowed, so every `CLIENT_PHP_VERSION` target keeps resolving; on PHP 7.4+ Composer now picks only releases that run deprecation-free on PHP 8.5
+
+### Changed
+- Updated `docler-labs/api-client-exception` to 2.3.1 and `guzzlehttp/psr7` to 2.13.1 in the `example` and `example3_1` lockfiles, so the acceptance tests also run deprecation-free on PHP 8.5
+- Updated `composer/composer` to 2.2.30 (development dependency)
+
+Generated code is unchanged; only the generated `composer.json` constraints differ.
+
 ## [11.2.2] - 2026-08-07
 ### Security
 - Updated `guzzlehttp/guzzle` to 7.15.2, resolving CVE-2026-69246 (a noncanonical host can bypass host-based checks) along with the earlier 7.12.x–7.15.x advisories

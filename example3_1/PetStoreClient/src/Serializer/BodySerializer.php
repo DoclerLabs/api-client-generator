@@ -15,11 +15,14 @@ use DoclerLabs\ApiClientException\UnexpectedResponseException;
 use InvalidArgumentException;
 use OpenApi\PetStoreClient\Request\RequestInterface;
 use OpenApi\PetStoreClient\Serializer\ContentType\ContentTypeSerializerInterface;
+use OpenApi\PetStoreClient\Serializer\ContentType\JsonContentTypeSerializer;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
 class BodySerializer
 {
+    private const JSON_SUFFIX = '+json';
+
     /** @var ContentTypeSerializerInterface[] */
     private $contentTypeSerializers = [];
 
@@ -66,11 +69,29 @@ class BodySerializer
 
     private function getContentTypeSerializer(string $contentType): ContentTypeSerializerInterface
     {
-        $contentType = strtolower(trim(explode(';', $contentType)[0]));
-        if (!isset($this->contentTypeSerializers[$contentType])) {
-            throw new InvalidArgumentException(sprintf('Serializer for `%s` is not found. Supported: %s', $contentType, json_encode(array_keys($this->contentTypeSerializers))));
+        $normalizedContentType = $this->normalizeContentType($contentType);
+        if (isset($this->contentTypeSerializers[$normalizedContentType])) {
+            return $this->contentTypeSerializers[$normalizedContentType];
         }
+        // RFC 6839: +json suffix indicates JSON-based format, fall back to JSON serializer
+        if ($this->isJsonBasedContentType($normalizedContentType)) {
+            return $this->contentTypeSerializers[JsonContentTypeSerializer::MIME_TYPE];
+        }
+        throw new InvalidArgumentException(sprintf('Serializer for `%s` is not found. Supported: %s', $normalizedContentType, json_encode(array_keys($this->contentTypeSerializers))));
+    }
 
-        return $this->contentTypeSerializers[$contentType];
+    private function normalizeContentType(string $contentType): string
+    {
+        return strtolower(trim(explode(';', $contentType)[0]));
+    }
+
+    private function isJsonBasedContentType(string $normalizedContentType): bool
+    {
+        return $this->endsWith($normalizedContentType, self::JSON_SUFFIX) && isset($this->contentTypeSerializers[JsonContentTypeSerializer::MIME_TYPE]);
+    }
+
+    private function endsWith(string $haystack, string $needle): bool
+    {
+        return $needle === '' || substr($haystack, -strlen($needle)) === $needle;
     }
 }
