@@ -121,6 +121,18 @@ class Specification
         return array_keys(array_filter($allContentTypes));
     }
 
+    public function hasLiteralRequestBody(): bool
+    {
+        /** @var Operation $operation */
+        foreach ($this->getOperations() as $operation) {
+            if ($operation->request->fields->hasLiteralBody()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function requiresIntlExtension(): bool
     {
         foreach ($this->getOperations() as $operation) {

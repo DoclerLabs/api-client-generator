@@ -1,0 +1,29 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Untyped (mixed) properties Test API
+paths:
+  '/v1/items':
+    get:
+      operationId: getItems
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemWithMixed'
+components:
+  schemas:
+    ItemWithMixed:
+      type: object
+      required:
+        - mandatoryMixed
+        - mandatoryNullableMixed
+      properties:
+        mandatoryMixed: {}
+        optionalMixed: {}
+        optionalNullableMixed:
+          nullable: true
+        mandatoryNullableMixed:
+          nullable: true

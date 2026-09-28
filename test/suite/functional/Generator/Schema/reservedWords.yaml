@@ -1,0 +1,106 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Reserved word schema names Test API
+paths:
+  '/v1/matches':
+    get:
+      operationId: findMatches
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Match'
+  '/v1/matches/{matchId}':
+    get:
+      operationId: getMatch
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Match'
+  '/v1/tournaments/{tournamentId}':
+    get:
+      operationId: getTournament
+      parameters:
+        - name: tournamentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tournament'
+  '/v1/games/{gameId}':
+    get:
+      operationId: getGame
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+components:
+  schemas:
+    Game:
+      oneOf:
+        - $ref: '#/components/schemas/Match'
+        - $ref: '#/components/schemas/Tournament'
+      discriminator:
+        propertyName: type
+        mapping:
+          match: '#/components/schemas/Match'
+          tournament: '#/components/schemas/Tournament'
+    List:
+      type: string
+      enum:
+        - group
+        - knockout
+        - class
+    Match:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+        list:
+          $ref: '#/components/schemas/List'
+    Tournament:
+      allOf:
+        - type: object
+          required:
+            - matches
+          properties:
+            matches:
+              type: array
+              items:
+                $ref: '#/components/schemas/Match'
+            class:
+              type: object
+              properties:
+                name:
+                  type: string

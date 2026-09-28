@@ -44,6 +44,7 @@ use PhpParser\Node\Expr\NullsafeMethodCall;
 use PhpParser\Node\Expr\NullsafePropertyFetch;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Ternary;
+use PhpParser\Node\Expr\Throw_ as ThrowExpression;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\MatchArm;
 use PhpParser\Node\Name;
@@ -170,9 +171,12 @@ class CodeBuilder extends BuilderFactory
             ->makePrivate();
 
         if (!empty($type) && $this->phpVersion->isPropertyTypeHintSupported()) {
-            if ($nullable && $type !== FieldType::PHP_TYPE_MIXED) {
+            if ($nullable) {
                 $property->setDefault(null);
-                $type = '?' . $type;
+                // mixed already includes null and cannot be marked nullable
+                if ($type !== FieldType::PHP_TYPE_MIXED) {
+                    $type = '?' . $type;
+                }
             }
 
             $property->setType($type);
@@ -260,6 +264,11 @@ class CodeBuilder extends BuilderFactory
         return new Cast\Array_($expr);
     }
 
+    public function castToString(Expr $expr): Cast\String_
+    {
+        return new Cast\String_($expr);
+    }
+
     public function expr(Expr $expr): Expression
     {
         return new Expression($expr);
@@ -278,6 +287,11 @@ class CodeBuilder extends BuilderFactory
     public function matchArm(array $conditions, Expr $body): MatchArm
     {
         return new MatchArm($conditions, $body);
+    }
+
+    public function defaultMatchArm(Expr $body): MatchArm
+    {
+        return new MatchArm(null, $body);
     }
 
     public function switch(Expr $condition, Case_ ...$cases): Switch_
@@ -368,6 +382,16 @@ class CodeBuilder extends BuilderFactory
         }
 
         return new Throw_($this->new($exceptionClassName, $args));
+    }
+
+    public function throwExpression(string $exceptionClassName, ?Expr $message = null): ThrowExpression
+    {
+        $args = [];
+        if ($message !== null) {
+            $args = [$message];
+        }
+
+        return new ThrowExpression($this->new($exceptionClassName, $args));
     }
 
     public function foreach(Expr $array, Variable $asValue, array $stmts, Variable $asKey = null): Foreach_

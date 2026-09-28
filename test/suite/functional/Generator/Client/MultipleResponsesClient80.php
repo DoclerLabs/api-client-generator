@@ -10,10 +10,14 @@ declare(strict_types=1);
 
 namespace Test;
 
+use DoclerLabs\ApiClientException\UnexpectedResponseBodyException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
 use Test\Request\AddPetTaskRequest;
+use Test\Request\GetPetsStatusRequest;
+use Test\Request\ImportPetsRequest;
 use Test\Request\Mapper\RequestMapperInterface;
 use Test\Request\RequestInterface;
 use Test\Request\SavePetRequest;
@@ -21,6 +25,7 @@ use Test\Response\ResponseHandler;
 use Test\Schema\Mapper\PetMapper;
 use Test\Schema\Mapper\PetTaskMapper;
 use Test\Schema\Pet;
+use Test\Serializer\ContentType\ContentTypeSerializerInterface;
 
 class MultipleResponsesClient
 {
@@ -41,6 +46,7 @@ class MultipleResponsesClient
         return match ($response->getStatusCode()) {
             204 => null,
             200, 201 => $this->container->get(PetMapper::class)->toSchema($unserializedResponse),
+            default => throw new RuntimeException('Response status code not properly mapped in schema.'),
         };
     }
 
@@ -52,7 +58,32 @@ class MultipleResponsesClient
         return match ($response->getStatusCode()) {
             204 => null,
             200, 201 => $this->container->get(PetMapper::class)->toSchema($unserializedResponse),
-            202 => $this->container->get(PetTaskMapper::class)->toSchema($unserializedResponse),
+            202     => $this->container->get(PetTaskMapper::class)->toSchema($unserializedResponse),
+            default => throw new RuntimeException('Response status code not properly mapped in schema.'),
+        };
+    }
+
+    public function importPets(ImportPetsRequest $request)
+    {
+        $response             = $this->sendRequest($request);
+        $unserializedResponse = $this->handleResponse($response);
+
+        return match ($response->getStatusCode()) {
+            201     => null,
+            202     => null,
+            default => throw new RuntimeException('Response status code not properly mapped in schema.'),
+        };
+    }
+
+    public function getPetsStatus(GetPetsStatusRequest $request): ?string
+    {
+        $response             = $this->sendRequest($request);
+        $unserializedResponse = $this->handleResponse($response);
+
+        return match ($response->getStatusCode()) {
+            204     => null,
+            200     => $unserializedResponse[ContentTypeSerializerInterface::LITERAL_VALUE_KEY] ?? throw new UnexpectedResponseBodyException('Response body does not contain the expected non-null value.'),
+            default => throw new RuntimeException('Response status code not properly mapped in schema.'),
         };
     }
 

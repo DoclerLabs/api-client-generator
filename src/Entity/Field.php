@@ -8,6 +8,7 @@ use DoclerLabs\ApiClientGenerator\Ast\PhpVersion;
 use DoclerLabs\ApiClientGenerator\Entity\Constraint\ConstraintCollection;
 use DoclerLabs\ApiClientGenerator\Naming\CaseCaster;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaCollectionNaming;
+use DoclerLabs\ApiClientGenerator\Naming\SchemaNaming;
 use RuntimeException;
 
 class Field
@@ -29,6 +30,8 @@ class Field
     private mixed $default = null;
 
     private mixed $discriminator = null;
+
+    private bool $explicitReferenceName = false;
 
     public function __construct(
         private PhpVersion $phpVersion,
@@ -122,6 +125,28 @@ class Field
         return $this->referenceName;
     }
 
+    public function setReferenceName(string $referenceName): self
+    {
+        $this->referenceName = $referenceName;
+
+        return $this;
+    }
+
+    /**
+     * Whether the reference name is the name of the referenced component, rather than a fallback name.
+     */
+    public function hasExplicitReferenceName(): bool
+    {
+        return $this->explicitReferenceName;
+    }
+
+    public function setExplicitReferenceName(bool $explicitReferenceName): self
+    {
+        $this->explicitReferenceName = $explicitReferenceName;
+
+        return $this;
+    }
+
     public function isRequired(): bool
     {
         return $this->required;
@@ -188,6 +213,30 @@ class Field
                && $this->getArrayItem()->isEnum();
     }
 
+    /**
+     * An array of arrays (at any depth) of objects, e.g. array<array<Item>>: its innermost arrays are collections.
+     */
+    public function isArrayOfArraysOfObjects(): bool
+    {
+        if (!$this->isArray()) {
+            return false;
+        }
+
+        $item = $this->getArrayItem();
+
+        return !$item->isNullable() && ($item->isArrayOfObjects() || $item->isArrayOfArraysOfObjects());
+    }
+
+    /**
+     * The innermost array of objects (the collection) of an array of arrays of objects.
+     */
+    public function getInnermostArrayOfObjects(): Field
+    {
+        $item = $this->getArrayItem();
+
+        return $item->isArrayOfObjects() ? $item : $item->getInnermostArrayOfObjects();
+    }
+
     public function getDefault(): mixed
     {
         return $this->default;
@@ -220,7 +269,7 @@ class Field
     public function getPhpClassName(): string
     {
         if ($this->type->isObject()) {
-            return $this->referenceName;
+            return SchemaNaming::getSchemaClassName($this->referenceName);
         }
 
         if (

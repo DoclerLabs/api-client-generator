@@ -13,12 +13,12 @@ use DoclerLabs\ApiClientGenerator\Entity\Field;
 use DoclerLabs\ApiClientGenerator\Entity\Operation;
 use DoclerLabs\ApiClientGenerator\Entity\Request;
 use DoclerLabs\ApiClientGenerator\Generator\Security\SecurityStrategyInterface;
-use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\CopiedNamespace;
 use DoclerLabs\ApiClientGenerator\Naming\RequestNaming;
 use DoclerLabs\ApiClientGenerator\Output\Copy\Schema\SerializableInterface;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Stmt\ClassMethod;
 
@@ -171,7 +171,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
                     )) {
                         $param->setDefault($this->builder->classConstFetch(
                             $field->getPhpClassName(),
-                            EnumGenerator::getCaseName((string)$default)
+                            EnumGenerator::getCaseNameOfValue($field->getEnumValues() ?? [], $default)
                         ));
                     } else {
                         $param->setDefault($field->getDefault());
@@ -253,9 +253,8 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             if ($field->isRequired()) {
                 continue;
             }
-            if ($field->isNullable()) {
-                throw new InvalidSpecificationException('Nullable optional parameter is not supported');
-            }
+            // A nullable optional parameter accepts an explicit null. It is treated like an unset parameter:
+            // null values are left out of the query, header and cookie parameters, as they are for required ones.
             $statements[] = $this->generateSet($field);
         }
 
@@ -362,7 +361,7 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         $methods[] = $this->generateGetRawParametersMethod('getRawQueryParameters', $fields->getQueryFields(), $securityQueryFields);
         $methods[] = $this->generateGetParametersMethod('getCookies', $fields->getCookieFields(), $securityCookies);
         $methods[] = $this->generateGetHeadersMethod($request, $fields->getHeaderFields(), $operation, $specification);
-        $methods[] = $this->generateGetBody($fields->getBody());
+        $methods[] = $this->generateGetBody($fields->getBody(), $fields->hasLiteralBody());
 
         return $methods;
     }
@@ -459,8 +458,25 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         return $fieldsArr;
     }
 
-    private function generateGetBody(?Field $body): ClassMethod
+    private function generateGetBody(?Field $body, bool $isLiteral): ClassMethod
     {
+        if ($body !== null && $isLiteral) {
+            // The body serializers can only encode SerializableInterface, so a literal body gets wrapped.
+            $returnType = 'LiteralRequestBody';
+            $return     = $this->builder->new(
+                $returnType,
+                [$this->builder->localPropertyFetch($body->getPhpVariableName())]
+            );
+
+            return $this
+                ->builder
+                ->method('getBody')
+                ->makePublic()
+                ->addStmt($this->builder->return($return))
+                ->composeDocBlock([], $returnType)
+                ->getNode();
+        }
+
         if ($body !== null) {
             $returnType = $body->getPhpTypeHint();
 
@@ -503,6 +519,14 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
         $fieldsArr  = $this->generateFieldsArray($fields);
         $returnType = 'array';
 
+        foreach ($fields as $field) {
+            /** @var Field $field */
+            $headerValue = $this->generateHeaderStringValue($field);
+            if ($headerValue !== null) {
+                $fieldsArr[$field->getName()] = $headerValue;
+            }
+        }
+
         if (!empty($fieldsArr)) {
             $returnVal = $this->builder->funcCall(
                 'array_merge',
@@ -519,6 +543,43 @@ class RequestGenerator extends MutatorAccessorClassGeneratorAbstract
             ->setReturnType($returnType)
             ->composeDocBlock([], $returnType)
             ->getNode();
+    }
+
+    /**
+     * PSR-7 header values are strings (guzzlehttp/psr7 >= 2.11 deprecates anything else, nyholm/psr7 rejects booleans),
+     * so integer, number and boolean header parameters (including integer backed enums) are cast to string.
+     * Booleans are sent as '1' and '0', the same way the query and cookie parameters serialize them.
+     * A null value (unset optional or nullable parameter) stays null, so it is still filtered out.
+     * Returns null when the header value needs no conversion.
+     */
+    private function generateHeaderStringValue(Field $field): ?Expr
+    {
+        $type = $field->getType();
+        if (!$type->isInteger() && !$type->isFloat() && !$type->isBoolean()) {
+            return null;
+        }
+
+        $property = $this->builder->localPropertyFetch($field->getPhpVariableName());
+        $value    = $property;
+        if ($field->isEnum() && $this->phpVersion->isEnumSupported()) {
+            $value = $this->builder->propertyFetch($property, 'value');
+        }
+
+        if ($type->isBoolean()) {
+            $stringValue = $this->builder->ternary($value, $this->builder->val('1'), $this->builder->val('0'));
+        } else {
+            $stringValue = $this->builder->castToString($value);
+        }
+
+        if ($field->isNullable() || $field->isOptional()) {
+            $stringValue = $this->builder->ternary(
+                $this->builder->equals($property, $this->builder->val(null)),
+                $this->builder->val(null),
+                $stringValue
+            );
+        }
+
+        return $stringValue;
     }
 
     private function getSecurityHeadersStmts(Operation $operation, Specification $specification): array

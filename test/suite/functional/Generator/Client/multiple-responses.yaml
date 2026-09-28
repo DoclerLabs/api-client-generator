@@ -59,6 +59,29 @@ paths:
                 $ref: '#/components/schemas/PetTask'
         '204':
           description: pet did not change
+  /pets-import:
+    post:
+      operationId: importPets
+      responses:
+        '201':
+          description: pets imported
+        '202':
+          description: pets import accepted
+  /pets-status:
+    get:
+      operationId: getPetsStatus
+      responses:
+        '200':
+          description: pet store status
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - open
+                  - closed
+        '204':
+          description: pet store status unknown
 components:
   schemas:
     Pet:

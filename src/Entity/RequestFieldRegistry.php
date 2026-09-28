@@ -88,6 +88,19 @@ class RequestFieldRegistry implements IteratorAggregate
     }
 
     /**
+     * A literal body has a schema that is not an object: a string, number, boolean, or an array of those.
+     * Untyped (mixed) bodies are passed through as they are.
+     */
+    public function hasLiteralBody(): bool
+    {
+        $body = $this->getBody();
+
+        return $body !== null
+            && !$body->isComposite()
+            && $body->getType()->toSpecificationType() !== null;
+    }
+
+    /**
      * @return RecursiveIteratorIterator|Field[]
      */
     public function getIterator(): RecursiveIteratorIterator

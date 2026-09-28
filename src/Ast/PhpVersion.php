@@ -84,6 +84,11 @@ class PhpVersion
         return $this->isVersionGreaterThanOrEqualTo80();
     }
 
+    public function isThrowExpressionSupported(): bool
+    {
+        return $this->isVersionGreaterThanOrEqualTo80();
+    }
+
     public function isMixedTypehintSupported(): bool
     {
         return $this->isVersionGreaterThanOrEqualTo80();

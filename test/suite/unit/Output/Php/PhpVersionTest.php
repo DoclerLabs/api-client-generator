@@ -44,6 +44,13 @@ class PhpVersionTest extends TestCase
         self::assertTrue((new PhpVersion(PhpVersion::VERSION_PHP74))->isNullableTypeHintSupported());
     }
 
+    public function testIsThrowExpressionSupported()
+    {
+        self::assertFalse((new PhpVersion(PhpVersion::VERSION_PHP74))->isThrowExpressionSupported());
+        self::assertTrue((new PhpVersion(PhpVersion::VERSION_PHP80))->isThrowExpressionSupported());
+        self::assertTrue((new PhpVersion(PhpVersion::VERSION_PHP83))->isThrowExpressionSupported());
+    }
+
     public function testIsClassConstantVisibilitySupported()
     {
         self::assertFalse(

@@ -27,6 +27,9 @@ use UnexpectedValueException;
 
 class FieldFactory
 {
+    /** @var string[] reserved words already reported as schema names */
+    private array $reservedSchemaNames = [];
+
     public function __construct(private PhpNameValidator $nameValidator, private PhpVersion $phpVersion)
     {
     }
@@ -122,7 +125,7 @@ class FieldFactory
                 $arrayItem = $this->create(
                     $operationName,
                     lcfirst($itemReferenceName),
-                    $sibling,
+                    $itemsReference,
                     true,
                     $itemReferenceName
                 );
@@ -155,6 +158,20 @@ class FieldFactory
                 }
             }
 
+            if (
+                FieldType::isSpecificationTypeObject($type)
+                && SchemaNaming::isReservedClassName($referenceName)
+                && !in_array($referenceName, $this->reservedSchemaNames, true)
+            ) {
+                $this->reservedSchemaNames[] = $referenceName;
+                $warningMessage              = sprintf(
+                    'Schema name %s is a reserved word in PHP, %s is used as class name instead.',
+                    $referenceName,
+                    SchemaNaming::getSchemaClassName($referenceName)
+                );
+                trigger_error($warningMessage, E_USER_WARNING);
+            }
+
             $fieldType = new FieldType($type, $this->phpVersion);
             $field     = new Field(
                 $this->phpVersion,
@@ -176,6 +193,8 @@ class FieldFactory
                 !empty($oneOf),
                 !empty($anyOf)
             );
+
+            $field->setExplicitReferenceName($schemaOrReference instanceof Reference);
 
             if ($arrayItem !== null) {
                 $field->setArrayItem($arrayItem);
@@ -283,6 +302,9 @@ class FieldFactory
 
     private function mergeAllOfAttributes(SpecObjectInterface $schema, bool &$nullable): SpecObjectInterface
     {
+        // `nullable: true` next to `allOf` (the OAS 3.0 nullable reference idiom) must survive the merge:
+        // the referenced schemas carry `nullable: false` by default, which would otherwise override it.
+        $explicitlyNullable = $nullable;
         foreach ($schema->allOf as $allOfSchema) {
             if ($allOfSchema instanceof Reference) {
                 $allOfSchema = $allOfSchema->resolve();
@@ -291,7 +313,7 @@ class FieldFactory
             if (in_array('null', (array)$allOfSchema->type, true)) {
                 // 3.1 schema nullable does not exist anymore, rather it's done via type
                 $nullable = true;
-            } elseif (isset($allOfSchema->nullable)) {
+            } elseif (!$explicitlyNullable && isset($allOfSchema->nullable)) {
                 $nullable = $allOfSchema->nullable;
             }
 

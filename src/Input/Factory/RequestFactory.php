@@ -6,7 +6,6 @@ namespace DoclerLabs\ApiClientGenerator\Input\Factory;
 
 use cebe\openapi\spec\Reference;
 use cebe\openapi\spec\RequestBody;
-use cebe\openapi\SpecObjectInterface;
 use DoclerLabs\ApiClientGenerator\Entity\Request;
 use DoclerLabs\ApiClientGenerator\Entity\RequestFieldRegistry;
 use DoclerLabs\ApiClientGenerator\Input\InvalidSpecificationException;
@@ -27,6 +26,7 @@ class RequestFactory
         RequestBody $body = null
     ): Request {
         $contentTypes = [];
+        $schema       = null;
         $collection   = new RequestFieldRegistry();
         foreach ($parameters as $parameter) {
             $referenceName = '';
@@ -47,17 +47,22 @@ class RequestFactory
         }
 
         if ($body !== null) {
-            $schema = null;
             foreach ($body->content as $contentType => $content) {
+                $contentTypes[] = $contentType;
+
+                // A media type without schema does not describe its content, so it has no body field of its own.
+                // The media type is still accepted, it can be sent with the body of the other media types or empty.
+                if ($content->schema === null) {
+                    continue;
+                }
                 if ($schema !== null && !Parity::isEqualTo($content->schema, $schema)) {
                     throw new InvalidSpecificationException('Multiple schemas per request is not currently supported.');
                 }
-                $schema         = $content->schema;
-                $contentTypes[] = $contentType;
+                $schema = $content->schema;
             }
+        }
 
-            /** @var SpecObjectInterface $schema */
-
+        if ($schema !== null) {
             $schemaName = SchemaNaming::getClassName($schema, ucfirst($operationName) . 'RequestBody');
 
             $collection->add(

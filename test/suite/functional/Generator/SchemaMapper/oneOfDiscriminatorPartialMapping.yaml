@@ -1,0 +1,66 @@
+openapi: 3.0.0
+info:
+  title: OneOf with a discriminator mapping that covers only some of the alternatives
+  version: 1.0.0
+
+paths:
+  /pets/{petId}:
+    get:
+      operationId: getPet
+      parameters:
+        - in: path
+          name: petId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+
+components:
+  schemas:
+    Pet:
+      oneOf:
+        - $ref: '#/components/schemas/Cat'
+        - $ref: '#/components/schemas/Dog'
+        - $ref: '#/components/schemas/Lizard'
+      discriminator:
+        propertyName: petType
+        mapping:
+          cat: '#/components/schemas/Cat'
+          kitten: '#/components/schemas/Cat'
+          dog: Dog
+    Cat:
+      type: object
+      required:
+        - petType
+        - name
+      properties:
+        petType:
+          type: string
+        name:
+          type: string
+    Dog:
+      type: object
+      required:
+        - petType
+        - bark
+      properties:
+        petType:
+          type: string
+        bark:
+          type: string
+    Lizard:
+      type: object
+      required:
+        - petType
+        - lovesRocks
+      properties:
+        petType:
+          type: string
+        lovesRocks:
+          type: boolean

@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace OpenApi\PetStoreClient;
 
+use DoclerLabs\ApiClientException\UnexpectedResponseBodyException;
 use OpenApi\PetStoreClient\Request\AddPetRequest;
 use OpenApi\PetStoreClient\Request\CreateUserRequest;
 use OpenApi\PetStoreClient\Request\CreateUsersWithListInputRequest;
@@ -149,6 +150,9 @@ class SwaggerPetstoreOpenAPI3Client
     public function loginUser(LoginUserRequest $request): string
     {
         $response = $this->handleResponse($this->sendRequest($request));
+        if (!isset($response[ContentTypeSerializerInterface::LITERAL_VALUE_KEY])) {
+            throw new UnexpectedResponseBodyException('Response body does not contain the expected non-null value.');
+        }
 
         return $response[ContentTypeSerializerInterface::LITERAL_VALUE_KEY];
     }

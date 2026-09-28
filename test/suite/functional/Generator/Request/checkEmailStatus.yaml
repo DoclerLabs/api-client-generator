@@ -1,0 +1,38 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Example API
+paths:
+  '/v1/email-status':
+    post:
+      description: Media type without schema, the request has no body field
+      operationId: checkEmailStatus
+      requestBody:
+        content:
+          application/x-www-form-urlencoded: {}
+      responses:
+        '204':
+          description: Email status checked.
+  '/v1/notes':
+    post:
+      description: Media type without schema next to one with a schema
+      operationId: createNote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Note'
+          application/x-www-form-urlencoded: {}
+      responses:
+        '201':
+          description: Note created.
+components:
+  schemas:
+    Note:
+      type: object
+      properties:
+        text:
+          type: string
+      required:
+        - text

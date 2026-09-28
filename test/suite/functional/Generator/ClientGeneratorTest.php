@@ -52,6 +52,24 @@ class ClientGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . '\\MultipleResponsesClient',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
             ],
+            'Literal responses with php 7.4' => [
+                '/Client/literal-responses.yaml',
+                '/Client/LiteralResponsesClient74.php',
+                self::BASE_NAMESPACE . '\\LiteralResponsesClient',
+                ConfigurationBuilder::fake()->build(),
+            ],
+            'Literal responses with php 8.0' => [
+                '/Client/literal-responses.yaml',
+                '/Client/LiteralResponsesClient80.php',
+                self::BASE_NAMESPACE . '\\LiteralResponsesClient',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
+            ],
+            'Literal responses with php 8.1' => [
+                '/Client/literal-responses.yaml',
+                '/Client/LiteralResponsesClient81.php',
+                self::BASE_NAMESPACE . '\\LiteralResponsesClient',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
             'Basic schema with php 8.1 and include tags' => [
                 '/Client/petstore.yaml',
                 '/Client/SwaggerPetstoreClientWithTags.php',

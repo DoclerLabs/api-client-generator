@@ -1,0 +1,64 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Example API
+paths:
+  '/v1/campaigns/{campaignId}/members':
+    post:
+      description: Literal integer request body
+      operationId: addMember
+      parameters:
+        - name: campaignId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: integer
+              description: The member id.
+      responses:
+        '204':
+          description: Member added.
+  '/v1/nickname':
+    put:
+      description: Literal nullable string request body
+      operationId: setNickname
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              nullable: true
+      responses:
+        '204':
+          description: Nickname set.
+  '/v1/tags':
+    put:
+      description: Array of strings request body
+      operationId: setTags
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '204':
+          description: Tags set.
+  '/v1/expiry':
+    put:
+      description: Literal date-time request body
+      operationId: setExpiry
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              format: date-time
+      responses:
+        '204':
+          description: Expiry set.

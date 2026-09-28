@@ -174,7 +174,7 @@ class SchemaCollectionGenerator extends GeneratorAbstract
             ->addStmt($if)
             ->addStmt($return)
             ->setReturnType($arrayItem->getPhpTypeHint(), true)
-            ->composeDocBlock([], $arrayItem->getReferenceName() . '|null')
+            ->composeDocBlock([], $arrayItem->getPhpClassName() . '|null')
             ->getNode();
     }
 }

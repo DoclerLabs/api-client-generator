@@ -82,6 +82,102 @@ class SchemaGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ItemWithArraysOfEnumProperties',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
             ],
+            'Nullable allOf reference with PHP 7.4' => [
+                '/SchemaMapper/nullableAllOfReference.yaml',
+                '/Schema/NullableAllOfReference74.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Profile',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Nullable allOf reference with PHP 8.1' => [
+                '/SchemaMapper/nullableAllOfReference.yaml',
+                '/Schema/NullableAllOfReference81.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Profile',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Array of arrays of objects with PHP 7.0' => [
+                '/SchemaMapper/arrayOfArraysOfObjects.yaml',
+                '/Schema/ArrayOfArraysOfObjects70.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ShowSubscribers',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP70)->build(),
+            ],
+            'Array of arrays of objects with PHP 7.4' => [
+                '/SchemaMapper/arrayOfArraysOfObjects.yaml',
+                '/Schema/ArrayOfArraysOfObjects74.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ShowSubscribers',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Array of arrays of objects with PHP 8.1' => [
+                '/SchemaMapper/arrayOfArraysOfObjects.yaml',
+                '/Schema/ArrayOfArraysOfObjects81.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ShowSubscribers',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Untyped (mixed) properties with PHP 7.4' => [
+                '/Schema/itemWithMixed.yaml',
+                '/Schema/ItemWithMixedPhp74.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ItemWithMixed',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Untyped (mixed) properties with PHP 8.0' => [
+                '/Schema/itemWithMixed.yaml',
+                '/Schema/ItemWithMixedPhp80.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ItemWithMixed',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP80)->build(),
+            ],
+            'Untyped (mixed) properties with PHP 8.1' => [
+                '/Schema/itemWithMixed.yaml',
+                '/Schema/ItemWithMixedPhp81.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ItemWithMixed',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Schema named after a reserved word with PHP 7.4' => [
+                '/Schema/reservedWords.yaml',
+                '/Schema/MatchSchemaPhp74.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\MatchSchema',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Schema named after a reserved word with PHP 8.1' => [
+                '/Schema/reservedWords.yaml',
+                '/Schema/MatchSchemaPhp81.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\MatchSchema',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Schema referencing schemas named after reserved words' => [
+                '/Schema/reservedWords.yaml',
+                '/Schema/Tournament.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Tournament',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Inline schema with a reserved word fallback name' => [
+                '/Schema/reservedWords.yaml',
+                '/Schema/ClassSchema.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ClassSchema',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Schema with an enum property whose class name collides' => [
+                '/Schema/classNameCollisions.yaml',
+                '/Schema/CallWithCollidingEnum.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\Call',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
+            'Component schema keeps its name when an inline schema collides with it' => [
+                '/Schema/classNameCollisions.yaml',
+                '/Schema/HotDeal.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\HotDeal',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Inline schema colliding with a component schema gets a numeric suffix' => [
+                '/Schema/classNameCollisions.yaml',
+                '/Schema/HotDeal2.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\HotDeal2',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Schema with an inline property whose class name collides' => [
+                '/Schema/classNameCollisions.yaml',
+                '/Schema/PageItem.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\PageItem',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
         ];
     }
 

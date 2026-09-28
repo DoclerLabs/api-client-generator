@@ -1,0 +1,86 @@
+openapi: 3.0.0
+info:
+  title: OneOf without discriminator, alternatives told apart by an enum
+  version: 1.0.0
+
+paths:
+  /attachments/{attachmentId}:
+    get:
+      operationId: getAttachment
+      parameters:
+        - in: path
+          name: attachmentId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attachment'
+
+components:
+  schemas:
+    Attachment:
+      type: object
+      required:
+        - id
+        - uploader
+      properties:
+        id:
+          type: integer
+        uploader:
+          oneOf:
+            - $ref: '#/components/schemas/PerformerUploader'
+            - $ref: '#/components/schemas/MemberUploader'
+            - $ref: '#/components/schemas/SystemUploader'
+            - $ref: '#/components/schemas/BotUploader'
+    PerformerUploader:
+      type: object
+      required:
+        - type
+        - id
+      properties:
+        type:
+          type: string
+          enum:
+            - performer
+        id:
+          type: integer
+    MemberUploader:
+      type: object
+      required:
+        - type
+        - id
+      properties:
+        type:
+          type: string
+          enum:
+            - member
+        id:
+          type: integer
+    SystemUploader:
+      type: object
+      required:
+        - system
+      properties:
+        system:
+          type: boolean
+    BotUploader:
+      type: object
+      required:
+        - bot
+      properties:
+        bot:
+          $ref: '#/components/schemas/Bot'
+    Bot:
+      type: object
+      required:
+        - kind
+      properties:
+        kind:
+          type: string
+          enum:
+            - crawler

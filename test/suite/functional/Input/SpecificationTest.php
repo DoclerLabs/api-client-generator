@@ -269,6 +269,59 @@ class SpecificationTest extends TestCase
         static::assertSame('License name', $specificationWithLicense->getLicenseName());
     }
 
+    /**
+     * @dataProvider literalRequestBodyProvider
+     */
+    public function testHasLiteralRequestBody(?array $requestBodySchema, bool $expectedResult): void
+    {
+        $operation = [
+            'operationId' => 'updateUser',
+            'responses'   => [
+                '204' => [
+                    'description' => 'No content',
+                ],
+            ],
+        ];
+        if ($requestBodySchema !== null) {
+            $operation['requestBody'] = [
+                'content' => [
+                    'application/json' => [
+                        'schema' => $requestBodySchema,
+                    ],
+                ],
+            ];
+        }
+        $data = [
+            'openapi' => '3.0.0',
+            'info'    => [
+                'title'   => 'Sample API',
+                'version' => '1.0.0',
+            ],
+            'paths' => [
+                '/users' => [
+                    'put' => $operation,
+                ],
+            ],
+        ];
+
+        $specification = $this->sut->parse($data, '/openapi.yaml');
+
+        static::assertSame($expectedResult, $specification->hasLiteralRequestBody());
+    }
+
+    public function literalRequestBodyProvider(): array
+    {
+        return [
+            'No request body'      => [null, false],
+            'Object body'          => [['type' => 'object', 'properties' => ['name' => ['type' => 'string']]], false],
+            'Array of objects'     => [['type' => 'array', 'items' => ['type' => 'object', 'properties' => ['name' => ['type' => 'string']]]], false],
+            'Untyped body'         => [['description' => 'Anything'], false],
+            'Integer body'         => [['type' => 'integer'], true],
+            'Nullable string body' => [['type' => 'string', 'nullable' => true], true],
+            'Array of integers'    => [['type' => 'array', 'items' => ['type' => 'integer']], true],
+        ];
+    }
+
     protected function setUp(): void
     {
         $container = $this->getContainerWith(ConfigurationBuilder::fake()->build());

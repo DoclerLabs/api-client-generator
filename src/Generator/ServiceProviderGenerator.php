@@ -62,7 +62,11 @@ class ServiceProviderGenerator extends GeneratorAbstract
                 )
             );
 
-        $compositeFields = $specification->getCompositeResponseFields()->getUniqueByPhpClassName();
+        $compositeFields = array_filter(
+            $specification->getCompositeResponseFields()->getUniqueByPhpClassName(),
+            // array-of-enum items have no mapper to register
+            static fn (Field $field): bool => !$field->isEnum()
+        );
 
         $classBuilder = $this
             ->builder
@@ -277,6 +281,9 @@ class ServiceProviderGenerator extends GeneratorAbstract
         if ($field->isObject()) {
             $alreadyInjected = [];
             foreach ($field->getObjectProperties() as $subfield) {
+                if ($subfield->isArrayOfArraysOfObjects()) {
+                    $subfield = $subfield->getInnermostArrayOfObjects();
+                }
                 if ($subfield->isComposite() && !isset($alreadyInjected[$subfield->getPhpClassName()])) {
                     $getMethodArg = $this->builder->classConstFetch(
                         SchemaMapperNaming::getClassName($subfield),

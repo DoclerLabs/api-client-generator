@@ -9,14 +9,17 @@ use DoclerLabs\ApiClientException\UnexpectedResponseBodyException;
 use DoclerLabs\ApiClientGenerator\Ast\Builder\ParameterBuilder;
 use DoclerLabs\ApiClientGenerator\Ast\ParameterNode;
 use DoclerLabs\ApiClientGenerator\Entity\Field;
+use DoclerLabs\ApiClientGenerator\Entity\FieldType;
 use DoclerLabs\ApiClientGenerator\Input\Specification;
 use DoclerLabs\ApiClientGenerator\Naming\SchemaMapperNaming;
 use DoclerLabs\ApiClientGenerator\Output\Php\PhpFileCollection;
 use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Case_;
 use PhpParser\Node\Stmt\ClassMethod;
+use ValueError;
 
 class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
 {
@@ -30,6 +33,11 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
     {
         foreach ($specification->getCompositeResponseFields() as $field) {
             /** @var Field $field */
+            if ($field->isEnum()) {
+                // array-of-enum items are mapped by the parent with from(), they need no mapper
+                continue;
+            }
+
             $this->generateMapper($fileRegistry, $field);
         }
     }
@@ -59,6 +67,9 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         if ($root->isObject()) {
             $alreadyInjected = [];
             foreach ($root->getObjectProperties() as $child) {
+                if ($child->isArrayOfArraysOfObjects()) {
+                    $child = $child->getInnermostArrayOfObjects();
+                }
                 if ($child->isComposite()) {
                     $childClassName = SchemaMapperNaming::getClassName($child);
                     if (!isset($alreadyInjected[$childClassName])) {
@@ -96,6 +107,9 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         if ($root->isObject()) {
             $alreadyInjected = [];
             foreach ($root->getObjectProperties() as $child) {
+                if ($child->isArrayOfArraysOfObjects()) {
+                    $child = $child->getInnermostArrayOfObjects();
+                }
                 if ($child->isComposite()) {
                     $childClassName = SchemaMapperNaming::getClassName($child);
                     if (!isset($alreadyInjected[$childClassName])) {
@@ -387,6 +401,15 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                         $this->builder->val(null)
                     )
                     : $arrayMapCall;
+            } elseif ($field->isArrayOfArraysOfObjects()) {
+                $collectionsMapping = $this->generateArrayOfArraysOfObjectsMapping($field, $requiredResponseItems[$i]);
+                $requiredVars[]     = $field->isNullable()
+                    ? $this->builder->ternary(
+                        $this->builder->notEquals($requiredResponseItems[$i], $this->builder->val(null)),
+                        $collectionsMapping,
+                        $this->builder->val(null)
+                    )
+                    : $collectionsMapping;
             } else {
                 $requiredVars[] = $requiredResponseItems[$i];
             }
@@ -433,7 +456,14 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                     }
                 } elseif ($field->isEnum() && $this->phpVersion->isEnumSupported()) {
                     $this->addImport($this->fqdn($this->withSubNamespace(SchemaGenerator::NAMESPACE_SUBPATH), $field->getPhpClassName()));
-                    $optionalVar = $this->builder->staticCall($field->getPhpClassName(), 'from', [$optionalResponseItems[$i]]);
+                    $newEnum     = $this->builder->staticCall($field->getPhpClassName(), 'from', [$optionalResponseItems[$i]]);
+                    $optionalVar = $field->isNullable()
+                        ? $this->builder->ternary(
+                            $this->builder->notEquals($optionalResponseItems[$i], $this->builder->val(null)),
+                            $newEnum,
+                            $this->builder->val(null)
+                        )
+                        : $newEnum;
                 } elseif ($field->isArrayOfEnums() && $this->phpVersion->isEnumSupported()) {
                     $enumField = $field->getArrayItem();
                     $this->addImport($this->fqdn($this->withSubNamespace(SchemaGenerator::NAMESPACE_SUBPATH), $enumField->getPhpClassName()));
@@ -457,6 +487,15 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                             $this->builder->val(null)
                         )
                         : $arrayMapCall;
+                } elseif ($field->isArrayOfArraysOfObjects()) {
+                    $collectionsMapping = $this->generateArrayOfArraysOfObjectsMapping($field, $optionalResponseItems[$i]);
+                    $optionalVar        = $field->isNullable()
+                        ? $this->builder->ternary(
+                            $this->builder->notEquals($optionalResponseItems[$i], $this->builder->val(null)),
+                            $collectionsMapping,
+                            $this->builder->val(null)
+                        )
+                        : $collectionsMapping;
                 } else {
                     $optionalVar = $optionalResponseItems[$i];
                 }
@@ -478,8 +517,14 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                     ));
 
                     $this->addImport(UnexpectedResponseBodyException::class);
+                    $caughtExceptions = [$this->builder->className('UnexpectedResponseBodyException')];
+                    if ($this->phpVersion->isEnumSupported() && $this->isMappedWithEnums($field)) {
+                        // <Enum>::from() throws a ValueError for a value of another alternative
+                        $this->addImport(ValueError::class);
+                        $caughtExceptions[] = $this->builder->className('ValueError');
+                    }
                     $catchStatement = $this->builder->catch(
-                        [$this->builder->className('UnexpectedResponseBodyException')],
+                        $caughtExceptions,
                         $this->builder->var('exception'),
                         []
                     );
@@ -554,6 +599,41 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         return $statements;
     }
 
+    /**
+     * Maps every innermost array of an array of arrays of objects to its collection.
+     */
+    private function generateArrayOfArraysOfObjectsMapping(Field $field, Expr $payloadItem): FuncCall
+    {
+        $item    = $field->getArrayItem();
+        $itemVar = $this->builder->var('item');
+        if ($item->isArrayOfObjects()) {
+            $this->addImport($this->fqdn($this->withSubNamespace(SchemaGenerator::NAMESPACE_SUBPATH), $item->getPhpClassName()));
+            $itemMapping = $this->builder->methodCall(
+                $this->builder->localPropertyFetch(SchemaMapperNaming::getPropertyName($item)),
+                'toSchema',
+                [$itemVar]
+            );
+            $itemType = $item->getPhpClassName();
+        } else {
+            $itemMapping = $this->generateArrayOfArraysOfObjectsMapping($item, $itemVar);
+            $itemType    = FieldType::PHP_TYPE_ARRAY;
+        }
+
+        return $this->builder->funcCall(
+            'array_map',
+            [
+                $this->builder->closure(
+                    [$this->builder->return($itemMapping)],
+                    [$this->builder->param('item')->setType(FieldType::PHP_TYPE_ARRAY)->getNode()],
+                    [],
+                    $itemType,
+                    false
+                ),
+                $payloadItem,
+            ]
+        );
+    }
+
     private function generateDiscriminatorStatement(Field $root, Variable $payloadVariable): Stmt
     {
         $discriminator = $root->getDiscriminator();
@@ -571,104 +651,113 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
             $this->builder->val($propertyName)
         );
 
-        $fallbackStatements = $this->generateDiscriminatorFallbackStatements($payloadDiscriminator, $payloadVariable);
-
         /** @phpstan-ignore-next-line */
         $mapping = $discriminator->mapping ?? [];
-        $cases   = $this->generateDiscriminatorMappingCases($root, $mapping, $payloadVariable);
+        $cases   = $this->generateDiscriminatorCases($root, $mapping, $payloadVariable);
 
-        if ($cases === []) {
-            return $this->builder->if($ifCondition, $fallbackStatements);
-        }
-
-        $defaultStatements = [...$fallbackStatements, $this->builder->break()];
-        $cases[]           = $this->builder->default(...$defaultStatements);
+        $this->addImport(UnexpectedResponseBodyException::class);
+        $cases[] = $this->builder->default(
+            $this->builder->throw(
+                'UnexpectedResponseBodyException',
+                $this->builder->val(
+                    sprintf(
+                        'Unknown `%s` discriminator value for `%s` in the response body',
+                        $propertyName,
+                        $root->getPhpClassName()
+                    )
+                )
+            )
+        );
+        $this->mapMethodThrownExceptions['UnexpectedResponseBodyException'] = true;
 
         return $this->builder->if($ifCondition, [$this->builder->switch($payloadDiscriminator, ...$cases)]);
     }
 
     /**
-     * @return Stmt[]
-     */
-    private function generateDiscriminatorFallbackStatements(Expr $payloadDiscriminator, Variable $payloadVariable): array
-    {
-        $assignMethodName = $this->builder->expr(
-            $this->builder->assign(
-                $this->builder->var('methodName'),
-                $this->builder->concat(
-                    $this->builder->val('set'),
-                    $this->builder->funcCall('ucfirst', [$payloadDiscriminator])
-                )
-            )
-        );
-
-        $assignMapperName = $this->builder->expr(
-            $this->builder->assign(
-                $this->builder->var('mapperName'),
-                $this->builder->concat(
-                    $payloadDiscriminator,
-                    $this->builder->val('Mapper')
-                )
-            )
-        );
-
-        $schemaMethodCall = $this->builder->expr(
-            $this->builder->methodCall(
-                $this->builder->var('schema'),
-                '$methodName',
-                [
-                    $this->builder->methodCall(
-                        $this->builder->localPropertyFetch('$mapperName'),
-                        'toSchema',
-                        [$payloadVariable]
-                    ),
-                ]
-            )
-        );
-
-        return [$assignMethodName, $assignMapperName, $schemaMethodCall];
-    }
-
-    /**
+     * One case per discriminator value: the explicit mapping first, then the implicit mapping (the schema name)
+     * of every alternative the explicit mapping does not cover. The latter also accepts the lcfirst class name,
+     * which the previous value based dispatch (`$this->{$value . 'Mapper'}`) resolved.
+     *
      * @param string[] $mapping
      *
      * @return Case_[]
      */
-    private function generateDiscriminatorMappingCases(Field $root, array $mapping, Variable $payloadVariable): array
+    private function generateDiscriminatorCases(Field $root, array $mapping, Variable $payloadVariable): array
     {
-        $childrenByClassName = [];
+        $childrenBySchemaName = [];
         foreach ($root->getObjectProperties() as $child) {
             if ($child->isComposite()) {
-                $childrenByClassName[$child->getPhpClassName()] = $child;
+                $childrenBySchemaName[$child->getName()] = $child;
             }
         }
 
-        $cases = [];
+        $cases            = [];
+        $usedValues       = [];
+        $explicitlyMapped = [];
         foreach ($mapping as $discriminatorValue => $reference) {
             $schemaName = $this->resolveSchemaNameFromReference($reference);
-            if (!isset($childrenByClassName[$schemaName])) {
+            if (!isset($childrenBySchemaName[$schemaName])) {
                 continue;
             }
 
-            $child   = $childrenByClassName[$schemaName];
-            $cases[] = $this->builder->case(
-                $this->builder->val((string)$discriminatorValue),
-                $this->builder->expr(
-                    $this->builder->methodCall(
-                        $this->builder->var('schema'),
-                        $this->getSetMethodName($child),
-                        [
-                            $this->builder->methodCall(
-                                $this->builder->localPropertyFetch(SchemaMapperNaming::getPropertyName($child)),
-                                'toSchema',
-                                [$payloadVariable]
-                            ),
-                        ]
-                    )
-                ),
-                $this->builder->break()
+            $cases[] = $this->generateDiscriminatorCase(
+                [(string)$discriminatorValue],
+                $childrenBySchemaName[$schemaName],
+                $payloadVariable
             );
+            $usedValues[]                  = (string)$discriminatorValue;
+            $explicitlyMapped[$schemaName] = true;
         }
+
+        foreach ($childrenBySchemaName as $schemaName => $child) {
+            if (isset($explicitlyMapped[$schemaName])) {
+                continue;
+            }
+
+            $implicitValues = array_values(
+                array_diff(array_unique([(string)$schemaName, lcfirst($child->getPhpClassName())]), $usedValues)
+            );
+            if ($implicitValues === []) {
+                continue;
+            }
+
+            $cases[]    = $this->generateDiscriminatorCase($implicitValues, $child, $payloadVariable);
+            $usedValues = [...$usedValues, ...$implicitValues];
+        }
+
+        return array_merge([], ...$cases);
+    }
+
+    /**
+     * @param string[] $discriminatorValues
+     *
+     * @return Case_[]
+     */
+    private function generateDiscriminatorCase(array $discriminatorValues, Field $child, Variable $payloadVariable): array
+    {
+        $cases     = [];
+        $lastValue = array_pop($discriminatorValues);
+        foreach ($discriminatorValues as $discriminatorValue) {
+            $cases[] = $this->builder->case($this->builder->val($discriminatorValue));
+        }
+
+        $cases[] = $this->builder->case(
+            $this->builder->val($lastValue),
+            $this->builder->expr(
+                $this->builder->methodCall(
+                    $this->builder->var('schema'),
+                    $this->getSetMethodName($child),
+                    [
+                        $this->builder->methodCall(
+                            $this->builder->localPropertyFetch(SchemaMapperNaming::getPropertyName($child)),
+                            'toSchema',
+                            [$payloadVariable]
+                        ),
+                    ]
+                )
+            ),
+            $this->builder->break()
+        );
 
         return $cases;
     }
@@ -678,5 +767,32 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
         $segments = explode('/', $reference);
 
         return (string)end($segments);
+    }
+
+    /**
+     * Whether mapping the field (or anything nested in it) can throw the ValueError of an enum.
+     */
+    private function isMappedWithEnums(Field $field): bool
+    {
+        if ($field->isEnum()) {
+            return true;
+        }
+
+        if ($field->isArray()) {
+            return $this->isMappedWithEnums($field->getArrayItem());
+        }
+
+        if (($field->hasOneOf() || $field->hasAnyOf()) && !$field->getDiscriminator()) {
+            // its own mapper catches the ValueError of its alternatives
+            return false;
+        }
+
+        foreach ($field->getObjectProperties() as $property) {
+            if ($this->isMappedWithEnums($property)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

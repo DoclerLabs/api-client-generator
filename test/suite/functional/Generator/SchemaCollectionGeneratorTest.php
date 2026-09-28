@@ -47,6 +47,18 @@ class SchemaCollectionGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ItemCollection',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
             ],
+            'Collection nested in an array of arrays of objects with PHP 7.4' => [
+                '/SchemaMapper/arrayOfArraysOfObjects.yaml',
+                '/SchemaCollection/ShowSubscriberCollection74.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\ShowSubscriberCollection',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Collection of a schema named after a reserved word' => [
+                '/Schema/reservedWords.yaml',
+                '/SchemaCollection/MatchCollection.php',
+                self::BASE_NAMESPACE . SchemaGenerator::NAMESPACE_SUBPATH . '\\MatchCollection',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
         ];
     }
 

@@ -1,0 +1,58 @@
+openapi: 3.0.0
+info:
+  title: Nullable enum properties
+  version: 1.0.0
+
+paths:
+  /cookies/{cookieId}:
+    get:
+      operationId: getCookie
+      parameters:
+        - in: path
+          name: cookieId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cookie'
+
+components:
+  schemas:
+    Cookie:
+      type: object
+      required:
+        - name
+        - mandatoryNullableType
+      properties:
+        name:
+          type: string
+        mandatoryNullableType:
+          type: string
+          enum:
+            - session
+            - persistent
+          nullable: true
+        optionalType:
+          type: string
+          enum:
+            - session
+            - persistent
+        optionalNullableType:
+          type: string
+          enum:
+            - session
+            - persistent
+          nullable: true
+        category:
+          $ref: '#/components/schemas/CookieCategory'
+    CookieCategory:
+      type: string
+      enum:
+        - analytical
+        - essential
+      nullable: true

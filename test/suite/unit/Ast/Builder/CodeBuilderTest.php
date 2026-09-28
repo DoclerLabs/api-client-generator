@@ -287,6 +287,39 @@ EOD,
         self::assertEquals('true ? $left : null', $this->printer->prettyPrint([$ternary]));
     }
 
+    public function testThrowExpression(): void
+    {
+        $throw = $this->sut->throwExpression('RuntimeException', $this->sut->val('message'));
+        self::assertEquals(
+            '$var ?? throw new RuntimeException(\'message\')',
+            $this->printer->prettyPrintExpr($this->sut->coalesce($this->sut->var('var'), $throw))
+        );
+    }
+
+    public function testMatchWithDefaultArm(): void
+    {
+        $match = $this->sut->match(
+            $this->sut->var('code'),
+            $this->sut->matchArm([$this->sut->val(200)], $this->sut->val(null)),
+            $this->sut->defaultMatchArm($this->sut->throwExpression('RuntimeException'))
+        );
+        self::assertEquals(
+            <<<'EOD'
+match ($code) {
+    200 => null,
+    default => throw new RuntimeException(),
+}
+EOD,
+            $this->printer->prettyPrintExpr($match)
+        );
+    }
+
+    public function testCastToString(): void
+    {
+        $cast = $this->sut->castToString($this->sut->var('value'));
+        self::assertEquals('(string) $value', $this->printer->prettyPrintExpr($cast));
+    }
+
     public function testNotEquals(): void
     {
         $left  = $this->sut->var('left');
@@ -294,5 +327,49 @@ EOD,
 
         $notEquals = $this->sut->notEquals($left, $right);
         self::assertEquals('$left !== $right', $this->printer->prettyPrintExpr($notEquals));
+    }
+
+    /**
+     * @dataProvider localPropertyProvider
+     */
+    public function testLocalProperty(string $type, bool $nullable, string $expected): void
+    {
+        $this->phpVersionResolver->method('isPropertyTypeHintSupported')->willReturn(true);
+
+        $property = $this->sut->localProperty('some', $type, $type, $nullable);
+
+        self::assertEquals($expected, $this->printer->prettyPrint([$property]));
+    }
+
+    public function localPropertyProvider(): array
+    {
+        return [
+            'mandatory'       => ['string', false, 'private string $some;'],
+            'nullable'        => ['string', true, 'private ?string $some = null;'],
+            'mandatory mixed' => ['mixed', false, 'private mixed $some;'],
+            'nullable mixed'  => ['mixed', true, 'private mixed $some = null;'],
+        ];
+    }
+
+    /**
+     * @dataProvider paramTypeProvider
+     */
+    public function testParamType(string $type, bool $nullable, string $expected): void
+    {
+        $this->phpVersionResolver->method('isNullableTypeHintSupported')->willReturn(true);
+
+        $param = $this->sut->param('some')->setType($type, $nullable)->getNode();
+
+        self::assertEquals($expected, $this->printer->prettyPrint([$this->sut->method('test')->addParam($param)->getNode()]));
+    }
+
+    public function paramTypeProvider(): array
+    {
+        return [
+            'mandatory'       => ['string', false, 'function test(string $some)' . PHP_EOL . '{' . PHP_EOL . '}'],
+            'nullable'        => ['string', true, 'function test(?string $some)' . PHP_EOL . '{' . PHP_EOL . '}'],
+            'mandatory mixed' => ['mixed', false, 'function test(mixed $some)' . PHP_EOL . '{' . PHP_EOL . '}'],
+            'nullable mixed'  => ['mixed', true, 'function test(mixed $some)' . PHP_EOL . '{' . PHP_EOL . '}'],
+        ];
     }
 }
