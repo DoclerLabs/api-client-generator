@@ -433,7 +433,14 @@ class SchemaMapperGenerator extends MutatorAccessorClassGeneratorAbstract
                     }
                 } elseif ($field->isEnum() && $this->phpVersion->isEnumSupported()) {
                     $this->addImport($this->fqdn($this->withSubNamespace(SchemaGenerator::NAMESPACE_SUBPATH), $field->getPhpClassName()));
-                    $optionalVar = $this->builder->staticCall($field->getPhpClassName(), 'from', [$optionalResponseItems[$i]]);
+                    $newEnum     = $this->builder->staticCall($field->getPhpClassName(), 'from', [$optionalResponseItems[$i]]);
+                    $optionalVar = $field->isNullable()
+                        ? $this->builder->ternary(
+                            $this->builder->notEquals($optionalResponseItems[$i], $this->builder->val(null)),
+                            $newEnum,
+                            $this->builder->val(null)
+                        )
+                        : $newEnum;
                 } elseif ($field->isArrayOfEnums() && $this->phpVersion->isEnumSupported()) {
                     $enumField = $field->getArrayItem();
                     $this->addImport($this->fqdn($this->withSubNamespace(SchemaGenerator::NAMESPACE_SUBPATH), $enumField->getPhpClassName()));

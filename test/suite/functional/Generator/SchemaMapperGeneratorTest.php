@@ -190,6 +190,18 @@ class SchemaMapperGeneratorTest extends AbstractGeneratorTest
                 self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\ProfileMapper',
                 ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
             ],
+            'Nullable enums with php 7.4' => [
+                '/SchemaMapper/nullableEnum.yaml',
+                '/SchemaMapper/NullableEnumMapper74.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\CookieMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP74)->build(),
+            ],
+            'Nullable enums with php 8.1' => [
+                '/SchemaMapper/nullableEnum.yaml',
+                '/SchemaMapper/NullableEnumMapper81.php',
+                self::BASE_NAMESPACE . SchemaMapperGenerator::NAMESPACE_SUBPATH . '\\CookieMapper',
+                ConfigurationBuilder::fake()->withPhpVersion(PhpVersion::VERSION_PHP81)->build(),
+            ],
         ];
     }
 
