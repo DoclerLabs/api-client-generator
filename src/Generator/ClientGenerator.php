@@ -431,18 +431,19 @@ class ClientGenerator extends GeneratorAbstract
                     $nullableCases[$response->statusCode] = $this->builder->return($this->builder->val(null));
                 }
             } else {
-                $returnTypeHints[$responseBody->getPhpTypeHint()] = true;
-                $isNullable                                       = $isNullable || $responseBody->isNullable();
+                // Responses are grouped by type hint: the class name for composite, date and enum bodies,
+                // the scalar type for any other literal body.
+                $typeHint                   = $responseBody->getPhpTypeHint();
+                $returnTypeHints[$typeHint] = true;
+                $isNullable                 = $isNullable || $responseBody->isNullable();
 
-                $phpClassName = $responseBody->getPhpClassName();
-
-                $caseConditions[$phpClassName][] = new LNumber($response->statusCode);
-                if (!isset($caseBodies[$phpClassName])) {
+                $caseConditions[$typeHint][] = new LNumber($response->statusCode);
+                if (!isset($caseBodies[$typeHint])) {
                     $response = $this->processResponse($unserializedResponseVar, $responseBody);
                     if ($this->phpVersion->isMatchSupported()) {
-                        $matchBodies[$phpClassName] = $response;
+                        $matchBodies[$typeHint] = $response;
                     } else {
-                        $caseBodies[$phpClassName] = [
+                        $caseBodies[$typeHint] = [
                             ...$this->generateLiteralResponseGuard($unserializedResponseVar, $responseBody),
                             $this->builder->return($response),
                         ];
@@ -456,8 +457,8 @@ class ClientGenerator extends GeneratorAbstract
             foreach ($nullableMatchArms as $statusCode => $nullableMatchArm) {
                 $matchArms[] = $this->builder->matchArm([new LNumber($statusCode)], $nullableMatchArm);
             }
-            foreach ($matchBodies as $phpClassName => $matchBody) {
-                $matchArms[] = $this->builder->matchArm($caseConditions[$phpClassName], $matchBody);
+            foreach ($matchBodies as $typeHint => $matchBody) {
+                $matchArms[] = $this->builder->matchArm($caseConditions[$typeHint], $matchBody);
             }
 
             $this->addImport(RuntimeException::class);
@@ -478,11 +479,11 @@ class ClientGenerator extends GeneratorAbstract
             foreach ($nullableCases as $statusCode => $nullableCase) {
                 $cases[] = $this->builder->case(new LNumber($statusCode), $nullableCase);
             }
-            foreach ($caseBodies as $phpClassName => $caseBody) {
-                for ($i = 0, $l = count($caseConditions[$phpClassName]) - 1; $i < $l; ++$i) {
-                    $cases[] = $this->builder->case($caseConditions[$phpClassName][$i]);
+            foreach ($caseBodies as $typeHint => $caseBody) {
+                for ($i = 0, $l = count($caseConditions[$typeHint]) - 1; $i < $l; ++$i) {
+                    $cases[] = $this->builder->case($caseConditions[$typeHint][$i]);
                 }
-                $cases[] = $this->builder->case($caseConditions[$phpClassName][$l], ...$caseBody);
+                $cases[] = $this->builder->case($caseConditions[$typeHint][$l], ...$caseBody);
             }
             $stmts[] = $this->builder->switch(
                 $this->builder->methodCall($responseVar, 'getStatusCode'),
