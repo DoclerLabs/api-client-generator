@@ -8,22 +8,23 @@
     "packages": [
         {
             "name": "docler-labs/api-client-exception",
-            "version": "2.0.0",
+            "version": "2.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DoclerLabs/api-client-exception.git",
-                "reference": "a3ec4018885b9ae193f01e04d886038020d7855e"
+                "reference": "eb574734d32c2a624d1f8fe17dc1d5252ba252d6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DoclerLabs/api-client-exception/zipball/a3ec4018885b9ae193f01e04d886038020d7855e",
-                "reference": "a3ec4018885b9ae193f01e04d886038020d7855e",
+                "url": "https://api.github.com/repos/DoclerLabs/api-client-exception/zipball/eb574734d32c2a624d1f8fe17dc1d5252ba252d6",
+                "reference": "eb574734d32c2a624d1f8fe17dc1d5252ba252d6",
                 "shasum": ""
             },
             "require": {
+                "fig/http-message-util": "^1.1",
                 "php": "^7.4 || ^8.0",
                 "psr/http-client": "^1.0",
-                "psr/http-message": "^1.0"
+                "psr/http-message": "^1.0 || ^2.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "^9.5"
@@ -48,9 +49,65 @@
             ],
             "support": {
                 "issues": "https://github.com/DoclerLabs/api-client-exception/issues",
-                "source": "https://github.com/DoclerLabs/api-client-exception/tree/2.0.0"
+                "source": "https://github.com/DoclerLabs/api-client-exception/tree/2.3.1"
             },
-            "time": "2022-11-21T12:45:09+00:00"
+            "time": "2026-09-28T09:26:44+00:00"
+        },
+        {
+            "name": "fig/http-message-util",
+            "version": "1.1.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/http-message-util.git",
+                "reference": "9d94dc0154230ac39e5bf89398b324a86f63f765"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/http-message-util/zipball/9d94dc0154230ac39e5bf89398b324a86f63f765",
+                "reference": "9d94dc0154230ac39e5bf89398b324a86f63f765",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.3 || ^7.0 || ^8.0"
+            },
+            "suggest": {
+                "psr/http-message": "The package containing the PSR-7 interfaces"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Fig\\Http\\Message\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "https://www.php-fig.org/"
+                }
+            ],
+            "description": "Utility classes and constants for use with PSR-7 (psr/http-message)",
+            "keywords": [
+                "http",
+                "http-message",
+                "psr",
+                "psr-7",
+                "request",
+                "response"
+            ],
+            "support": {
+                "issues": "https://github.com/php-fig/http-message-util/issues",
+                "source": "https://github.com/php-fig/http-message-util/tree/1.1.5"
+            },
+            "time": "2020-11-24T22:02:12+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -266,16 +323,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "2.13.0",
+            "version": "2.13.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "dad89620b7a6edb60c15858442eb2e408b45d8f4"
+                "reference": "95e7828100de18b4e269fb1703be530082d5166d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/dad89620b7a6edb60c15858442eb2e408b45d8f4",
-                "reference": "dad89620b7a6edb60c15858442eb2e408b45d8f4",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/95e7828100de18b4e269fb1703be530082d5166d",
+                "reference": "95e7828100de18b4e269fb1703be530082d5166d",
                 "shasum": ""
             },
             "require": {
@@ -365,7 +422,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/2.13.0"
+                "source": "https://github.com/guzzle/psr7/tree/2.13.1"
             },
             "funding": [
                 {
@@ -381,7 +438,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-07-16T22:23:49+00:00"
+            "time": "2026-08-24T09:13:11+00:00"
         },
         {
             "name": "openapi/pet-store-client",
@@ -389,13 +446,13 @@
             "dist": {
                 "type": "path",
                 "url": "PetStoreClient",
-                "reference": "93ea26f4a1d5f4436e771c9a3fe34e3da0ee2010"
+                "reference": "913a168df8522adcead52b9c2e1287962df7b070"
             },
             "require": {
-                "docler-labs/api-client-exception": "^1.0 || ^2.0",
+                "docler-labs/api-client-exception": "^1.0 || ^2.3.1",
                 "ext-dom": "*",
                 "ext-json": "*",
-                "guzzlehttp/psr7": "^1.6 || ^2.6",
+                "guzzlehttp/psr7": "^1.6 || ^2.7",
                 "php": "^7.4 || ^8.0",
                 "pimple/pimple": "^3.5",
                 "psr/container": "^1.0 || ^2.0",
